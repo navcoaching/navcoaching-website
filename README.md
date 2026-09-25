@@ -67,7 +67,7 @@ npm run test:e2e       # رحلة كاملة على iPhone وiPad وDesktop (ق�
    `DATABASE_URL` (بدور nav_app فقط)، `DATABASE_SSL=true`، `BETTER_AUTH_SECRET`، `BETTER_AUTH_URL`، `NEXT_PUBLIC_SITE_URL`، `RESEND_API_KEY`، `MAIL_FROM`، `COACH_NOTIFY_EMAIL`، `STORAGE_DRIVER=netlify`.
    **لا تضعي `DATABASE_URL_OWNER` في Netlify.**
 5. جرّبي على رابط `*.netlify.app` رحلة كاملة بطلب حقيقي بمبلغ رمزي، ثم ألغيه.
-6. بعد الموافقة: انقلي الدومين `navcoaching.sa` إلى الموقع الجديد (انظري خطة الترحيل).
+6. بعد الموافقة: انقلي الدومين `navcoaching.com` إلى الموقع الجديد (انظري خطة الترحيل).
 
 ## إدارة الموقع (للمدربة)
 

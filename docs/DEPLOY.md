@@ -39,8 +39,8 @@
 بدون هذه الخطوة لن يصل رمز الدخول لأي عميل.
 
 1. أنشئي حساباً في **resend.com**.
-2. **Domains ← Add Domain**، واكتبي `navcoaching.sa`.
-3. ستظهر لك سجلات DNS (عادةً TXT وMX). أضيفيها في لوحة الجهة التي تدير دومينك (المكان الذي اشتريتِ منه `navcoaching.sa`).
+2. **Domains ← Add Domain**، واكتبي `navcoaching.com`.
+3. ستظهر لك سجلات DNS (عادةً TXT وMX). أضيفيها في لوحة الجهة التي تدير دومينك (المكان الذي اشتريتِ منه `navcoaching.com`).
 4. انتظري حتى تصير حالة الدومين في Resend **Verified**. قد يأخذ دقائق أو ساعات.
 5. **API Keys ← Create API Key**، بصلاحية الإرسال فقط. انسخي المفتاح؛ لا يظهر إلا مرة واحدة.
 
@@ -61,7 +61,7 @@
 | `BETTER_AUTH_URL` | `https://navcoaching-app.netlify.app` (رابط موقعك بالضبط، بدون `/` في آخره) |
 | `NEXT_PUBLIC_SITE_URL` | نفس القيمة السابقة |
 | `RESEND_API_KEY` | المفتاح من الخطوة 2 |
-| `MAIL_FROM` | `Nav Coaching <no-reply@navcoaching.sa>` |
+| `MAIL_FROM` | `Nav Coaching <no-reply@navcoaching.com>` |
 | `COACH_NOTIFY_EMAIL` | بريدك الذي تصلك عليه تنبيهات الطلبات |
 | `STORAGE_DRIVER` | `netlify` |
 
@@ -99,17 +99,17 @@
 
 إذا نجحت هذه الخطوات، صار الموقع **يستقبل الاشتراكات** على رابط `navcoaching-app.netlify.app`.
 
-## الخطوة 7 — الدومين `navcoaching.sa`
+## الخطوة 7 — الدومين `navcoaching.com`
 
-1. Netlify ← الموقع الجديد ← **Domain management ← Add a domain**، واكتبي `navcoaching.sa`، ثم اتبعي تعليمات DNS التي تظهر.
+1. Netlify ← الموقع الجديد ← **Domain management ← Add a domain**، واكتبي `navcoaching.com`، ثم اتبعي تعليمات DNS التي تظهر.
    - إذا كان الدومين مربوطاً حالياً بالموقع القديم، احذفيه من الموقع القديم أولاً (Domain management في الموقع القديم).
 2. انتظري تفعيل HTTPS (شهادة SSL تلقائية).
 3. عدّلي المتغيرين إلى الدومين:
-   - `BETTER_AUTH_URL` = `https://navcoaching.sa`
-   - `NEXT_PUBLIC_SITE_URL` = `https://navcoaching.sa`
+   - `BETTER_AUTH_URL` = `https://navcoaching.com`
+   - `NEXT_PUBLIC_SITE_URL` = `https://navcoaching.com`
 
    ثم **Trigger deploy**.
-4. جرّبي الدخول من جديد على `https://navcoaching.sa/login`.
+4. جرّبي الدخول من جديد على `https://navcoaching.com/login`.
 5. في **الموقع القديم** بعد التأكد: اجعلي روابطه تحوّل للموقع الجديد، أو أبقيه شهراً وراقبي Forms لأي طلب متأخر (تفاصيل في [DELIVERY.md](DELIVERY.md#7-خطة-الترحيل-الآمن)).
 
 ## بعد الإطلاق
