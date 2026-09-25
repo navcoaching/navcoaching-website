@@ -6,6 +6,4 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# إضافة Next.js الرسمية من Netlify (تُثبّت تلقائياً عادةً، وذُكرت هنا للوضوح)
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
+# Netlify يكتشف Next.js تلقائياً ويركّب محرّكه (لا حاجة لإضافة plugin يدوياً).

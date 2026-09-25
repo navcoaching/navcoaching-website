@@ -56,6 +56,9 @@ npm run test:e2e       # رحلة كاملة على iPhone وiPad وDesktop (ق�
 
 ## النشر على Netlify (رابط Preview أولاً)
 
+> **الدليل التفصيلي خطوة بخطوة (بدون أوامر على جهازك):** [docs/DEPLOY.md](docs/DEPLOY.md). قاعدة البيانات تُجهَّز بلصق [`db/setup.sql`](db/setup.sql) في محرر SQL.
+
+
 1. **قاعدة البيانات:** أنشئي مشروع Postgres (Neon أو Supabase)، ثم نفّذي أوامر الأدوار أعلاه عليه.
 2. من جهازك، بقيم الإنتاج في `.env.local` (أو متغيرات مؤقتة):
    `npm run db:migrate && npm run db:seed`
