@@ -395,10 +395,15 @@ dialog.lightbox .lb-bar { display: flex; justify-content: space-between; align-i
 .short-play .cap { position: absolute; bottom: 16px; inset-inline: 16px; color: #fff; font-size: 14px; text-align: center; }
 
 /* التقييمات */
-.reviews { columns: 3 300px; column-gap: clamp(14px, 2vw, 22px); }
-.review { break-inside: avoid; margin: 0 0 clamp(14px, 2vw, 22px); display: grid; gap: 12px; }
-.review blockquote { margin: 0; font-size: 16px; }
-.review .who { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 14px; }
+.reviews { display: grid; gap: clamp(14px, 2vw, 22px); grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); align-items: stretch; }
+.review { margin: 0; display: grid; grid-template-rows: auto 1fr auto auto; gap: 12px; }
+.review-top { display: flex; align-items: center; justify-content: space-between; min-height: 28px; }
+.review .qmark { font: 700 54px/0.6 Georgia, serif; color: var(--cyan); height: 26px; overflow: hidden; }
+.review-text { display: grid; gap: 6px; align-content: start; }
+.review blockquote { margin: 0; font-size: 16px; line-height: 1.9; }
+.review blockquote.clamped { display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
+.review-text .link-btn { justify-self: start; min-height: 32px; }
+.review .who { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
 .review .who b { font-family: var(--f-display); }
 .stars { color: #e5a50a; letter-spacing: 2px; font-size: 15px; }
 .review .reply { border-inline-start: 3px solid var(--cyan); padding-inline-start: 12px; font-size: 14.5px; color: var(--muted); }

@@ -1,11 +1,15 @@
 import type { PublicReview } from "@/lib/data";
 import { fmtDate } from "@/lib/format";
+import ReviewText from "./ReviewText";
 
 export default function ReviewCard({ r }: { r: PublicReview }) {
   return (
     <figure className="card review reveal">
-      {r.rating ? <span className="stars" role="img" aria-label={`تقييم ${r.rating} من 5`}>{"★".repeat(r.rating)}</span> : null}
-      <blockquote>«{r.body}»</blockquote>
+      <div className="review-top">
+        <span className="qmark" aria-hidden="true">”</span>
+        {r.rating ? <span className="stars" role="img" aria-label={`تقييم ${r.rating} من 5`}>{"★".repeat(r.rating)}</span> : null}
+      </div>
+      <ReviewText body={r.body} />
       <figcaption className="who">
         <b>{r.display_name}</b>
         <span className="muted">{r.period_label ?? fmtDate(r.created_at)}{r.product_name ? ` · ${r.product_name}` : ""}</span>
