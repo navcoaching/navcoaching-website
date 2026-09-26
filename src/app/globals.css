@@ -676,3 +676,9 @@ ol.weeks li .small { margin-inline-start: auto; }
 .calc-target.is-surplus b { color: var(--accent-text); }
 input[type="date"] { width: 100%; max-width: 100%; min-width: 0; min-height: 50px; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--text); font-size: 16px; }
 .stat b[dir="ltr"] { text-align: right; }
+.method-list { display: grid; gap: 8px; }
+.method { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 12px; cursor: pointer; background: var(--surface); }
+.method.on { border-color: var(--navy); background: var(--choice-bg); }
+.method input { margin-top: 5px; accent-color: var(--navy); }
+.method span { display: grid; gap: 2px; }
+.method small { color: var(--muted); font-size: 13.5px; }

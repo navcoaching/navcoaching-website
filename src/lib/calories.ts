@@ -77,3 +77,83 @@ export function calculateEnergyBalance(i: EnergyInput): EnergyResult {
   if (maintenance <= 0) warnings.push("النتيجة غير منطقية: راجع أرقام التغيّر في الجسم والسعرات المأكولة.");
   return { leanMJ, fatMJ, netKcal, days, avgIntake, dailyBalance, dailyBalancePct, maintenance, warnings };
 }
+
+// =====================================================================
+// حاسبة السعرات اليومية (Henselmans Energy Intake Calculator 2026)
+// تقدير سعرات المحافظة والهدف من الوزن وتركيبة الجسم والتمرين. الثوابت والمعادلات مطابقة لملف الإكسل المرجعي.
+// =====================================================================
+
+export type BmrMethod = "cunningham" | "tenhaaf" | "tinsley";
+export type IntakeInput = {
+  method: BmrMethod;
+  weight: number;          // كغ
+  bodyFat?: number | null; // % (Cunningham)
+  heightCm?: number | null;// سم (Ten Haaf)
+  age?: number | null;     // سنة (Ten Haaf)
+  sex?: "male" | "female" | null; // (Ten Haaf)
+  paf: number;             // عامل النشاط البدني خارج التمرين
+  tef?: number;            // عامل التأثير الحراري للطعام (افتراضي 1.2 كما في الملف)
+  minutes: number;         // مدة جلسة تمرين المقاومة (دقيقة)
+  trainingDays: number;    // أيام التمرين في الأسبوع
+  ebFactor: number;        // عامل توازن الطاقة: 1 محافظة، أقل من 1 عجز، أكثر من 1 فائض
+};
+export type IntakeResult = {
+  ffm: number | null; bmr: number; trainingEE: number; restDayEE: number; trainingDayEE: number;
+  maintenance: number; target: number; restDayTarget: number; trainingDayTarget: number;
+};
+
+export const DEFAULT_TEF = 1.2;
+/** مصروف تمرين المقاومة: 0.1 سعرة لكل كغ لكل دقيقة */
+export const TRAINING_KCAL_PER_KG_MIN = 0.1;
+
+export const INTAKE_LIMITS = { weight: [30, 250], bodyFat: [3, 60], heightCm: [120, 230], age: [15, 90], minutes: [0, 240] } as const;
+
+export function bmrFor(i: IntakeInput): { bmr: number; ffm: number | null } {
+  if (i.method === "cunningham") {
+    const ffm = i.weight * (1 - (i.bodyFat ?? 0) / 100);
+    return { bmr: 370 + 21.6 * ffm, ffm };                  // Cunningham et al. (1991)
+  }
+  if (i.method === "tinsley") return { bmr: 24.8 * i.weight + 10, ffm: null }; // Tinsley et al. (2018)
+  const h = (i.heightCm ?? 0) / 100;
+  const sex = i.sex === "male" ? 1 : 0;
+  const kj = 49.94 * i.weight + 2459.053 * h - 34.014 * (i.age ?? 0) + 799.257 * sex + 122.502; // Ten Haaf & Weijs (2014), كيلوجول
+  return { bmr: kj / 4.184, ffm: null };
+}
+
+export function calculateIntake(i: IntakeInput): IntakeResult {
+  const tef = i.tef ?? DEFAULT_TEF;
+  const { bmr, ffm } = bmrFor(i);
+  const trainingEE = TRAINING_KCAL_PER_KG_MIN * i.weight * i.minutes;
+  const restDayEE = bmr * i.paf * tef;
+  const trainingDayEE = (bmr * i.paf + trainingEE) * tef;
+  const maintenance = (trainingDayEE * i.trainingDays + restDayEE * (7 - i.trainingDays)) / 7;
+  return {
+    ffm, bmr, trainingEE, restDayEE, trainingDayEE, maintenance,
+    target: maintenance * i.ebFactor, restDayTarget: restDayEE * i.ebFactor, trainingDayTarget: trainingDayEE * i.ebFactor,
+  };
+}
+
+export type IntakeErrors = Partial<Record<keyof IntakeInput, string>>;
+export function validateIntake(i: Partial<Record<keyof IntakeInput, unknown>>): IntakeErrors {
+  const e: IntakeErrors = {};
+  const num = (k: "weight" | "bodyFat" | "heightCm" | "age" | "minutes", label: string, unit: string) => {
+    const v = i[k]; const [min, max] = INTAKE_LIMITS[k];
+    if (typeof v !== "number" || !Number.isFinite(v)) e[k] = `اكتب ${label}.`;
+    else if (v <= 0 && k !== "minutes") e[k] = `${label} لازم يكون أكبر من صفر.`;
+    else if (v < min || v > max) e[k] = `اكتب ${label} بين ${min} و ${max}${unit}.`;
+  };
+  if (!["cunningham", "tenhaaf", "tinsley"].includes(i.method as string)) e.method = "اختر طريقة الحساب.";
+  num("weight", "الوزن", " كغ");
+  num("minutes", "مدة التمرين", " دقيقة");
+  if (i.method === "cunningham") num("bodyFat", "نسبة الدهون", "%");
+  if (i.method === "tenhaaf") {
+    num("heightCm", "الطول", " سم");
+    num("age", "العمر", " سنة");
+    if (i.sex !== "male" && i.sex !== "female") e.sex = "اختر الجنس.";
+  }
+  const td = i.trainingDays;
+  if (typeof td !== "number" || !Number.isInteger(td) || td < 0 || td > 7) e.trainingDays = "اختر عدد أيام التمرين.";
+  if (typeof i.paf !== "number" || i.paf < 1 || i.paf > 2) e.paf = "اختر مستوى نشاطك.";
+  if (typeof i.ebFactor !== "number" || i.ebFactor < 0.6 || i.ebFactor > 1.3) e.ebFactor = "اختر هدفك.";
+  return e;
+}

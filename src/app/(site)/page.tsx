@@ -4,7 +4,7 @@ import Shots from "@/components/Shots";
 import YouTubeShort from "@/components/YouTubeShort";
 import RichText from "@/components/RichText";
 import ReviewCard from "@/components/ReviewCard";
-import CalculatorForm from "./calculator/CalculatorForm";
+import IntakeCalculator from "./calculator/IntakeCalculator";
 import { IconArrow, IconChat, IconFile, IconShield, IconTarget, IconTrend } from "@/components/Icons";
 import { getFaqs, getProducts, getPublicReviews, getSettings } from "@/lib/data";
 import { youtubeId } from "@/lib/youtube";
@@ -227,10 +227,10 @@ export default async function Home() {
         <div className="wrap stack" style={{ ["--space" as string]: "20px", maxWidth: 900 }}>
           <div className="sec-head">
             <span className="eyebrow">أداة مجانية</span>
-            <h2 id="home-calc-h">حاسبة السعرات وتوازن الطاقة</h2>
-            <p className="muted">اعرف سعرات المحافظة الفعلية لجسمك من التغيّر الحقيقي في الدهون والعضل بين قياسين. <Link href="/calculator">الشرح والأسئلة الشائعة</Link></p>
+            <h2 id="home-calc-h">حاسبة السعرات اليومية</h2>
+            <p className="muted">احسب سعراتك اليومية لهدفك من وزنك وتركيبة جسمك وتمرينك. <Link href="/calculator">حاسبة توازن الطاقة والأسئلة الشائعة</Link></p>
           </div>
-          <CalculatorForm compact />
+          <IntakeCalculator idPrefix="h" />
         </div>
       </section>
     </>

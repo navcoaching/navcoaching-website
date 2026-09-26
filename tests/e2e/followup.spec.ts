@@ -377,7 +377,7 @@ test("حاسبة السعرات: توازن الطاقة (معادلة Henselman
   const page = await newPage(browser, info.project.name + "-calc");
   await page.goto("/");
   // موجودة في آخر الصفحة الرئيسية
-  await expect(page.locator("#calculator").getByRole("button", { name: "احسب توازن الطاقة" })).toBeVisible();
+  await expect(page.locator("#calculator").getByRole("button", { name: "احسب السعرات" })).toBeVisible();
   if (await page.getByLabel("فتح القائمة").isVisible()) {
     await page.getByLabel("فتح القائمة").click();
     await page.locator(".menu-panel").getByRole("link", { name: "حاسبة السعرات" }).click();
@@ -385,7 +385,31 @@ test("حاسبة السعرات: توازن الطاقة (معادلة Henselman
     await page.locator(".nav").getByRole("link", { name: "حاسبة السعرات" }).click();
   }
   await expect(page).toHaveURL(/\/calculator$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("حاسبة السعرات وتوازن الطاقة");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("حاسبة السعرات");
+  await noHorizontalScroll(page);
+
+  // ---------- حاسبة السعرات اليومية: مثال ملف Henselmans (Cunningham) ----------
+  await page.fill("#i-weight", "80");
+  await page.getByRole("button", { name: "احسب السعرات", exact: true }).click();
+  await expect(page.getByText("اكتب نسبة الدهون.")).toBeVisible();
+  await page.fill("#i-bodyFat", "15");
+  await page.getByRole("button", { name: "احسب السعرات", exact: true }).click(); // الافتراضي: نشاط 1.0، 60 دقيقة، 4 أيام، تنشيف 0.8
+  await expect(page.getByTestId("intake-target")).toHaveText("2,029");
+  await expect(page.getByTestId("intake-maintenance")).toHaveText("2,536");
+  await expect(page.getByTestId("intake-bmr")).toHaveText("1,839");
+  await expect(page.getByTestId("intake-training-day")).toHaveText("2,226");
+  await expect(page.getByTestId("intake-rest-day")).toHaveText("1,765");
+  // Ten Haaf: يطلب الطول والعمر والجنس
+  await page.locator(".method", { hasText: "ما أعرف نسبة الدهون" }).click();
+  await page.fill("#i-weight", "85");
+  await page.getByRole("button", { name: "احسب السعرات", exact: true }).click();
+  await expect(page.getByText("اختر الجنس.")).toBeVisible();
+  await page.fill("#i-heightCm", "178");
+  await page.fill("#i-age", "35");
+  await page.locator(".choice", { has: page.locator('input[name="i-sex"][value="male"]') }).click();
+  await page.getByRole("button", { name: "احسب السعرات", exact: true }).click();
+  await expect(page.getByTestId("intake-maintenance")).toHaveText("2,745");
+  await expect(page.getByTestId("intake-target")).toHaveText("2,196");
   await noHorizontalScroll(page);
 
   // تحقق: حقول فارغة

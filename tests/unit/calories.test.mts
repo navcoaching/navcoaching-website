@@ -42,3 +42,28 @@ describe("حاسبة توازن الطاقة", () => {
     assert.match(e.endDate!, /بعد الأول/);
   });
 });
+
+import { calculateIntake, validateIntake } from "../../src/lib/calories.ts";
+describe("حاسبة السعرات اليومية (Henselmans Energy Intake Calculator)", () => {
+  const common = { paf: 1.0, minutes: 60, trainingDays: 4, ebFactor: 0.8 };
+  const r0 = (v: number) => Math.round(v);
+  test("Cunningham: مطابق لمثال الملف", () => {
+    const r = calculateIntake({ ...common, method: "cunningham", weight: 80, bodyFat: 15 });
+    assert.equal(r.ffm, 68);
+    assert.deepEqual([r0(r.bmr), r0(r.trainingEE), r0(r.restDayEE), r0(r.trainingDayEE), r0(r.maintenance), r0(r.target)], [1839, 480, 2207, 2783, 2536, 2029]);
+  });
+  test("Tinsley: مطابق لمثال الملف", () => {
+    const r = calculateIntake({ ...common, method: "tinsley", weight: 90 });
+    assert.deepEqual([r0(r.bmr), r0(r.trainingEE), r0(r.restDayEE), r0(r.trainingDayEE), r0(r.maintenance), r0(r.target)], [2242, 540, 2690, 3338, 3061, 2449]);
+  });
+  test("Ten Haaf: مطابق لمثال الملف", () => {
+    const r = calculateIntake({ ...common, method: "tenhaaf", weight: 85, heightCm: 178, age: 35, sex: "male" });
+    assert.deepEqual([Math.floor(r.bmr), r0(r.trainingEE), r0(r.restDayEE), r0(r.trainingDayEE), r0(r.maintenance), r0(r.target)], [1996, 510, 2396, 3008, 2745, 2196]);
+  });
+  test("التحقق حسب الطريقة", () => {
+    assert.ok(validateIntake({ ...common, method: "cunningham", weight: 80 }).bodyFat);
+    const e = validateIntake({ ...common, method: "tenhaaf", weight: 0 });
+    assert.ok(e.weight && e.heightCm && e.age && e.sex);
+    assert.deepEqual(validateIntake({ ...common, method: "tinsley", weight: 90 }), {});
+  });
+});
