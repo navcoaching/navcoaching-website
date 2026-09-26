@@ -43,7 +43,12 @@ async function noHorizontalScroll(page: Page) {
 }
 
 async function pickRadio(page: Page, name: string, value: string) {
-  await page.locator(`input[name="${name}"][value="${value}"]`).check({ force: true });
+  // نضغط على نص الخيار كما يفعل المستخدم، وننتظر حتى يثبت الاختيار
+  const input = page.locator(`input[name="${name}"][value="${value}"]`);
+  await expect(async () => {
+    await input.locator("xpath=..").click();
+    await expect(input).toBeChecked({ timeout: 1000 });
+  }).toPass({ timeout: 10_000 });
 }
 
 test("رحلة الشراء والمتابعة والتقييم", async ({ browser }, info) => {
@@ -272,5 +277,66 @@ test("رفض الملفات غير المسموحة وحماية المسارا�
   await page.getByRole("button", { name: "رفع الإيصال" }).click();
   await expect(page.getByText("نوع الملف غير مسموح")).toBeVisible();
   await expect(page.getByTestId("order-status")).toHaveText("بانتظار الدفع");
+  await page.context().close();
+});
+
+test("المدربة تخفي طلباً من القائمة وتحذف الملغى نهائياً", async ({ browser }, info) => {
+  const project = info.project.name;
+  const coachEmail = `coach2-${project}@e2e.test`;
+  const coach = await newUserPage(browser, project + "-arch");
+  await coach.goto("/login?next=/admin");
+  await login(coach, coachEmail);
+  await db.query(`UPDATE "user" SET role = 'coach' WHERE email = $1`, [coachEmail]);
+  const { rows: [u] } = await db.query(`SELECT id FROM "user" WHERE email = $1`, [coachEmail]);
+  const orderNo = (await db.query("SELECT app.new_order_no() AS no")).rows[0].no as string;
+  await db.query(
+    `INSERT INTO orders (order_no, user_id, category, product_name, offer_label, list_price_halalas, amount_due_halalas, status, contact_name, contact_phone, idempotency_key, is_demo)
+     VALUES ($1, $2, 'files', 'منتج اختبار', 'دفعة واحدة', 19900, 19900, 'awaiting_payment', 'اختبار', '+966500000000', $3, true)`,
+    [orderNo, u.id, `k-${orderNo}-archive`]);
+
+  await coach.goto(`/admin/orders?q=${orderNo}`);
+  const row = coach.locator("tr", { hasText: orderNo });
+  await row.getByRole("button", { name: "إخفاء" }).click();
+  await expect(coach.locator("tr", { hasText: orderNo })).toHaveCount(0);
+  await coach.goto(`/admin/orders?view=archived&q=${orderNo}`);
+  await expect(coach.locator("tr", { hasText: orderNo })).toHaveCount(1);
+
+  await coach.goto(`/admin/orders/${orderNo}`);
+  await expect(coach.getByText("الحذف النهائي متاح للطلبات الملغاة فقط.")).toBeVisible();
+  const cancel = coach.locator("form", { has: coach.getByRole("button", { name: "إلغاء الطلب" }) });
+  await cancel.locator('input[name="note"]').fill("طلب تجريبي");
+  coach.once("dialog", (d) => d.accept());
+  await cancel.getByRole("button", { name: "إلغاء الطلب" }).click();
+  await coach.getByText("حذف نهائي").first().click();
+  const del = coach.locator("form", { has: coach.getByRole("button", { name: "حذف نهائي" }) });
+  await del.locator('input[name="confirm"]').fill(orderNo);
+  await del.getByRole("button", { name: "حذف نهائي" }).click();
+  await expect(coach).toHaveURL(/\/admin\/orders\?deleted=1/);
+  expect((await db.query("SELECT count(*)::int n FROM orders WHERE order_no = $1", [orderNo])).rows[0].n).toBe(0);
+  await coach.context().close();
+});
+
+test("قائمة الجوال تُغلق بعد اختيار صفحة", async ({ browser }, info) => {
+  test.skip(info.project.name !== "iphone", "القائمة المنسدلة للجوال فقط");
+  const page = await newUserPage(browser, "menu");
+  await page.goto("/");
+  await page.getByLabel("فتح القائمة").click();
+  const panel = page.locator(".menu-panel");
+  await expect(panel).toBeVisible();
+  await panel.getByRole("link", { name: "البرامج" }).click();
+  await expect(page).toHaveURL(/\/programs$/);
+  await expect(panel).toBeHidden();
+  // الضغط خارج القائمة يغلقها أيضاً
+  await page.getByLabel("فتح القائمة").click();
+  await expect(panel).toBeVisible();
+  const box = await panel.boundingBox();
+  const vh = page.viewportSize()!.height;
+  await page.mouse.click(20, Math.min(vh - 10, box!.y + box!.height + 40));
+  await expect(panel).toBeHidden();
+  // وزر Esc
+  await page.getByLabel("فتح القائمة").click();
+  await expect(panel).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(panel).toBeHidden();
   await page.context().close();
 });

@@ -138,6 +138,30 @@ export async function replyCheckinAction(_: ActionState, fd: FormData): Promise<
   return { ok: true, message: "تم إرسال الرد." };
 }
 
+export async function archiveOrderAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const orderNo = String(fd.get("order_no") ?? "");
+  const archive = fd.get("archive") === "1";
+  try {
+    await asCoach((tx) => tx.query("SELECT app.coach_archive_order($1,$2)", [orderNo, archive]));
+  } catch (err) { return fail(err); }
+  revalidatePath("/admin/orders");
+  revalidatePath(`/admin/orders/${orderNo}`);
+  return { ok: true, message: archive ? "أُخفي الطلب من القائمة." : "رجع الطلب للقائمة." };
+}
+
+export async function deleteOrderAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const orderNo = String(fd.get("order_no") ?? "");
+  if (String(fd.get("confirm") ?? "").trim() !== orderNo) return { error: "اكتبي رقم الطلب كما هو للتأكيد." };
+  let keys: string[] = [];
+  try {
+    keys = await asCoach(async (tx) => (await tx.query("SELECT app.coach_delete_order($1) AS k", [orderNo])).rows[0].k ?? []);
+  } catch (err) { return fail(err); }
+  const store = await storage();
+  await Promise.all(keys.map((k) => store.remove(k).catch(() => {})));
+  revalidatePath("/admin/orders");
+  redirect("/admin/orders?deleted=1");
+}
+
 // ---------- التقييمات ----------
 export async function moderateReviewAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const id = String(fd.get("id") ?? "");

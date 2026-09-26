@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { IconMenu, IconUser } from "./Icons";
 import ThemeToggle from "./ThemeToggle";
+import MobileMenu from "./MobileMenu";
 
 const LINKS = [
   { href: "/programs", label: "البرامج" },
@@ -27,15 +28,14 @@ export default function Header() {
           <Link href={account.href} className="btn btn-ghost btn-sm"><IconUser size={18} />{account.label}</Link>
           <Link href="/programs" className="btn btn-sm">ابدأ الآن</Link>
         </nav>
-        <details className="menu">
-          <summary aria-label="فتح القائمة"><IconMenu /></summary>
+        <MobileMenu summary={<IconMenu />}>
           <nav className="menu-panel" aria-label="القائمة">
             {LINKS.map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}
             <Link href={account.href}>{account.label}</Link>
             <ThemeToggle withLabel />
             <Link href="/programs" className="btn btn-block">ابدأ الآن</Link>
           </nav>
-        </details>
+        </MobileMenu>
       </div>
     </header>
   );

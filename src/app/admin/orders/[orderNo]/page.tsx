@@ -9,7 +9,7 @@ import { coachNextSteps, statusLabel, statusTone } from "@/lib/status";
 import { ANSWER_LABELS } from "@/lib/intake";
 import ActionForm from "@/components/admin/ActionForm";
 import {
-  addDeliverableAction, removeDeliverableAction, replyCheckinAction, setAmountAction, transitionAction,
+  addDeliverableAction, archiveOrderAction, deleteOrderAction, removeDeliverableAction, replyCheckinAction, setAmountAction, transitionAction,
 } from "@/app/actions/admin";
 
 const show = (v: unknown) => (Array.isArray(v) ? v.join("، ") : v == null || v === "" ? "—" : String(v));
@@ -160,6 +160,27 @@ export default async function AdminOrder({ params }: { params: Promise<{ orderNo
               ))}
             </div>
           )}
+          <div className="card stack">
+            <h2 style={{ fontSize: 17 }}>إدارة الطلب</h2>
+            {o.archived_at && <p className="small muted">هذا الطلب مخفي من قائمة الطلبات.</p>}
+            <ActionForm action={archiveOrderAction} submit={o.archived_at ? "إظهار في القائمة" : "إخفاء من القائمة"} submitClass="btn btn-ghost btn-sm">
+              <input type="hidden" name="order_no" value={o.order_no} />
+              <input type="hidden" name="archive" value={o.archived_at ? "0" : "1"} />
+              <p className="small muted">الإخفاء لا يحذف شيئاً، والعميل يرى طلبه كما هو.</p>
+            </ActionForm>
+            {o.status === "cancelled" ? (
+              <details>
+                <summary className="small" style={{ cursor: "pointer", minHeight: 44, color: "var(--err)" }}>حذف نهائي</summary>
+                <ActionForm action={deleteOrderAction} submit="حذف نهائي" submitClass="btn btn-danger btn-sm">
+                  <input type="hidden" name="order_no" value={o.order_no} />
+                  <p className="small">يحذف الطلب وتقييمه الأولي وإيصالاته وسجله نهائياً ولا يمكن استرجاعه.</p>
+                  <div className="field"><label>للتأكيد اكتبي رقم الطلب: <bdi>{o.order_no}</bdi></label><input name="confirm" type="text" dir="ltr" autoComplete="off" required /></div>
+                </ActionForm>
+              </details>
+            ) : (
+              <p className="small muted">الحذف النهائي متاح للطلبات الملغاة فقط.</p>
+            )}
+          </div>
           <div className="card log">
             <h2 style={{ fontSize: 17, marginBottom: 10 }}>سجل الحالة (لا يُعدّل)</h2>
             <ol className="timeline">

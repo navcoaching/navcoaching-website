@@ -205,3 +205,28 @@ describe("المحتوى وحدود الطلبات", () => {
     await assert.rejects(as(A, "SELECT * FROM rate_hits"), /permission denied/);
   });
 });
+
+describe("أرشفة وحذف الطلبات", () => {
+  test("الإخفاء للمدربة فقط، والطلب يبقى ظاهراً لصاحبه", async () => {
+    const no = await newOrder(A, "k-archive-000000001");
+    await assert.rejects(as(A, "SELECT app.coach_archive_order($1, true)", [no]), /للمدربة فقط/);
+    await as(COACH, "SELECT app.coach_archive_order($1, true)", [no]);
+    const r = await as(A, "SELECT archived_at FROM orders WHERE order_no = $1", [no]);
+    assert.ok(r.rows[0].archived_at);
+    await as(COACH, "SELECT app.coach_archive_order($1, false)", [no]);
+    assert.equal((await as(A, "SELECT archived_at FROM orders WHERE order_no = $1", [no])).rows[0].archived_at, null);
+  });
+  test("الحذف النهائي للملغاة فقط، ويحذف السجل والإيصال", async () => {
+    const no = await newOrder(A, "k-delete-0000000001");
+    await as(A, "SELECT app.submit_payment_proof($1,'del-key','image/webp',10,'sha-del')", [no]);
+    await assert.rejects(as(COACH, "SELECT app.coach_delete_order($1)", [no]), /الملغاة فقط/);
+    await assert.rejects(as(A, "SELECT app.coach_delete_order($1)", [no]), /للمدربة فقط/);
+    await as(COACH, "SELECT app.coach_transition($1,'cancelled','طلب تجريبي',false)", [no]);
+    const keys = (await as(COACH, "SELECT app.coach_delete_order($1) AS k", [no])).rows[0].k;
+    assert.deepEqual(keys, ["del-key"]);
+    assert.equal((await owner.query("SELECT count(*)::int n FROM orders WHERE order_no = $1", [no])).rows[0].n, 0);
+    // السجل مازال للإضافة فقط خارج دالة الحذف
+    await assert.rejects(owner.query("DELETE FROM order_events"), /للإضافة فقط/);
+    await assert.rejects(as(A, "SELECT set_config('app.allow_purge','1',true); DELETE FROM orders"), /permission denied|cannot insert multiple/);
+  });
+});

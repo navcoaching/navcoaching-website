@@ -93,7 +93,7 @@ export type OrderRow = {
   id: string; order_no: string; category: string; product_name: string; offer_label: string; months: number;
   list_price_halalas: number; amount_due_halalas: number | null; currency: string; student_discount_requested: boolean;
   status: string; contact_name: string; contact_phone: string; created_at: string; updated_at: string; paid_at: string | null;
-  product_slug?: string | null; user_email?: string; is_demo: boolean;
+  product_slug?: string | null; user_email?: string; is_demo: boolean; archived_at?: string | null;
 };
 
 export async function getMyOrders(userId: string): Promise<OrderRow[]> {
