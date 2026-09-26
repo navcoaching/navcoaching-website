@@ -17,6 +17,7 @@ export default async function AdminHome() {
   const [data, s] = await Promise.all([
     withUser(coach.id, async (tx) => {
       const counts = (await tx.query("SELECT status, count(*)::int n FROM orders WHERE NOT is_demo GROUP BY status")).rows as { status: string; n: number }[];
+      const newWeek = (await tx.query("SELECT count(*)::int n FROM orders WHERE NOT is_demo AND created_at > now() - interval '7 days'")).rows[0].n as number;
       const pendingReviews = (await tx.query("SELECT count(*)::int n FROM reviews WHERE status = 'pending'")).rows[0].n as number;
       const pendingCheckins = (await tx.query("SELECT count(*)::int n FROM check_ins WHERE coach_reply IS NULL")).rows[0].n as number;
       const latest = (await tx.query("SELECT order_no, product_name, offer_label, status, category, amount_due_halalas, contact_name, created_at FROM orders ORDER BY created_at DESC LIMIT 8")).rows;
@@ -53,7 +54,7 @@ export default async function AdminHome() {
             AND (coalesce(i.health->>'weight','') = '' OR coalesce(i.health->>'height','') = '')
           ORDER BY o.created_at DESC LIMIT 20`);
       for (const o of noMeasure) alerts.push({ order_no: o.order_no, name: o.contact_name, tone: "warn", text: "الوزن أو الطول غير موجود في الاستبيان" });
-      return { counts, pendingReviews, pendingCheckins, latest, demo, alerts };
+      return { counts, newWeek, pendingReviews, pendingCheckins, latest, demo, alerts };
     }),
     getSettings(),
   ]);
@@ -73,6 +74,7 @@ export default async function AdminHome() {
       <h1>أهلاً {coach.name.split(" ")[0]}</h1>
       {data.demo > 0 && <p className="alert warn">توجد بيانات تجريبية ({data.demo}) في قاعدة البيانات. لا تُنشر في الإنتاج — احذفيها قبل الإطلاق.</p>}
       <div className="grid g4">
+        <Link href="/admin/orders?status=awaiting_payment" className="card stat" style={{ textDecoration: "none", color: "inherit" }} data-testid="stat-new-orders"><span className="muted">طلبات جديدة بانتظار الدفع</span><b>{c("awaiting_payment")}</b><span className="small muted">{data.newWeek} طلب خلال آخر 7 أيام</span></Link>
         <Link href="/admin/orders?status=payment_review" className="card stat" style={{ textDecoration: "none", color: "inherit" }}><span className="muted">إيصالات بانتظار التحقق</span><b>{c("payment_review")}</b></Link>
         <Link href="/admin/orders?status=awaiting_quote" className="card stat" style={{ textDecoration: "none", color: "inherit" }}><span className="muted">بانتظار تأكيد المبلغ</span><b>{c("awaiting_quote")}</b></Link>
         <Link href="/admin/orders?status=preparing" className="card stat" style={{ textDecoration: "none", color: "inherit" }}><span className="muted">قيد الإعداد</span><b>{c("preparing")}</b></Link>

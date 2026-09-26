@@ -231,7 +231,7 @@ bdi, .ltr { unicode-bidi: isolate; direction: ltr; }
 .nav a:not(.btn):hover, .nav a[aria-current="page"] { background: var(--surface-2); }
 .nav .btn { min-height: 44px; margin-inline-start: 8px; }
 .menu { display: none; }
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
   .nav { display: none; }
   .menu { display: block; position: relative; }
   .menu > summary {
@@ -243,6 +243,7 @@ bdi, .ltr { unicode-bidi: isolate; direction: ltr; }
     position: fixed; inset-inline: 12px; top: calc(var(--header-h) + env(safe-area-inset-top) + 6px);
     background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-2);
     padding: 10px; display: grid; gap: 2px; animation: drop 0.22s var(--ease);
+    max-height: calc(100dvh - var(--header-h) - env(safe-area-inset-top) - 20px); overflow-y: auto; overscroll-behavior: contain;
   }
   .menu-panel a:not(.btn) { padding: 14px 16px; border-radius: 12px; text-decoration: none; color: var(--text); font-weight: 500; }
   .menu-panel a:not(.btn):hover, .menu-panel a[aria-current="page"] { background: var(--surface-2); }
@@ -646,3 +647,18 @@ ol.weeks li .small { margin-inline-start: auto; }
 .nav a.nav-hl:not(.btn) { color: var(--accent-text); font-weight: 600; }
 .calc-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 @media (min-width: 760px) { .calc-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* ---------- الجداول المجانية ---------- */
+.fp-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
+.fp-card { display: grid; grid-template-rows: auto 1fr auto; gap: 14px; }
+.fp-body { display: grid; gap: 8px; align-content: start; }
+.fp-body h2 { font-size: 20px; }
+.fp-body h2 a { color: var(--heading); text-decoration: none; }
+.fp-body h2 a:hover { color: var(--accent-text); }
+.fp-body .tag { width: fit-content; }
+.fp-cover { aspect-ratio: 16 / 9; border-radius: var(--r); overflow: hidden; background: linear-gradient(135deg, var(--ink), var(--navy)); display: grid; place-items: center; color: var(--cyan); }
+.fp-cover img { width: 100%; height: 100%; object-fit: cover; }
+.fp-detail { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 760px) { .fp-detail { grid-template-columns: 300px minmax(0, 1fr); align-items: start; } }
+.fp-mine { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.fp-mine li { display: grid; gap: 6px; padding: 12px 14px; border-radius: var(--r); background: var(--paper); }

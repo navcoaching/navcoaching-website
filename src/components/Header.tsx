@@ -11,6 +11,7 @@ const LINKS: NavItem[] = [
   { href: "/about", label: "عن المدربة" },
   { href: "/reviews", label: "التجارب" },
   { href: "/faq", label: "الأسئلة الشائعة" },
+  { href: "/free-plans", label: "الجداول المجانية", highlight: true },
   { href: "/calculator", label: "حاسبة السعرات", highlight: true },
 ];
 

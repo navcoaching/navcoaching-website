@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireUser } from "@/lib/session";
-import { getMyOrders, getMyPrefs } from "@/lib/data";
+import { getMyFreePlans, getMyOrders, getMyPrefs } from "@/lib/data";
 import { fmtDate, riyals } from "@/lib/format";
 import { statusLabel, statusTone } from "@/lib/status";
 import { PrefsForm, ProfileForm, SignOut } from "./ClientForms";
 
 export const metadata: Metadata = { title: "حسابي", robots: { index: false } };
 
-export default async function Account({ searchParams }: { searchParams: Promise<{ denied?: string }> }) {
+export default async function Account({ searchParams }: { searchParams: Promise<{ denied?: string; plan?: string }> }) {
   const user = await requireUser("/account");
-  const [orders, prefs, { denied }] = await Promise.all([getMyOrders(user.id), getMyPrefs(user.id), searchParams]);
+  const [orders, prefs, freePlans, { denied, plan: planMsg }] = await Promise.all([getMyOrders(user.id), getMyPrefs(user.id), getMyFreePlans(user.id), searchParams]);
   const needsAction = orders.filter((o) => ["awaiting_payment", "awaiting_quote"].includes(o.status));
 
   return (
@@ -45,6 +45,30 @@ export default async function Account({ searchParams }: { searchParams: Promise<
               </Link>
             ))
           )}
+          <section id="free-plans" className="stack" aria-labelledby="fp-h" style={{ ["--space" as string]: "12px", scrollMarginTop: 90 }}>
+            <h2 id="fp-h" style={{ fontSize: 22 }}>جداولي المجانية</h2>
+            {planMsg === "unavailable" && <p className="alert warn" role="alert">ملف هذا الجدول غير متاح مؤقتاً. حاول لاحقاً، وإذا استمرت المشكلة راسلنا على واتساب.</p>}
+            {planMsg === "notfound" && <p className="alert err" role="alert">تعذّر تحميل الملف: الرابط غير صالح أو لا يخص حسابك.</p>}
+            {freePlans.length === 0 ? (
+              <div className="card stack">
+                <p>ما طلبت أي جدول مجاني بعد.</p>
+                <Link href="/free-plans" className="btn btn-ghost" style={{ width: "fit-content" }}>تصفح الجداول المجانية</Link>
+              </div>
+            ) : (
+              <ul className="fp-mine" data-testid="my-free-plans">
+                {freePlans.map((p) => (
+                  <li key={p.request_id}>
+                    <b>{p.title}</b>
+                    <span className="small muted">{p.summary.length > 140 ? p.summary.slice(0, 140) + "…" : p.summary}</span>
+                    <span className="small muted">طُلب في {fmtDate(p.requested_at)}</span>
+                    {p.has_file
+                      ? <a className="btn btn-sm" style={{ width: "fit-content" }} href={`/api/free-plans/${p.request_id}`}>تحميل PDF</a>
+                      : <span className="small alert warn" style={{ width: "fit-content" }}>الملف غير متاح مؤقتاً</span>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         </div>
         <aside className="stack">
           <div className="card stack">

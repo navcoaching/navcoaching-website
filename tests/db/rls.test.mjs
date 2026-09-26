@@ -356,3 +356,56 @@ describe("سجل ملاحظات المدربة", () => {
     assert.equal((await as(COACH, "SELECT count(*)::int n FROM order_note_entries n JOIN orders o ON o.id = n.order_id WHERE o.order_no = $1", [no])).rows[0].n, 1);
   });
 });
+
+describe("الجداول المجانية", () => {
+  const save = (who, id, slug, status, withFile = true) =>
+    as(who, "SELECT app.coach_save_free_plan($1,$2,'جدول اختبار','وصف مختصر للاختبار فقط','مبتدئ',NULL,$3,0,$4,$5,$6,'x') AS r",
+      [id, slug, status, withFile ? `free-plans/${slug}.pdf` : null, withFile ? "application/pdf" : null, withFile ? 1234 : null]).then((r) => r.rows[0].r);
+  let pub, hidden;
+  before(async () => {
+    pub = (await save(COACH, null, "test-published", "published")).id;
+    hidden = (await save(COACH, null, "test-hidden", "hidden")).id;
+  });
+
+  test("الإضافة للمدربة فقط، ولا نشر بدون ملف", async () => {
+    await assert.rejects(save(A, null, "x-client", "published"), /للمدربة فقط/);
+    await assert.rejects(save(COACH, null, "no-file", "published", false), /ارفعي ملف PDF/);
+    await assert.rejects(as(A, "INSERT INTO free_plans (slug, title, summary) VALUES ('a','abc','abcdefghijk')"), /permission denied/);
+  });
+  test("الزائر يرى المنشور فقط، ومفتاح الملف غير قابل للقراءة", async () => {
+    const slugs = (await as(null, "SELECT slug FROM free_plans")).rows.map((r) => r.slug);
+    assert.ok(slugs.includes("test-published"));
+    assert.ok(!slugs.includes("test-hidden"));
+    await assert.rejects(as(A, "SELECT file_key FROM free_plans"), /permission denied/);
+    await assert.rejects(as(COACH, "SELECT file_key FROM free_plans"), /permission denied/);
+  });
+  test("الطلب: يلزم الدخول، منشور فقط، بدون تكرار", async () => {
+    await assert.rejects(as(null, "SELECT app.request_free_plan('test-published')"), /تسجيل الدخول/);
+    await assert.rejects(as(A, "SELECT app.request_free_plan('test-hidden')"), /غير متاح/);
+    const r1 = (await as(A, "SELECT app.request_free_plan('test-published') AS r")).rows[0].r;
+    const r2 = (await as(A, "SELECT app.request_free_plan('test-published') AS r")).rows[0].r;
+    assert.equal(r1.created, true);
+    assert.equal(r2.created, false);
+    assert.equal(r1.request_id, r2.request_id);
+    assert.equal((await owner.query("SELECT count(*)::int n FROM free_plan_requests WHERE plan_id = $1", [pub])).rows[0].n, 1);
+    await assert.rejects(as(A, "INSERT INTO free_plan_requests (plan_id, user_id) VALUES ($1, $2)", [hidden, A]), /permission denied/);
+  });
+  test("التنزيل وجداولي لصاحب الطلب فقط", async () => {
+    const req = (await as(A, "SELECT request_id FROM app.my_free_plans()")).rows[0].request_id;
+    assert.equal((await as(A, "SELECT file_key FROM app.free_plan_file($1)", [req])).rows[0].file_key, "free-plans/test-published.pdf");
+    assert.equal((await as(B, "SELECT * FROM app.free_plan_file($1)", [req])).rowCount, 0);
+    assert.equal((await as(null, "SELECT * FROM app.free_plan_file($1)", [req])).rowCount, 0);
+    assert.equal((await as(B, "SELECT * FROM app.my_free_plans()")).rowCount, 0);
+    assert.equal((await as(B, "SELECT * FROM free_plan_requests")).rowCount, 0);
+    // إخفاء الجدول لاحقاً لا يسحبه ممن طلبه
+    await save(COACH, pub, "test-published", "hidden", false);
+    assert.equal((await as(A, "SELECT * FROM app.my_free_plans()")).rowCount, 1);
+    assert.equal((await as(A, "SELECT * FROM app.free_plan_file($1)", [req])).rowCount, 1);
+    await assert.rejects(as(B, "SELECT app.request_free_plan('test-published')"), /غير متاح/);
+  });
+  test("استبدال الملف يرجع المفتاح القديم لحذفه", async () => {
+    const r = await as(COACH, "SELECT app.coach_save_free_plan($1,'test-hidden','جدول اختبار','وصف مختصر للاختبار فقط',NULL,NULL,'hidden',0,'free-plans/new.pdf','application/pdf',99,'y') AS r", [hidden]);
+    assert.equal(r.rows[0].r.old_file_key, "free-plans/test-hidden.pdf");
+    await assert.rejects(as(COACH, "SELECT app.coach_save_free_plan($1,'test-hidden','جدول اختبار','وصف مختصر للاختبار فقط',NULL,NULL,'hidden',0,'k.exe','application/x-msdownload',9,'z')", [hidden]), /PDF/);
+  });
+});

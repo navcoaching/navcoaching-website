@@ -357,7 +357,8 @@ test("قائمة الجوال تُغلق بعد اختيار صفحة", async ({
   await expect(panel).toBeVisible();
   const box = await panel.boundingBox();
   const vh = page.viewportSize()!.height;
-  await page.mouse.click(20, Math.min(vh - 10, box!.y + box!.height + 40));
+  // خارج القائمة: الهامش الجانبي (القائمة تبعد 12px عن الحافة) أو تحتها إن وُجد مكان
+  await page.mouse.click(4, Math.min(vh - 10, box!.y + box!.height + 40));
   await expect(panel).toBeHidden();
   // وزر Esc
   await page.getByLabel("فتح القائمة").click();

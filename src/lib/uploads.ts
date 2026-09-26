@@ -7,11 +7,12 @@ export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 
 export type CleanFile = { data: Buffer; mime: string; ext: string; size: number; sha256: string; width?: number; height?: number };
 
-type Kind = "proof" | "image" | "deliverable";
+type Kind = "proof" | "image" | "deliverable" | "pdf";
 
 const ALLOWED: Record<Kind, string[]> = {
   proof: ["image/jpeg", "image/png", "image/webp", "application/pdf"],
   image: ["image/jpeg", "image/png", "image/webp"],
+  pdf: ["application/pdf"],
   deliverable: [
     "application/pdf",
     "image/jpeg", "image/png", "image/webp",
@@ -36,7 +37,7 @@ export async function cleanUpload(file: File | null, kind: Kind): Promise<CleanF
     if (file.name.toLowerCase().endsWith(".xlsx")) mime = ALLOWED.deliverable[4];
     if (file.name.toLowerCase().endsWith(".docx")) mime = ALLOWED.deliverable[5];
   }
-  if (!ALLOWED[kind].includes(mime)) throw new UploadError("نوع الملف غير مسموح. المسموح: صور JPG/PNG/WebP أو PDF.");
+  if (!ALLOWED[kind].includes(mime)) throw new UploadError(kind === "pdf" ? "الملف لازم يكون PDF." : "نوع الملف غير مسموح. المسموح: صور JPG/PNG/WebP أو PDF.");
 
   if (mime.startsWith("image/")) {
     try {

@@ -4,7 +4,7 @@ import { fmtDate } from "@/lib/format";
 import ActionForm from "@/components/admin/ActionForm";
 import { updateMediaAction, uploadMediaAction } from "@/app/actions/admin";
 
-const USAGE: Record<string, string> = { hero: "الواجهة", about: "عن المدربة", gallery: "معرض", product: "منتج" };
+const USAGE: Record<string, string> = { hero: "الواجهة", about: "عن المدربة", gallery: "معرض", product: "منتج", free_plan: "جدول مجاني" };
 
 export default async function AdminMedia() {
   const coach = await requireCoach();

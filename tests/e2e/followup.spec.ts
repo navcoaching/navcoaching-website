@@ -3,6 +3,7 @@
 // دليل الإضافة للشاشة الرئيسية، ومسميات «الاستبيان». كل البيانات في قاعدة nav_e2e المنفصلة.
 import { test, expect, type Page, type Browser } from "@playwright/test";
 import pg from "pg";
+import { readFileSync } from "node:fs";
 
 const OWNER = process.env.E2E_DATABASE_URL_OWNER ?? "postgres://nav_owner:nav_owner_dev@localhost:5432/nav_e2e";
 const CRON_SECRET = "e2e-cron-secret-0123456789";
@@ -418,5 +419,114 @@ test("حاسبة السعرات: التبويبة، التحقق، والنتا�
   await expect(page.getByText("هذه الحاسبة توفر إرشادات عامة")).toBeVisible();
   await page.getByText("كيف أعرف نسبة الدهون في جسمي؟").click();
   await expect(page.getByText(/فحص InBody أو DEXA/)).toBeVisible();
+  await page.context().close();
+});
+
+test("الجداول المجانية: عرض، طلب بعد الدخول، تنزيل محمي، وإدارة", async ({ browser }, info) => {
+  const project = info.project.name;
+  const coachEmail = `coach5-${project}@e2e.test`;
+  const userEmail = `plan-user-${project}@e2e.test`;
+  const otherEmail = `plan-other-${project}@e2e.test`;
+  const slug = `e2e-plan-${project}`;
+  const hiddenSlug = `e2e-hidden-${project}`;
+  const pdf = Buffer.from(`%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[]/Count 0>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF\n% ${project}\n`);
+
+  // ---------- المدربة تضيف جدولاً منشوراً وآخر مخفياً ----------
+  const coach = await newPage(browser, project + "-c5");
+  await login(coach, coachEmail, "/admin");
+  await db.query(`UPDATE "user" SET role = 'coach' WHERE email = $1`, [coachEmail]);
+  for (const [s, title, publish] of [[slug, `جدول تجريبي ${project}`, true], [hiddenSlug, `جدول مخفي ${project}`, false]] as const) {
+    await coach.goto("/admin/free-plans/new");
+    await coach.getByLabel("اسم الجدول").fill(title);
+    await coach.getByLabel("رابط الصفحة (بالإنجليزي)").fill(s);
+    await coach.getByLabel("وصف مختصر").fill("وصف اختباري لجدول تجريبي في بيئة الاختبار فقط.");
+    await coach.setInputFiles("#fp-file", { name: "plan.pdf", mimeType: "application/pdf", buffer: pdf });
+    if (publish) await coach.locator('input[name="status"][value="published"]').check();
+    await coach.getByRole("button", { name: "إنشاء الجدول" }).click();
+    await expect(coach.getByText("تم إنشاء الجدول.")).toBeVisible();
+  }
+  // ملف غير PDF يُرفض على الخادم
+  await coach.goto("/admin/free-plans/new");
+  await coach.getByLabel("اسم الجدول").fill("ملف مزيف");
+  await coach.getByLabel("رابط الصفحة (بالإنجليزي)").fill(`fake-${project}`);
+  await coach.getByLabel("وصف مختصر").fill("محاولة رفع ملف ليس PDF لاختبار الرفض.");
+  await coach.setInputFiles("#fp-file", { name: "evil.pdf", mimeType: "application/pdf", buffer: Buffer.from("<script>alert(1)</script>") });
+  await coach.getByRole("button", { name: "إنشاء الجدول" }).click();
+  await expect(coach.getByText("الملف لازم يكون PDF.")).toBeVisible();
+
+  // ---------- الزائر: يرى المنشور فقط، ولا يطلب بدون حساب ----------
+  const page = await newPage(browser, project + "-fp");
+  await page.goto("/");
+  if (await page.getByLabel("فتح القائمة").isVisible()) {
+    await page.getByLabel("فتح القائمة").click();
+    await page.locator(".menu-panel").getByRole("link", { name: "الجداول المجانية" }).click();
+  } else {
+    await page.locator(".nav").getByRole("link", { name: "الجداول المجانية" }).click();
+  }
+  await expect(page).toHaveURL(/\/free-plans$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("جداول تدريب مجانية");
+  const list = page.getByTestId("free-plans");
+  await expect(list).toContainText(`جدول تجريبي ${project}`);
+  await expect(list).not.toContainText(`جدول مخفي ${project}`);
+  await noHorizontalScroll(page);
+  expect((await page.goto(`/free-plans/${hiddenSlug}`))?.status()).toBe(404);
+  const anonDl = await page.request.get(`/api/free-plans/00000000-0000-0000-0000-000000000000`, { maxRedirects: 0 });
+  expect(anonDl.status()).toBe(303);
+  expect(anonDl.headers().location).toContain("/login");
+
+  // ---------- الطلب يعيد المستخدم لنفس الجدول بعد الدخول ----------
+  await page.goto("/free-plans");
+  await list.locator(".fp-card", { hasText: `جدول تجريبي ${project}` }).getByRole("link", { name: "اطلب الجدول مجانًا" }).click();
+  await expect(page).toHaveURL(new RegExp(`/login\\?next=%2Ffree-plans%2F${slug}`));
+  await page.getByLabel("البريد الإلكتروني").fill(userEmail);
+  await page.getByRole("button", { name: "أرسل رمز الدخول" }).click();
+  await page.getByLabel("رمز الدخول").fill(await latestOtp(userEmail));
+  await page.getByRole("button", { name: "دخول" }).click();
+  await expect(page).toHaveURL(new RegExp(`/free-plans/${slug}$`));
+  await page.getByRole("button", { name: "اطلب الجدول مجانًا" }).dblclick();
+  await expect(page.getByText("أُضيف الجدول إلى «جداولي المجانية»")).toBeVisible();
+  await page.reload();
+  await expect(page.getByTestId("plan-owned")).toContainText("موجود في جداولي");
+  const { rows: [{ n }] } = await db.query(
+    `SELECT count(*)::int n FROM free_plan_requests r JOIN "user" u ON u.id = r.user_id JOIN free_plans p ON p.id = r.plan_id WHERE u.email = $1 AND p.slug = $2`, [userEmail, slug]);
+  expect(n).toBe(1); // لا تكرار رغم الضغط المزدوج والتحديث
+
+  // ---------- جداولي المجانية + تنزيل الملف الحقيقي ----------
+  await page.getByRole("link", { name: /افتح جداولي المجانية/ }).click();
+  const mine = page.getByTestId("my-free-plans");
+  await expect(mine).toContainText(`جدول تجريبي ${project}`);
+  const href = (await mine.getByRole("link", { name: "تحميل PDF" }).getAttribute("href"))!;
+  const [download] = await Promise.all([page.waitForEvent("download"), mine.getByRole("link", { name: "تحميل PDF" }).click()]);
+  expect(download.suggestedFilename()).toBe(`nav-${slug}.pdf`);
+  const saved = await download.path();
+  expect(readFileSync(saved).equals(pdf)).toBe(true);
+  await noHorizontalScroll(page);
+
+  // ---------- مستخدم آخر لا يصل للرابط ----------
+  const other = await newPage(browser, project + "-fo");
+  await login(other, otherEmail);
+  const res = await other.request.get(href, { maxRedirects: 0 });
+  expect(res.status()).toBe(303);
+  expect(res.headers().location).toContain("plan=notfound");
+  await other.goto(href);
+  await expect(other.getByText("تعذّر تحميل الملف")).toBeVisible();
+  await expect(other.getByText("ما طلبت أي جدول مجاني بعد.")).toBeVisible();
+  await other.context().close();
+
+  // ---------- الإدارة: عدد الطلبات، والإخفاء يمنع الطلب الجديد ويُبقي الملف لمن طلبه ----------
+  await coach.goto("/admin/free-plans");
+  await expect(coach.getByTestId("admin-free-plans").locator("tr", { hasText: `جدول تجريبي ${project}` })).toContainText("1");
+  await coach.getByTestId("admin-free-plans").locator("tr", { hasText: `جدول تجريبي ${project}` }).getByRole("link", { name: "تعديل" }).click();
+  await coach.locator('input[name="status"][value="hidden"]').check();
+  await coach.getByRole("button", { name: "حفظ التعديلات" }).click();
+  await expect(coach.getByText("تم الحفظ.")).toBeVisible();
+  expect((await page.goto(`/free-plans/${slug}`))?.status()).toBe(404);
+  await page.goto("/account");
+  await expect(page.getByTestId("my-free-plans")).toContainText(`جدول تجريبي ${project}`);
+  const again = await page.request.get(href);
+  expect(again.headers()["content-type"]).toBe("application/pdf");
+  await coach.goto("/admin");
+  await expect(coach.getByTestId("stat-new-orders")).toBeVisible();
+  await coach.context().close();
   await page.context().close();
 });

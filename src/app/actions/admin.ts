@@ -512,7 +512,7 @@ export async function uploadMediaAction(_: ActionState, fd: FormData): Promise<A
   const alt = String(fd.get("alt") ?? "").trim().slice(0, 200);
   const usage = String(fd.get("usage") ?? "gallery");
   const rights = String(fd.get("rights_note") ?? "").trim().slice(0, 300);
-  if (!["hero", "about", "gallery", "product"].includes(usage)) return { error: "نوع الاستخدام غير صالح." };
+  if (!["hero", "about", "gallery", "product", "free_plan"].includes(usage)) return { error: "نوع الاستخدام غير صالح." };
   if (alt.length < 3) return { error: "اكتبي وصفاً للصورة (للقارئ الآلي ومحركات البحث)." };
   if (rights.length < 3) return { error: "اكتبي مصدر الصورة أو إذن النشر (مثال: تصويري الشخصي، أو ترخيص من موقع كذا)." };
   try {
@@ -594,4 +594,51 @@ export async function createManualOrderAction(_: ActionState, fd: FormData): Pro
   // نتيجة الإشعار تظهر في «سجل الإشعارات» بصفحة الطلب
   void results;
   redirect(`/admin/orders/${orderNo}?created=1`);
+}
+
+// ---------- الجداول المجانية (المدربة فقط) ----------
+const freePlanSchema = z.object({
+  id: z.union([z.literal(""), z.string().uuid()]),
+  slug: z.string().trim().toLowerCase().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "الرابط بالإنجليزي: حروف صغيرة وأرقام وشرطات فقط، مثل home-beginner.").max(60),
+  title: z.string().trim().min(3, "اكتبي اسم الجدول.").max(120),
+  summary: z.string().trim().min(10, "اكتبي وصفاً مختصراً (10 أحرف على الأقل).").max(600, "الوصف أطول من 600 حرف."),
+  audience: z.string().trim().max(120).optional().default(""),
+  image_id: z.union([z.literal(""), z.string().uuid()]),
+  status: z.enum(["published", "hidden"]),
+  sort: z.coerce.number().int().min(-1000).max(1000).catch(0),
+});
+
+export async function saveFreePlanAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const g = (k: string) => String(fd.get(k) ?? "");
+  const parsed = freePlanSchema.safeParse({ id: g("id"), slug: g("slug"), title: g("title"), summary: g("summary"), audience: g("audience"), image_id: g("image_id"), status: g("status"), sort: g("sort") });
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+  const v = parsed.data;
+  const file = fd.get("file") as File | null;
+  let uploaded: { key: string; mime: string; size: number; sha256: string } | null = null;
+  let id: string;
+  try {
+    await coach();
+    if (file && typeof file !== "string" && file.size > 0) {
+      const clean = await cleanUpload(file, "pdf");
+      const key = newKey("free-plans", "pdf");
+      await (await storage()).put(key, clean.data, clean.mime);
+      uploaded = { key, mime: clean.mime, size: clean.size, sha256: clean.sha256 };
+    }
+    const r = await asCoach(async (tx) => (await tx.query(
+      "SELECT app.coach_save_free_plan($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) AS r",
+      [v.id || null, v.slug, v.title, v.summary, v.audience, v.image_id || null, v.status, v.sort,
+       uploaded?.key ?? null, uploaded?.mime ?? null, uploaded?.size ?? null, uploaded?.sha256 ?? null])).rows[0].r as { id: string; old_file_key: string | null });
+    id = r.id;
+    if (r.old_file_key) await (await storage()).remove(r.old_file_key).catch(() => {});
+  } catch (err) {
+    if (uploaded) await (await storage()).remove(uploaded.key).catch(() => {});
+    if (err instanceof UploadError) return { error: err.message };
+    if ((err as { code?: string }).code === "23505") return { error: "هذا الرابط مستخدم لجدول آخر. اختاري رابطاً مختلفاً." };
+    return fail(err);
+  }
+  revalidatePath("/free-plans");
+  revalidatePath(`/free-plans/${v.slug}`);
+  revalidatePath("/admin/free-plans");
+  if (!v.id) redirect(`/admin/free-plans/${id}?created=1`);
+  return { ok: true, message: uploaded ? "تم الحفظ ورفع ملف PDF الجديد." : "تم الحفظ." };
 }

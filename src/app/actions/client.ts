@@ -210,3 +210,22 @@ export async function updateMeasurementsAction(_: ActionState, fd: FormData): Pr
   revalidatePath(`/account/orders/${orderNo}`);
   return { ok: true, message: "شكراً! تم تحديث القياسات." };
 }
+
+// ---------- طلب جدول مجاني ----------
+export type FreePlanState = ActionState & { owned?: boolean; needLogin?: boolean };
+export async function requestFreePlanAction(_: FreePlanState, fd: FormData): Promise<FreePlanState> {
+  const slug = String(fd.get("slug") ?? "");
+  if (!/^[a-z0-9-]{1,60}$/.test(slug)) return { error: GENERIC };
+  const user = await getCurrentUser();
+  if (!user) return { needLogin: true, error: "انتهت الجلسة. سجّل الدخول ثم اطلب الجدول مرة أخرى." };
+  if (!(await allow(`freeplan:u:${user.id}`, 30, 3600))) return { error: LIMITED };
+  try {
+    const { rows: [r] } = await withUser(user.id, (tx) => tx.query("SELECT app.request_free_plan($1) AS r", [slug]));
+    revalidatePath("/account");
+    return r.r.created
+      ? { ok: true, owned: true, message: "تم! أُضيف الجدول إلى «جداولي المجانية» في حسابك، وتقدر تحمّله الآن." }
+      : { ok: true, owned: true, message: "هذا الجدول موجود في جداولي مسبقاً." };
+  } catch (err) {
+    return { error: dbErrorMessage(err) ?? GENERIC };
+  }
+}

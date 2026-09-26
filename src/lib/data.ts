@@ -151,3 +151,22 @@ export async function getMyPrefs(userId: string) {
     (await tx.query("SELECT email_enabled, whatsapp_enabled FROM user_prefs WHERE user_id = $1", [userId])).rows[0]);
   return (row ?? { email_enabled: true, whatsapp_enabled: true }) as { email_enabled: boolean; whatsapp_enabled: boolean };
 }
+
+// ---------- الجداول المجانية ----------
+export type FreePlan = { id: string; slug: string; title: string; summary: string; audience: string | null; image_id: string | null; owned: boolean };
+
+/** الجداول المنشورة (RLS تمنع المخفية)، مع حالة «موجود في جداولي» للمستخدم الحالي */
+export async function getFreePlans(userId: string | null, slug?: string): Promise<FreePlan[]> {
+  const run = async (tx: import("./db").Tx) => (await tx.query(
+    `SELECT p.id, p.slug, p.title, p.summary, p.audience, p.image_id,
+            ${userId ? "EXISTS (SELECT 1 FROM free_plan_requests r WHERE r.plan_id = p.id AND r.user_id = $2)" : "false"} AS owned
+       FROM free_plans p
+      WHERE p.status = 'published' AND ($1::text IS NULL OR p.slug = $1)
+      ORDER BY p.sort, p.created_at`, userId ? [slug ?? null, userId] : [slug ?? null])).rows as FreePlan[];
+  return userId ? withUser(userId, run) : withAnon(run);
+}
+
+export type MyFreePlan = { request_id: string; requested_at: string; slug: string; title: string; summary: string; has_file: boolean };
+export async function getMyFreePlans(userId: string): Promise<MyFreePlan[]> {
+  return withUser(userId, async (tx) => (await tx.query("SELECT * FROM app.my_free_plans()")).rows as MyFreePlan[]);
+}
