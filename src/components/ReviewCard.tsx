@@ -10,7 +10,7 @@ export default function ReviewCard({ r }: { r: PublicReview }) {
         <b>{r.display_name}</b>
         <span className="muted">{r.period_label ?? fmtDate(r.created_at)}{r.product_name ? ` · ${r.product_name}` : ""}</span>
       </figcaption>
-      <span className="verified">✓ {r.source === "platform" ? "تقييم من عميل اشترى الخدمة عبر الموقع" : "تقييم موثّق من عميل اشترى الخدمة"}</span>
+      <span className="verified">✓ {r.source === "platform" ? "تقييم من متدرب اشترى الخدمة عبر الموقع" : "تقييم موثّق من متدرب اشترى الخدمة"}</span>
       {r.coach_reply && <p className="reply"><b>رد المدربة:</b> {r.coach_reply}</p>}
     </figure>
   );
