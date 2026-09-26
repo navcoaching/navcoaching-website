@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Settings } from "@/lib/data";
 import { localPhone, waLink } from "@/lib/format";
-import { IconWhatsApp } from "./Icons";
+import { IconInstagram, IconWhatsApp } from "./Icons";
 
 export default function Footer({ s }: { s: Settings }) {
   return (
@@ -14,6 +14,10 @@ export default function Footer({ s }: { s: Settings }) {
               <Image src="/brand/logo-white.webp" alt="Nav Coaching" width={150} height={34} />
               <p>برامج تدريب وتغذية مخصصة لأهدافك، مع متابعة أسبوعية.</p>
               <p className="small">ساعات العمل والرد: {s.response_time}</p>
+              <div className="social" aria-label="حساباتنا">
+                <a href={waLink(s.contact.whatsapp)} target="_blank" rel="noopener" aria-label="واتساب" title="واتساب" className="wa"><IconWhatsApp size={24} /></a>
+                {s.contact.instagram && <a href={s.contact.instagram} target="_blank" rel="noopener" aria-label="انستقرام" title="انستقرام" className="ig"><IconInstagram size={24} /></a>}
+              </div>
             </div>
             <div>
               <h2>الموقع</h2>
