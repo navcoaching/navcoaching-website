@@ -3,12 +3,13 @@ import { Fragment } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/session";
-import { getOrderDetail, getSettings } from "@/lib/data";
+import { getMyFollowUp, getOrderDetail, getSettings } from "@/lib/data";
+import { SUB_LABEL, WEEKDAYS, fmtYMD, riyadhDate } from "@/lib/schedule";
 import { fmtDate, fmtDateTime, riyals, waLink } from "@/lib/format";
 import { ENTITLED, statusLabel, statusTone, stepIndex, timelineSteps } from "@/lib/status";
 import { CopyButton } from "@/components/FormBits";
 import { IconFile, IconLink } from "@/components/Icons";
-import { CancelForm, CheckinForm, ClearDraft, ReviewForm, UploadProofForm } from "../../ClientForms";
+import { CancelForm, CheckinForm, ClearDraft, MeasurementsForm, ReviewForm, UploadProofForm } from "../../ClientForms";
 
 export const metadata: Metadata = { title: "تفاصيل الطلب", robots: { index: false } };
 
@@ -18,7 +19,13 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
   const [detail, s, sp] = await Promise.all([getOrderDetail(user.id, orderNo), getSettings(), searchParams]);
   // RLS تمنع قراءة طلب شخص آخر؛ نتحقق من الملكية هنا أيضاً (المدربة تستخدم لوحة الإدارة)
   if (!detail || detail.order.user_id !== user.id) notFound();
-  const { order: o, events, proofs, deliverables, checkins, review } = detail;
+  const { order: o, events, proofs, deliverables, checkins, review, intake } = detail;
+  const follow = await getMyFollowUp(user.id, o);
+  const today = riyadhDate();
+  const currentWeek = follow?.weeks.find((w) => w.status !== "done" && w.windowEnd >= today);
+  const lastMissed = follow?.weeks.filter((w) => w.status === "missed").pop();
+  const h = intake?.health ?? {};
+  const missingMeasures = intake && o.status !== "cancelled" && (h.weight == null || h.weight === "" || h.height == null || h.height === "");
 
   const steps = timelineSteps(o.category, o.student_discount_requested);
   const current = o.status === "cancelled" ? -1 : stepIndex(o.status, o.category, o.student_discount_requested);
@@ -37,7 +44,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
         {sp.new && (
           <div className="alert ok" role="status">
             <div>
-              <b>وصل تقييمك وتم إنشاء طلبك.</b> رقم طلبك <bdi className="num"><b>{o.order_no}</b></bdi>. احتفظ به للتواصل.
+              <b>وصل استبيانك وتم إنشاء طلبك.</b> رقم طلبك <bdi className="num"><b>{o.order_no}</b></bdi>. احتفظ به للتواصل.
             </div>
           </div>
         )}
@@ -94,6 +101,36 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
 
               {["awaiting_quote", "awaiting_payment"].includes(o.status) && <CancelForm orderNo={o.order_no} />}
             </div>
+
+            {missingMeasures && (
+              <div className="card stack" aria-labelledby="measure-h">
+                <h2 id="measure-h" style={{ fontSize: 20 }}>أكمل قياساتك</h2>
+                <p className="small muted">استبيانك ما فيه الوزن أو الطول. نحتاجها لتجهيز برنامجك بدقة، وتظهر للمدربة فقط.</p>
+                <MeasurementsForm orderNo={o.order_no} />
+              </div>
+            )}
+
+            {/* ---------- سجل المراجعات الأسبوعية ---------- */}
+            {follow && follow.weeks.length > 0 && (
+              <div className="card stack" aria-labelledby="weeks-h" data-testid="review-history">
+                <h2 id="weeks-h" style={{ fontSize: 20 }}>سجل المراجعات الأسبوعية</h2>
+                {currentWeek && o.status === "active" && (
+                  <p className="alert info" data-testid="review-window">المراجعة مفتوحة من <b>{fmtYMD(currentWeek.windowStart)}</b> إلى <b>{fmtYMD(currentWeek.windowEnd)}</b>.</p>
+                )}
+                {lastMissed && o.status === "active" && (
+                  <p className="alert warn" data-testid="review-missed">ما وصلتنا مراجعة الأسبوع {lastMissed.no}. ولا يهمك، متى ما تيسّر لك أرسلها أو حدّث المدربة عشان نكمل متابعتك.</p>
+                )}
+                <ol className="weeks">
+                  {follow.weeks.map((w) => (
+                    <li key={w.no} className={`wk ${w.status}`}>
+                      <span aria-hidden="true">{w.status === "done" ? "✅" : w.status === "current" ? "⏳" : w.status === "missed" ? "•" : "○"}</span>
+                      <span>الأسبوع {w.no} — {fmtYMD(w.due)}</span>
+                      <span className="small muted">{w.status === "done" ? "تمت" : w.status === "current" ? "الأسبوع الحالي" : w.status === "missed" ? "لم تصل" : "قادم"}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
 
             {/* ---------- الملفات ---------- */}
             {entitled && (
@@ -172,6 +209,10 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                 <dt>المطلوب</dt><dd className="num">{amount == null ? "بانتظار التأكيد" : riyals(amount)}</dd>
                 <dt>طريقة الدفع</dt><dd>تحويل بنكي</dd>
                 {o.paid_at && (<><dt>تأكيد الدفع</dt><dd>{fmtDate(o.paid_at)}</dd></>)}
+                {o.sub_start_at && (<><dt>بداية الاشتراك</dt><dd data-testid="sub-start">{fmtYMD(riyadhDate(o.sub_start_at))}</dd></>)}
+                {o.sub_end_at && (<><dt>نهاية الاشتراك</dt><dd data-testid="sub-end">{fmtYMD(riyadhDate(o.sub_end_at))}</dd></>)}
+                {follow && (<><dt>حالة الاشتراك</dt><dd>{SUB_LABEL[follow.state]}</dd></>)}
+                {o.review_weekday != null && o.sub_start_at && (<><dt>يوم المراجعة</dt><dd>{WEEKDAYS[o.review_weekday]}</dd></>)}
               </dl>
             </div>
             {events.some((e) => e.note) && (

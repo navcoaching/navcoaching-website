@@ -3,15 +3,18 @@ import { requireCoach } from "@/lib/session";
 import { getSettings } from "@/lib/data";
 import { youtubeId } from "@/lib/youtube";
 import ActionForm from "@/components/admin/ActionForm";
+import { loadReminders } from "@/lib/reminders";
 import { saveFaqAction, savePolicyAction, saveSettingAction } from "@/app/actions/admin";
 
 export default async function AdminContent() {
   const coach = await requireCoach();
-  const [s, { faqs, policies, heroMedia }] = await Promise.all([
+  const [s, { faqs, policies, heroMedia, rem }] = await Promise.all([
     getSettings(),
     withUser(coach.id, async (tx) => ({
       faqs: (await tx.query("SELECT * FROM faqs ORDER BY sort")).rows,
       policies: (await tx.query("SELECT * FROM policies ORDER BY sort")).rows,
+      // إعداد التذكيرات غير عام (is_public=false) فيُقرأ بصلاحية المدربة
+      rem: await loadReminders(tx),
       heroMedia: (await tx.query("SELECT id, alt FROM media_assets WHERE approved AND usage = 'hero' ORDER BY created_at DESC")).rows as { id: string; alt: string }[],
     })),
   ]);
@@ -22,7 +25,7 @@ export default async function AdminContent() {
     <div className="stack" style={{ ["--space" as string]: "22px" }}>
       <h1>المحتوى والإعدادات</h1>
       <nav className="pill-nav">
-        {[["video", "مقطع التعريف"], ["hero", "الواجهة"], ["contact", "التواصل ومدة الرد"], ["bank", "الحساب البنكي"], ["about", "عن المدربة"], ["checkins", "المراجعة الأسبوعية"], ["faq", "الأسئلة الشائعة"], ["policies", "السياسات"]].map(([id, l]) => <a key={id} href={`#${id}`}>{l}</a>)}
+        {[["video", "مقطع التعريف"], ["hero", "الواجهة"], ["contact", "التواصل ومدة الرد"], ["bank", "الحساب البنكي"], ["about", "عن المدربة"], ["checkins", "المراجعة الأسبوعية"], ["reminders", "التنبيهات والتذكيرات"], ["faq", "الأسئلة الشائعة"], ["policies", "السياسات"]].map(([id, l]) => <a key={id} href={`#${id}`}>{l}</a>)}
       </nav>
 
       <section className="card stack">
@@ -112,6 +115,28 @@ export default async function AdminContent() {
           <div className="field"><label>الأسئلة (سطر لكل سؤال بصيغة: الموضوع | السؤال)</label>
             <textarea name="questions" style={{ minHeight: 220 }} defaultValue={(s.checkins?.questions ?? []).map((q) => `${q.topic} | ${q.q}`).join("\n")} />
           </div>
+        </ActionForm>
+      </section>
+
+      <section className="card stack">
+        <H id="reminders">التنبيهات والتذكيرات</H>
+        <p className="small muted">
+          تُرسل بالبريد، وبواتساب بعد تفعيل WhatsApp Business API فقط. تعمل تلقائياً كل ساعة بين 9 صباحاً و9 مساءً (بتوقيت الرياض) إذا كان CRON_SECRET مضبوطاً.
+          لا تكتبي بيانات صحية في النصوص؛ يُضاف رابط الحساب تلقائياً.
+          المتغيرات المتاحة: <bdi dir="ltr">{"{name}"}</bdi> الاسم الأول، <bdi dir="ltr">{"{product}"}</bdi> الباقة، <bdi dir="ltr">{"{end_date}"}</bdi> تاريخ الانتهاء،
+          <bdi dir="ltr">{" {window_start} {window_end}"}</bdi> بداية ونهاية نافذة المراجعة.
+        </p>
+        <ActionForm action={saveSettingAction} submit="حفظ إعدادات التذكير">
+          <input type="hidden" name="key" value="reminders" />
+          <div className="grid g2">
+            <div className="field"><label htmlFor="rem-days">تذكير قبل انتهاء الاشتراك بـ (أيام، مفصولة بفاصلة)</label><input id="rem-days" name="sub_expiry_days" type="text" dir="ltr" defaultValue={rem.sub_expiry_days.join(", ")} /></div>
+            <div className="field"><label htmlFor="rem-lead">تذكير المراجعة الأسبوعية قبل موعدها بـ (أيام، 0–6)</label><input id="rem-lead" name="review_lead_days" type="number" min={0} max={6} defaultValue={rem.review_lead_days} /></div>
+            <div className="field"><label htmlFor="rem-window">مدة نافذة تسليم المراجعة بعد موعدها (أيام، 0–6)</label><input id="rem-window" name="review_window_days" type="number" min={0} max={6} defaultValue={rem.review_window_days} /></div>
+            <div className="field"><label htmlFor="rem-cool">أقل مدة بين إرسالين يدويين لنفس المتدرب (دقائق)</label><input id="rem-cool" name="manual_cooldown_minutes" type="number" min={1} max={1440} defaultValue={rem.manual_cooldown_minutes} /></div>
+          </div>
+          <div className="field"><label htmlFor="rem-sub">نص تذكير انتهاء الاشتراك</label><textarea id="rem-sub" name="sub_expiry_text" maxLength={400} defaultValue={rem.sub_expiry_text} /></div>
+          <div className="field"><label htmlFor="rem-review">نص تذكير المراجعة الأسبوعية</label><textarea id="rem-review" name="review_text" maxLength={400} defaultValue={rem.review_text} /></div>
+          <div className="field"><label htmlFor="rem-missed">نص التذكير اللطيف عند فوات المراجعة</label><textarea id="rem-missed" name="missed_review_text" maxLength={400} defaultValue={rem.missed_review_text} /></div>
         </ActionForm>
       </section>
 

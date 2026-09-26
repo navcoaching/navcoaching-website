@@ -7,7 +7,8 @@ import { dbErrorMessage, withUser, type Tx } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { cleanUpload, newKey, UploadError } from "@/lib/uploads";
 import { storage } from "@/lib/storage";
-import { notifySafe } from "@/lib/mail";
+import { CHANNEL_LABEL, RESULT_LABEL, notifyTrainee, type ChannelResult } from "@/lib/notify";
+import { loadReminders, loadWeekState, reviewMessage } from "@/lib/reminders";
 import { statusLabel } from "@/lib/status";
 import { youtubeId } from "@/lib/youtube";
 import type { ActionState } from "./client";
@@ -32,13 +33,25 @@ async function log(tx: Tx, userId: string, action: string, target: string, detai
 
 const fail = (err: unknown): ActionState => ({ error: dbErrorMessage(err) ?? ((err as Error).message === "forbidden" ? "لا تملكين صلاحية." : GENERIC) });
 
-async function notifyClient(tx: Tx, orderNo: string) {
+async function orderTarget(tx: Tx, orderNo: string) {
   const { rows: [o] } = await tx.query(
-    `SELECT o.status, o.category, u.email FROM orders o JOIN "user" u ON u.id = o.user_id WHERE o.order_no = $1`, [orderNo]);
-  if (!o) return;
-  const site = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-  await notifySafe(o.email, `تحديث على طلبك ${orderNo}`,
-    `حالة طلبك ${orderNo} الآن: ${statusLabel(o.status, o.category)}.\nالتفاصيل والخطوة التالية في حسابك:\n${site}/account/orders/${orderNo}\n\nNav Coaching`);
+    `SELECT id, order_no, user_id, status, category, contact_name FROM orders WHERE order_no = $1`, [orderNo]);
+  return o as { id: string; order_no: string; user_id: string; status: string; category: string; contact_name: string } | undefined;
+}
+
+/** ملخص نتيجة الإشعار لكل قناة، يظهر للمدربة بعد الإجراء */
+function summarize(results: ChannelResult[]) {
+  if (!results.length) return "";
+  return " الإشعار: " + results.map((r) => `${CHANNEL_LABEL[r.channel]} — ${RESULT_LABEL[r.status]}${r.detail ? ` (${r.detail})` : ""}`).join("، ") + ".";
+}
+
+async function notifyStatus(tx: Tx, orderNo: string) {
+  const o = await orderTarget(tx, orderNo);
+  if (!o) return [];
+  return notifyTrainee(tx, { orderId: o.id, orderNo, userId: o.user_id }, {
+    kind: "status", subject: `تحديث على طلبك ${orderNo}`,
+    text: `حالة طلبك ${orderNo} الآن: ${statusLabel(o.status, o.category)}.`,
+  });
 }
 
 // ---------- الطلبات ----------
@@ -47,14 +60,15 @@ export async function transitionAction(_: ActionState, fd: FormData): Promise<Ac
   const to = String(fd.get("to") ?? "");
   const note = String(fd.get("note") ?? "").trim().slice(0, 500);
   const bank = fd.get("bank_confirmed") === "on";
+  let results: ChannelResult[] = [];
   try {
-    await asCoach(async (tx) => {
+    results = await asCoach(async (tx) => {
       await tx.query("SELECT app.coach_transition($1,$2,$3,$4)", [orderNo, to, note, bank]);
-      await notifyClient(tx, orderNo);
+      return notifyStatus(tx, orderNo);
     });
   } catch (err) { return fail(err); }
   revalidatePath(`/admin/orders/${orderNo}`);
-  return { ok: true, message: "تم تحديث الحالة وتسجيلها." };
+  return { ok: true, message: "تم تحديث الحالة وتسجيلها." + summarize(results) };
 }
 
 export async function setAmountAction(_: ActionState, fd: FormData): Promise<ActionState> {
@@ -62,14 +76,15 @@ export async function setAmountAction(_: ActionState, fd: FormData): Promise<Act
   const amount = Number(fd.get("amount"));
   const note = String(fd.get("note") ?? "").trim().slice(0, 300);
   if (!Number.isFinite(amount) || amount < 0) return { error: "اكتبي مبلغاً صحيحاً." };
+  let results: ChannelResult[] = [];
   try {
-    await asCoach(async (tx) => {
+    results = await asCoach(async (tx) => {
       await tx.query("SELECT app.coach_set_amount($1,$2,$3)", [orderNo, Math.round(amount * 100), note]);
-      await notifyClient(tx, orderNo);
+      return notifyStatus(tx, orderNo);
     });
   } catch (err) { return fail(err); }
   revalidatePath(`/admin/orders/${orderNo}`);
-  return { ok: true, message: "تم تأكيد المبلغ." };
+  return { ok: true, message: "تم تأكيد المبلغ." + summarize(results) };
 }
 
 export async function addDeliverableAction(_: ActionState, fd: FormData): Promise<ActionState> {
@@ -78,6 +93,7 @@ export async function addDeliverableAction(_: ActionState, fd: FormData): Promis
   const url = String(fd.get("url") ?? "").trim();
   const file = fd.get("file") as File | null;
   if (title.length < 2) return { error: "اكتبي عنواناً للملف." };
+  let results: ChannelResult[] = [];
   try {
     await coach();
     if (file && file.size > 0) {
@@ -99,12 +115,19 @@ export async function addDeliverableAction(_: ActionState, fd: FormData): Promis
         await log(tx, uid, "deliverable.add", orderNo, { title, url });
       });
     }
+    // الإشعار فقط إذا كان المتدرب يستطيع فتح المحتوى الآن (طلب نشط أو مسلّم أو مكتمل)
+    results = await asCoach(async (tx) => {
+      const o = await orderTarget(tx, orderNo);
+      if (!o || !["active", "delivered", "completed"].includes(o.status)) return [];
+      return notifyTrainee(tx, { orderId: o.id, orderNo, userId: o.user_id }, {
+        kind: "deliverable", subject: "محتوى جديد في برنامجك", text: "أضافت المدربة ملفاً أو رابطاً جديداً لبرنامجك." });
+    });
   } catch (err) {
     if (err instanceof UploadError) return { error: err.message };
     return fail(err);
   }
   revalidatePath(`/admin/orders/${orderNo}`);
-  return { ok: true, message: "تمت الإضافة. تظهر للعميل عندما يكون طلبه نشطاً أو مسلّماً." };
+  return { ok: true, message: (results.length ? "تمت الإضافة." : "تمت الإضافة. تظهر للعميل عندما يكون طلبه نشطاً أو مسلّماً، ويُشعَر عند التفعيل.") + summarize(results) };
 }
 
 export async function removeDeliverableAction(_: ActionState, fd: FormData): Promise<ActionState> {
@@ -127,15 +150,95 @@ export async function replyCheckinAction(_: ActionState, fd: FormData): Promise<
   const orderNo = String(fd.get("order_no") ?? "");
   const reply = String(fd.get("reply") ?? "").trim().slice(0, 2000);
   if (!reply) return { error: "اكتبي الرد." };
+  let results: ChannelResult[] = [];
   try {
-    await asCoach(async (tx) => {
+    results = await asCoach(async (tx) => {
       await tx.query("SELECT app.reply_checkin($1,$2)", [id, reply]);
-      const { rows: [o] } = await tx.query(`SELECT u.email FROM orders o JOIN "user" u ON u.id = o.user_id WHERE o.order_no = $1`, [orderNo]);
-      await notifySafe(o?.email, `رد المدربة على مراجعتك — ${orderNo}`, `وصلك رد على مراجعتك الأسبوعية. اقرأه من حسابك:\n${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/account/orders/${orderNo}`);
+      const o = await orderTarget(tx, orderNo);
+      if (!o) return [];
+      return notifyTrainee(tx, { orderId: o.id, orderNo, userId: o.user_id }, {
+        kind: "checkin_reply", subject: `رد المدربة على مراجعتك — ${orderNo}`, text: "وصلك رد من المدربة على مراجعتك الأسبوعية." });
     });
   } catch (err) { return fail(err); }
   revalidatePath(`/admin/orders/${orderNo}`);
-  return { ok: true, message: "تم إرسال الرد." };
+  return { ok: true, message: "تم إرسال الرد." + summarize(results) };
+}
+
+// ---------- المتابعة ----------
+export async function saveNoteAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const orderNo = String(fd.get("order_no") ?? "");
+  const body = String(fd.get("body") ?? "").slice(0, 5000);
+  try {
+    await asCoach((tx) => tx.query("SELECT app.coach_save_note($1,$2)", [orderNo, body]));
+  } catch (err) { return fail(err); }
+  revalidatePath(`/admin/orders/${orderNo}`);
+  return { ok: true, message: "حُفظت الملاحظة." };
+}
+
+export async function setSubscriptionAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const orderNo = String(fd.get("order_no") ?? "");
+  const start = String(fd.get("start") ?? ""), end = String(fd.get("end") ?? "");
+  const wd = String(fd.get("weekday") ?? "");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(start) || !/^\d{4}-\d{2}-\d{2}$/.test(end)) return { error: "اختاري تاريخ البدء والانتهاء." };
+  try {
+    // التاريخ يُفسَّر بتوقيت الرياض (+03:00)
+    await asCoach((tx) => tx.query("SELECT app.coach_set_subscription($1,$2,$3,$4)",
+      [orderNo, `${start}T00:00:00+03:00`, `${end}T23:59:00+03:00`, wd === "" ? null : Number(wd)]));
+  } catch (err) { return fail(err); }
+  revalidatePath(`/admin/orders/${orderNo}`);
+  return { ok: true, message: "حُفظت تواريخ الاشتراك." };
+}
+
+export async function markWeekAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const orderNo = String(fd.get("order_no") ?? "");
+  const week = Number(fd.get("week"));
+  const done = fd.get("done") === "1";
+  try {
+    await asCoach((tx) => tx.query("SELECT app.coach_mark_week($1,$2,$3)", [orderNo, week, done]));
+  } catch (err) { return fail(err); }
+  revalidatePath(`/admin/orders/${orderNo}`);
+  return { ok: true, message: done ? "عُلّم الأسبوع كمكتمل." : "أُلغيت العلامة." };
+}
+
+/** زر «إرسال تنبيه المراجعة الآن»: نفس النص المعروض في المعاينة، مع فترة تباعد لمنع التكرار */
+export async function sendReviewNowAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const orderNo = String(fd.get("order_no") ?? "");
+  try {
+    const out = await asCoach(async (tx) => {
+      const o = await orderTarget(tx, orderNo);
+      if (!o) return { error: "الطلب غير موجود." };
+      const r = await loadReminders(tx);
+      const { rows: [recent] } = await tx.query(
+        `SELECT created_at FROM notification_log WHERE order_id = $1 AND kind = 'review_manual' AND created_at > now() - make_interval(mins => $2) ORDER BY id DESC LIMIT 1`,
+        [o.id, r.manual_cooldown_minutes]);
+      if (recent) return { error: `أُرسل تنبيه لهذا المتدرب قبل أقل من ${r.manual_cooldown_minutes} دقائق. انتظري قليلاً.` };
+      const { rows: [sub] } = await tx.query("SELECT sub_start_at, sub_end_at, review_weekday FROM orders WHERE id = $1", [o.id]);
+      const weeks = sub?.sub_start_at ? await loadWeekState(tx, { ...o, product_name: "", ...sub }, r) : [];
+      const next = weeks.find((w) => w.status !== "done" && w.status !== "missed") ?? weeks.find((w) => w.status !== "done");
+      const text = reviewMessage(r, o.contact_name.trim().split(/\s+/)[0], next);
+      const results = await notifyTrainee(tx, { orderId: o.id, orderNo, userId: o.user_id }, { kind: "review_manual", subject: "تذكير بالمراجعة الأسبوعية", text });
+      return { results };
+    });
+    if ("error" in out) return { error: out.error };
+    revalidatePath(`/admin/orders/${orderNo}`);
+    const failed = out.results.every((x) => x.status === "failed" || x.status === "skipped");
+    return { ok: !failed, error: failed ? "لم يُرسل التنبيه عبر أي قناة." + summarize(out.results) : undefined, message: "تم." + summarize(out.results) };
+  } catch (err) { return fail(err); }
+}
+
+/** طلب تحديث الوزن والطول من متدرب أرسل الاستبيان قبل أن يصبحا إلزاميين */
+export async function requestMeasurementsAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const orderNo = String(fd.get("order_no") ?? "");
+  let results: ChannelResult[] = [];
+  try {
+    results = await asCoach(async (tx) => {
+      const o = await orderTarget(tx, orderNo);
+      if (!o) return [];
+      return notifyTrainee(tx, { orderId: o.id, orderNo, userId: o.user_id }, {
+        kind: "measurements", subject: "طلب تحديث بياناتك", text: "نحتاج وزنك وطولك الحاليين لتحديث برنامجك. تقدر تضيفها من صفحة طلبك." });
+    });
+  } catch (err) { return fail(err); }
+  return { ok: true, message: "أُرسل الطلب." + summarize(results) };
 }
 
 export async function archiveOrderAction(_: ActionState, fd: FormData): Promise<ActionState> {
@@ -320,6 +423,21 @@ export async function saveSettingAction(_: ActionState, fd: FormData): Promise<A
     case "checkins":
       value = { enabled: fd.get("enabled") === "on", questions: lines(g("questions")).map((l) => { const [topic, ...q] = l.split("|"); return q.length ? { topic: topic.trim(), q: q.join("|").trim() } : { topic: "", q: topic.trim() }; }) };
       break;
+    case "reminders": {
+      const nums = g("sub_expiry_days").split(/[,،\s]+/).map(Number).filter((n) => Number.isInteger(n) && n >= 1 && n <= 60);
+      const int = (k: string, min: number, max: number) => Math.min(max, Math.max(min, Math.round(Number(g(k)) || 0)));
+      if (!nums.length) return { error: "اكتبي أيام التذكير قبل الانتهاء، مثل: 7، 3" };
+      value = {
+        sub_expiry_days: [...new Set(nums)].sort((a, b) => b - a),
+        sub_expiry_text: g("sub_expiry_text").slice(0, 400),
+        review_lead_days: int("review_lead_days", 0, 6),
+        review_window_days: int("review_window_days", 0, 6),
+        review_text: g("review_text").slice(0, 400),
+        missed_review_text: g("missed_review_text").slice(0, 400),
+        manual_cooldown_minutes: int("manual_cooldown_minutes", 1, 1440),
+      };
+      break;
+    }
     case "hero_image":
       value = { media_id: g("media_id") || null };
       break;

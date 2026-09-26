@@ -16,6 +16,7 @@
     "db:seed-demo": "node scripts/seed-demo.mjs",
     "db:purge-demo": "node scripts/purge-demo.mjs",
     "make-coach": "node scripts/make-coach.mjs",
+    "test:unit": "node --test tests/unit/*.test.mts",
     "test:db": "node --test --test-concurrency=1 tests/db/rls.test.mjs",
     "test:e2e": "playwright test"
   },

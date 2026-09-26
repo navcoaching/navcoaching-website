@@ -41,7 +41,7 @@ export default async function Programs() {
         <div className="wrap">
           <span className="eyebrow">البرامج والأسعار</span>
           <h1 style={{ fontSize: "clamp(30px,5vw,48px)", marginTop: 12 }}>اختر برنامجك</h1>
-          <p className="lead">كل البرامج مخصصة لك بعد التقييم. {s.badges.slice(0, 2).join(" و")}.</p>
+          <p className="lead">كل البرامج مخصصة لك بعد الاستبيان. {s.badges.slice(0, 2).join(" و")}.</p>
           <Link href="#quiz" className="btn btn-cyan" style={{ marginTop: 20 }}>محتار أي باقة تناسبك؟ جاوب على 4 أسئلة</Link>
         </div>
       </section>

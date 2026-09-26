@@ -37,7 +37,7 @@ export default async function Faq() {
                 <div><span className="muted small">الآيبان</span><div className="iban"><bdi>{s.bank.iban}</bdi></div></div>
                 <CopyButton value={s.bank.iban} label="نسخ الآيبان" />
               </div>
-              <p className="small muted" style={{ marginTop: 10 }}>حوّل فقط بعد إرسال التقييم وظهور رقم طلبك والمبلغ.</p>
+              <p className="small muted" style={{ marginTop: 10 }}>حوّل فقط بعد إرسال الاستبيان وظهور رقم طلبك والمبلغ.</p>
             </div>
             <div className="card flat">
               <p>ما لقيت جوابك؟</p>

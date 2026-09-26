@@ -1,10 +1,12 @@
 import { z } from "zod";
 
-// خيارات «تقييم المتدرب» منقولة من نموذج الموقع الحالي (assessment.html) كما هي.
+// «الاستبيان»: نموذج التسجيل الأولي للمتدرب (كان اسمه «تقييم المتدرب» في الموقع السابق).
+// الأسماء الداخلية القديمة باقية كما هي حتى لا ينكسر ترابط البيانات: الجدول intakes والدالة create_order = الاستبيان.
+// لا علاقة له بـ reviews (تقييمات الخدمة بعد التجربة المنشورة للزوار).
+// الخيارات منقولة من نموذج الموقع السابق (assessment.html).
 export const OPT = {
   cc: ["+966", "+971", "+965", "+973", "+974", "+968", "أخرى"],
   gender: ["أنثى", "ذكر"],
-  age: ["18 – 24", "25 – 34", "35 – 44", "45 – 54", "55 فأكثر", "أقل من 18 (بموافقة ولي الأمر)"],
   city: ["الدمام", "الخبر", "الظهران", "الرياض", "جدة", "مدينة أخرى في السعودية", "خارج السعودية"],
   goal: ["نزول دهون", "بناء عضل", "نزول دهون + بناء عضل", "زيادة وزن", "لياقة وقوة", "أداء رياضي", "أخرى"],
   level: ["مبتدئ · أقل من 6 أشهر", "متوسط · 6 أشهر – سنتين", "متقدم · أكثر من سنتين"],
@@ -25,13 +27,17 @@ export const OPT = {
 } as const;
 
 /** العروض التي تشمل تغذية (خبرة السعرات إلزامية فيها) — من الموقع الحالي */
+/** حدود العمر المقبولة في الاستبيان (عدّليها هنا عند الحاجة) */
+export const AGE_MIN = 10;
+export const AGE_MAX = 90;
+/** نص السؤال كما طلبته المدربة حرفياً */
+export const EXPECTATIONS_Q = "ماذا تتوقع مني أثناء التدريب؟";
+
 export const NUTRITION_SKUS = ["int1", "int3", "adv1", "adv3", "nut1", "diyN", "cN"];
 
 const oneOf = <T extends readonly string[]>(list: T, msg: string) => z.enum(list as unknown as [string, ...string[]], { message: msg });
 const optionalOneOf = <T extends readonly string[]>(list: T) => z.union([z.literal(""), oneOf(list, "اختيار غير صالح")]).optional().default("");
 const text = (max: number) => z.string().trim().max(max, `النص أطول من ${max} حرفاً`).optional().default("");
-const optNum = (min: number, max: number, msg: string) =>
-  z.union([z.literal(""), z.coerce.number().min(min, msg).max(max, msg)]).optional().default("");
 
 export const intakeSchema = z
   .object({
@@ -41,7 +47,9 @@ export const intakeSchema = z
     cc: oneOf(OPT.cc, "اختر رمز الدولة"),
     phone: z.string().trim().max(20),
     gender: oneOf(OPT.gender, "اختر الجنس"),
-    age: oneOf(OPT.age, "اختر الفئة العمرية"),
+    age: z.string().trim().regex(/^\d{1,3}$/, `اكتب عمرك رقماً صحيحاً بين ${AGE_MIN} و ${AGE_MAX}.`)
+      .transform(Number).refine((n) => n >= AGE_MIN && n <= AGE_MAX, `اكتب عمرك رقماً صحيحاً بين ${AGE_MIN} و ${AGE_MAX}.`),
+    guardian_ok: z.enum(["", "on"]).optional().default(""),
     city: optionalOneOf(OPT.city),
     student: z.enum(["", "نعم"]).optional().default(""),
     goal: oneOf(OPT.goal, "اختر هدفاً"),
@@ -55,13 +63,14 @@ export const intakeSchema = z
     pregnancy: optionalOneOf(OPT.pregnancy),
     health_notes: text(600),
     health_ack: z.literal("on", { message: "نحتاج موافقتك على هذه النقطة للمتابعة." }),
-    weight: optNum(30, 250, "اكتب وزناً بين 30 و 250 كغ."),
-    height: optNum(120, 230, "اكتب طولاً بين 120 و 230 سم."),
+    weight: z.coerce.number({ message: "اكتب وزنك بالكيلوغرام." }).min(30, "اكتب وزناً بين 30 و 250 كغ.").max(250, "اكتب وزناً بين 30 و 250 كغ."),
+    height: z.coerce.number({ message: "اكتب طولك بالسنتيمتر." }).min(120, "اكتب طولاً بين 120 و 230 سم.").max(230, "اكتب طولاً بين 120 و 230 سم."),
     bodyfat: optionalOneOf([...new Set([...OPT.bodyfat_male, ...OPT.bodyfat_female])]),
     steps: optionalOneOf(OPT.steps),
     sleep: optionalOneOf(OPT.sleep),
     job: optionalOneOf(OPT.job),
     calories: optionalOneOf(OPT.calories),
+    expectations: z.string().trim().min(3, "هذا السؤال مطلوب.").max(1000, "النص أطول من 1000 حرف."),
     challenge: text(600),
     prev_coach: optionalOneOf(OPT.yesno),
     prev_why: text(300),
@@ -73,6 +82,8 @@ export const intakeSchema = z
     website: z.string().max(0, "spam").optional().default(""), // honeypot
   })
   .superRefine((v, ctx) => {
+    if (v.age < 18 && v.guardian_ok !== "on")
+      ctx.addIssue({ code: "custom", path: ["guardian_ok"], message: "للأعمار أقل من 18 نحتاج تأكيد موافقة ولي الأمر." });
     if (NUTRITION_SKUS.includes(v.sku) && !v.calories)
       ctx.addIssue({ code: "custom", path: ["calories"], message: "اختر خبرتك — باقتك تشمل تغذية." });
     const digits = v.phone.replace(/[^\d]/g, "").replace(/^0+/, "");
@@ -96,6 +107,7 @@ export function splitIntake(v: IntakeInput) {
   const answers = {
     gender: v.gender, age: v.age, city: v.city, goal: v.goal, level: v.level, place: v.place, equip: v.equip,
     days: v.days, duration: v.duration, steps: v.steps, sleep: v.sleep, job: v.job, calories: v.calories,
+    expectations: v.expectations, guardian_ok: v.age < 18 ? "نعم" : "",
     challenge: v.challenge, prev_coach: v.prev_coach, prev_why: v.prev_why, source: v.source, notes: v.notes,
   };
   const healthFlag = v.injury === "نعم" || v.condition === "نعم" || ["حامل", "بعد الولادة"].includes(v.pregnancy);
@@ -103,6 +115,7 @@ export function splitIntake(v: IntakeInput) {
 }
 
 export const ANSWER_LABELS: Record<string, string> = {
+  expectations: EXPECTATIONS_Q, guardian_ok: "موافقة ولي الأمر",
   gender: "الجنس", age: "العمر", city: "المدينة", goal: "الهدف", level: "المستوى", place: "مكان التمرين",
   equip: "الأدوات", days: "أيام التمرين", duration: "الوقت باليوم", steps: "الخطوات اليومية", sleep: "ساعات النوم",
   job: "طبيعة اليوم", calories: "خبرة السعرات", challenge: "أكبر تحدي", prev_coach: "تدرب مع مدرب قبل",

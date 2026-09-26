@@ -7,7 +7,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const site = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const products = await getProducts().catch(() => []);
   return [
-    ...["", "/programs", "/about", "/faq", "/reviews", "/policies"].map((p) => ({ url: `${site}${p}` })),
+    ...["", "/programs", "/about", "/faq", "/reviews", "/policies", "/install"].map((p) => ({ url: `${site}${p}` })),
     ...products.map((p) => ({ url: `${site}/programs/${p.slug}` })),
   ];
 }

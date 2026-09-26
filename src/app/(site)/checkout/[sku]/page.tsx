@@ -5,7 +5,7 @@ import { requireUser } from "@/lib/session";
 import { getOfferBySku, getProducts, getSettings } from "@/lib/data";
 import { CATEGORY_LABEL, riyals } from "@/lib/format";
 
-export const metadata: Metadata = { title: "تقييم المتدرب", robots: { index: false } };
+export const metadata: Metadata = { title: "استبيان المتدرب", robots: { index: false } };
 
 export default async function Checkout({ params }: { params: Promise<{ sku: string }> }) {
   const { sku } = await params;
@@ -21,7 +21,7 @@ export default async function Checkout({ params }: { params: Promise<{ sku: stri
     <>
       <section className="page-hero">
         <div className="wrap">
-          <span className="eyebrow">تقييم المتدرب</span>
+          <span className="eyebrow">استبيان المتدرب</span>
           <h1 style={{ fontSize: "clamp(28px,5vw,44px)", marginTop: 12 }}>خلّني أعرفك عشان أصمم برنامجك</h1>
           <p className="lead">5 خطوات قصيرة، وبعدها يظهر لك رقم طلبك وبيانات الدفع. إجاباتك تُحفظ على جهازك أثناء التعبئة (عدا البيانات الصحية والقياسات).</p>
         </div>
@@ -33,7 +33,7 @@ export default async function Checkout({ params }: { params: Promise<{ sku: stri
             <span className="eyebrow">طلبك</span>
             <h2 style={{ fontSize: 20 }}>{found.product.name}</h2>
             <p>{found.offer.label} · <b className="num">{riyals(found.offer.price_halalas)}</b></p>
-            <p className="small muted">تقدر تغيّر الباقة من الخطوة الأولى. الدفع بتحويل بنكي بعد إرسال التقييم، ولا يُعتبر الطلب مدفوعاً إلا بعد التحقق من وصول المبلغ.</p>
+            <p className="small muted">تقدر تغيّر الباقة من الخطوة الأولى. الدفع بتحويل بنكي بعد إرسال الاستبيان، ولا يُعتبر الطلب مدفوعاً إلا بعد التحقق من وصول المبلغ.</p>
             <p className="small muted">مسجّل الدخول بـ <bdi dir="ltr">{user.email}</bdi></p>
           </aside>
         </div>

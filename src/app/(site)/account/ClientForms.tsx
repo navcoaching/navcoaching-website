@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  cancelOrderAction, submitCheckinAction, submitReviewAction, updateProfileAction, uploadProofAction,
+  cancelOrderAction, savePrefsAction, submitCheckinAction, submitReviewAction, updateMeasurementsAction, updateProfileAction, uploadProofAction,
 } from "@/app/actions/client";
 import { FormMessage, Submit, useFormAction } from "@/components/FormBits";
 import { authClient } from "@/lib/auth-client";
@@ -122,6 +122,43 @@ export function ReviewForm({ orderNo, name }: { orderNo: string; name: string })
       </label>
       <FormMessage state={state} />
       <Submit pending={pending} className="btn">أرسل التقييم</Submit>
+    </form>
+  );
+}
+
+export function PrefsForm({ email, whatsapp }: { email: boolean; whatsapp: boolean }) {
+  const { state, onSubmit, pending } = useFormAction(savePrefsAction);
+  return (
+    <form onSubmit={onSubmit} className="form" data-testid="prefs-form">
+      <label className="check"><input type="checkbox" name="email_enabled" defaultChecked={email} /><span>إشعارات البريد الإلكتروني</span></label>
+      <label className="check"><input type="checkbox" name="whatsapp_enabled" defaultChecked={whatsapp} /><span>إشعارات واتساب</span></label>
+      <span className="hint">تشمل: إضافة ملف أو رابط لبرنامجك، رد المدربة على مراجعتك، تغيّر حالة الطلب، وتذكيرات المراجعة والاشتراك. الرسائل مختصرة ومعها رابط حسابك فقط، بدون أي بيانات صحية. رمز الدخول يصلك بالبريد دائماً.</span>
+      <FormMessage state={state} />
+      <Submit pending={pending} className="btn btn-ghost btn-sm">حفظ التفضيلات</Submit>
+    </form>
+  );
+}
+
+export function MeasurementsForm({ orderNo }: { orderNo: string }) {
+  const { state, onSubmit, pending } = useFormAction(updateMeasurementsAction);
+  if (state.ok) return <FormMessage state={state} />;
+  return (
+    <form onSubmit={onSubmit} className="form" data-testid="measurements-form">
+      <input type="hidden" name="order_no" value={orderNo} />
+      <div className="grid g2">
+        <div className="field">
+          <label htmlFor="m-weight">الوزن (كغ)</label>
+          <input id="m-weight" name="weight" type="number" inputMode="decimal" step="0.1" min={30} max={250} required />
+          {state.fieldErrors?.weight && <span className="err-msg">{state.fieldErrors.weight}</span>}
+        </div>
+        <div className="field">
+          <label htmlFor="m-height">الطول (سم)</label>
+          <input id="m-height" name="height" type="number" inputMode="decimal" step="0.1" min={120} max={230} required />
+          {state.fieldErrors?.height && <span className="err-msg">{state.fieldErrors.height}</span>}
+        </div>
+      </div>
+      <FormMessage state={state} />
+      <Submit pending={pending} className="btn btn-sm">حفظ القياسات</Submit>
     </form>
   );
 }

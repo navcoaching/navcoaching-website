@@ -86,7 +86,7 @@ export default async function Home() {
           <div className="sec-head reveal">
             <span className="eyebrow">البرامج</span>
             <h2>اختر مستوى المتابعة اللي يناسبك</h2>
-            <p className="lead">كل البرامج مخصصة لك بعد التقييم. {s.prices_note}</p>
+            <p className="lead">كل البرامج مخصصة لك بعد الاستبيان. {s.prices_note}</p>
           </div>
           <div className="grid g4">
             {follow.map((p, i) => <ProductCard key={p.id} p={p} index={i} />)}

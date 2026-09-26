@@ -1,4 +1,6 @@
 import "server-only";
+import { DEFAULT_REMINDERS, subscriptionState } from "./schedule";
+import { loadWeekState } from "./reminders";
 import { cache } from "react";
 import { withAnon, withUser } from "./db";
 
@@ -94,6 +96,7 @@ export type OrderRow = {
   list_price_halalas: number; amount_due_halalas: number | null; currency: string; student_discount_requested: boolean;
   status: string; contact_name: string; contact_phone: string; created_at: string; updated_at: string; paid_at: string | null;
   product_slug?: string | null; user_email?: string; is_demo: boolean; archived_at?: string | null;
+  product_id?: string | null; sub_start_at?: string | null; sub_end_at?: string | null; review_weekday?: number | null;
 };
 
 export async function getMyOrders(userId: string): Promise<OrderRow[]> {
@@ -129,4 +132,22 @@ export async function getOrderDetail(userId: string, orderNo: string) {
       intake: (intake.rows[0] ?? null) as null | { answers: Record<string, unknown>; health: Record<string, unknown>; health_flag: boolean; media_consent: string; consent_terms_at: string; created_at: string },
     };
   });
+}
+
+/** اشتراك المتدرب وسجل مراجعاته الأسبوعية (يُقرأ بصلاحيته؛ نصوص التذكير لا تُكشف له) */
+export async function getMyFollowUp(userId: string, o: { id: string; order_no: string; user_id: string; contact_name: string; product_name: string; status: string; sub_start_at?: string | null; sub_end_at?: string | null; review_weekday?: number | null }) {
+  const start = o.sub_start_at, end = o.sub_end_at;
+  if (!start || !end) return null;
+  return withUser(userId, async (tx) => {
+    const { rows: [{ s }] } = await tx.query("SELECT app.review_schedule() AS s");
+    const r = { ...DEFAULT_REMINDERS, ...(s ?? {}) };
+    const weeks = await loadWeekState(tx, { ...o, sub_start_at: start, sub_end_at: end, review_weekday: o.review_weekday ?? null }, r);
+    return { weeks, state: subscriptionState({ status: o.status, sub_start_at: start, sub_end_at: end }, Math.max(0, ...r.sub_expiry_days)) };
+  });
+}
+
+export async function getMyPrefs(userId: string) {
+  const row = await withUser(userId, async (tx) =>
+    (await tx.query("SELECT email_enabled, whatsapp_enabled FROM user_prefs WHERE user_id = $1", [userId])).rows[0]);
+  return (row ?? { email_enabled: true, whatsapp_enabled: true }) as { email_enabled: boolean; whatsapp_enabled: boolean };
 }

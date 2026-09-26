@@ -1,5 +1,5 @@
 // رحلة كاملة على الجوال والآيباد والكمبيوتر، ببيانات اختبار في قاعدة nav_e2e المنفصلة:
-// تصفح ← دخول ← تقييم وطلب ← رفع إيصال ← اعتماد المدربة ← ملفات ← مراجعة أسبوعية ← تقييم ← نشر التقييم.
+// تصفح ← دخول ← استبيان وطلب ← رفع إيصال ← اعتماد المدربة ← ملفات ← مراجعة أسبوعية ← تقييم ← نشر التقييم.
 import { test, expect, type Page, type Browser } from "@playwright/test";
 import pg from "pg";
 import sharp from "sharp";
@@ -77,7 +77,7 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await login(page, clientEmail);
   await expect(page).toHaveURL(/\/checkout\/int1/);
 
-  // ---------- 3) التقييم (5 خطوات) ----------
+  // ---------- 3) الاستبيان (5 خطوات) ----------
   await noHorizontalScroll(page);
   await expect(page.locator('fieldset[data-step="2"]')).toBeHidden();
   await page.getByRole("button", { name: "التالي" }).click();
@@ -85,7 +85,7 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await page.getByLabel("الاسم").fill("سارة الاختبار");
   await page.locator("#phone").fill("512345678");
   await pickRadio(page, "gender", "أنثى");
-  await page.locator("#age").selectOption("25 – 34");
+  await page.locator("#age").fill("29");
   await page.getByRole("button", { name: "التالي" }).click();
   await expect(page.locator('fieldset[data-step="1"]')).toBeHidden();
   await pickRadio(page, "goal", "لياقة وقوة");
@@ -100,17 +100,20 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await page.locator("#health_notes").fill("ألم خفيف أسفل الظهر مع الانحناء");
   await page.locator('input[name="health_ack"]').check();
   await page.getByRole("button", { name: "التالي" }).click();
+  await page.locator("#weight").fill("68.5");
+  await page.locator("#height").fill("164");
   await page.locator("#calories").selectOption("أعرف الأساسيات");
   await page.getByRole("button", { name: "التالي" }).click();
+  await page.locator("#expectations").fill("متابعة أسبوعية واضحة وتعديل البرنامج حسب تقدمي");
   await page.locator("#media").selectOption("لا، أفضّل الخصوصية");
   await page.locator('input[name="consent_terms"]').check();
   await page.locator('input[name="consent_wa"]').check();
-  await page.getByRole("button", { name: "أرسل التقييم وانتقل للدفع" }).click();
+  await page.getByRole("button", { name: "أرسل الاستبيان وانتقل للدفع" }).click();
 
   // ---------- 4) صفحة التأكيد ----------
   await expect(page).toHaveURL(/\/account\/orders\/NAV-\d{6}-[A-Z0-9]{5}\?new=1/);
   const orderNo = page.url().match(/NAV-\d{6}-[A-Z0-9]{5}/)![0];
-  await expect(page.getByText("وصل تقييمك وتم إنشاء طلبك.")).toBeVisible();
+  await expect(page.getByText("وصل استبيانك وتم إنشاء طلبك.")).toBeVisible();
   await expect(page.getByTestId("order-status")).toHaveText("بانتظار الدفع");
   await expect(page.getByText("SA1280000139608016245411")).toBeVisible();
   await noHorizontalScroll(page);
@@ -158,6 +161,11 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await coach.getByRole("link", { name: orderNo }).click();
   await expect(coach.getByText("تحتاج مراعاة")).toBeVisible(); // تنبيه البيانات الصحية للمدربة فقط
   await expect(coach.getByText("ألم خفيف أسفل الظهر")).toBeVisible();
+  // العمر الدقيق والسؤال الجديد يظهران للمدربة
+  await expect(coach.getByText("29 سنة")).toBeVisible();
+  await expect(coach.getByText("ماذا تتوقع مني أثناء التدريب؟")).toBeVisible();
+  await expect(coach.getByText("متابعة أسبوعية واضحة وتعديل البرنامج حسب تقدمي")).toBeVisible();
+  await expect(coach.getByText("68.5 كغ")).toBeVisible();
   const approve = coach.locator("form", { has: coach.getByRole("button", { name: "اعتماد الدفع" }) });
   await approve.locator('input[name="bank_confirmed"]').check();
   await approve.getByRole("button", { name: "اعتماد الدفع" }).click();
@@ -179,11 +187,26 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   const activate = coach.locator("form", { has: coach.getByRole("button", { name: "تفعيل البرنامج" }) });
   await activate.getByRole("button", { name: "تفعيل البرنامج" }).click();
   await expect(coach.locator(".status").first()).toHaveText("البرنامج نشط");
+  // تاريخ البدء يُضبط تلقائياً عند التفعيل، والنهاية = البدء + مدة الباقة
+  const { rows: [sub] } = await db.query("SELECT sub_start_at, sub_end_at, months FROM orders WHERE order_no = $1", [orderNo]);
+  expect(sub.sub_start_at).not.toBeNull();
+  const months = (new Date(sub.sub_end_at).getUTCFullYear() - new Date(sub.sub_start_at).getUTCFullYear()) * 12 + new Date(sub.sub_end_at).getUTCMonth() - new Date(sub.sub_start_at).getUTCMonth();
+  expect(months).toBe(sub.months);
+  await expect(coach.getByText("تاريخ البدء")).toBeVisible();
+  // إشعار تغيّر الحالة مسجّل، والملف المضاف قبل التفعيل لم يُرسل عنه إشعار
+  const logs = (await db.query(
+    `SELECT kind, channel, status, body FROM notification_log n JOIN orders o ON o.id = n.order_id WHERE o.order_no = $1`, [orderNo])).rows;
+  expect(logs.some((l) => l.kind === "status" && l.channel === "email" && l.status === "simulated")).toBe(true);
+  expect(logs.some((l) => l.kind === "status" && l.channel === "whatsapp" && l.status === "skipped")).toBe(true);
+  expect(logs.some((l) => l.kind === "deliverable")).toBe(false);
+  for (const l of logs) expect(l.body).not.toContain("الظهر");
 
   // ---------- 8) العميل: الملفات + المراجعة الأسبوعية + التقييم ----------
   await page.reload();
   await expect(page.getByTestId("order-status")).toHaveText("البرنامج نشط");
   await expect(page.getByRole("link", { name: "ملف البرنامج — الشهر الأول" })).toBeVisible();
+  await expect(page.getByTestId("sub-start")).toBeVisible();
+  await expect(page.getByTestId("sub-end")).toBeVisible();
   await page.locator('textarea[name="a"]').first().fill("الحركة اليومية أفضل والنوم أحسن");
   await page.getByRole("button", { name: "أرسل المراجعة" }).click();
   await expect(page.getByText("وصلت مراجعتك")).toBeVisible();

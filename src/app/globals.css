@@ -580,3 +580,32 @@ input[type="file"] { width: 100%; padding: 14px; border: 1.5px dashed var(--line
   .site-header, .site-footer, .wa-float, .btn { display: none !important; }
   body { background: #fff; }
 }
+
+/* ---------- شارات الباقات (لوحة الإدارة) — ألوان فاتحة ثابتة تبقى مميزة في الوضعين ---------- */
+.ptag { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; font-weight: 600; padding: 3px 10px; border-radius: 999px; white-space: nowrap; border: 1px solid transparent; }
+.ptag-now { font-weight: 400; opacity: 0.8; }
+.ptag.c0 { background: #e3f6fc; color: #0a5f80; border-color: #b8e6f6; }
+.ptag.c1 { background: #eef3ff; color: #284da0; border-color: #cfdcff; }
+.ptag.c2 { background: #e8f7ee; color: #17663f; border-color: #bfe8cf; }
+.ptag.c3 { background: #fff3d4; color: #7a4e00; border-color: #f5dd9c; }
+.ptag.c4 { background: #fdecf3; color: #9b1d56; border-color: #f7c6da; }
+.ptag.c5 { background: #f1ecfd; color: #5b3aa8; border-color: #dbcdf8; }
+.ptag.c6 { background: #ffece3; color: #9a3b0c; border-color: #fbcdb4; }
+.ptag.c7 { background: #eaf0f6; color: #34495e; border-color: #d0dbe6; }
+.note-dot { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--warn-bg); color: var(--warn); font-size: 12px; margin-inline-start: 6px; vertical-align: middle; }
+.wk { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 14px; }
+.wk.done { color: var(--ok); } .wk.current { color: var(--cyan-ink); } .wk.missed { color: var(--warn); } .wk.upcoming { color: var(--muted); }
+.alert-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.alert-list li { padding: 10px 12px; border-radius: 10px; background: var(--paper); font-size: 14px; border-inline-start: 4px solid var(--line); }
+.alert-list li.warn { border-inline-start-color: #c98a1a; }
+.alert-list li.bad { border-inline-start-color: #c0392b; }
+.alert-list li.info { border-inline-start-color: #2f7d6d; }
+ol.weeks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+ol.weeks li { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 8px 10px; border-radius: 10px; background: var(--paper); }
+ol.weeks li .small { margin-inline-start: auto; }
+.install-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.install-steps li { display: grid; justify-items: center; gap: 10px; text-align: center; position: relative; }
+.install-steps .n { position: absolute; inset-inline-start: 8px; top: 0; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: #1fb8e8; color: #07142a; font-weight: 700; }
+.install-steps p { margin: 0; line-height: 1.8; }
+.install-art { max-width: 100%; height: auto; }
+.install-cta { display: grid; gap: 4px; text-decoration: none; color: inherit; }

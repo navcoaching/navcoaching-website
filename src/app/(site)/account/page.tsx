@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireUser } from "@/lib/session";
-import { getMyOrders } from "@/lib/data";
+import { getMyOrders, getMyPrefs } from "@/lib/data";
 import { fmtDate, riyals } from "@/lib/format";
 import { statusLabel, statusTone } from "@/lib/status";
-import { ProfileForm, SignOut } from "./ClientForms";
+import { PrefsForm, ProfileForm, SignOut } from "./ClientForms";
 
 export const metadata: Metadata = { title: "حسابي", robots: { index: false } };
 
 export default async function Account({ searchParams }: { searchParams: Promise<{ denied?: string }> }) {
   const user = await requireUser("/account");
-  const [orders, { denied }] = await Promise.all([getMyOrders(user.id), searchParams]);
+  const [orders, prefs, { denied }] = await Promise.all([getMyOrders(user.id), getMyPrefs(user.id), searchParams]);
   const needsAction = orders.filter((o) => ["awaiting_payment", "awaiting_quote"].includes(o.status));
 
   return (
@@ -52,6 +52,14 @@ export default async function Account({ searchParams }: { searchParams: Promise<
             <p className="small muted">البريد: <bdi dir="ltr">{user.email}</bdi></p>
             <ProfileForm name={user.name.includes("@") ? "" : user.name} />
           </div>
+          <div className="card stack" aria-labelledby="prefs-h">
+            <h2 id="prefs-h" style={{ fontSize: 18 }}>تفضيلات التواصل</h2>
+            <PrefsForm email={prefs.email_enabled} whatsapp={prefs.whatsapp_enabled} />
+          </div>
+          <Link href="/install" className="card flat install-cta" data-testid="install-link">
+            <b>📱 أضف الموقع كتطبيق على جوالك</b>
+            <span className="small muted">خطوات مصوّرة لـ iPhone وأندرويد</span>
+          </Link>
           <div className="card flat stack">
             <p className="small">تحتاج مساعدة؟ راسلنا على واتساب واذكر رقم طلبك.</p>
             <SignOut />

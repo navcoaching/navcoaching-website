@@ -26,7 +26,7 @@ function formToObject(fd: FormData) {
   return o;
 }
 
-// ---------- إنشاء الطلب مع التقييم ----------
+// ---------- إنشاء الطلب مع الاستبيان ----------
 export async function createOrderAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const user = await getCurrentUser();
   if (!user) return { error: "انتهت الجلسة. سجّل الدخول مرة أخرى ثم أعد الإرسال (إجاباتك محفوظة على جهازك)." };
@@ -135,7 +135,7 @@ export async function submitCheckinAction(_: ActionState, fd: FormData): Promise
   return { ok: true, message: "وصلت مراجعتك. بيوصلك رد المدربة هنا." };
 }
 
-// ---------- التقييم ----------
+// ---------- التقييم (تقييم الخدمة بعد التجربة، غير الاستبيان) ----------
 const reviewSchema = z.object({
   order_no: z.string().min(5).max(40),
   rating: z.union([z.literal(""), z.coerce.number().int().min(1).max(5)]).optional().default(""),
@@ -175,4 +175,38 @@ export async function updateProfileAction(_: ActionState, fd: FormData): Promise
   await withUser(user.id, (tx) => tx.query(`UPDATE "user" SET name = $1, "updatedAt" = now() WHERE id = $2`, [name, user.id]));
   revalidatePath("/account");
   return { ok: true, message: "تم حفظ الاسم." };
+}
+
+// ---------- تفضيلات التواصل (البريد / واتساب) ----------
+export async function savePrefsAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await getCurrentUser();
+  if (!user) return { error: "سجّل الدخول أولاً." };
+  const email = fd.get("email_enabled") === "on";
+  const whatsapp = fd.get("whatsapp_enabled") === "on";
+  await withUser(user.id, (tx) => tx.query(
+    `INSERT INTO user_prefs (user_id, email_enabled, whatsapp_enabled) VALUES ($1,$2,$3)
+     ON CONFLICT (user_id) DO UPDATE SET email_enabled = EXCLUDED.email_enabled, whatsapp_enabled = EXCLUDED.whatsapp_enabled, updated_at = now()`,
+    [user.id, email, whatsapp]));
+  revalidatePath("/account");
+  return { ok: true, message: "تم حفظ تفضيلات التواصل." };
+}
+
+// ---------- استكمال الوزن والطول للاستبيانات القديمة ----------
+export async function updateMeasurementsAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await getCurrentUser();
+  if (!user) return { error: "سجّل الدخول أولاً." };
+  const orderNo = String(fd.get("order_no") ?? "");
+  const weight = Number(fd.get("weight")), height = Number(fd.get("height"));
+  const fieldErrors: Record<string, string> = {};
+  if (!Number.isFinite(weight) || weight < 30 || weight > 250) fieldErrors.weight = "اكتب وزناً بين 30 و 250 كغ.";
+  if (!Number.isFinite(height) || height < 120 || height > 230) fieldErrors.height = "اكتب طولاً بين 120 و 230 سم.";
+  if (Object.keys(fieldErrors).length) return { error: "راجع الحقول المحددة.", fieldErrors };
+  if (!(await allow(`measure:u:${user.id}`, 10, 3600))) return { error: LIMITED };
+  try {
+    await withUser(user.id, (tx) => tx.query("SELECT app.update_intake_measurements($1,$2,$3)", [orderNo, weight, height]));
+  } catch (err) {
+    return { error: dbErrorMessage(err) ?? GENERIC };
+  }
+  revalidatePath(`/account/orders/${orderNo}`);
+  return { ok: true, message: "شكراً! تم تحديث القياسات." };
 }

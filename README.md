@@ -48,8 +48,10 @@ npm run dev            # http://localhost:3000
 
 ```bash
 npm run typecheck
-npm run test:db        # 18 اختبار صلاحيات على مستوى قاعدة البيانات (قاعدة nav_test منفصلة)
-npm run test:e2e       # رحلة كاملة على iPhone وiPad وDesktop (قاعدة nav_e2e منفصلة)
+npm run test:unit      # قواعد الاستبيان وحسابات الاشتراك والمراجعات الأسبوعية
+npm run test:db        # 27 اختبار صلاحيات على مستوى قاعدة البيانات (قاعدة nav_test منفصلة)
+npm run test:e2e       # رحلة كاملة + المتابعة والتذكيرات على iPhone وiPad وDesktop (قاعدة nav_e2e منفصلة)
+# منطق الاشتراك والمراجعات والإشعارات وواتساب وGoogle Sheets: docs/FOLLOWUP.md
 ```
 
 الاختبارات تُنشئ قواعدها من الصفر، ولا تلمس قاعدة التطوير أو الإنتاج.

@@ -17,23 +17,24 @@ export function devMailboxEnabled() {
   return process.env.NODE_ENV !== "production" || process.env.E2E_MAILBOX === "1";
 }
 
-export async function sendMail(to: string, subject: string, text: string) {
+/** يرجع "sent" عند الإرسال الفعلي عبر Resend، و"dev" عند الحفظ في صندوق التطوير فقط. */
+export async function sendMail(to: string, subject: string, text: string): Promise<"sent" | "dev"> {
   if (mailConfigured()) {
     const resend = new Resend(process.env.RESEND_API_KEY);
     const { error } = await resend.emails.send({ from: process.env.MAIL_FROM!, to, subject, text });
     if (error) throw new Error(`mail failed: ${error.message}`);
-    return;
+    return "sent";
   }
   if (devMailboxEnabled()) {
     await pool.query("INSERT INTO dev_mailbox (recipient, subject, body) VALUES ($1, $2, $3)", [to, subject, text]);
     console.info(`[dev-mail] to=${to} subject=${subject}`);
-    return;
+    return "dev";
   }
   throw new Error("البريد غير مفعّل: أضيفي RESEND_API_KEY و MAIL_FROM");
 }
 
 /**
- * تنبيهات الطلبات: رقم الطلب والحالة فقط، بدون أي بيانات صحية أو إجابات التقييم.
+ * تنبيهات الطلبات: رقم الطلب والحالة فقط، بدون أي بيانات صحية أو إجابات الاستبيان.
  * لا تُفشل العملية الأساسية إذا تعذر الإرسال.
  */
 export async function notifySafe(to: string | undefined | null, subject: string, text: string) {

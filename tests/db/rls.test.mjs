@@ -246,3 +246,62 @@ describe("قراءات الزائر بدون معاملة", () => {
     await single.end();
   });
 });
+
+describe("المتابعة: الملاحظات والاشتراك والإشعارات", () => {
+  test("ملاحظات المدربة لا يقرأها صاحب الطلب ولا يكتبها", async () => {
+    const no = await newOrder(A, "k-notes-00000000001");
+    await as(COACH, "SELECT app.coach_save_note($1, 'ملاحظة سرية: يحتاج متابعة لصيقة')", [no]);
+    assert.equal((await as(A, "SELECT * FROM order_admin_notes")).rowCount, 0);
+    await assert.rejects(as(A, "SELECT app.coach_save_note($1, 'x')", [no]), /للمدربة فقط/);
+    await assert.rejects(as(A, "INSERT INTO order_admin_notes (order_id, body) SELECT id, 'x' FROM orders WHERE order_no = $1", [no]), /permission denied/);
+    const r = await as(COACH, "SELECT n.body, n.updated_by FROM order_admin_notes n JOIN orders o ON o.id = n.order_id WHERE o.order_no = $1", [no]);
+    assert.equal(r.rows[0].updated_by, COACH);
+  });
+  test("تاريخ البدء والانتهاء يُسجلان تلقائياً عند التفعيل", async () => {
+    const no = await newOrder(A, "k-subdates-00000001", "int3");
+    await as(COACH, "SELECT app.coach_transition($1,'preparing','',true)", [no]);
+    assert.equal((await as(A, "SELECT sub_start_at FROM orders WHERE order_no = $1", [no])).rows[0].sub_start_at, null);
+    await as(COACH, "SELECT app.coach_transition($1,'active','',false)", [no]);
+    const { rows: [o] } = await as(A, "SELECT sub_start_at, sub_end_at, review_weekday, (sub_end_at - sub_start_at) > interval '88 days' AS three_months FROM orders WHERE order_no = $1", [no]);
+    assert.ok(o.sub_start_at && o.sub_end_at && o.review_weekday !== null && o.three_months);
+    await assert.rejects(as(A, "SELECT app.coach_set_subscription($1, now(), now() + interval '1 day', 2)", [no]), /للمدربة فقط/);
+    await as(COACH, "SELECT app.coach_set_subscription($1, now() - interval '80 days', now() + interval '5 days', 2)", [no]);
+    await as(COACH, "SELECT app.coach_mark_week($1, 1, true)", [no]);
+    assert.equal((await as(A, "SELECT count(*)::int n FROM review_weeks")).rows[0].n, 1);
+    await assert.rejects(as(A, "SELECT app.coach_mark_week($1, 2, true)", [no]), /للمدربة فقط/);
+  });
+  test("الإشعار لنفس المناسبة لا يتكرر، والعميل لا يقرأ السجل", async () => {
+    const no = await newOrder(A, "k-notify-0000000001");
+    const { rows: [o] } = await as(A, "SELECT id FROM orders WHERE order_no = $1", [no]);
+    const first = (await as(COACH, "SELECT app.notify_claim($1,$2,'sub_expiry','email','sub_expiry:2026-10-01:7','نص') AS id", [o.id, A])).rows[0].id;
+    const again = (await as(COACH, "SELECT app.notify_claim($1,$2,'sub_expiry','email','sub_expiry:2026-10-01:7','نص') AS id", [o.id, A])).rows[0].id;
+    assert.ok(first);
+    assert.equal(again, null);
+    await as(COACH, "SELECT app.notify_finish($1,'sent',null)", [first]);
+    assert.equal((await as(A, "SELECT * FROM notification_log")).rowCount, 0);
+    await assert.rejects(as(A, "SELECT app.notify_claim($1,$2,'x','email',null,'x')", [o.id, A]), /للمدربة فقط/);
+    const sys = (await as("system-scheduler", "SELECT app.notify_claim($1,$2,'review_upcoming','email','r:1','نص') AS id", [o.id, A])).rows[0].id;
+    assert.ok(sys, "مستخدم النظام يسجل التذكيرات المجدولة");
+  });
+  test("التفضيلات: كل مستخدم يعدّل تفضيلاته فقط", async () => {
+    await as(A, "INSERT INTO user_prefs (user_id, whatsapp_enabled) VALUES ($1, false)", [A]);
+    await assert.rejects(as(A, "INSERT INTO user_prefs (user_id) VALUES ($1)", [B]), /row-level security/);
+    assert.equal((await as(B, "UPDATE user_prefs SET email_enabled = false WHERE user_id = $1", [A])).rowCount, 0);
+    assert.equal((await as(COACH, "SELECT whatsapp_enabled FROM user_prefs WHERE user_id = $1", [A])).rows[0].whatsapp_enabled, false);
+  });
+  test("تحديث الوزن والطول لصاحب الطلب فقط وبقيم منطقية", async () => {
+    const no = await newOrder(A, "k-measure-000000001");
+    await assert.rejects(as(A, "SELECT app.update_intake_measurements($1, 10, 170)", [no]), /وزناً/);
+    await assert.rejects(as(B, "SELECT app.update_intake_measurements($1, 70, 170)", [no]), /غير موجود/);
+    await as(A, "SELECT app.update_intake_measurements($1, 70.5, 168)", [no]);
+    const h = (await as(COACH, "SELECT i.health FROM intakes i JOIN orders o ON o.id = i.order_id WHERE o.order_no = $1", [no])).rows[0].health;
+    assert.equal(Number(h.weight), 70.5);
+  });
+  test("المتدرب يقرأ جدول المراجعة فقط، ونصوص التذكير تبقى للمدربة", async () => {
+    const sch = (await as(A, "SELECT app.review_schedule() AS s")).rows[0].s;
+    assert.equal(typeof sch.review_window_days, "number");
+    assert.equal(sch.review_text, undefined);
+    assert.equal((await as(A, "SELECT value FROM site_settings WHERE key = 'reminders'")).rowCount, 0);
+    assert.equal((await as(COACH, "SELECT value FROM site_settings WHERE key = 'reminders'")).rowCount, 1);
+  });
+});

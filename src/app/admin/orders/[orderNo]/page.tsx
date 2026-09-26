@@ -6,10 +6,12 @@ import { getOrderDetail } from "@/lib/data";
 import { withUser } from "@/lib/db";
 import { fmtDateTime, riyals, waLink } from "@/lib/format";
 import { coachNextSteps, statusLabel, statusTone } from "@/lib/status";
-import { ANSWER_LABELS } from "@/lib/intake";
+import { ANSWER_LABELS, EXPECTATIONS_Q } from "@/lib/intake";
 import ActionForm from "@/components/admin/ActionForm";
+import PackageTag from "@/components/admin/PackageTag";
+import { AdminNotes, Subscription } from "./FollowUp";
 import {
-  addDeliverableAction, archiveOrderAction, deleteOrderAction, removeDeliverableAction, replyCheckinAction, setAmountAction, transitionAction,
+  addDeliverableAction, archiveOrderAction, deleteOrderAction, removeDeliverableAction, replyCheckinAction, requestMeasurementsAction, setAmountAction, transitionAction,
 } from "@/app/actions/admin";
 
 const show = (v: unknown) => (Array.isArray(v) ? v.join("، ") : v == null || v === "" ? "—" : String(v));
@@ -20,6 +22,11 @@ export default async function AdminOrder({ params }: { params: Promise<{ orderNo
   const detail = await getOrderDetail(coach.id, orderNo);
   if (!detail) notFound();
   const { order: o, events, proofs, deliverables, checkins, intake, review } = detail;
+  const currentName = await withUser(coach.id, async (tx) =>
+    o.product_id ? (await tx.query("SELECT name FROM products WHERE id = $1", [o.product_id])).rows[0]?.name ?? null : null);
+  const answers = (intake?.answers ?? {}) as Record<string, unknown>;
+  const health = (intake?.health ?? {}) as Record<string, unknown>;
+  const missingMeasures = intake && (health.weight == null || health.weight === "" || health.height == null || health.height === "");
   const actorNames = await withUser(coach.id, async (tx) =>
     Object.fromEntries((await tx.query(
       `SELECT DISTINCT e.actor_id, u.name FROM order_events e JOIN "user" u ON u.id = e.actor_id JOIN orders o ON o.id = e.order_id WHERE o.order_no = $1`,
@@ -32,6 +39,7 @@ export default async function AdminOrder({ params }: { params: Promise<{ orderNo
       <nav className="small"><Link href="/admin/orders">الطلبات</Link> / <bdi className="num">{o.order_no}</bdi></nav>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <div>
+          <div style={{ marginBottom: 6 }}><PackageTag name={o.product_name} productId={o.product_id ?? null} currentName={currentName} /></div>
           <h1 style={{ marginBottom: 4 }}>{o.product_name} — {o.offer_label}</h1>
           <p className="muted">{o.contact_name} · <bdi dir="ltr">{o.contact_phone}</bdi> · <bdi dir="ltr">{o.user_email}</bdi></p>
         </div>
@@ -79,12 +87,31 @@ export default async function AdminOrder({ params }: { params: Promise<{ orderNo
             <a className="btn btn-ghost btn-sm" style={{ width: "fit-content" }} href={waLink(phoneDigits, `مرحباً ${o.contact_name}، بخصوص طلبك رقم ${o.order_no}`)} target="_blank" rel="noopener">مراسلة العميل على واتساب</a>
           </div>
 
-          {/* ---------- التقييم الأولي ---------- */}
+          <Subscription coachId={coach.id} o={o} />
+
+          {/* ---------- الاستبيان (الجدول الداخلي intakes) ---------- */}
           {intake && (
             <div className="card stack">
-              <h2 style={{ fontSize: 19 }}>تقييم المتدرب</h2>
+              <h2 style={{ fontSize: 19 }}>استبيان المتدرب</h2>
+              <div className="alert info" style={{ display: "block" }}>
+                <b>{EXPECTATIONS_Q}</b>
+                <p style={{ marginTop: 6, whiteSpace: "pre-wrap" }}>{answers.expectations ? String(answers.expectations) : "— (أُرسل الاستبيان قبل إضافة هذا السؤال)"}</p>
+              </div>
+              <dl className="kv">
+                <dt>العمر</dt><dd>{typeof answers.age === "number" ? `${answers.age} سنة` : answers.age ? `${String(answers.age)} (نطاق من الاستبيان القديم)` : "—"}</dd>
+                <dt>الوزن</dt><dd>{health.weight ? `${String(health.weight)} كغ` : "—"}</dd>
+                <dt>الطول</dt><dd>{health.height ? `${String(health.height)} سم` : "—"}</dd>
+              </dl>
+              {missingMeasures && (
+                <div className="alert warn" style={{ display: "block" }}>
+                  <p>هذا المتدرب أرسل الاستبيان قبل أن يصبح الوزن والطول إلزاميين، ولم يكملهما بعد.</p>
+                  <ActionForm action={requestMeasurementsAction} submit="اطلبي منه تحديثهما" submitClass="btn btn-ghost btn-sm">
+                    <input type="hidden" name="order_no" value={o.order_no} />
+                  </ActionForm>
+                </div>
+              )}
               <dl className="kv small">
-                {Object.entries(intake.answers).map(([k, v]) => <Fragment key={k}><dt>{ANSWER_LABELS[k] ?? k}</dt><dd>{show(v)}</dd></Fragment>)}
+                {Object.entries(intake.answers).filter(([k]) => !["expectations", "age"].includes(k)).map(([k, v]) => <Fragment key={k}><dt>{ANSWER_LABELS[k] ?? k}</dt><dd>{show(v)}</dd></Fragment>)}
                 <dt>النشر في السوشل ميديا</dt><dd>{intake.media_consent}</dd>
                 <dt>طلب خصم طالب</dt><dd>{o.student_discount_requested ? "نعم" : "لا"}</dd>
                 <dt>ملاحظة العميل</dt><dd>{o.client_note ?? "—"}</dd>
@@ -140,6 +167,7 @@ export default async function AdminOrder({ params }: { params: Promise<{ orderNo
         </div>
 
         <aside className="stack" style={{ ["--space" as string]: "18px" }}>
+          <AdminNotes coachId={coach.id} o={o} />
           <div className="card">
             <dl className="kv small">
               <dt>السعر</dt><dd className="num">{riyals(o.list_price_halalas)}</dd>
@@ -173,7 +201,7 @@ export default async function AdminOrder({ params }: { params: Promise<{ orderNo
                 <summary className="small" style={{ cursor: "pointer", minHeight: 44, color: "var(--err)" }}>حذف نهائي</summary>
                 <ActionForm action={deleteOrderAction} submit="حذف نهائي" submitClass="btn btn-danger btn-sm">
                   <input type="hidden" name="order_no" value={o.order_no} />
-                  <p className="small">يحذف الطلب وتقييمه الأولي وإيصالاته وسجله نهائياً ولا يمكن استرجاعه.</p>
+                  <p className="small">يحذف الطلب واستبيانه وإيصالاته وسجله نهائياً ولا يمكن استرجاعه.</p>
                   <div className="field"><label>للتأكيد اكتبي رقم الطلب: <bdi>{o.order_no}</bdi></label><input name="confirm" type="text" dir="ltr" autoComplete="off" required /></div>
                 </ActionForm>
               </details>

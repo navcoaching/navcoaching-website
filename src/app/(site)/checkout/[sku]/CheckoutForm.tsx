@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { createOrderAction } from "@/app/actions/client";
-import { NUTRITION_SKUS, OPT } from "@/lib/intake";
+import { AGE_MAX, AGE_MIN, EXPECTATIONS_Q, NUTRITION_SKUS, OPT } from "@/lib/intake";
 import { Submit, useFormAction } from "@/components/FormBits";
 
 type OfferOpt = { sku: string; label: string; group: string; price: string };
@@ -13,13 +13,13 @@ const DRAFT_KEY = "nav_checkout_draft_v2";
 // البيانات الصحية والقياسات لا تُحفظ على الجهاز أثناء التعبئة (كما في الموقع الحالي)
 const SENSITIVE = new Set(["injury", "condition", "pregnancy", "health_notes", "health_ack", "weight", "height", "bodyfat"]);
 const STEP_OF: Record<string, number> = {
-  sku: 1, name: 1, cc: 1, phone: 1, gender: 1, age: 1, city: 1, student: 1,
+  sku: 1, name: 1, cc: 1, phone: 1, gender: 1, age: 1, guardian_ok: 1, city: 1, student: 1,
   goal: 2, level: 2, place: 2, equip: 2, days: 2, duration: 2,
   injury: 3, condition: 3, pregnancy: 3, health_notes: 3, health_ack: 3,
   weight: 4, height: 4, bodyfat: 4, steps: 4, sleep: 4, job: 4, calories: 4,
-  challenge: 5, prev_coach: 5, prev_why: 5, source: 5, media: 5, notes: 5, consent_terms: 5, consent_wa: 5,
+  expectations: 5, challenge: 5, prev_coach: 5, prev_why: 5, source: 5, media: 5, notes: 5, consent_terms: 5, consent_wa: 5,
 };
-const TITLES = ["الباقة والتواصل", "الهدف والتمرين", "الصحة والإصابات", "نمط الحياة والتغذية", "التوقعات والإرسال"];
+const TITLES = ["الباقة والتواصل", "الهدف والتمرين", "الصحة والإصابات", "القياسات ونمط الحياة", "التوقعات والإرسال"];
 
 type Draft = Record<string, string | string[]>;
 const readDraft = (): Draft => { try { return JSON.parse(localStorage.getItem(DRAFT_KEY) ?? "{}"); } catch { return {}; } };
@@ -112,7 +112,7 @@ export default function CheckoutForm({ sku, offers, defaultName, responseTime }:
                 <optgroup key={g} label={g}>{offers.filter((o) => o.group === g).map((o) => <option key={o.sku} value={o.sku}>{o.label} — {o.price}</option>)}</optgroup>
               ))}
             </select>
-            {offer && <span className="hint">السعر: {offer.price}. تدفعه بتحويل بنكي بعد إرسال التقييم.</span>}
+            {offer && <span className="hint">السعر: {offer.price}. تدفعه بتحويل بنكي بعد إرسال الاستبيان.</span>}
           </div>
           <div className="field">
             <label htmlFor="name">الاسم <span className="req">*</span></label>
@@ -131,7 +131,17 @@ export default function CheckoutForm({ sku, offers, defaultName, responseTime }:
             <ErrText n="phone" errors={errors} />
           </div>
           <fieldset className="field"><legend>الجنس <span className="req">*</span></legend><Radios ctx={ctx} name="gender" opts={OPT.gender} required err="اختر الجنس — نحتاجه لتصميم البرنامج والمراجع المناسبة." /><ErrText n="gender" errors={errors} /></fieldset>
-          <div className="field"><label htmlFor="age">العمر <span className="req">*</span></label><Select ctx={ctx} name="age" opts={OPT.age} required err="اختر الفئة العمرية." /><ErrText n="age" errors={errors} /></div>
+          <div className="field">
+            <label htmlFor="age">العمر <span className="req">*</span></label>
+            <input id="age" name="age" type="number" inputMode="numeric" min={AGE_MIN} max={AGE_MAX} step={1} required defaultValue={d("age")}
+              data-err={`اكتب عمرك رقماً صحيحاً بين ${AGE_MIN} و ${AGE_MAX}.`} {...inv("age")} style={{ maxWidth: 160 }} />
+            <ErrText n="age" errors={errors} />
+          </div>
+          <label className="check" hidden={!(Number(val("age")) > 0 && Number(val("age")) < 18)}>
+            <input type="checkbox" name="guardian_ok" required={Number(val("age")) > 0 && Number(val("age")) < 18} data-err="للأعمار أقل من 18 نحتاج تأكيد موافقة ولي الأمر." {...inv("guardian_ok")} />
+            <span>أؤكد أن ولي الأمر موافق على الاشتراك. <span className="req">*</span></span>
+          </label>
+          <ErrText n="guardian_ok" errors={errors} />
           <div className="field"><label htmlFor="city">المدينة (اختياري)</label><Select ctx={ctx} name="city" opts={OPT.city} /></div>
           <label className="check"><input type="checkbox" name="student" value="نعم" defaultChecked={d("student") === "نعم"} /><span>أنا طالب/طالبة وأبي خصم 10% (يُطلب إثبات بسيط، ونؤكد لك المبلغ النهائي قبل التحويل)</span></label>
         </fieldset>
@@ -174,8 +184,8 @@ export default function CheckoutForm({ sku, offers, defaultName, responseTime }:
         {/* 4 */}
         <fieldset data-step="4" hidden={step !== 4} className="form">
           <div className="grid g2">
-            <div className="field"><label htmlFor="weight">الوزن الحالي (كغ) (اختياري)</label><input id="weight" name="weight" type="number" inputMode="decimal" min={30} max={250} step="0.1" data-err="اكتب وزناً بين 30 و 250 كغ." {...inv("weight")} /><ErrText n="weight" errors={errors} /></div>
-            <div className="field"><label htmlFor="height">الطول (سم) (اختياري)</label><input id="height" name="height" type="number" inputMode="numeric" min={120} max={230} data-err="اكتب طولاً بين 120 و 230 سم." {...inv("height")} /><ErrText n="height" errors={errors} /></div>
+            <div className="field"><label htmlFor="weight">الوزن الحالي (كغ) <span className="req">*</span></label><input id="weight" name="weight" type="number" inputMode="decimal" min={30} max={250} step="0.1" required data-err="اكتب وزناً بين 30 و 250 كغ." {...inv("weight")} /><ErrText n="weight" errors={errors} /></div>
+            <div className="field"><label htmlFor="height">الطول (سم) <span className="req">*</span></label><input id="height" name="height" type="number" inputMode="numeric" min={120} max={230} step="0.1" required data-err="اكتب طولاً بين 120 و 230 سم." {...inv("height")} /><ErrText n="height" errors={errors} /></div>
           </div>
           <div className="field"><label htmlFor="bodyfat">نسبة الدهون التقريبية (اختياري)</label>
             <select id="bodyfat" name="bodyfat" defaultValue=""><option value="">اختر</option>{bodyfat.map((o) => <option key={o}>{o}</option>)}</select>
@@ -192,6 +202,11 @@ export default function CheckoutForm({ sku, offers, defaultName, responseTime }:
 
         {/* 5 */}
         <fieldset data-step="5" hidden={step !== 5} className="form">
+          <div className="field">
+            <label htmlFor="expectations">{EXPECTATIONS_Q} <span className="req">*</span></label>
+            <textarea id="expectations" name="expectations" required minLength={3} maxLength={1000} defaultValue={d("expectations")} data-err="هذا السؤال مطلوب." {...inv("expectations")} />
+            <ErrText n="expectations" errors={errors} />
+          </div>
           <div className="field"><label htmlFor="challenge">وش أكبر تحدي تواجهه الآن؟ (اختياري)</label><textarea id="challenge" name="challenge" maxLength={600} defaultValue={d("challenge")} /></div>
           <fieldset className="field"><legend>تدربت مع مدرب قبل؟</legend><Radios ctx={ctx} name="prev_coach" opts={OPT.yesno} /></fieldset>
           <div className="field" hidden={val("prev_coach") !== "نعم"}><label htmlFor="prev_why">ليه ما استمريت معه؟ (اختياري)</label><input id="prev_why" name="prev_why" type="text" maxLength={300} defaultValue={d("prev_why")} /></div>
@@ -226,7 +241,7 @@ export default function CheckoutForm({ sku, offers, defaultName, responseTime }:
           {step < 5 ? (
             <button type="button" className="btn" onClick={() => { if (validateStep(step)) setStep(step + 1); }}>التالي</button>
           ) : (
-            <Submit className="btn btn-cyan" pending={pending} pendingText="جارٍ إرسال الطلب…">أرسل التقييم وانتقل للدفع</Submit>
+            <Submit className="btn btn-cyan" pending={pending} pendingText="جارٍ إرسال الطلب…">أرسل الاستبيان وانتقل للدفع</Submit>
           )}
         </div>
       </form>
