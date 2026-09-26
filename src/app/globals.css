@@ -260,7 +260,7 @@ bdi, .ltr { unicode-bidi: isolate; direction: ltr; }
   padding-block: clamp(48px, 9vw, 120px) clamp(56px, 10vw, 128px);
 }
 .hero-grid { display: grid; gap: clamp(28px, 5vw, 56px); align-items: center; grid-template-columns: 1.15fr 0.85fr; }
-@media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } .hero-photo { max-width: 340px; } }
+@media (max-width: 900px) { .hero-grid, .hero-grid.with-shot { grid-template-columns: 1fr; } .hero-photo { max-width: 340px; } }
 .hero h1 { color: #fff; }
 .hero h1 .hl { color: var(--cyan); display: block; font-size: 0.62em; font-weight: 600; margin-top: 6px; }
 .hero .lead { color: var(--on-dark-muted); }
@@ -270,9 +270,11 @@ bdi, .ltr { unicode-bidi: isolate; direction: ltr; }
   font-size: 14px; padding: 8px 14px; border-radius: 999px;
   background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.14); color: var(--on-dark);
 }
-/* الجدول صورة عريضة، فيظهر بعرض الصفحة تحت النص بدل عمود جانبي ضيق */
-.hero-grid.stacked { grid-template-columns: 1fr; }
-.hero-shot { margin: 0; width: 100%; max-width: 1100px; justify-self: center; display: grid; gap: 12px; }
+/* الجدول صورة عريضة: عمود أعرض من العادة بجنب النص */
+.hero-grid.with-shot { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); }
+.hero-grid.with-shot h1 { font-size: clamp(32px, 4.6vw, 54px); }
+@media (max-width: 900px) { .hero-grid.with-shot { grid-template-columns: 1fr; } }
+.hero-shot { margin: 0; width: 100%; max-width: 680px; justify-self: center; display: grid; gap: 12px; }
 .hero-shot img { width: 100%; height: auto; border-radius: 14px; background: #fff; padding: 8px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4); }
 .hero-shot figcaption { color: var(--on-dark-muted); font-size: 14px; display: flex; gap: 8px; align-items: center; }
 .hero-photo {
