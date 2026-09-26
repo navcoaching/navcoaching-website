@@ -7,89 +7,129 @@ export const metadata: Metadata = {
 };
 
 /* رسومات توضيحية مبسطة (ليست لقطات شاشة حقيقية) — شكل الأزرار قد يختلف قليلاً حسب إصدار النظام */
-const C = { frame: "#07142a", screen: "#f3f6fa", hi: "#1fb8e8", line: "#9aa6b8" };
+const C = { ink: "#07142a", screen: "#f3f6fa", bar: "#e1e7ef", hi: "#1fb8e8", hiBg: "#dff4fc", line: "#b4bfcd", muted: "#5b6b80" };
+const F = "IBM Plex Sans Arabic, Tahoma, sans-serif";
 
+/** إطار جوال بسيط. النصوص داخل الرسم RTL: textAnchor="start" يعني المحاذاة من اليمين */
 function Phone({ children, label }: { children: React.ReactNode; label: string }) {
   return (
-    <svg viewBox="0 0 160 240" width="160" height="240" role="img" aria-label={label} className="install-art">
-      <rect x="4" y="4" width="152" height="232" rx="22" fill="none" stroke="var(--text)" strokeWidth="4" />
-      <rect x="12" y="14" width="136" height="212" rx="14" fill={C.screen} />
+    <svg viewBox="0 0 220 360" width="220" height="360" role="img" aria-label={label} className="install-art" style={{ direction: "rtl" }} fontFamily={F}>
+      <rect x="6" y="6" width="208" height="348" rx="30" fill="#fff" stroke="var(--text)" strokeWidth="5" />
+      <rect x="16" y="18" width="188" height="324" rx="20" fill={C.screen} />
       {children}
     </svg>
   );
 }
-const Lines = ({ y = 44 }: { y?: number }) => (
-  <g stroke={C.line} strokeWidth="5" strokeLinecap="round">
-    <line x1="28" y1={y} x2="132" y2={y} /><line x1="28" y1={y + 16} x2="110" y2={y + 16} /><line x1="28" y1={y + 32} x2="120" y2={y + 32} />
+const T = ({ x, y, size = 14, bold, color = C.ink, children }: { x: number; y: number; size?: number; bold?: boolean; color?: string; children: React.ReactNode }) => (
+  <text x={x} y={y} fontSize={size} fontWeight={bold ? 700 : 500} fill={color} textAnchor="start">{children}</text>
+);
+const Lines = ({ y }: { y: number }) => (
+  <g stroke={C.line} strokeWidth="7" strokeLinecap="round">
+    <line x1="40" y1={y} x2="180" y2={y} /><line x1="70" y1={y + 22} x2="180" y2={y + 22} /><line x1="55" y1={y + 44} x2="180" y2={y + 44} />
   </g>
 );
-const Ring = ({ cx, cy, r = 13 }: { cx: number; cy: number; r?: number }) => (
-  <circle cx={cx} cy={cy} r={r} fill="none" stroke={C.hi} strokeWidth="3.5" />
+const Ring = ({ cx, cy, r = 22 }: { cx: number; cy: number; r?: number }) => (
+  <circle cx={cx} cy={cy} r={r} fill="none" stroke={C.hi} strokeWidth="4.5" />
+);
+const Tap = ({ x, y, text }: { x: number; y: number; text: string }) => (
+  <g>
+    <rect x={x - 46} y={y - 17} width="92" height="28" rx="14" fill={C.hi} />
+    <text x={x} y={y + 2} fontSize="13" fontWeight={700} fill={C.ink} textAnchor="middle">{text}</text>
+  </g>
+);
+const AppIcon = ({ y = 120 }: { y?: number }) => (
+  <g>
+    <rect x="80" y={y} width="60" height="60" rx="14" fill={C.ink} />
+    <text x="110" y={y + 37} fontSize="17" fontWeight={700} fill={C.hi} textAnchor="middle" fontFamily="Arial, sans-serif">NAV</text>
+    <text x="110" y={y + 84} fontSize="14" fontWeight={600} fill={C.ink} textAnchor="middle" fontFamily="Arial, sans-serif">Nav Coaching</text>
+  </g>
 );
 
 const IosShare = () => (
   <Phone label="زر المشاركة أسفل شاشة Safari">
-    <Lines />
-    <rect x="12" y="192" width="136" height="34" fill="#e3e8ef" />
-    <g stroke={C.frame} strokeWidth="2.5" fill="none" strokeLinecap="round">
-      <rect x="73" y="204" width="14" height="14" rx="2" /><line x1="80" y1="197" x2="80" y2="211" /><polyline points="75,201 80,196 85,201" />
+    <Lines y={70} />
+    <Tap x={110} y={230} text="اضغط هنا ↓" />
+    <rect x="16" y="282" width="188" height="60" fill={C.bar} />
+    <g stroke={C.ink} strokeWidth="3.2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M100 300 h-6 v24 h32 v-24 h-6" /><line x1="110" y1="290" x2="110" y2="314" /><polyline points="102,297 110,289 118,297" />
     </g>
-    <Ring cx={80} cy={208} r={16} />
+    <Ring cx={110} cy={308} r={24} />
   </Phone>
 );
 const IosAdd = () => (
   <Phone label="خيار «إضافة إلى الشاشة الرئيسية» في قائمة المشاركة">
-    <rect x="12" y="92" width="136" height="134" fill="#fff" />
-    {["نسخ", "إضافة إلى الشاشة الرئيسية", "إضافة إشارة مرجعية"].map((t, i) => (
-      <g key={t}>
-        <text x="136" y={124 + i * 32} fontSize="10" textAnchor="end" fill={C.frame} fontFamily="inherit">{t}</text>
-        {i === 1 && <rect x="20" y={108 + i * 32} width="120" height="24" rx="8" fill="none" stroke={C.hi} strokeWidth="3" />}
-      </g>
-    ))}
-    <g stroke={C.frame} strokeWidth="2" fill="none"><rect x="26" y="146" width="14" height="14" rx="3" /><line x1="33" y1="149" x2="33" y2="157" /><line x1="29" y1="153" x2="37" y2="153" /></g>
+    <rect x="16" y="120" width="188" height="222" rx="0" fill="#fff" />
+    {["نسخ", "إضافة إلى الشاشة الرئيسية", "إضافة إشارة مرجعية"].map((t, i) => {
+      const y = 140 + i * 58;
+      const on = i === 1;
+      return (
+        <g key={t}>
+          {on && <rect x="22" y={y - 4} width="176" height="50" rx="12" fill={C.hiBg} stroke={C.hi} strokeWidth="4" />}
+          <T x={184} y={y + 27} size={14} bold={on}>{t}</T>
+        </g>
+      );
+    })}
   </Phone>
 );
-const Confirm = ({ label, btn }: { label: string; btn: string }) => (
+const Confirm = ({ label, add, cancel }: { label: string; add: string; cancel: string }) => (
   <Phone label={label}>
-    <rect x="12" y="14" width="136" height="36" fill="#e3e8ef" />
-    <text x="30" y="37" fontSize="11" fill={C.hi} fontWeight="700" fontFamily="inherit">{btn}</text>
-    <Ring cx={40} cy={33} r={17} />
-    <rect x="58" y="70" width="44" height="44" rx="10" fill="#07142a" />
-    <text x="80" y="98" fontSize="13" textAnchor="middle" fill="#1fb8e8" fontWeight="700" fontFamily="inherit">NAV</text>
-    <text x="80" y="132" fontSize="10" textAnchor="middle" fill={C.frame} fontFamily="inherit">Nav Coaching</text>
+    <rect x="16" y="18" width="188" height="56" fill={C.bar} />
+    <T x={188} y={52} color={C.muted}>{cancel}</T>
+    <text x={48} y={52} fontSize="16" fontWeight={700} fill="#0a7ea8" textAnchor="middle">{add}</text>
+    <Ring cx={48} cy={46} r={26} />
+    <AppIcon y={140} />
+  </Phone>
+);
+const AndroidConfirm = () => (
+  <Phone label="نافذة التأكيد وزر «تثبيت»">
+    <rect x="16" y="18" width="188" height="324" rx="20" fill="#00000022" />
+    <rect x="28" y="96" width="164" height="196" rx="18" fill="#fff" />
+    <text x="110" y="128" fontSize="15" fontWeight={700} fill={C.ink} textAnchor="middle">تثبيت التطبيق؟</text>
+    <rect x="86" y="144" width="48" height="48" rx="12" fill={C.ink} />
+    <text x="110" y="174" fontSize="14" fontWeight={700} fill={C.hi} textAnchor="middle" fontFamily="Arial, sans-serif">NAV</text>
+    <text x="110" y="214" fontSize="13" fontWeight={600} fill={C.ink} textAnchor="middle" fontFamily="Arial, sans-serif">Nav Coaching</text>
+    <text x="150" y="262" fontSize="14" fill={C.muted} textAnchor="middle">إلغاء</text>
+    <text x="70" y="262" fontSize="15" fontWeight={700} fill="#0a7ea8" textAnchor="middle">تثبيت</text>
+    <Ring cx={70} cy={257} r={26} />
   </Phone>
 );
 const AndroidMenu = () => (
   <Phone label="زر القائمة بثلاث نقاط أعلى Chrome">
-    <rect x="12" y="14" width="136" height="30" fill="#e3e8ef" />
-    <rect x="40" y="21" width="84" height="16" rx="8" fill="#fff" />
-    <g fill={C.frame}><circle cx="24" cy="23" r="2.4" /><circle cx="24" cy="29" r="2.4" /><circle cx="24" cy="35" r="2.4" /></g>
-    <Ring cx={24} cy={29} r={12} />
-    <Lines y={70} />
+    <rect x="16" y="18" width="188" height="56" fill={C.bar} />
+    <rect x="66" y="32" width="124" height="28" rx="14" fill="#fff" />
+    <text x="128" y="51" fontSize="11" fill={C.muted} textAnchor="middle" fontFamily="Arial, sans-serif">navcoaching.com</text>
+    <g fill={C.ink}><circle cx="36" cy="37" r="3.6" /><circle cx="36" cy="46" r="3.6" /><circle cx="36" cy="55" r="3.6" /></g>
+    <Ring cx={36} cy={46} r={20} />
+    <Tap x={78} y={104} text="↑ اضغط هنا" />
+    <Lines y={150} />
   </Phone>
 );
 const AndroidAdd = () => (
-  <Phone label="خيار «إضافة إلى الشاشة الرئيسية» أو «تثبيت التطبيق» في قائمة Chrome">
-    <Lines y={70} />
-    <rect x="16" y="20" width="100" height="128" rx="8" fill="#fff" stroke="#d5dbe4" />
-    {["علامة تبويب جديدة", "السجل", "تثبيت التطبيق", "الإعدادات"].map((t, i) => (
-      <g key={t}>
-        <text x="108" y={44 + i * 28} fontSize="9.5" textAnchor="end" fill={C.frame} fontFamily="inherit">{t}</text>
-        {i === 2 && <rect x="21" y={29 + i * 28} width="90" height="22" rx="7" fill="none" stroke={C.hi} strokeWidth="3" />}
-      </g>
-    ))}
+  <Phone label="خيار «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية» في قائمة Chrome">
+    <Lines y={200} />
+    <rect x="24" y="28" width="150" height="220" rx="12" fill="#fff" stroke="#cfd7e2" strokeWidth="2" />
+    {["علامة تبويب جديدة", "السجل", "تثبيت التطبيق", "الإعدادات"].map((t, i) => {
+      const y = 40 + i * 50;
+      const on = i === 2;
+      return (
+        <g key={t}>
+          {on && <rect x="30" y={y} width="138" height="42" rx="10" fill={C.hiBg} stroke={C.hi} strokeWidth="4" />}
+          <T x={158} y={y + 27} size={14} bold={on}>{t}</T>
+        </g>
+      );
+    })}
   </Phone>
 );
 
 const IOS = [
   { art: <IosShare />, text: <>افتح <b>navcoaching.com</b> في متصفح <b>Safari</b>، ثم اضغط زر <b>المشاركة</b> (مربع وسهم للأعلى) أسفل الشاشة. في iPad تجده أعلى الشاشة.</> },
   { art: <IosAdd />, text: <>انزل في القائمة واختر <b>«إضافة إلى الشاشة الرئيسية»</b>. إذا ما ظهر، اضغط «تعديل الإجراءات» وفعّله.</> },
-  { art: <Confirm label="زر «إضافة» في أعلى الشاشة" btn="إضافة" />, text: <>اضغط <b>«إضافة»</b> أعلى الشاشة. بتلقى أيقونة Nav على شاشتك الرئيسية، ويفتح منها حسابك مباشرة.</> },
+  { art: <Confirm label="زر «إضافة» في أعلى الشاشة" add="إضافة" cancel="إلغاء" />, text: <>اضغط <b>«إضافة»</b> أعلى الشاشة. بتلقى أيقونة Nav على شاشتك الرئيسية، ويفتح منها حسابك مباشرة.</> },
 ];
 const ANDROID = [
   { art: <AndroidMenu />, text: <>افتح <b>navcoaching.com</b> في متصفح <b>Chrome</b>، ثم اضغط زر <b>القائمة ⋮</b> (ثلاث نقاط) أعلى الشاشة.</> },
   { art: <AndroidAdd />, text: <>اختر <b>«تثبيت التطبيق»</b> أو <b>«إضافة إلى الشاشة الرئيسية»</b> (الاسم يختلف حسب إصدار الجوال).</> },
-  { art: <Confirm label="زر «تثبيت» في نافذة التأكيد" btn="تثبيت" />, text: <>أكّد بالضغط على <b>«تثبيت»</b> أو <b>«إضافة»</b>. تظهر أيقونة Nav على الشاشة الرئيسية أو قائمة التطبيقات.</> },
+  { art: <AndroidConfirm />, text: <>أكّد بالضغط على <b>«تثبيت»</b> أو <b>«إضافة»</b>. تظهر أيقونة Nav على الشاشة الرئيسية أو قائمة التطبيقات.</> },
 ];
 
 export default function InstallGuide() {
