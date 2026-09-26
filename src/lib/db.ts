@@ -22,7 +22,9 @@ export type Tx = PoolClient;
 
 /** ينفّذ fn داخل معاملة مرتبطة بهوية المستخدم (أو زائر عند userId=null). */
 export async function withUser<T>(userId: string | null, fn: (tx: Tx) => Promise<T>): Promise<T> {
+  if (userId === null) return withAnon(fn);
   const client = await pool.connect();
+  let broken = false;
   try {
     await client.query("BEGIN");
     await client.query("SELECT set_config('app.user_id', $1, true)", [userId ?? ""]);
@@ -30,14 +32,27 @@ export async function withUser<T>(userId: string | null, fn: (tx: Tx) => Promise
     await client.query("COMMIT");
     return result;
   } catch (err) {
-    await client.query("ROLLBACK").catch(() => {});
+    // إذا تعذّر التراجع يُتلف الاتصال بدل إرجاعه للمجموعة، حتى لا تنتقل حالته لطلب آخر
+    await client.query("ROLLBACK").catch(() => { broken = true; });
     throw err;
+  } finally {
+    client.release(broken);
+  }
+}
+
+/**
+ * قراءات الزائر: بدون معاملة ولا ضبط هوية (رحلة واحدة لقاعدة البيانات بدل أربع).
+ * الهوية فارغة تلقائياً لأن withUser يضبطها على مستوى المعاملة فقط (is_local)،
+ * فلا تبقى على الاتصال بعد انتهاء المعاملة، وسياسات RLS تعامل الطلب كزائر.
+ */
+export async function withAnon<T>(fn: (tx: Tx) => Promise<T>): Promise<T> {
+  const client = await pool.connect();
+  try {
+    return await fn(client);
   } finally {
     client.release();
   }
 }
-
-export const withAnon = <T>(fn: (tx: Tx) => Promise<T>) => withUser(null, fn);
 
 /** يحوّل أخطاء قاعدة البيانات المقصودة (RAISE ... USING ERRCODE='P0001') إلى رسالة عربية آمنة للعرض. */
 export function dbErrorMessage(err: unknown): string | null {

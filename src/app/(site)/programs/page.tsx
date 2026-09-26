@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import Quiz from "@/components/Quiz";
+import ProgramTabs from "@/components/ProgramTabs";
 import { getProducts, getSettings } from "@/lib/data";
 import { CATEGORY_LABEL, riyals, shortName } from "@/lib/format";
 
@@ -25,13 +26,10 @@ const COMPARE: [string, string[]][] = [
 ];
 const COMPARE_SLUGS = ["intensive", "advanced", "basic", "nutrition"];
 
-export default async function Programs({ searchParams }: { searchParams: Promise<{ cat?: string }> }) {
-  const { cat: raw } = await searchParams;
-  const cat = CATS.includes(raw as (typeof CATS)[number]) ? (raw as (typeof CATS)[number]) : "follow";
+export default async function Programs() {
   const [products, s] = await Promise.all([getProducts(), getSettings()]);
-  const list = products.filter((p) => p.category === cat);
   const compare = COMPARE_SLUGS.map((slug) => products.find((p) => p.slug === slug));
-  const showCompare = cat === "follow" && compare.every(Boolean);
+  const showCompare = compare.every(Boolean);
 
   const quizOffers = Object.fromEntries(products.flatMap((p) => p.offers.map((o) => [o.sku, {
     sku: o.sku, name: p.name, slug: p.slug, price: riyals(o.price_halalas), monthly: o.months === 1,
@@ -50,16 +48,15 @@ export default async function Programs({ searchParams }: { searchParams: Promise
 
       <section className="section tight">
         <div className="wrap">
-          <nav className="tabs" aria-label="نوع البرنامج">
-            {CATS.map((c) => (
-              <Link key={c} href={`/programs?cat=${c}`} aria-current={c === cat ? "true" : undefined} scroll={false}>{CATEGORY_LABEL[c]}</Link>
-            ))}
-          </nav>
-          {list.length ? (
-            <div className="grid g4">{list.map((p, i) => <ProductCard key={p.id} p={p} index={i} />)}</div>
-          ) : (
-            <p className="alert info">لا توجد منتجات متاحة في هذا القسم حالياً.</p>
-          )}
+          <ProgramTabs
+            labels={Object.fromEntries(CATS.map((c) => [c, CATEGORY_LABEL[c]])) as Record<(typeof CATS)[number], string>}
+            panels={Object.fromEntries(CATS.map((c) => {
+              const list = products.filter((p) => p.category === c);
+              return [c, list.length
+                ? <div className="grid g4">{list.map((p, i) => <ProductCard key={p.id} p={p} index={i} />)}</div>
+                : <p className="alert info">لا توجد منتجات متاحة في هذا القسم حالياً.</p>];
+            })) as Record<(typeof CATS)[number], React.ReactNode>}
+          />
           <p className="small muted" style={{ marginTop: 18 }}>{s.prices_note} <Link href="/policies#refund">شروط الضمان والتجديد المجاني</Link></p>
         </div>
       </section>

@@ -230,3 +230,19 @@ describe("أرشفة وحذف الطلبات", () => {
     await assert.rejects(as(A, "SELECT set_config('app.allow_purge','1',true); DELETE FROM orders"), /permission denied|cannot insert multiple/);
   });
 });
+
+describe("قراءات الزائر بدون معاملة", () => {
+  test("اتصال أُعيد للمجموعة بعد معاملة مستخدم لا يحمل هويته", async () => {
+    await newOrder(A, "k-anon-reuse-0000001");
+    const single = new pg.Pool({ connectionString: APP, max: 1 });
+    const c = await single.connect();
+    await c.query("BEGIN");
+    await c.query("SELECT set_config('app.user_id', $1, true)", [A]);
+    assert.ok((await c.query("SELECT count(*)::int n FROM orders")).rows[0].n > 0);
+    await c.query("COMMIT");
+    c.release();
+    const anon = await single.query("SELECT count(*)::int n FROM orders");
+    assert.equal(anon.rows[0].n, 0);
+    await single.end();
+  });
+});
