@@ -371,3 +371,52 @@ test("الأعضاء المسجلون وإضافة برنامج يدوياً ب�
   await expect(coach.getByTestId("members")).toContainText("1 طلب");
   await coach.context().close();
 });
+
+test("حاسبة السعرات: التبويبة، التحقق، والنتائج", async ({ browser }, info) => {
+  const page = await newPage(browser, info.project.name + "-calc");
+  await page.goto("/");
+  if (await page.getByLabel("فتح القائمة").isVisible()) {
+    await page.getByLabel("فتح القائمة").click();
+    await page.locator(".menu-panel").getByRole("link", { name: "حاسبة السعرات" }).click();
+  } else {
+    await page.locator(".nav").getByRole("link", { name: "حاسبة السعرات" }).click();
+  }
+  await expect(page).toHaveURL(/\/calculator$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("حاسبة السعرات والماكروز");
+  await noHorizontalScroll(page);
+
+  // تحقق: حقول فارغة وقيم غير منطقية
+  await page.getByRole("button", { name: "احسب السعرات الحرارية" }).click();
+  await expect(page.getByText("اختر الجنس.")).toBeVisible();
+  await expect(page.getByText("اكتب الوزن.")).toBeVisible();
+  await expect(page.locator("#calc-result")).toHaveCount(0);
+  await page.locator(".choice", { hasText: "أنثى" }).click();
+  await page.fill("#c-age", "30");
+  await page.fill("#c-weight", "0");
+  await page.fill("#c-height", "165");
+  await page.fill("#c-steps", "8000");
+  await page.selectOption("#c-goal", "lose");
+  await page.selectOption("#c-level", "beginner");
+  await page.getByRole("button", { name: "احسب السعرات الحرارية" }).click();
+  await expect(page.getByText("الوزن لازم يكون أكبر من صفر.")).toBeVisible();
+
+  // أنثى 65 كغ، دهون 28٪، 8000 خطوة، تنشيف، مبتدئة، بروتين معتدل
+  await page.fill("#c-weight", "65");
+  await page.fill("#c-bodyFat", "28");
+  await page.getByRole("button", { name: "احسب السعرات الحرارية" }).click();
+  await expect(page.getByTestId("calc-target")).toHaveText("1,671");
+  await expect(page.getByTestId("calc-tdee")).toHaveText("2,071");
+  await expect(page.getByTestId("calc-protein")).toHaveText("75");
+  await expect(page.getByTestId("calc-fat")).toHaveText("50");
+  await expect(page.getByTestId("calc-carbs")).toHaveText("230");
+  await noHorizontalScroll(page);
+
+  // بدون نسبة الدهون: تنبيه الدقة
+  await page.fill("#c-bodyFat", "");
+  await page.getByRole("button", { name: "احسب السعرات الحرارية" }).click();
+  await expect(page.getByText(/فالنتيجة أقل دقة/)).toBeVisible();
+  await expect(page.getByText("هذه الحاسبة توفر إرشادات عامة")).toBeVisible();
+  await page.getByText("كيف أعرف نسبة الدهون في جسمي؟").click();
+  await expect(page.getByText(/فحص InBody أو DEXA/)).toBeVisible();
+  await page.context().close();
+});
