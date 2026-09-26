@@ -7,28 +7,30 @@ export const metadata: Metadata = { title: "عن المدربة" };
 
 export default async function About() {
   const [s, photos] = await Promise.all([getSettings(), getApprovedMedia("about")]);
+  // نفس محتوى وترتيب صفحة «عن المدربة» في الموقع الحالي
   return (
     <>
       <section className="page-hero">
         <div className="wrap">
           <span className="eyebrow">عن المدربة</span>
-          <h1 style={{ fontSize: "clamp(30px,5vw,50px)", marginTop: 12 }}>{s.about.name}</h1>
-          <p className="lead">{s.about.bio}</p>
+          <h1 style={{ fontSize: "clamp(32px,6vw,56px)", marginTop: 12 }}>{s.about.name}</h1>
         </div>
       </section>
       <section className="section">
-        <div className="wrap grid g2" style={{ alignItems: "start" }}>
-          <div className="stack">
-            <ul className="checklist" style={{ fontSize: 18 }}>{s.about.points.map((p) => <li key={p}>{p}</li>)}</ul>
+        <div className="wrap">
+          <div className="card stack about-card" style={{ ["--space" as string]: "22px", maxWidth: 860 }}>
+            <span className="eyebrow">Nav Coaching</span>
+            <p className="lead" style={{ color: "var(--text)" }}>{s.about.bio}</p>
+            <ol className="about-points">{s.about.points.map((p) => <li key={p}>{p}</li>)}</ol>
+            <div className="stack" style={{ ["--space" as string]: "12px" }}>
+              <h2 style={{ fontSize: 20 }}>الشهادات والمؤهلات</h2>
+              <ul className="certs">{s.about.certs.map((c) => <li key={c}><bdi>{c}</bdi></li>)}</ul>
+            </div>
             {photos[0] && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={`/api/files/media/${photos[0].id}`} alt={photos[0].alt} loading="lazy" style={{ borderRadius: 22, width: "100%", height: "auto" }} />
+              <img src={`/api/files/media/${photos[0].id}`} alt={photos[0].alt} loading="lazy" style={{ borderRadius: 18, width: "100%", height: "auto" }} />
             )}
-            <div className="row"><Link className="btn" href="/programs">شوف البرامج</Link></div>
-          </div>
-          <div className="card">
-            <h2 style={{ fontSize: 22, marginBottom: 14 }}>الشهادات والمؤهلات</h2>
-            <ul className="checklist">{s.about.certs.map((c) => <li key={c}><bdi>{c}</bdi></li>)}</ul>
+            <div><Link className="btn" href="/programs">شوف البرامج</Link></div>
           </div>
         </div>
       </section>
