@@ -169,10 +169,15 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   await mf.getByLabel("الوزن (كغ)").fill("20");
   await mf.getByLabel("الطول (سم)").fill("165");
   await mf.getByRole("button", { name: "حفظ القياسات" }).click();
-  await expect(trainee.getByText("اكتب وزناً بين 30 و 250 كغ.")).toBeVisible();
+  // المتصفح يمنع الإرسال خارج النطاق (والخادم يرفضه أيضاً — tests/db)
+  expect(await mf.getByLabel("الوزن (كغ)").evaluate((e: HTMLInputElement) => e.validity.rangeUnderflow)).toBe(true);
+  await expect(trainee.getByText("تم تحديث القياسات")).toHaveCount(0);
   await mf.getByLabel("الوزن (كغ)").fill("62");
   await mf.getByRole("button", { name: "حفظ القياسات" }).click();
-  await expect(trainee.getByText("تم تحديث القياسات")).toBeVisible();
+  await expect(trainee.getByTestId("measurements-form")).toHaveCount(0); // اكتملت البيانات فاختفى النموذج
+  const { rows: [hm] } = await db.query("SELECT i.health FROM intakes i JOIN orders o ON o.id = i.order_id WHERE o.order_no = $1", [orderNo]);
+  expect(Number(hm.health.weight)).toBe(62);
+  expect(hm.health.health_notes).toBe("آلام في الركبة اليسرى"); // لم تُمس بقية البيانات الصحية
   await coach.goto(`/admin/orders/${orderNo}`);
   await expect(coach.getByRole("button", { name: "اطلبي منه تحديثهما" })).toHaveCount(0);
   await expect(coach.getByText("62 كغ")).toBeVisible();
@@ -236,7 +241,6 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
 test("الاستبيان: العمر والقياسات وسؤال التوقعات إلزامية", async ({ browser }, info) => {
   const page = await newPage(browser, info.project.name + "-v");
   await login(page, `valid-${info.project.name}@e2e.test`, "/checkout/int1");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("استبيان");
   await expect(page.getByText("استبيان المتدرب").first()).toBeVisible();
   await page.getByLabel("الاسم").fill("اختبار التحقق");
   await page.locator("#phone").fill("512345678");

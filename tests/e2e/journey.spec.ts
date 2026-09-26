@@ -192,10 +192,10 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   expect(sub.sub_start_at).not.toBeNull();
   const months = (new Date(sub.sub_end_at).getUTCFullYear() - new Date(sub.sub_start_at).getUTCFullYear()) * 12 + new Date(sub.sub_end_at).getUTCMonth() - new Date(sub.sub_start_at).getUTCMonth();
   expect(months).toBe(sub.months);
-  await expect(coach.getByText("تاريخ البدء")).toBeVisible();
+  await expect(coach.getByRole("term").filter({ hasText: "تاريخ البدء" })).toBeVisible();
   // إشعار تغيّر الحالة مسجّل، والملف المضاف قبل التفعيل لم يُرسل عنه إشعار
   const logs = (await db.query(
-    `SELECT kind, channel, status, body FROM notification_log n JOIN orders o ON o.id = n.order_id WHERE o.order_no = $1`, [orderNo])).rows;
+    `SELECT n.kind, n.channel, n.status, n.body FROM notification_log n JOIN orders o ON o.id = n.order_id WHERE o.order_no = $1`, [orderNo])).rows;
   expect(logs.some((l) => l.kind === "status" && l.channel === "email" && l.status === "simulated")).toBe(true);
   expect(logs.some((l) => l.kind === "status" && l.channel === "whatsapp" && l.status === "skipped")).toBe(true);
   expect(logs.some((l) => l.kind === "deliverable")).toBe(false);

@@ -9,6 +9,7 @@ import { coachNextSteps, statusLabel, statusTone } from "@/lib/status";
 import { ANSWER_LABELS, EXPECTATIONS_Q } from "@/lib/intake";
 import ActionForm from "@/components/admin/ActionForm";
 import PackageTag from "@/components/admin/PackageTag";
+import Details from "@/components/admin/Details";
 import { AdminNotes, Subscription } from "./FollowUp";
 import {
   addDeliverableAction, archiveOrderAction, deleteOrderAction, removeDeliverableAction, replyCheckinAction, requestMeasurementsAction, setAmountAction, transitionAction,
@@ -151,7 +152,7 @@ export default async function AdminOrder({ params }: { params: Promise<{ orderNo
             <div className="card stack">
               <h2 style={{ fontSize: 19 }}>المراجعات الأسبوعية</h2>
               {checkins.map((c) => (
-                <details key={c.id} className="card flat" open={!c.coach_reply}>
+                <Details key={c.id} className="card flat" defaultOpen={!c.coach_reply}>
                   <summary style={{ cursor: "pointer", minHeight: 44 }}>{fmtDateTime(c.created_at)} {c.coach_reply ? <span className="status ok">تم الرد</span> : <span className="status action">بانتظار ردك</span>}</summary>
                   <dl className="kv small" style={{ marginTop: 10 }}>
                     {c.answers.map((a, i) => <Fragment key={i}><dt>{a.topic || a.q}</dt><dd>{a.a || "—"}</dd></Fragment>)}
@@ -160,7 +161,7 @@ export default async function AdminOrder({ params }: { params: Promise<{ orderNo
                     <input type="hidden" name="id" value={c.id} /><input type="hidden" name="order_no" value={o.order_no} />
                     <div className="field"><label>ردك</label><textarea name="reply" defaultValue={c.coach_reply ?? ""} maxLength={2000} /></div>
                   </ActionForm>
-                </details>
+                </Details>
               ))}
             </div>
           )}
