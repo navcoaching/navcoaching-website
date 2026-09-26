@@ -92,11 +92,11 @@ export default function CalculatorForm() {
             {errors.goal && <span className="err-msg">{errors.goal}</span>}
           </div>
           <div className="field">
-            <label htmlFor="c-level">الهدف الفرعي <span className="req">*</span></label>
+            <label htmlFor="c-level">مستواك في تمارين المقاومة <span className="req">*</span></label>
             <select id="c-level" value={raw.level} onChange={(e) => set("level", e.target.value)} aria-invalid={errors.level ? true : undefined}>
               <option value="" disabled>اختر…</option>
-              <option value="beginner">مبتدئ في تمارين المقاومة (أقل من سنة)</option>
-              <option value="advanced">متقدم في تمارين المقاومة</option>
+              <option value="beginner">مبتدئ (أقل من سنة)</option>
+              <option value="advanced">متقدم (سنة أو أكثر)</option>
             </select>
             {errors.level && <span className="err-msg">{errors.level}</span>}
           </div>
