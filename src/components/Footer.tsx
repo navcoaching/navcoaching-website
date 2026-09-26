@@ -24,7 +24,7 @@ export default function Footer({ s }: { s: Settings }) {
               <ul>
                 <li><Link href="/programs">البرامج والأسعار</Link></li>
                 <li><Link href="/about">عن المدربة</Link></li>
-                <li><Link href="/reviews">تجارب المتدربين</Link></li>
+                <li><Link href="/reviews">تقييمات المتدربين</Link></li>
                 <li><Link href="/faq">الأسئلة الشائعة</Link></li>
                 <li><Link href="/account">حسابي وطلباتي</Link></li>
               </ul>

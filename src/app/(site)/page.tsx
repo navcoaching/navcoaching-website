@@ -181,19 +181,19 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ---------- التجارب ---------- */}
+      {/* ---------- التقييمات ---------- */}
       {reviews.length > 0 && (
         <section className="section">
           <div className="wrap">
             <div className="sec-head reveal">
-              <span className="eyebrow">تجارب المتدربين</span>
-              <h2>تجارب المتدربين معي</h2>
+              <span className="eyebrow">التقييمات</span>
+              <h2>تقييمات المتدربين</h2>
               <p className="muted small">{s.testimonials_disclaimer}</p>
             </div>
             <div className="reviews">
               {reviews.map((r) => <ReviewCard key={r.id} r={r} />)}
             </div>
-            <Link href="/reviews" className="btn btn-ghost" style={{ marginTop: 8 }}>كل التجارب</Link>
+            <Link href="/reviews" className="btn btn-ghost" style={{ marginTop: 8 }}>كل التقييمات</Link>
           </div>
         </section>
       )}

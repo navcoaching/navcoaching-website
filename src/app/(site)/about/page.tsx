@@ -89,7 +89,7 @@ export default async function About() {
         <div className="wrap center stack" style={{ justifyItems: "center", display: "grid" }}>
           <h2>تبي تشوف وش قالوا اللي تدربوا معي؟</h2>
           <div className="row" style={{ justifyContent: "center" }}>
-            <Link className="btn btn-ghost" href="/reviews">تجارب المتدربين</Link>
+            <Link className="btn btn-ghost" href="/reviews">تقييمات المتدربين</Link>
             <Link className="btn" href="/programs">اختر برنامجك</Link>
           </div>
         </div>

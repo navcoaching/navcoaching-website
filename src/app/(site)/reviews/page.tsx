@@ -4,7 +4,7 @@ import ReviewCard from "@/components/ReviewCard";
 import { getPublicReviews, getSettings } from "@/lib/data";
 
 export const revalidate = 300;
-export const metadata: Metadata = { title: "تجارب المتدربين" };
+export const metadata: Metadata = { title: "تقييمات المتدربين" };
 
 export default async function Reviews() {
   const [reviews, s] = await Promise.all([getPublicReviews(), getSettings()]);
@@ -12,8 +12,8 @@ export default async function Reviews() {
     <>
       <section className="page-hero">
         <div className="wrap">
-          <span className="eyebrow">تجارب المتدربين</span>
-          <h1 style={{ fontSize: "clamp(30px,5vw,50px)", marginTop: 12 }}>تجارب حقيقية، منشورة بموافقة أصحابها</h1>
+          <span className="eyebrow">التقييمات</span>
+          <h1 style={{ fontSize: "clamp(30px,5vw,50px)", marginTop: 12 }}>تقييمات حقيقية، منشورة بموافقة أصحابها</h1>
           <p className="lead">{s.testimonials_disclaimer}</p>
         </div>
       </section>
