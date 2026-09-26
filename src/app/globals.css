@@ -669,3 +669,10 @@ ol.weeks li .small { margin-inline-start: auto; }
 @media (min-width: 760px) { .fp-detail { grid-template-columns: 300px minmax(0, 1fr); align-items: start; } }
 .fp-mine { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .fp-mine li { display: grid; gap: 6px; padding: 12px 14px; border-radius: var(--r); background: var(--paper); }
+.change-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.change-row .choices { flex: none; }
+.change-row .input-unit { flex: 1 1 140px; min-width: 0; }
+.calc-target.is-deficit b { color: var(--ok); }
+.calc-target.is-surplus b { color: var(--accent-text); }
+input[type="date"] { width: 100%; max-width: 100%; min-width: 0; min-height: 50px; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--text); font-size: 16px; }
+.stat b[dir="ltr"] { text-align: right; }

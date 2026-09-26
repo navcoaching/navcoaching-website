@@ -373,9 +373,11 @@ test("الأعضاء المسجلون وإضافة برنامج يدوياً ب�
   await coach.context().close();
 });
 
-test("حاسبة السعرات: التبويبة، التحقق، والنتائج", async ({ browser }, info) => {
+test("حاسبة السعرات: توازن الطاقة (معادلة Henselmans)، التحقق، والنتائج", async ({ browser }, info) => {
   const page = await newPage(browser, info.project.name + "-calc");
   await page.goto("/");
+  // موجودة في آخر الصفحة الرئيسية
+  await expect(page.locator("#calculator").getByRole("button", { name: "احسب توازن الطاقة" })).toBeVisible();
   if (await page.getByLabel("فتح القائمة").isVisible()) {
     await page.getByLabel("فتح القائمة").click();
     await page.locator(".menu-panel").getByRole("link", { name: "حاسبة السعرات" }).click();
@@ -383,42 +385,36 @@ test("حاسبة السعرات: التبويبة، التحقق، والنتا�
     await page.locator(".nav").getByRole("link", { name: "حاسبة السعرات" }).click();
   }
   await expect(page).toHaveURL(/\/calculator$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("حاسبة السعرات والماكروز");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("حاسبة السعرات وتوازن الطاقة");
   await noHorizontalScroll(page);
 
-  // تحقق: حقول فارغة وقيم غير منطقية
-  await page.getByRole("button", { name: "احسب السعرات الحرارية" }).click();
-  await expect(page.getByText("اختر الجنس.")).toBeVisible();
-  await expect(page.getByText("اكتب الوزن.")).toBeVisible();
-  await expect(page.locator("#calc-result")).toHaveCount(0);
-  await page.locator(".choice", { hasText: "أنثى" }).click();
-  await page.fill("#c-age", "30");
-  await page.fill("#c-weight", "0");
-  await page.fill("#c-height", "165");
-  await page.fill("#c-steps", "8000");
-  await page.selectOption("#c-goal", "lose");
-  await page.selectOption("#c-level", "beginner");
-  await page.getByRole("button", { name: "احسب السعرات الحرارية" }).click();
-  await expect(page.getByText("الوزن لازم يكون أكبر من صفر.")).toBeVisible();
+  // تحقق: حقول فارغة
+  await page.getByRole("button", { name: "احسب توازن الطاقة" }).click();
+  await expect(page.getByText(/اكتب تغيّر الكتلة الخالية من الدهون/)).toBeVisible();
+  await expect(page.getByText("اختر تاريخ القياس الأول.")).toBeVisible();
 
-  // أنثى 65 كغ، دهون 28٪، 8000 خطوة، تنشيف، مبتدئة، بروتين معتدل
-  await page.fill("#c-weight", "65");
-  await page.fill("#c-bodyFat", "28");
-  await page.getByRole("button", { name: "احسب السعرات الحرارية" }).click();
-  await expect(page.getByTestId("calc-target")).toHaveText("1,671");
-  await expect(page.getByTestId("calc-tdee")).toHaveText("2,071");
-  await expect(page.getByTestId("calc-protein")).toHaveText("75");
-  await expect(page.getByTestId("calc-fat")).toHaveText("50");
-  await expect(page.getByTestId("calc-carbs")).toHaveText("230");
+  // مثال ملف Henselmans: عضل +5، دهون −3، 31 يوم، 2069 × 6 أيام تمرين، 1548 يوم الراحة
+  await page.fill("#c-lean", "5");
+  await page.locator(".choice", { has: page.locator('input[name="c-fatDir"][value="down"]') }).click();
+  await page.fill("#c-fat", "3");
+  await page.fill("#c-startDate", "2019-12-10");
+  await page.fill("#c-endDate", "2020-01-10");
+  await page.fill("#c-trainingKcal", "2069");
+  await page.selectOption("#c-trainingDays", "6");
+  await page.fill("#c-restKcal", "0");
+  await page.getByRole("button", { name: "احسب توازن الطاقة" }).click();
+  await expect(page.getByText("سعرات يوم الراحة لازم تكون أكبر من صفر.")).toBeVisible();
+  await page.fill("#c-restKcal", "1548");
+  await page.getByRole("button", { name: "احسب توازن الطاقة" }).click();
+  await expect(page.getByTestId("calc-daily")).toHaveText("−620");
+  await expect(page.getByTestId("calc-net")).toHaveText("−19,227");
+  await expect(page.getByTestId("calc-days")).toHaveText("31");
+  await expect(page.getByTestId("calc-avg")).toHaveText("1,995");
+  await expect(page.getByTestId("calc-maintenance")).toHaveText("2,615");
+  await expect(page.getByText("24٪")).toBeVisible();
   await noHorizontalScroll(page);
-
-  // بدون نسبة الدهون: تنبيه الدقة
-  await page.fill("#c-bodyFat", "");
-  await page.getByRole("button", { name: "احسب السعرات الحرارية" }).click();
-  await expect(page.getByText(/فالنتيجة أقل دقة/)).toBeVisible();
-  await expect(page.getByText("هذه الحاسبة توفر إرشادات عامة")).toBeVisible();
-  await page.getByText("كيف أعرف نسبة الدهون في جسمي؟").click();
-  await expect(page.getByText(/فحص InBody أو DEXA/)).toBeVisible();
+  await page.getByText("وش الفرق بين هذي الحاسبة والحاسبات العادية؟").click();
+  await expect(page.getByText(/توازن طاقتك الفعلي/)).toBeVisible();
   await page.context().close();
 });
 

@@ -1,130 +1,79 @@
-// حاسبة السعرات والماكروز — منطق حساب خالص (بدون واجهة) حتى يسهل اختباره وتعديله.
-// كل الثوابت القابلة للتعديل في أعلى الملف.
+// حاسبة توازن الطاقة (Henselmans Energy Balance Calculator) — منطق حساب خالص بدون واجهة.
+// تحسب التوازن الفعلي للطاقة من التغيّر الحقيقي في تركيبة الجسم بين قياسين (مثل فحصي InBody)
+// ومتوسط السعرات المأكولة خلال نفس الفترة، ومنها سعرات المحافظة الفعلية.
+// الثوابت مطابقة لملف الإكسل المرجعي.
 
-export type Sex = "male" | "female";
-export type Goal = "gain" | "lose" | "maintain";
-export type Level = "beginner" | "advanced";
-export type ProteinPref = "moderate" | "high";
+/** الطاقة القابلة للأيض لكل كغ (ميغاجول) — كما في ملف Henselmans */
+export const MJ_PER_KG = { fat: 39.5, lean: 7.6 } as const;
+/** سعرات لكل ميغاجول */
+export const KCAL_PER_MJ = 238.8458966;
 
-export type CalorieInput = {
-  sex: Sex;
-  age: number;
-  weight: number; // كغ
-  height: number; // سم
-  bodyFat?: number | null; // %
-  steps: number; // متوسط يومي
-  goal: Goal;
-  level: Level;
-  protein: ProteinPref;
+export type EnergyInput = {
+  leanChange: number;   // تغيّر الكتلة الخالية من الدهون (كغ) موجب = زيادة
+  fatChange: number;    // تغيّر كتلة الدهون (كغ) موجب = زيادة
+  startDate: string;    // YYYY-MM-DD
+  endDate: string;      // YYYY-MM-DD
+  trainingKcal: number; // سعرات يوم التمرين
+  trainingDays: number; // أيام التمرين في الأسبوع (0–7)، والباقي أيام راحة
+  restKcal: number;     // سعرات يوم الراحة
 };
 
-export type CalorieResult = {
-  lbm: number;
-  lbmEstimated: boolean; // لا توجد نسبة دهون ← الكتلة الخالية = الوزن الكلي (تقدير أقل دقة)
-  formula: "katch" | "mifflin";
-  bmr: number;
-  activity: number;
-  tdee: number;
-  target: number;
-  proteinG: number;
-  proteinPerKg: number;
-  fatG: number;
-  carbsG: number;
+export type EnergyResult = {
+  leanMJ: number;
+  fatMJ: number;
+  netKcal: number;          // صافي التوازن خلال الفترة
+  days: number;             // مدة الفترة بالأيام
+  avgIntake: number;        // متوسط السعرات اليومية
+  dailyBalance: number;     // التوازن اليومي (سالب = عجز، موجب = فائض)
+  dailyBalancePct: number;  // نسبة التوازن من سعرات المحافظة
+  maintenance: number;      // سعرات المحافظة الفعلية = المتوسط − التوازن اليومي
   warnings: string[];
 };
 
-/** حدود الإدخال المقبولة */
-export const LIMITS = {
-  age: [15, 90], weight: [30, 250], height: [120, 230], bodyFat: [3, 60], steps: [0, 50000],
-} as const;
+export const LIMITS = { change: [-50, 50], kcal: [500, 10000], trainingDays: [0, 7] } as const;
 
-/** عامل النشاط حسب متوسط الخطوات اليومية (الحد الأعلى غير شامل) */
-export const STEP_FACTORS: { below: number; factor: number }[] = [
-  { below: 5000, factor: 1.2 },
-  { below: 7500, factor: 1.35 },
-  { below: 10000, factor: 1.5 },
-  { below: 12500, factor: 1.65 },
-  { below: Infinity, factor: 1.8 },
-];
+const DAY = 86_400_000;
+const parseDate = (s: string) => (/^\d{4}-\d{2}-\d{2}$/.test(s) ? Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10)) : NaN);
+export const daysBetween = (a: string, b: string) => Math.round((parseDate(b) - parseDate(a)) / DAY);
 
-/** فرق السعرات عن المحافظة حسب الهدف */
-export const GOAL_DELTA: Record<Goal, number> = { gain: 400, lose: -400, maintain: 0 };
+export type FieldErrors = Partial<Record<keyof EnergyInput, string>>;
 
-/** جرام بروتين لكل كغ من الكتلة الخالية: المبتدئ عند الحد الأدنى، والمتقدم عند الحد الأعلى */
-export const PROTEIN_PER_KG_LBM: Record<ProteinPref, Record<Level, number>> = {
-  moderate: { beginner: 1.6, advanced: 2.0 },
-  high: { beginner: 2.4, advanced: 2.8 },
-};
-
-/** حد أدنى شائع للسعرات اليومية بدون إشراف مختص (تنبيه فقط، لا يغيّر الحساب) */
-export const MIN_SAFE_KCAL: Record<Sex, number> = { male: 1500, female: 1200 };
-
-/** نسبة سعرات الدهون من سعرات الهدف */
-export const FAT_SHARE = 0.27;
-
-export type FieldErrors = Partial<Record<keyof CalorieInput, string>>;
-
-export function validate(i: Partial<Record<keyof CalorieInput, unknown>>): FieldErrors {
+export function validate(i: Partial<Record<keyof EnergyInput, unknown>>): FieldErrors {
   const e: FieldErrors = {};
-  const num = (k: "age" | "weight" | "height" | "steps" | "bodyFat", label: string, unit: string) => {
+  const isNum = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+  for (const [k, label] of [["leanChange", "تغيّر الكتلة الخالية من الدهون"], ["fatChange", "تغيّر كتلة الدهون"]] as const) {
     const v = i[k];
-    const [min, max] = LIMITS[k];
-    if (typeof v !== "number" || !Number.isFinite(v)) e[k] = `اكتب ${label}.`;
-    else if (v <= 0 && k !== "steps") e[k] = `${label} لازم يكون أكبر من صفر.`;
-    else if (v < min || v > max) e[k] = `اكتب ${label} بين ${min} و ${max}${unit}.`;
-  };
-  if (i.sex !== "male" && i.sex !== "female") e.sex = "اختر الجنس.";
-  num("age", "العمر", " سنة");
-  if (typeof i.age === "number" && !Number.isInteger(i.age) && !e.age) e.age = "اكتب العمر رقماً صحيحاً.";
-  num("weight", "الوزن", " كغ");
-  num("height", "الطول", " سم");
-  num("steps", "عدد الخطوات", " خطوة");
-  if (i.bodyFat != null) num("bodyFat", "نسبة الدهون", "%");
-  if (!["gain", "lose", "maintain"].includes(i.goal as string)) e.goal = "اختر هدفك.";
-  if (!["beginner", "advanced"].includes(i.level as string)) e.level = "اختر مستواك في تمارين المقاومة.";
-  if (!["moderate", "high"].includes(i.protein as string)) e.protein = "اختر كمية البروتين.";
+    if (!isNum(v)) e[k] = `اكتب ${label} (اكتب 0 إذا ما تغيّر).`;
+    else if (v < LIMITS.change[0] || v > LIMITS.change[1]) e[k] = `اكتب ${label} بين ${LIMITS.change[0]} و ${LIMITS.change[1]} كغ.`;
+  }
+  for (const [k, label] of [["trainingKcal", "سعرات يوم التمرين"], ["restKcal", "سعرات يوم الراحة"]] as const) {
+    const v = i[k];
+    if (!isNum(v)) e[k] = `اكتب ${label}.`;
+    else if (v <= 0) e[k] = `${label} لازم تكون أكبر من صفر.`;
+    else if (v < LIMITS.kcal[0] || v > LIMITS.kcal[1]) e[k] = `اكتب ${label} بين ${LIMITS.kcal[0]} و ${LIMITS.kcal[1]}.`;
+  }
+  const td = i.trainingDays;
+  if (!isNum(td) || !Number.isInteger(td) || td < 0 || td > 7) e.trainingDays = "اختر عدد أيام التمرين (0–7).";
+  const s = String(i.startDate ?? ""), en = String(i.endDate ?? "");
+  if (Number.isNaN(parseDate(s))) e.startDate = "اختر تاريخ القياس الأول.";
+  if (Number.isNaN(parseDate(en))) e.endDate = "اختر تاريخ القياس الثاني.";
+  else if (!e.startDate && daysBetween(s, en) < 1) e.endDate = "تاريخ القياس الثاني لازم يكون بعد الأول.";
   return e;
 }
 
-export const activityFactor = (steps: number) => STEP_FACTORS.find((s) => steps < s.below)!.factor;
-
-export function calculateCalories(i: CalorieInput): CalorieResult {
+export function calculateEnergyBalance(i: EnergyInput): EnergyResult {
   const warnings: string[] = [];
-  const hasBf = i.bodyFat != null;
+  const leanMJ = i.leanChange * MJ_PER_KG.lean;
+  const fatMJ = i.fatChange * MJ_PER_KG.fat;
+  const netKcal = (leanMJ + fatMJ) * KCAL_PER_MJ;
+  const days = daysBetween(i.startDate, i.endDate);
+  const restDays = 7 - i.trainingDays;
+  const avgIntake = (i.trainingKcal * i.trainingDays + i.restKcal * restDays) / 7;
+  const dailyBalance = netKcal / days;
+  const maintenance = avgIntake - dailyBalance;
+  const dailyBalancePct = maintenance > 0 ? dailyBalance / maintenance : 0;
 
-  // أ) الكتلة الخالية من الدهون
-  const lbm = hasBf ? i.weight * (1 - i.bodyFat! / 100) : i.weight;
-  if (!hasBf) warnings.push("بدون نسبة الدهون استخدمنا الوزن الكلي بدل الكتلة الخالية من الدهون، فالنتيجة أقل دقة، والبروتين قد يطلع أعلى من حاجتك إذا كانت نسبة دهونك مرتفعة.");
-
-  // ب) معدل الأيض الأساسي
-  const bmr = hasBf
-    ? 370 + 21.6 * lbm // Katch-McArdle
-    : 10 * i.weight + 6.25 * i.height - 5 * i.age + (i.sex === "male" ? 5 : -161); // Mifflin-St Jeor
-
-  // ج) سعرات المحافظة
-  const activity = activityFactor(i.steps);
-  const tdee = bmr * activity;
-
-  // د) سعرات الهدف
-  const target = tdee + GOAL_DELTA[i.goal];
-
-  if (target < MIN_SAFE_KCAL[i.sex]) warnings.push(`سعرات الهدف أقل من الحد الأدنى المتعارف عليه (${MIN_SAFE_KCAL[i.sex]} سعرة) بدون إشراف مختص. لا تنزل عنه قبل استشارة مختص.`);
-
-  // هـ) البروتين حسب الكتلة الخالية
-  const proteinPerKg = PROTEIN_PER_KG_LBM[i.protein][i.level];
-  const proteinG = proteinPerKg * lbm;
-
-  // و) الدهون
-  const fatG = (target * FAT_SHARE) / 9;
-
-  // ز) الكربوهيدرات = الباقي
-  const carbKcal = target - proteinG * 4 - fatG * 9;
-  const carbsG = carbKcal / 4;
-  if (carbKcal < 0) warnings.push("سعرات البروتين والدهون أكبر من سعرات الهدف، فما بقي شيء للكربوهيدرات. اختر «بروتين معتدل» أو أدخل نسبة الدهون لنتيجة أدق.");
-  else if (carbsG < 50) warnings.push("الكربوهيدرات المتبقية قليلة جداً. جرّب «بروتين معتدل» أو راجع مختصاً قبل تطبيقها.");
-
-  return {
-    lbm, lbmEstimated: !hasBf, formula: hasBf ? "katch" : "mifflin",
-    bmr, activity, tdee, target, proteinG, proteinPerKg, fatG, carbsG: Math.max(0, carbsG), warnings,
-  };
+  if (days < 14) warnings.push("المدة أقل من أسبوعين، فالنتيجة تتأثر كثيراً بتقلبات الماء وأخطاء جهاز القياس. الأفضل 4 أسابيع أو أكثر.");
+  if (maintenance <= 0) warnings.push("النتيجة غير منطقية: راجع أرقام التغيّر في الجسم والسعرات المأكولة.");
+  return { leanMJ, fatMJ, netKcal, days, avgIntake, dailyBalance, dailyBalancePct, maintenance, warnings };
 }

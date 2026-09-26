@@ -1,62 +1,44 @@
-// اختبارات منطق حاسبة السعرات (قيم محسوبة يدوياً).
+// اختبارات حاسبة توازن الطاقة مقابل مثال ملف Henselmans Energy Balance Calculator نفسه.
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { calculateCalories, validate, activityFactor, type CalorieInput } from "../../src/lib/calories.ts";
+import { calculateEnergyBalance, validate, daysBetween, type EnergyInput } from "../../src/lib/calories.ts";
 
-const base: CalorieInput = { sex: "male", age: 30, weight: 80, height: 180, bodyFat: 20, steps: 8000, goal: "lose", level: "beginner", protein: "moderate" };
-const near = (a: number, b: number, eps = 0.01) => assert.ok(Math.abs(a - b) < eps, `${a} ≠ ${b}`);
+// المثال الموجود في ملف الإكسل
+const sheet: EnergyInput = { leanChange: 5, fatChange: -3, startDate: "2019-12-10", endDate: "2020-01-10", trainingKcal: 2069, trainingDays: 6, restKcal: 1548 };
+const near = (a: number, b: number, eps = 0.5) => assert.ok(Math.abs(a - b) < eps, `${a} ≠ ${b}`);
 
-describe("حاسبة السعرات", () => {
-  test("مع نسبة الدهون: Katch-McArdle والكتلة الخالية", () => {
-    const r = calculateCalories(base);
-    near(r.lbm, 64);                       // 80 × 0.8
-    near(r.bmr, 370 + 21.6 * 64);          // 1752.4
-    assert.equal(r.formula, "katch");
-    assert.equal(r.activity, 1.5);         // 8000 خطوة
-    near(r.tdee, 1752.4 * 1.5);            // 2628.6
-    near(r.target, 2628.6 - 400);          // 2228.6
-    near(r.proteinG, 1.6 * 64);            // 102.4
-    near(r.fatG, (2228.6 * 0.27) / 9);     // 66.858
-    near(r.carbsG, (2228.6 - 102.4 * 4 - 66.858 * 9) / 4);
-    assert.equal(r.lbmEstimated, false);
+describe("حاسبة توازن الطاقة", () => {
+  test("تطابق مخرجات ملف الإكسل", () => {
+    const r = calculateEnergyBalance(sheet);
+    near(r.leanMJ, 38, 1e-9);
+    near(r.fatMJ, -118.5, 1e-9);
+    assert.equal(r.days, 31);
+    near(r.avgIntake, 1994.571429, 1e-5);
+    assert.equal(Math.round(r.netKcal), -19227);       // Net energy balance (kcal)
+    assert.equal(Math.round(r.dailyBalance), -620);    // Daily energy balance (kcal)
+    assert.equal(Math.round(r.dailyBalancePct * 100), -24); // Daily energy balance (%)
+    near(r.maintenance, 1994.571429 + 620.23, 0.1);
   });
-  test("بدون نسبة الدهون: Mifflin-St Jeor وتنبيه الدقة", () => {
-    const m = calculateCalories({ ...base, bodyFat: null });
-    near(m.bmr, 10 * 80 + 6.25 * 180 - 5 * 30 + 5); // 1780
-    assert.equal(m.formula, "mifflin");
-    assert.equal(m.lbmEstimated, true);
-    near(m.lbm, 80);
-    assert.ok(m.warnings.some((w) => w.includes("أقل دقة")));
-    const f = calculateCalories({ ...base, sex: "female", bodyFat: null });
-    near(f.bmr, 10 * 80 + 6.25 * 180 - 5 * 30 - 161);
+  test("فائض عند زيادة الدهون والعضل", () => {
+    const r = calculateEnergyBalance({ ...sheet, leanChange: 1, fatChange: 0.5 });
+    assert.ok(r.dailyBalance > 0);
+    assert.ok(r.maintenance < r.avgIntake);
   });
-  test("عوامل النشاط حسب الخطوات", () => {
-    assert.deepEqual([0, 4999, 5000, 7499, 7500, 9999, 10000, 12499, 12500, 30000].map(activityFactor),
-      [1.2, 1.2, 1.35, 1.35, 1.5, 1.5, 1.65, 1.65, 1.8, 1.8]);
+  test("أيام الراحة = 7 − أيام التمرين", () => {
+    near(calculateEnergyBalance({ ...sheet, trainingDays: 0 }).avgIntake, 1548, 1e-9);
+    near(calculateEnergyBalance({ ...sheet, trainingDays: 7 }).avgIntake, 2069, 1e-9);
   });
-  test("الهدف والبروتين حسب المستوى", () => {
-    const tdee = calculateCalories(base).tdee;
-    near(calculateCalories({ ...base, goal: "gain" }).target, tdee + 400);
-    near(calculateCalories({ ...base, goal: "maintain" }).target, tdee);
-    near(calculateCalories({ ...base, level: "advanced" }).proteinPerKg, 2.0);
-    near(calculateCalories({ ...base, protein: "high" }).proteinPerKg, 2.4);
-    near(calculateCalories({ ...base, protein: "high", level: "advanced" }).proteinPerKg, 2.8);
-  });
-  test("الكربوهيدرات لا تكون سالبة، مع تنبيه", () => {
-    const r = calculateCalories({ sex: "female", age: 90, weight: 45, height: 150, bodyFat: null, steps: 0, goal: "lose", level: "advanced", protein: "high" });
-    assert.equal(r.carbsG, 0);
-    assert.ok(r.warnings.some((w) => w.includes("ما بقي شيء للكربوهيدرات")));
-    assert.ok(r.warnings.some((w) => w.includes("أقل من الحد الأدنى")));
+  test("تنبيه المدة القصيرة", () => {
+    const r = calculateEnergyBalance({ ...sheet, endDate: "2019-12-17" });
+    assert.ok(r.warnings.some((w) => w.includes("أقل من أسبوعين")));
   });
   test("التحقق من المدخلات", () => {
-    assert.deepEqual(validate(base), {});
-    const e = validate({ ...base, weight: 0, height: -5, age: 0, sex: undefined, bodyFat: 80 });
-    assert.match(e.weight!, /أكبر من صفر/);
-    assert.match(e.height!, /أكبر من صفر/);
-    assert.match(e.age!, /أكبر من صفر/);
-    assert.ok(e.sex && e.bodyFat);
-    assert.equal(validate({ ...base, bodyFat: null }).bodyFat, undefined); // اختيارية
-    assert.ok(validate({ ...base, age: 25.5 }).age);
-    assert.equal(validate({ ...base, steps: 0 }).steps, undefined);
+    assert.deepEqual(validate(sheet), {});
+    assert.equal(daysBetween("2020-02-28", "2020-03-01"), 2);
+    const e = validate({ ...sheet, trainingKcal: 0, restKcal: -5, fatChange: NaN, endDate: "2019-12-01", trainingDays: 8 });
+    assert.match(e.trainingKcal!, /أكبر من صفر/);
+    assert.match(e.restKcal!, /أكبر من صفر/);
+    assert.ok(e.fatChange && e.trainingDays);
+    assert.match(e.endDate!, /بعد الأول/);
   });
 });

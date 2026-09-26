@@ -4,6 +4,7 @@ import Shots from "@/components/Shots";
 import YouTubeShort from "@/components/YouTubeShort";
 import RichText from "@/components/RichText";
 import ReviewCard from "@/components/ReviewCard";
+import CalculatorForm from "./calculator/CalculatorForm";
 import { IconArrow, IconChat, IconFile, IconShield, IconTarget, IconTrend } from "@/components/Icons";
 import { getFaqs, getProducts, getPublicReviews, getSettings } from "@/lib/data";
 import { youtubeId } from "@/lib/youtube";
@@ -218,6 +219,18 @@ export default async function Home() {
               </details>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ---------- حاسبة السعرات (آخر الصفحة) ---------- */}
+      <section className="section" id="calculator" aria-labelledby="home-calc-h">
+        <div className="wrap stack" style={{ ["--space" as string]: "20px", maxWidth: 900 }}>
+          <div className="sec-head">
+            <span className="eyebrow">أداة مجانية</span>
+            <h2 id="home-calc-h">حاسبة السعرات وتوازن الطاقة</h2>
+            <p className="muted">اعرف سعرات المحافظة الفعلية لجسمك من التغيّر الحقيقي في الدهون والعضل بين قياسين. <Link href="/calculator">الشرح والأسئلة الشائعة</Link></p>
+          </div>
+          <CalculatorForm compact />
         </div>
       </section>
     </>
