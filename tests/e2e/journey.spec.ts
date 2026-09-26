@@ -175,10 +175,10 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await expect(coach.locator(".status").first()).toHaveText("قيد الإعداد");
   await expect(coach.getByText("اعتماد الدفع")).toHaveCount(0);
 
-  const add = coach.locator("form", { has: coach.getByRole("button", { name: "إضافة" }) });
+  const add = coach.locator("form", { has: coach.getByRole("button", { name: "إضافة", exact: true }) });
   await add.locator('input[name="title"]').fill("ملف البرنامج — الشهر الأول");
   await add.locator('input[name="url"]').fill("https://example.com/program-file");
-  await add.getByRole("button", { name: "إضافة" }).click();
+  await add.getByRole("button", { name: "إضافة", exact: true }).click();
   await expect(coach.getByText("تمت الإضافة")).toBeVisible();
 
   // العميل لا يرى الملف قبل تفعيل البرنامج

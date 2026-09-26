@@ -25,16 +25,15 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
     rows: (await tx.query(
       `SELECT o.order_no, o.product_id, o.product_name, p.name AS current_name, o.offer_label, o.status, o.category,
               o.amount_due_halalas, o.contact_name, o.contact_phone, o.created_at, o.student_discount_requested, o.is_demo, o.source,
-              u.email, i.health_flag, (n.body IS NOT NULL AND n.body <> '') AS has_note
+              u.email, i.health_flag, EXISTS (SELECT 1 FROM order_note_entries n WHERE n.order_id = o.id) AS has_note
          FROM orders o JOIN "user" u ON u.id = o.user_id
          LEFT JOIN intakes i ON i.order_id = o.id
          LEFT JOIN products p ON p.id = o.product_id
-         LEFT JOIN order_admin_notes n ON n.order_id = o.id
         WHERE ($1 = '' OR o.status = $1)
           AND (o.archived_at IS NOT NULL) = $3
           AND ($4 = '' OR o.product_id::text = $4)
           AND ($2 = '' OR o.order_no ILIKE '%' || $2 || '%' OR o.contact_name ILIKE '%' || $2 || '%'
-               OR o.contact_phone LIKE '%' || $2 || '%' OR u.email ILIKE '%' || $2 || '%' OR n.body ILIKE '%' || $2 || '%')
+               OR o.contact_phone LIKE '%' || $2 || '%' OR u.email ILIKE '%' || $2 || '%' OR EXISTS (SELECT 1 FROM order_note_entries n WHERE n.order_id = o.id AND n.body ILIKE '%' || $2 || '%'))
         ORDER BY o.created_at DESC LIMIT 200`, [status, q, archived, pkg])).rows,
     packages: (await tx.query(
       `SELECT o.product_id, coalesce(p.name, max(o.product_name)) AS name, count(*)::int AS n

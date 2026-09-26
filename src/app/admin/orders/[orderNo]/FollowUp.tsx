@@ -4,26 +4,45 @@ import { loadReminders, loadWeekState, reviewMessage } from "@/lib/reminders";
 import { SUB_LABEL, WEEKDAYS, WEEK_LABEL, fmtYMD, riyadhDate, subscriptionState } from "@/lib/schedule";
 import { CHANNEL_LABEL, RESULT_LABEL } from "@/lib/notify";
 import ActionForm from "@/components/admin/ActionForm";
-import { markWeekAction, saveNoteAction, sendReviewNowAction, setSubscriptionAction } from "@/app/actions/admin";
+import { addNoteAction, deleteNoteAction, markWeekAction, sendReviewNowAction, setSubscriptionAction } from "@/app/actions/admin";
 import type { OrderRow } from "@/lib/data";
 
 type O = OrderRow & { user_id: string; id: string };
 const STATUS_TXT: Record<string, string> = { pending: "قيد الإرسال", ...RESULT_LABEL };
 
-/** ملاحظات المدربة الخاصة — لا تُقرأ إلا بصلاحية إدارية في قاعدة البيانات */
+/** ملاحظات المدربة الخاصة: سجل بتاريخ وكاتبة كل ملاحظة. لا تُقرأ إلا بصلاحية إدارية في قاعدة البيانات */
 export async function AdminNotes({ coachId, o }: { coachId: string; o: O }) {
-  const note = await withUser(coachId, async (tx) => (await tx.query(
-    `SELECT n.body, n.updated_at, u.name FROM order_admin_notes n LEFT JOIN "user" u ON u.id = n.updated_by WHERE n.order_id = $1`, [o.id])).rows[0]);
+  const notes = await withUser(coachId, async (tx) => (await tx.query(
+    `SELECT n.id, n.body, n.created_at, u.name FROM order_note_entries n LEFT JOIN "user" u ON u.id = n.created_by
+      WHERE n.order_id = $1 ORDER BY n.created_at DESC, n.id DESC`, [o.id])).rows as { id: string; body: string; created_at: string; name: string | null }[]);
   return (
-    <div className="card stack" style={{ borderInlineStart: "4px solid #e5a50a" }}>
-      <h2 style={{ fontSize: 18 }}>ملاحظات المدربة الخاصة 🔒</h2>
-      <p className="small muted">لا تظهر للمتدرب أبداً. تُحفظ في جدول منفصل لا تُتاح قراءته إلا بصلاحية المدربة.</p>
-      <ActionForm action={saveNoteAction} submit="حفظ الملاحظة">
+    <section className="card stack notes-card" aria-labelledby="notes-h" data-testid="admin-notes">
+      <div className="row" style={{ justifyContent: "space-between" }}>
+        <h2 id="notes-h" style={{ fontSize: 19 }}>ملاحظات المدربة الخاصة 🔒 {notes.length > 0 && <span className="small muted">({notes.length})</span>}</h2>
+        <span className="small muted">لا تظهر للمتدرب أبداً</span>
+      </div>
+      <ActionForm action={addNoteAction} submit="إضافة ملاحظة" className="form note-form" resetOnSuccess>
         <input type="hidden" name="order_no" value={o.order_no} />
-        <textarea name="body" aria-label="ملاحظات المدربة الخاصة" defaultValue={note?.body ?? ""} maxLength={5000} style={{ minHeight: 140 }} />
-        {note && <p className="small muted">آخر تعديل: {fmtDateTime(note.updated_at)}{note.name ? ` — ${note.name}` : ""}</p>}
+        <textarea name="body" aria-label="ملاحظة جديدة" placeholder="اكتبي ملاحظة جديدة… (تُحفظ بتاريخ اليوم)" maxLength={5000} required style={{ minHeight: 90 }} />
       </ActionForm>
-    </div>
+      {notes.length === 0 ? <p className="small muted">لا توجد ملاحظات بعد.</p> : (
+        <ol className="note-log">
+          {notes.map((n) => (
+            <li key={n.id}>
+              <div className="note-meta">
+                <time dateTime={new Date(n.created_at).toISOString()}>{fmtDateTime(n.created_at)}</time>
+                {n.name && <span> · {n.name}</span>}
+              </div>
+              <p>{n.body}</p>
+              <ActionForm action={deleteNoteAction} submit="حذف" submitClass="link-btn small" className="note-del" confirm="حذف هذه الملاحظة نهائياً؟">
+                <input type="hidden" name="order_no" value={o.order_no} />
+                <input type="hidden" name="id" value={n.id} />
+              </ActionForm>
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
   );
 }
 

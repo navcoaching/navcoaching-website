@@ -339,3 +339,20 @@ describe("الطلبات اليدوية من المدربة", () => {
     await assert.rejects(create(COACH, "not-an-email", "int1", "active"), /بريداً صحيحاً/);
   });
 });
+
+describe("سجل ملاحظات المدربة", () => {
+  test("كل ملاحظة سطر بتاريخه، للمدربة فقط", async () => {
+    const no = await newOrder(A, "k-notelog-00000001");
+    await as(COACH, "SELECT app.coach_add_note($1, 'أولى')", [no]);
+    await as(COACH, "SELECT app.coach_add_note($1, 'ثانية')", [no]);
+    const rows = (await as(COACH, "SELECT n.id, n.body, n.created_by, n.created_at FROM order_note_entries n JOIN orders o ON o.id = n.order_id WHERE o.order_no = $1 ORDER BY n.id", [no])).rows;
+    assert.deepEqual(rows.map((r) => r.body), ["أولى", "ثانية"]);
+    assert.ok(rows.every((r) => r.created_by === COACH && r.created_at));
+    assert.equal((await as(A, "SELECT * FROM order_note_entries")).rowCount, 0);
+    await assert.rejects(as(A, "SELECT app.coach_add_note($1, 'x')", [no]), /للمدربة فقط/);
+    await assert.rejects(as(A, "SELECT app.coach_delete_note($1)", [rows[0].id]), /للمدربة فقط/);
+    await assert.rejects(as(COACH, "SELECT app.coach_add_note($1, '   ')", [no]), /اكتبي الملاحظة/);
+    await as(COACH, "SELECT app.coach_delete_note($1)", [rows[0].id]);
+    assert.equal((await as(COACH, "SELECT count(*)::int n FROM order_note_entries n JOIN orders o ON o.id = n.order_id WHERE o.order_no = $1", [no])).rows[0].n, 1);
+  });
+});

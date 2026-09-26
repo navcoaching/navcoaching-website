@@ -550,7 +550,9 @@ input[type="file"] { width: 100%; padding: 14px; border: 1.5px dashed var(--line
 .bank .iban { font: 600 17px/1.4 ui-monospace, "SFMono-Regular", Menlo, monospace; letter-spacing: 0.04em; word-break: break-all; }
 
 .account-layout { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr) 340px; align-items: start; }
-@media (max-width: 960px) { .account-layout { grid-template-columns: 1fr; } }
+.account-layout > * { min-width: 0; }
+.table-wrap { max-width: 100%; }
+@media (max-width: 960px) { .account-layout { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---------- لوحة الإدارة ---------- */
 .admin { display: grid; grid-template-columns: 240px minmax(0, 1fr); min-height: 100dvh; background: var(--paper); }
@@ -617,3 +619,10 @@ ol.weeks li .small { margin-inline-start: auto; }
 .install-steps p { margin: 0; line-height: 1.8; }
 .install-art { max-width: 100%; height: auto; }
 .install-cta { display: grid; gap: 4px; text-decoration: none; color: inherit; }
+.notes-card { border-inline-start: 4px solid #e5a50a; }
+.note-log { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.note-log li { background: var(--paper); border-radius: 10px; padding: 10px 12px; }
+.note-log li { min-width: 0; }
+.note-log p { margin: 4px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.8; }
+.note-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.note-log .note-del { display: flex; justify-content: flex-end; gap: 6px; align-items: center; }

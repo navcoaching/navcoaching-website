@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Settings } from "@/lib/data";
-import { localPhone, waLink } from "@/lib/format";
+import { waLink } from "@/lib/format";
 import { IconInstagram, IconWhatsApp } from "./Icons";
 
 export default function Footer({ s }: { s: Settings }) {
@@ -30,10 +30,8 @@ export default function Footer({ s }: { s: Settings }) {
               </ul>
             </div>
             <div>
-              <h2>التواصل والسياسات</h2>
+              <h2>السياسات</h2>
               <ul>
-                <li><a href={waLink(s.contact.whatsapp)} rel="noopener" target="_blank">واتساب <bdi>{localPhone(s.contact.whatsapp)}</bdi></a></li>
-                {s.contact.instagram && <li><a href={s.contact.instagram} rel="noopener" target="_blank">انستقرام</a></li>}
                 <li><Link href="/policies#privacy">سياسة الخصوصية</Link></li>
                 <li><Link href="/policies#terms">الشروط والأحكام</Link></li>
                 <li><Link href="/policies#refund">الضمان والاسترجاع</Link></li>

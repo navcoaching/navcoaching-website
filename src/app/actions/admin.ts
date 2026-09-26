@@ -165,14 +165,28 @@ export async function replyCheckinAction(_: ActionState, fd: FormData): Promise<
 }
 
 // ---------- المتابعة ----------
-export async function saveNoteAction(_: ActionState, fd: FormData): Promise<ActionState> {
+export async function addNoteAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const orderNo = String(fd.get("order_no") ?? "");
-  const body = String(fd.get("body") ?? "").slice(0, 5000);
+  const body = String(fd.get("body") ?? "").trim();
+  if (!body) return { error: "اكتبي الملاحظة أولاً." };
+  if (body.length > 5000) return { error: "الملاحظة أطول من 5000 حرف." };
   try {
-    await asCoach((tx) => tx.query("SELECT app.coach_save_note($1,$2)", [orderNo, body]));
+    await asCoach((tx) => tx.query("SELECT app.coach_add_note($1,$2)", [orderNo, body]));
   } catch (err) { return fail(err); }
   revalidatePath(`/admin/orders/${orderNo}`);
-  return { ok: true, message: "حُفظت الملاحظة." };
+  revalidatePath("/admin/orders");
+  return { ok: true, message: "أُضيفت الملاحظة." };
+}
+
+export async function deleteNoteAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const orderNo = String(fd.get("order_no") ?? "");
+  const id = Number(fd.get("id"));
+  if (!Number.isInteger(id) || id <= 0) return { error: GENERIC };
+  try {
+    await asCoach((tx) => tx.query("SELECT app.coach_delete_note($1)", [id]));
+  } catch (err) { return fail(err); }
+  revalidatePath(`/admin/orders/${orderNo}`);
+  return { ok: true, message: "حُذفت الملاحظة." };
 }
 
 export async function setSubscriptionAction(_: ActionState, fd: FormData): Promise<ActionState> {

@@ -83,9 +83,23 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
 
   // ---------- 1) ملاحظات خاصة: حفظ، مؤشر في القائمة، بحث ----------
   await coach.goto(`/admin/orders/${orderNo}`);
-  await coach.getByLabel("ملاحظات المدربة الخاصة").fill(secretNote);
-  await coach.getByRole("button", { name: "حفظ الملاحظة" }).click();
-  await expect(coach.getByText(/آخر تعديل:/)).toBeVisible();
+  await noHorizontalScroll(coach); // صفحة الطلب (مع جدول الأسابيع) لا تتجاوز عرض الجوال
+  const notes = coach.getByTestId("admin-notes");
+  // الملاحظات أعلى الصفحة قبل الإجراءات
+  const [notesY, actionY] = await Promise.all([notes.boundingBox(), coach.getByRole("heading", { name: "الإجراء التالي" }).boundingBox()]);
+  expect(notesY!.y).toBeLessThan(actionY!.y);
+  await notes.getByLabel("ملاحظة جديدة").fill("ملاحظة أولى: بداية جيدة");
+  await notes.getByRole("button", { name: "إضافة ملاحظة" }).click();
+  await expect(notes.locator(".note-log li")).toHaveCount(1);
+  await expect(notes.getByLabel("ملاحظة جديدة")).toHaveValue(""); // الحقل يُفرّغ بعد الإضافة
+  await notes.getByLabel("ملاحظة جديدة").fill(secretNote);
+  await notes.getByRole("button", { name: "إضافة ملاحظة" }).click();
+  await expect(notes.locator(".note-log li")).toHaveCount(2);
+  await expect(notes.locator(".note-log li").first()).toContainText(secretNote); // الأحدث أولاً
+  await expect(notes.locator(".note-log li time").first()).toBeVisible();        // لكل ملاحظة تاريخها
+  coach.once("dialog", (d) => d.accept());
+  await notes.locator(".note-log li", { hasText: "ملاحظة أولى" }).getByRole("button", { name: "حذف" }).click();
+  await expect(notes.locator(".note-log li")).toHaveCount(1);
   await coach.goto(`/admin/orders?q=${encodeURIComponent(secretNote)}`);
   const row = coach.locator("tr", { hasText: orderNo });
   await expect(row).toHaveCount(1); // البحث يشمل نص الملاحظة
@@ -207,10 +221,10 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
 
   // ---------- 12) إشعار إضافة رابط ورد على المراجعة ----------
   await coach.reload();
-  const add = coach.locator("form", { has: coach.getByRole("button", { name: "إضافة" }) });
+  const add = coach.locator("form", { has: coach.getByRole("button", { name: "إضافة", exact: true }) });
   await add.locator('input[name="title"]').fill("فيديو تصحيح التكنيك");
   await add.locator('input[name="url"]').fill("https://example.com/technique");
-  await add.getByRole("button", { name: "إضافة" }).click();
+  await add.getByRole("button", { name: "إضافة", exact: true }).click();
   await expect(coach.getByText(/تمت الإضافة/)).toBeVisible();
   logs = await logRows(orderNo);
   const del = logs.find((l) => l.kind === "deliverable" && l.channel === "email");
@@ -331,10 +345,10 @@ test("الأعضاء المسجلون وإضافة برنامج يدوياً ب�
   await expect(coach.getByText("تم إنشاء الطلب يدوياً")).toBeVisible();
   await expect(coach.locator(".status").first()).toHaveText("البرنامج نشط");
 
-  const add = coach.locator("form", { has: coach.getByRole("button", { name: "إضافة" }) });
+  const add = coach.locator("form", { has: coach.getByRole("button", { name: "إضافة", exact: true }) });
   await add.locator('input[name="title"]').fill("جدول ريم — الشهر الأول");
   await add.locator('input[name="url"]').fill("https://example.com/manual-plan");
-  await add.getByRole("button", { name: "إضافة" }).click();
+  await add.getByRole("button", { name: "إضافة", exact: true }).click();
   await expect(coach.getByText(/تمت الإضافة/)).toBeVisible();
 
   await coach.goto(`/admin/orders?q=${orderNo}`);

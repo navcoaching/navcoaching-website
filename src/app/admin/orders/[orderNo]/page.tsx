@@ -51,6 +51,8 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
       {created && <p className="alert ok" role="status">تم إنشاء الطلب يدوياً. أضيفي ملف البرنامج أو الرابط من «ملفات العميل». المتدرب يدخل ببريده <bdi dir="ltr">{o.user_email}</bdi> ويشوفه في حسابه.</p>}
       {o.source === "manual" && !intake && <p className="alert info">طلب يدوي أضافته المدربة — بدون استبيان من الموقع.</p>}
 
+      <AdminNotes coachId={coach.id} o={o} />
+
       <div className="account-layout">
         <div className="stack" style={{ ["--space" as string]: "18px" }}>
           {/* ---------- الإجراءات ---------- */}
@@ -171,7 +173,6 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
         </div>
 
         <aside className="stack" style={{ ["--space" as string]: "18px" }}>
-          <AdminNotes coachId={coach.id} o={o} />
           <div className="card">
             <dl className="kv small">
               <dt>السعر</dt><dd className="num">{riyals(o.list_price_halalas)}</dd>
