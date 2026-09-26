@@ -536,3 +536,48 @@ export async function updateMediaAction(_: ActionState, fd: FormData): Promise<A
   revalidatePath("/", "layout");
   return { ok: true, message: "تم." };
 }
+
+// ---------- طلب يدوي: برنامج لمتدرب بدون استبيان الموقع ----------
+const manualSchema = z.object({
+  email: z.string().trim().toLowerCase().email("اكتبي بريداً صحيحاً للمتدرب.").max(200),
+  name: z.string().trim().min(2, "اكتبي اسم المتدرب (حرفين على الأقل).").max(80),
+  phone: z.string().trim().max(20).regex(/^\+?[\d\s-]*$/, "رقم الجوال بالأرقام فقط، مثل +9665XXXXXXXX.").optional().default(""),
+  sku: z.string().min(1, "اختاري الباقة والمدة.").max(40),
+  status: z.enum(["awaiting_payment", "preparing", "active", "delivered"], { message: "اختاري الحالة." }),
+  amount: z.union([z.literal(""), z.coerce.number().min(0).max(100000)]).optional().default(""),
+  note: z.string().trim().max(500).optional().default(""),
+  notify: z.enum(["", "on"]).optional().default(""),
+});
+
+export async function createManualOrderAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const parsed = manualSchema.safeParse(Object.fromEntries([...fd.entries()].filter(([k]) => !k.startsWith("$ACTION"))));
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string> = {};
+    for (const i of parsed.error.issues) fieldErrors[String(i.path[0])] ??= i.message;
+    return { error: Object.values(fieldErrors)[0] ?? "راجعي الحقول.", fieldErrors };
+  }
+  const v = parsed.data;
+  const phone = v.phone.replace(/[\s-]/g, "");
+  let orderNo: string;
+  let results: ChannelResult[] = [];
+  try {
+    ({ orderNo, results } = await asCoach(async (tx) => {
+      const { rows: [r] } = await tx.query("SELECT app.coach_create_manual_order($1,$2,$3,$4,$5,$6,$7) AS no",
+        [v.email, v.name, phone, v.sku, v.status, v.amount === "" ? null : Math.round(v.amount * 100), v.note]);
+      const no = r.no as string;
+      let res: ChannelResult[] = [];
+      if (v.notify === "on") {
+        const o = await orderTarget(tx, no);
+        if (o) res = await notifyTrainee(tx, { orderId: o.id, orderNo: no, userId: o.user_id }, {
+          kind: "status", subject: "برنامجك في Nav Coaching", channels: ["email"],
+          text: "أضافت المدربة برنامجك إلى حسابك في Nav Coaching. ادخل ببريدك هذا لتشوف التفاصيل والملفات." });
+      }
+      return { orderNo: no, results: res };
+    }));
+  } catch (err) { return fail(err); }
+  revalidatePath("/admin/orders");
+  revalidatePath("/admin/members");
+  // نتيجة الإشعار تظهر في «سجل الإشعارات» بصفحة الطلب
+  void results;
+  redirect(`/admin/orders/${orderNo}?created=1`);
+}

@@ -17,9 +17,10 @@ import {
 
 const show = (v: unknown) => (Array.isArray(v) ? v.join("، ") : v == null || v === "" ? "—" : String(v));
 
-export default async function AdminOrder({ params }: { params: Promise<{ orderNo: string }> }) {
+export default async function AdminOrder({ params, searchParams }: { params: Promise<{ orderNo: string }>; searchParams: Promise<{ created?: string }> }) {
   const coach = await requireCoach();
   const { orderNo } = await params;
+  const { created } = await searchParams;
   const detail = await getOrderDetail(coach.id, orderNo);
   if (!detail) notFound();
   const { order: o, events, proofs, deliverables, checkins, intake, review } = detail;
@@ -47,6 +48,8 @@ export default async function AdminOrder({ params }: { params: Promise<{ orderNo
         <span className={`status ${statusTone(o.status)}`}>{statusLabel(o.status, o.category)}</span>
       </div>
       {o.is_demo && <p className="alert warn">طلب تجريبي — ليس طلباً حقيقياً.</p>}
+      {created && <p className="alert ok" role="status">تم إنشاء الطلب يدوياً. أضيفي ملف البرنامج أو الرابط من «ملفات العميل». المتدرب يدخل ببريده <bdi dir="ltr">{o.user_email}</bdi> ويشوفه في حسابه.</p>}
+      {o.source === "manual" && !intake && <p className="alert info">طلب يدوي أضافته المدربة — بدون استبيان من الموقع.</p>}
 
       <div className="account-layout">
         <div className="stack" style={{ ["--space" as string]: "18px" }}>

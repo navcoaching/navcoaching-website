@@ -20,8 +20,8 @@ async function newUserPage(browser: Browser, project: string) {
 
 async function latestOtp(email: string) {
   for (let i = 0; i < 20; i++) {
-    const { rows } = await db.query("SELECT body FROM dev_mailbox WHERE recipient = $1 ORDER BY id DESC LIMIT 1", [email]);
-    const m = rows[0]?.body.match(/\b(\d{6})\b/);
+    const { rows } = await db.query("SELECT body FROM dev_mailbox WHERE recipient = $1 AND subject LIKE 'رمز الدخول%' ORDER BY id DESC LIMIT 1", [email]);
+    const m = rows[0]?.body.match(/رمز الدخول: (\d{6})/);
     if (m) return m[1];
     await new Promise((r) => setTimeout(r, 250));
   }

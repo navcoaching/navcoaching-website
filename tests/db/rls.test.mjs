@@ -305,3 +305,37 @@ describe("المتابعة: الملاحظات والاشتراك والإشعا
     assert.equal((await as(COACH, "SELECT value FROM site_settings WHERE key = 'reminders'")).rowCount, 1);
   });
 });
+
+describe("الطلبات اليدوية من المدربة", () => {
+  const create = (who, email, sku, status, amount = null) =>
+    as(who, "SELECT app.coach_create_manual_order($1,'متدرب يدوي','+966511111111',$2,$3,$4,'اتفاق واتساب') AS no", [email, sku, status, amount]).then((r) => r.rows[0].no);
+
+  test("للمدربة فقط", async () => {
+    await assert.rejects(create(A, "x@test.local", "int1", "active"), /للمدربة فقط/);
+  });
+  test("ينشئ حساباً جديداً ويفعّل الاشتراك بتواريخه", async () => {
+    const no = await create(COACH, "  New.Trainee@Test.Local ", "int3", "active", 0);
+    const { rows: [o] } = await owner.query(
+      `SELECT o.status, o.source, o.amount_due_halalas, o.sub_start_at, o.sub_end_at, o.paid_at, u.email, u.role
+         FROM orders o JOIN "user" u ON u.id = o.user_id WHERE o.order_no = $1`, [no]);
+    assert.equal(o.status, "active");
+    assert.equal(o.source, "manual");
+    assert.equal(o.amount_due_halalas, 0);
+    assert.equal(o.email, "new.trainee@test.local");
+    assert.equal(o.role, "client");
+    assert.ok(o.sub_start_at && o.sub_end_at && o.paid_at);
+    const ev = (await owner.query("SELECT to_status FROM order_events e JOIN orders o ON o.id = e.order_id WHERE o.order_no = $1 ORDER BY e.id", [no])).rows.map((r) => r.to_status);
+    assert.deepEqual(ev, ["preparing", "active"]);
+  });
+  test("يستخدم الحساب الموجود، والطلب يظهر لصاحبه فقط", async () => {
+    const no = await create(COACH, "user_a@test.local", "diy", "delivered");
+    assert.equal((await as(A, "SELECT count(*)::int n FROM orders WHERE order_no = $1", [no])).rows[0].n, 1);
+    assert.equal((await as(B, "SELECT count(*)::int n FROM orders WHERE order_no = $1", [no])).rows[0].n, 0);
+    assert.equal((await owner.query(`SELECT count(*)::int n FROM "user" WHERE lower(email) = 'user_a@test.local'`)).rows[0].n, 1);
+  });
+  test("يرفض الحالة غير المناسبة والبريد الإداري", async () => {
+    await assert.rejects(create(COACH, "y@test.local", "diy", "active"), /لا تناسب/);
+    await assert.rejects(create(COACH, "user_coach@test.local", "int1", "active"), /إداري/);
+    await assert.rejects(create(COACH, "not-an-email", "int1", "active"), /بريداً صحيحاً/);
+  });
+});

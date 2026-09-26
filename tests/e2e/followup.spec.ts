@@ -16,8 +16,8 @@ async function newPage(browser: Browser, tag: string) {
 }
 async function latestOtp(email: string) {
   for (let i = 0; i < 20; i++) {
-    const { rows } = await db.query("SELECT body FROM dev_mailbox WHERE recipient = $1 ORDER BY id DESC LIMIT 1", [email]);
-    const m = rows[0]?.body.match(/\b(\d{6})\b/);
+    const { rows } = await db.query("SELECT body FROM dev_mailbox WHERE recipient = $1 AND subject LIKE 'رمز الدخول%' ORDER BY id DESC LIMIT 1", [email]);
+    const m = rows[0]?.body.match(/رمز الدخول: (\d{6})/);
     if (m) return m[1];
     await new Promise((r) => setTimeout(r, 250));
   }
@@ -293,4 +293,67 @@ test("«التقييم» يبقى للتقييمات العامة فقط", async
   await page.goto("/reviews");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/تقييم|تجارب/);
   await page.context().close();
+});
+
+test("الأعضاء المسجلون وإضافة برنامج يدوياً بدون استبيان", async ({ browser }, info) => {
+  const project = info.project.name;
+  const coachEmail = `coach4-${project}@e2e.test`;
+  const leadEmail = `lead-${project}@e2e.test`;        // سجّل بدون طلب
+  const manualEmail = `manual-${project}@e2e.test`;    // لا يملك حساباً، تنشئه المدربة
+  const name = `ريم يدوي ${project}`;
+
+  const lead = await newPage(browser, project + "-l");
+  await login(lead, leadEmail);
+  await lead.context().close();
+
+  const coach = await newPage(browser, project + "-c4");
+  await login(coach, coachEmail, "/admin");
+  await db.query(`UPDATE "user" SET role = 'coach' WHERE email = $1`, [coachEmail]);
+
+  // ---------- الأعضاء ----------
+  await coach.goto("/admin/members?view=no_orders");
+  await expect(coach.getByRole("heading", { level: 1 })).toHaveText("الأعضاء المسجلون");
+  await expect(coach.getByTestId("members")).toContainText(leadEmail);
+  await expect(coach.getByTestId("members")).not.toContainText(coachEmail); // الحسابات الإدارية لا تظهر
+  await noHorizontalScroll(coach);
+
+  // ---------- إضافة برنامج يدوياً لبريد جديد ----------
+  await coach.goto("/admin/orders/new");
+  await coach.getByLabel("بريد المتدرب").fill(manualEmail);
+  await coach.getByLabel("الاسم").fill(name);
+  const sku = (await coach.locator("#m-sku option").filter({ hasText: "المكثفة — 3 أشهر" }).first().getAttribute("value"))!;
+  await coach.locator("#m-sku").selectOption(sku);
+  await coach.getByLabel("المبلغ بالريال").fill("0");
+  await noHorizontalScroll(coach);
+  await coach.getByRole("button", { name: "إنشاء الطلب" }).click();
+  await expect(coach).toHaveURL(/\/admin\/orders\/NAV-[\w-]+\?created=1/);
+  const orderNo = coach.url().match(/NAV-\d{6}-[A-Z0-9]{5}/)![0];
+  await expect(coach.getByText("تم إنشاء الطلب يدوياً")).toBeVisible();
+  await expect(coach.locator(".status").first()).toHaveText("البرنامج نشط");
+
+  const add = coach.locator("form", { has: coach.getByRole("button", { name: "إضافة" }) });
+  await add.locator('input[name="title"]').fill("جدول ريم — الشهر الأول");
+  await add.locator('input[name="url"]').fill("https://example.com/manual-plan");
+  await add.getByRole("button", { name: "إضافة" }).click();
+  await expect(coach.getByText(/تمت الإضافة/)).toBeVisible();
+
+  await coach.goto(`/admin/orders?q=${orderNo}`);
+  await expect(coach.locator("tr", { hasText: orderNo })).toContainText("يدوي");
+  const mail = await db.query("SELECT body FROM dev_mailbox WHERE recipient = $1 AND body LIKE '%' || $2 || '%'", [manualEmail, orderNo]);
+  expect(mail.rowCount).toBeGreaterThan(0);
+
+  // ---------- المتدرب يدخل ببريده ويجد برنامجه وملفه ----------
+  const trainee = await newPage(browser, project + "-m");
+  await login(trainee, manualEmail);
+  await expect(trainee.getByRole("link", { name: /الباقة المكثفة/ })).toBeVisible();
+  await trainee.goto(`/account/orders/${orderNo}`);
+  await expect(trainee.getByTestId("order-status")).toHaveText("البرنامج نشط");
+  await expect(trainee.getByRole("link", { name: "جدول ريم — الشهر الأول" })).toBeVisible();
+  await expect(trainee.getByTestId("sub-start")).toBeVisible();
+  await expect(trainee.getByTestId("measurements-form")).toHaveCount(0); // لا استبيان ← لا يُطلب منه شيء
+  await trainee.context().close();
+
+  await coach.goto(`/admin/members?q=${manualEmail}`);
+  await expect(coach.getByTestId("members")).toContainText("1 طلب");
+  await coach.context().close();
 });

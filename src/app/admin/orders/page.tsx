@@ -24,7 +24,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
     // البحث يشمل رقم الطلب والاسم والجوال والبريد، وملاحظات المدربة الخاصة
     rows: (await tx.query(
       `SELECT o.order_no, o.product_id, o.product_name, p.name AS current_name, o.offer_label, o.status, o.category,
-              o.amount_due_halalas, o.contact_name, o.contact_phone, o.created_at, o.student_discount_requested, o.is_demo,
+              o.amount_due_halalas, o.contact_name, o.contact_phone, o.created_at, o.student_discount_requested, o.is_demo, o.source,
               u.email, i.health_flag, (n.body IS NOT NULL AND n.body <> '') AS has_note
          FROM orders o JOIN "user" u ON u.id = o.user_id
          LEFT JOIN intakes i ON i.order_id = o.id
@@ -51,7 +51,10 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
     <div>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h1>{archived ? "الطلبات المخفية" : "الطلبات"}</h1>
-        <Link className="btn btn-ghost btn-sm" href={archived ? "/admin/orders" : "/admin/orders?view=archived"}>{archived ? "رجوع للطلبات" : "الطلبات المخفية"}</Link>
+        <div className="row">
+          <Link className="btn btn-sm" href="/admin/orders/new">+ طلب يدوي</Link>
+          <Link className="btn btn-ghost btn-sm" href={archived ? "/admin/orders" : "/admin/orders?view=archived"}>{archived ? "رجوع للطلبات" : "الطلبات المخفية"}</Link>
+        </div>
       </div>
       {sp.deleted && <p className="alert ok" style={{ marginBottom: 14 }}>تم حذف الطلب نهائياً.</p>}
       <nav className="pill-nav" aria-label="تصفية حسب الحالة">
@@ -85,6 +88,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
                   <Link href={`/admin/orders/${o.order_no}`}><bdi className="num">{o.order_no}</bdi></Link>
                   {o.has_note && <span className="note-dot" role="img" aria-label="توجد ملاحظة خاصة" title="توجد ملاحظة خاصة">✎</span>}
                   {o.is_demo && <span className="tag demo" style={{ marginInlineStart: 6 }}>تجريبي</span>}
+                  {o.source === "manual" && <span className="tag soft" style={{ marginInlineStart: 6 }}>يدوي</span>}
                 </td>
                 <td>{o.contact_name}<div className="small muted"><bdi dir="ltr">{o.contact_phone}</bdi></div></td>
                 <td>
