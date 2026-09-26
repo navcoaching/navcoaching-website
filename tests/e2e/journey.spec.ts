@@ -76,6 +76,9 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await expect(page).toHaveURL(/\/login\?next=%2Fcheckout%2Fint1/);
   await login(page, clientEmail);
   await expect(page).toHaveURL(/\/checkout\/int1/);
+  // تنبيه المدربة بالتسجيل الجديد
+  const signup = await db.query("SELECT subject FROM dev_mailbox WHERE recipient = 'coach-notify@e2e.test' AND subject LIKE '%' || $1 || '%'", [clientEmail]);
+  expect(signup.rows[0]?.subject).toContain("تسجيل جديد");
 
   // ---------- 3) الاستبيان (5 خطوات) ----------
   await noHorizontalScroll(page);

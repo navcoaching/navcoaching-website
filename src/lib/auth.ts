@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth";
 import { emailOTP } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { pool } from "./db";
-import { sendMail } from "./mail";
+import { notifySafe, sendMail } from "./mail";
 
 /**
  * الدخول برمز مؤقت يصل للبريد (بدون كلمة مرور): أبسط على الجوال ولا يوجد كلمات مرور تتسرب.
@@ -19,6 +19,21 @@ export const auth = betterAuth({
     additionalFields: {
       role: { type: "string", required: false, defaultValue: "client", input: false },
       phone: { type: "string", required: false, input: false },
+    },
+  },
+  // تنبيه المدربة بكل تسجيل جديد. الحساب لا يُنشأ إلا بعد إدخال رمز صحيح من البريد، فالتنبيه لبريد حقيقي فقط.
+  databaseHooks: {
+    user: {
+      create: {
+        async after(user) {
+          const when = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Riyadh" }).format(new Date());
+          await notifySafe(
+            process.env.COACH_NOTIFY_EMAIL,
+            `تسجيل جديد في Nav Coaching: ${user.email}`,
+            `سجّل حساب جديد في الموقع.\nالبريد: ${user.email}\nالوقت: ${when} (بتوقيت الرياض)\n\nالتسجيل لا يعني طلباً بعد؛ يصلك تنبيه منفصل عند إرسال الاستبيان والطلب.\n${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/admin`,
+          );
+        },
+      },
     },
   },
   session: {
