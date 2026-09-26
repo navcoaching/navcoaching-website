@@ -227,11 +227,11 @@ bdi, .ltr { unicode-bidi: isolate; direction: ltr; }
 .brand { display: flex; align-items: center; min-height: 44px; }
 .brand img { height: 34px; width: auto; }
 .nav { display: flex; align-items: center; gap: 4px; }
-.nav a:not(.btn) { color: var(--text); text-decoration: none; padding: 10px 12px; border-radius: 999px; font-weight: 500; font-size: 15px; transition: background 0.2s; }
+.nav a:not(.btn) { white-space: nowrap; color: var(--text); text-decoration: none; padding: 10px 12px; border-radius: 999px; font-weight: 500; font-size: 15px; transition: background 0.2s; }
 .nav a:not(.btn):hover, .nav a[aria-current="page"] { background: var(--surface-2); }
-.nav .btn { min-height: 44px; margin-inline-start: 8px; }
+.nav .btn { min-height: 44px; margin-inline-start: 8px; white-space: nowrap; }
 .menu { display: none; }
-@media (max-width: 1200px) {
+@media (max-width: 999px) {
   .nav { display: none; }
   .menu { display: block; position: relative; }
   .menu > summary {

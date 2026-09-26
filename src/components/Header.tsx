@@ -7,10 +7,8 @@ import NavLinks, { type NavItem } from "./NavLinks";
 
 const LINKS: NavItem[] = [
   { href: "/programs", label: "البرامج" },
-  { href: "/#how", label: "كيف أشترك؟" },
   { href: "/about", label: "عن المدربة" },
   { href: "/reviews", label: "التقييمات" },
-  { href: "/faq", label: "الأسئلة الشائعة" },
   { href: "/free-plans", label: "الجداول المجانية", highlight: true },
   { href: "/calculator", label: "حاسبة السعرات", highlight: true },
 ];
