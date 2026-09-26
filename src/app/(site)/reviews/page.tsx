@@ -13,7 +13,7 @@ export default async function Reviews() {
       <section className="page-hero">
         <div className="wrap">
           <span className="eyebrow">التقييمات</span>
-          <h1 style={{ fontSize: "clamp(30px,5vw,50px)", marginTop: 12 }}>تقييمات حقيقية، منشورة بموافقة أصحابها</h1>
+          <h1 style={{ fontSize: "clamp(30px,5vw,50px)", marginTop: 12 }}>تقييمات المتدربين</h1>
           <p className="lead">{s.testimonials_disclaimer}</p>
         </div>
       </section>
