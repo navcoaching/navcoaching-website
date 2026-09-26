@@ -171,7 +171,7 @@ export default async function Home() {
           <div className="stack reveal">
             <span className="eyebrow">عن المدربة</span>
             <h2>{s.about.name}</h2>
-            <p className="lead">{s.about.bio}</p>
+            <p className="lead">{s.about.home_bio || s.about.bio}</p>
             <Link href="/about" className="btn btn-ghost" style={{ width: "fit-content" }}>اعرف أكثر عني</Link>
           </div>
           <div className="card reveal" style={{ ["--d" as string]: "120ms" }}>

@@ -84,12 +84,23 @@ export default async function AdminContent() {
 
       <section className="card stack">
         <H id="about">عن المدربة</H>
+        <p className="small muted">كل سطر = فقرة أو عنصر. في «أسلوبي» و«ملاحظات»: افصلي بين الأجزاء بعلامة |. لجعل بداية فقرة عريضة: **النص العريض** ثم الباقي.</p>
         <ActionForm action={saveSettingAction}>
           <input type="hidden" name="key" value="about" />
           <div className="field"><label>الاسم</label><input name="name" type="text" defaultValue={s.about.name} /></div>
-          <div className="field"><label>النبذة</label><textarea name="bio" defaultValue={s.about.bio} /></div>
-          <div className="field"><label>النقاط (سطر لكل نقطة)</label><textarea name="points" defaultValue={s.about.points.join("\n")} /></div>
+          <div className="field"><label>النبذة (أعلى صفحة عن المدربة)</label><textarea name="bio" defaultValue={s.about.bio} /></div>
+          <div className="field"><label>النبذة في الصفحة الرئيسية</label><textarea name="home_bio" defaultValue={s.about.home_bio ?? ""} /></div>
+          <div className="field"><label>قصتي — العنوان</label><input name="story_title" type="text" defaultValue={s.about.story_title ?? ""} /></div>
+          <div className="field"><label>قصتي — الفقرات (سطر لكل فقرة)</label><textarea name="story" style={{ minHeight: 180 }} defaultValue={(s.about.story ?? []).join("\n")} /></div>
+          <div className="field"><label>أسلوبي — العنوان</label><input name="pillars_title" type="text" defaultValue={s.about.pillars_title ?? ""} /></div>
+          <div className="field"><label>أسلوبي — النقاط (العنوان | الشرح)</label><textarea name="pillars" style={{ minHeight: 160 }} defaultValue={(s.about.pillars ?? []).map((p) => `${p.title} | ${p.body}`).join("\n")} /></div>
+          <div className="field"><label>لمن يناسب — العنوان</label><input name="fit_title" type="text" defaultValue={s.about.fit_title ?? ""} /></div>
+          <div className="field"><label>لمن يناسب — الفقرات</label><textarea name="fit" defaultValue={(s.about.fit ?? []).join("\n")} /></div>
+          <div className="field"><label>ملاحظات (العنوان | النص | الرابط اختياري | نص الرابط)</label><textarea name="notes" style={{ minHeight: 140 }} defaultValue={(s.about.notes ?? []).map((n) => [n.title, n.body, n.href ?? "", n.label ?? ""].join(" | ")).join("\n")} /></div>
+          <div className="field"><label>الخبرة — العنوان</label><input name="experience_title" type="text" defaultValue={s.about.experience_title ?? ""} /></div>
+          <div className="field"><label>الخبرة (سطر لكل نقطة)</label><textarea name="experience" defaultValue={(s.about.experience ?? []).join("\n")} /></div>
           <div className="field"><label>الشهادات (سطر لكل شهادة)</label><textarea name="certs" defaultValue={s.about.certs.join("\n")} /></div>
+          <input type="hidden" name="points" value={(s.about.points ?? []).join("\n")} />
         </ActionForm>
       </section>
 

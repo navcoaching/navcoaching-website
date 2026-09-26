@@ -15,7 +15,14 @@ export type Settings = {
   badges: string[];
   why: { title: string; body: string }[];
   how_steps: { title: string; body: string }[];
-  about: { name: string; bio: string; points: string[]; certs: string[] };
+  about: {
+    name: string; bio: string; home_bio?: string; points: string[]; certs: string[];
+    story_title?: string; story?: string[];
+    pillars_title?: string; pillars?: { title: string; body: string }[];
+    fit_title?: string; fit?: string[];
+    notes?: { title: string; body: string; href?: string; label?: string }[];
+    experience_title?: string; experience?: string[];
+  };
   intro_video: { url: string; title: string; body: string };
   testimonials_disclaimer: string;
   prices_note: string;

@@ -278,9 +278,18 @@ export async function saveSettingAction(_: ActionState, fd: FormData): Promise<A
       value = { accountName: g("accountName"), bankName: g("bankName"), iban };
       break;
     }
-    case "about":
-      value = { name: g("name"), bio: g("bio"), points: lines(g("points")), certs: lines(g("certs")) };
+    case "about": {
+      const pairs = (v: string) => lines(v).map((l) => l.split("|").map((x) => x.trim()));
+      value = {
+        name: g("name"), bio: g("bio"), home_bio: g("home_bio"), points: lines(g("points")), certs: lines(g("certs")),
+        story_title: g("story_title"), story: lines(g("story")),
+        pillars_title: g("pillars_title"), pillars: pairs(g("pillars")).map(([title, ...b]) => ({ title, body: b.join(" | ") })),
+        fit_title: g("fit_title"), fit: lines(g("fit")),
+        notes: pairs(g("notes")).map(([title, body = "", href = "", label = ""]) => ({ title, body, href: href.startsWith("/") || href.startsWith("https://") ? href : "", label })),
+        experience_title: g("experience_title"), experience: lines(g("experience")),
+      };
       break;
+    }
     case "badges":
       value = lines(g("value")).slice(0, 6);
       break;
