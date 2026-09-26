@@ -1,5 +1,4 @@
 import Link from "next/link";
-import HeroArt from "@/components/HeroArt";
 import ProductCard from "@/components/ProductCard";
 import Shots from "@/components/Shots";
 import YouTubeShort from "@/components/YouTubeShort";
@@ -18,6 +17,8 @@ export default async function Home() {
   const follow = products.filter((p) => p.category === "follow");
   const videoId = youtubeId(s.intro_video?.url);
   const heroMedia = s.hero_image?.media_id;
+  // صورة ثابتة توضّح شكل جدول المتدرب (أول لقطة في «نظرة داخل البرنامج»)
+  const heroShot = s.program_shots?.[0];
 
   return (
     <>
@@ -45,7 +46,13 @@ export default async function Home() {
               <img src={`/api/files/media/${heroMedia}`} alt="" fetchPriority="high" />
             </div>
           ) : (
-            <HeroArt />
+            heroShot && (
+              <figure className="hero-shot">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={heroShot.src} alt={heroShot.alt} width={heroShot.w} height={heroShot.h} fetchPriority="high" />
+                <figcaption><span className="tag soft">نموذج توضيحي</span> {heroShot.title}</figcaption>
+              </figure>
+            )
           )}
         </div>
         <div className="hero-slashes" aria-hidden="true" />
