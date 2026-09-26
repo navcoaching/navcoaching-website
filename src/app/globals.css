@@ -190,7 +190,9 @@ bdi, .ltr { unicode-bidi: isolate; direction: ltr; }
   font-size: 14px; padding: 8px 14px; border-radius: 999px;
   background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.14); color: var(--on-dark);
 }
-.hero-shot { margin: 0; width: 100%; max-width: 560px; justify-self: center; display: grid; gap: 12px; }
+/* الجدول صورة عريضة، فيظهر بعرض الصفحة تحت النص بدل عمود جانبي ضيق */
+.hero-grid.stacked { grid-template-columns: 1fr; }
+.hero-shot { margin: 0; width: 100%; max-width: 1100px; justify-self: center; display: grid; gap: 12px; }
 .hero-shot img { width: 100%; height: auto; border-radius: 14px; background: #fff; padding: 8px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4); }
 .hero-shot figcaption { color: var(--on-dark-muted); font-size: 14px; display: flex; gap: 8px; align-items: center; }
 .hero-photo {
