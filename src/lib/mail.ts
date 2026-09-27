@@ -18,15 +18,16 @@ export function devMailboxEnabled() {
 }
 
 /** يرجع "sent" عند الإرسال الفعلي عبر Resend، و"dev" عند الحفظ في صندوق التطوير فقط. */
-export async function sendMail(to: string, subject: string, text: string): Promise<"sent" | "dev"> {
+export async function sendMail(to: string, subject: string, text: string, html?: string): Promise<"sent" | "dev"> {
   if (mailConfigured()) {
     const resend = new Resend(process.env.RESEND_API_KEY);
-    const { error } = await resend.emails.send({ from: process.env.MAIL_FROM!, to, subject, text });
+    const { error } = await resend.emails.send({ from: process.env.MAIL_FROM!, to, subject, text, ...(html ? { html } : {}) });
     if (error) throw new Error(`mail failed: ${error.message}`);
     return "sent";
   }
   if (devMailboxEnabled()) {
     await pool.query("INSERT INTO dev_mailbox (recipient, subject, body) VALUES ($1, $2, $3)", [to, subject, text]);
+    if (html && process.env.MAIL_PREVIEW_DIR) await savePreview(subject, html);
     console.info(`[dev-mail] to=${to} subject=${subject}`);
     return "dev";
   }
@@ -44,4 +45,22 @@ export async function notifySafe(to: string | undefined | null, subject: string,
   } catch (err) {
     console.error("[notify] skipped:", (err as Error).message);
   }
+}
+
+/** في التطوير فقط: حفظ نسخة HTML للمعاينة (MAIL_PREVIEW_DIR) */
+async function savePreview(subject: string, html: string) {
+  const { writeFile, mkdir } = await import("node:fs/promises");
+  const dir = process.env.MAIL_PREVIEW_DIR!;
+  await mkdir(dir, { recursive: true });
+  await writeFile(`${dir}/${Date.now()}-${subject.replace(/[^\p{L}\p{N}-]+/gu, "_").slice(0, 60)}.html`, html);
+}
+
+/** هوية البريد: رابط الموقع والتواصل والاسم التجاري (من الإعدادات العامة) */
+export async function mailBrand(q: { query: (sql: string) => Promise<{ rows: { key: string; value: Record<string, string> }[] }> }) {
+  const { rows } = await q.query("SELECT key, value FROM site_settings WHERE key IN ('contact', 'legal') AND is_public");
+  const v = Object.fromEntries(rows.map((r) => [r.key, r.value]));
+  return {
+    site: (process.env.NEXT_PUBLIC_SITE_URL || "https://navcoaching.com").replace(/\/$/, ""),
+    whatsapp: v.contact?.whatsapp, instagram: v.contact?.instagram, legalName: v.legal?.name, cr: v.legal?.cr,
+  };
 }

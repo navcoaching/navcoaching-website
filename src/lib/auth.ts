@@ -2,7 +2,8 @@ import { betterAuth } from "better-auth";
 import { emailOTP } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { pool } from "./db";
-import { notifySafe, sendMail } from "./mail";
+import { mailBrand, notifySafe, sendMail } from "./mail";
+import { renderEmail } from "./email-template";
 
 /**
  * الدخول برمز مؤقت يصل للبريد (بدون كلمة مرور): أبسط على الجوال ولا يوجد كلمات مرور تتسرب.
@@ -61,10 +62,13 @@ export const auth = betterAuth({
       allowedAttempts: 5,
       storeOTP: "hashed",
       async sendVerificationOTP({ email, otp }) {
+        const brand = await mailBrand(pool).catch(() => ({ site: (process.env.NEXT_PUBLIC_SITE_URL || "https://navcoaching.com").replace(/\/$/, "") }));
         await sendMail(
           email,
           `رمز الدخول إلى Nav Coaching: ${otp}`,
           `رمز الدخول: ${otp}\n\nصالح لمدة 10 دقائق. إذا لم تطلب الدخول تجاهل هذه الرسالة.\n\nNav Coaching`,
+          renderEmail({ headline: "رمز الدخول 🔐", code: otp, brand,
+            message: "اكتب هذا الرمز في صفحة الدخول. صالح لمدة 10 دقائق، وإذا لم تطلب الدخول تجاهل هذه الرسالة." }),
         );
       },
     }),

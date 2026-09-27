@@ -1,6 +1,7 @@
 import "server-only";
 import type { Tx } from "./db";
-import { sendMail, mailConfigured, devMailboxEnabled } from "./mail";
+import { sendMail, mailConfigured, devMailboxEnabled, mailBrand } from "./mail";
+import { renderEmail, statusCopy } from "./email-template";
 
 /**
  * إشعارات المتدرب عبر البريد وواتساب، مع سجل لكل محاولة (notification_log).
@@ -59,7 +60,8 @@ export async function notifyTrainee(
   const site = process.env.NEXT_PUBLIC_SITE_URL ?? "";
   const link = `${site}/account/orders/${target.orderNo}`;
   const { rows: [info] } = await tx.query(
-    `SELECT u.email, coalesce(o.contact_phone, u.phone) AS phone,
+    `SELECT u.email, coalesce(o.contact_phone, u.phone) AS phone, o.contact_name, o.status, o.category, o.product_name, o.offer_label,
+            o.amount_due_halalas, o.payment_method, o.created_at,
             coalesce(p.email_enabled, true) AS email_on, coalesce(p.whatsapp_enabled, true) AS wa_on,
             (i.consent_whatsapp_at IS NOT NULL) AS wa_consent
        FROM orders o JOIN "user" u ON u.id = o.user_id
@@ -67,6 +69,19 @@ export async function notifyTrainee(
        LEFT JOIN intakes i ON i.order_id = o.id
       WHERE o.id = $1`, [target.orderId]);
   if (!info) return [];
+
+  // نسخة HTML بهوية الموقع (النص العادي يبقى نفسه)؛ بريد الحالة يعرض خطوات الطلب وملخصه
+  const html = async () => {
+    const brand = await mailBrand(tx);
+    const first = String(info.contact_name ?? "").trim().split(/\s+/)[0];
+    const order = { orderNo: target.orderNo, createdAt: info.created_at, status: info.status, category: info.category, product: info.product_name,
+      offer: info.offer_label, amountHalalas: info.amount_due_halalas, paymentMethod: info.payment_method };
+    if (opts.kind === "status") {
+      const c = statusCopy(info.status, info.category);
+      return renderEmail({ name: first, headline: c.headline, message: c.message || opts.text, order, brand });
+    }
+    return renderEmail({ name: first, headline: opts.subject, message: opts.text, brand, cta: { label: "افتح حسابك", url: link } });
+  };
 
   const results: ChannelResult[] = [];
   for (const channel of opts.channels ?? (["email", "whatsapp"] as Channel[])) {
@@ -81,7 +96,7 @@ export async function notifyTrainee(
         if (!info.email_on) r = { channel, status: "skipped", detail: "المتدرب أوقف إشعارات البريد" };
         else if (!mailConfigured() && !devMailboxEnabled()) r = { channel, status: "skipped", detail: "البريد غير مفعّل (RESEND_API_KEY / MAIL_FROM)" };
         else {
-          const mode = await sendMail(info.email, opts.subject, body);
+          const mode = await sendMail(info.email, opts.subject, body, await html());
           r = mode === "sent" ? { channel, status: "sent" } : { channel, status: "simulated", detail: "بيئة تطوير: حُفظ في صندوق التطوير ولم يُرسل فعلياً" };
         }
       } else {

@@ -658,7 +658,7 @@ export async function grantRewardAction(_: ActionState, fd: FormData): Promise<A
       if (!a?.eligible || a.avg == null) return { error: "المتدرب غير مستحق حالياً (يلزم التزام 90% فأكثر خلال 12 أسبوعاً مكتملاً)." };
       const no = (await tx.query("SELECT app.coach_grant_reward($1, $2) AS no", [orderNo, a.avg])).rows[0].no as string;
       const results = await notifyTrainee(tx, { orderId: o.id, orderNo: no, userId: o.user_id }, {
-        kind: "status", subject: "مكافأة التزامك 🎁",
+        kind: "reward", subject: "مكافأة التزامك 🎁",
         text: "مبروك! بسبب التزامك خلال اشتراكك، أضفنا لك 3 أشهر مجاناً تبدأ بعد نهاية اشتراكك الحالي." });
       return { no, results };
     });
