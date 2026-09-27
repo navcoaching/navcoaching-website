@@ -47,7 +47,7 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
                     {hidden({ item: it.id })}
                     <div className="grid g2">
                       <div className="field"><label htmlFor={`ex-${it.id}`}>التمرين</label>
-                        <input id={`ex-${it.id}`} name="exercise" list="ex-options" dir="ltr" required defaultValue={it.name} autoComplete="off" /></div>
+                        <input type="text" id={`ex-${it.id}`} name="exercise" list="ex-options" dir="ltr" required defaultValue={it.name} autoComplete="off" /></div>
                       <div className="field"><label htmlFor={`nt-${it.id}`}>ملاحظة للمتدرب (اختياري)</label>
                         <input id={`nt-${it.id}`} name="note" type="text" maxLength={500} defaultValue={it.note ?? ""} placeholder="مثال: نزول بطيء 3 ثوانٍ" /></div>
                     </div>
@@ -56,8 +56,8 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
                         {Array.from({ length: weeks }, (_, w) => (
                           <div key={w} className="plan-week">
                             <span className="small muted">الأسبوع {w + 1}</span>
-                            <input name={`w${w + 1}_reps`} aria-label={`تكرارات الأسبوع ${w + 1}`} dir="ltr" inputMode="text" placeholder="3x12" defaultValue={formatReps(it.plan[w]?.reps ?? []).replace("×", "x")} />
-                            <input name={`w${w + 1}_rir`} aria-label={`RIR الأسبوع ${w + 1}`} dir="ltr" inputMode="decimal" placeholder="RIR" defaultValue={it.plan[w]?.rir ?? ""} />
+                            <input type="text" name={`w${w + 1}_reps`} aria-label={`تكرارات الأسبوع ${w + 1}`} dir="ltr" inputMode="text" placeholder="3x12" defaultValue={formatReps(it.plan[w]?.reps ?? []).replace("×", "x")} />
+                            <input type="text" name={`w${w + 1}_rir`} aria-label={`RIR الأسبوع ${w + 1}`} dir="ltr" inputMode="decimal" placeholder="RIR" defaultValue={it.plan[w]?.rir ?? ""} />
                           </div>
                         ))}
                       </div>
@@ -82,11 +82,11 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
               {hidden({ day: d.id })}
               <div className="grid g3">
                 <div className="field"><label htmlFor={`add-${d.id}`}>التمرين (ابحثي بالاسم)</label>
-                  <input id={`add-${d.id}`} name="exercise" list="ex-options" dir="ltr" required autoComplete="off" /></div>
+                  <input type="text" id={`add-${d.id}`} name="exercise" list="ex-options" dir="ltr" required autoComplete="off" /></div>
                 <div className="field"><label htmlFor={`addr-${d.id}`}>المجموعات × التكرارات</label>
-                  <input id={`addr-${d.id}`} name="reps" dir="ltr" placeholder="3x12" /></div>
+                  <input type="text" id={`addr-${d.id}`} name="reps" dir="ltr" placeholder="3x12" /></div>
                 <div className="field"><label htmlFor={`addi-${d.id}`}>RIR</label>
-                  <input id={`addi-${d.id}`} name="rir" dir="ltr" inputMode="decimal" placeholder="2" /></div>
+                  <input type="text" id={`addi-${d.id}`} name="rir" dir="ltr" inputMode="decimal" placeholder="2" /></div>
               </div>
               <span className="hint">تُطبّق على كل الأسابيع، ثم عدّلي كل أسبوع من التمرين نفسه.</span>
             </ActionForm>

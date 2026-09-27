@@ -12,14 +12,19 @@ import {
   addBlockNoteAction, archiveBlockAction, assignTemplateAction, deleteBlockNoteAction, markSwapsSeenAction, notifyProgramAction, saveBlockAction,
 } from "@/app/actions/training";
 import TraineeLogs from "./TraineeLogs";
+import { CHANNEL_LABEL, RESULT_LABEL, type Channel, type ChannelResult } from "@/lib/notify";
 
 type Block = { id: string; name: string; start_date: string; weeks: number; instructions: string | null; steps_goal_week: number; status: string; created_at: string; template_name: string | null };
 type Swap = { id: number; created_at: string; seen_at: string | null; week_no: number | null; from_name: string; to_name: string; day_title: string };
 
 /** برنامج التمرين لمتدرب: إسناد قالب، تعديل البلوك له، ملاحظات، تبديلاته، وسجلاته */
-export default async function OrderProgram({ params }: { params: Promise<{ orderNo: string }> }) {
+export default async function OrderProgram({ params, searchParams }: { params: Promise<{ orderNo: string }>; searchParams: Promise<{ assigned?: string; n?: string }> }) {
   const coach = await requireCoach();
   const { orderNo } = await params;
+  const sp = await searchParams;
+  // نتيجة إشعار المتدرب بعد الإسناد (قيم معروفة فقط)
+  const notified = (sp.n ?? "").split(",").map((x) => x.split(":") as [Channel, ChannelResult["status"]])
+    .filter(([c, st]) => c in CHANNEL_LABEL && st in RESULT_LABEL).map(([c, st]) => `${CHANNEL_LABEL[c]} — ${RESULT_LABEL[st]}`);
   const data = await withUser(coach.id, async (tx) => {
     const { rows: [o] } = await tx.query(
       `SELECT o.id, o.order_no, o.user_id, o.contact_name, o.product_name, o.status FROM orders o WHERE o.order_no = $1`, [orderNo]);
@@ -72,6 +77,7 @@ export default async function OrderProgram({ params }: { params: Promise<{ order
         <h1 style={{ marginBottom: 4 }}>برنامج التمرين — {o.contact_name}</h1>
         <p className="muted">{o.product_name}{active && <> · {active.name} · {week === 0 ? `يبدأ ${fmtDate(active.start_date)}` : `الأسبوع ${week} من ${active.weeks}`}</>}</p>
       </div>
+      {sp.assigned && <p className="alert ok" role="status">تم إسناد البرنامج.{notified.length > 0 && ` الإشعار: ${notified.join("، ")}`}</p>}
       {!entitled && <p className="alert warn">المتدرب لا يرى البرنامج حتى تصبح حالة الطلب «نشط» أو «تم التسليم».</p>}
 
       {swaps.length > 0 && (

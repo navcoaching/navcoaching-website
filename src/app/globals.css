@@ -712,3 +712,25 @@ input[type="date"] { width: 100%; max-width: 100%; min-width: 0; min-height: 50p
 .swap-list li.unseen { background: var(--warn-bg); }
 .log-table td, .log-table th { vertical-align: top; min-width: 120px; }
 .log-table th[scope="row"] { min-width: 150px; }
+
+/* ---------- صفحة برنامج المتدرب ---------- */
+.exercise-card .target { margin: 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.exercise-card .target b { font-size: 18px; }
+.log-form { gap: 10px; }
+.log-fields { display: grid; grid-template-columns: minmax(0, 110px) minmax(0, 1fr) minmax(0, 80px); gap: 10px; align-items: end; }
+.reps-field { min-width: 0; }
+.reps-inputs { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 6px; }
+.reps-inputs input, .log-fields input { text-align: center; padding-inline: 6px; }
+@media (max-width: 520px) {
+  .log-fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .log-fields .reps-field { grid-column: 1 / -1; order: 3; }
+}
+.swap-form select { flex: 1; min-width: 0; }
+.rating-choices .choice span { min-width: 48px; justify-content: center; }
+.coach-notes { border-inline-start: 4px solid var(--cyan); }
+.program-link { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; text-decoration: none; color: inherit; border: 2px solid var(--cyan); }
+.swap-note { margin-top: 8px; padding: 8px 10px; border-radius: 10px; background: var(--warn-bg); font-size: 14px; overflow-wrap: anywhere; }
+.swap-note ul { margin: 4px 0 6px; padding-inline-start: 18px; }
+.grid.progress-forms { grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+.plan-week { min-width: 0; }
+.plan-week input { width: 100%; min-width: 0; }

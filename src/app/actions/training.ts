@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { dbErrorMessage, withUser, type Tx } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
+import { notifySafe } from "@/lib/mail";
 import { notifyTrainee, RESULT_LABEL, CHANNEL_LABEL, type ChannelResult } from "@/lib/notify";
 import { parseReps, parseRir, type PlanWeek } from "@/lib/training";
 import { EQUIPMENT, EX_STATUS, KINDS, LEVELS, MUSCLES, PATTERNS, SECONDARY_MUSCLES, placeFor } from "@/lib/exercises";
@@ -371,7 +372,9 @@ export async function assignTemplateAction(_: ActionState, fd: FormData): Promis
   revalidatePath(`/admin/orders/${orderNo}/program`);
   revalidatePath(`/admin/orders/${orderNo}`);
   revalidatePath(`/account/orders/${orderNo}/training`);
-  return { ok: true, message: "تم إسناد البرنامج." + summarize(results) };
+  // الصفحة تتحول من نموذج الإسناد إلى البرنامج، فنعرض النتيجة بعد التحويل
+  const n = results.map((r) => `${r.channel}:${r.status}`).join(",");
+  redirect(`/admin/orders/${orderNo}/program?assigned=1${n ? `&n=${encodeURIComponent(n)}` : ""}`);
 }
 
 const blockSchema = z.object({
@@ -470,4 +473,116 @@ export async function markSwapsSeenAction(_: ActionState, fd: FormData): Promise
   const back = String(fd.get("back") ?? "");
   if (/^\/admin\/orders\/[A-Z0-9-]+\/program$/.test(back)) revalidatePath(back);
   return { ok: true, message: "تم." };
+}
+
+// =====================================================================
+// المتدرب: التسجيل والتبديل والتقدم (الكتابة عبر دوال قاعدة البيانات فقط)
+// =====================================================================
+const T_GENERIC = "تعذّر الحفظ. حاول مرة أخرى.";
+async function asTrainee<T>(fn: (tx: Tx, user: { id: string; name: string }) => Promise<T>): Promise<T> {
+  const u = await getCurrentUser();
+  if (!u) throw new Error("login");
+  return withUser(u.id, (tx) => fn(tx, u));
+}
+const tFail = (err: unknown): ActionState =>
+  ({ error: (err as Error).message === "login" ? "سجّل الدخول أولاً." : dbErrorMessage(err) ?? T_GENERIC });
+const orderPath = (fd: FormData) => {
+  const no = String(fd.get("order_no") ?? "");
+  return ORDER_NO.test(no) ? `/account/orders/${no}/training` : null;
+};
+const toNum = (v: FormDataEntryValue | null) => {
+  const s = String(v ?? "").trim().replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d))).replace(",", ".");
+  return s === "" ? null : Number(s);
+};
+
+export async function logItemAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const item = idOf(fd, "item");
+  const week = Number(fd.get("week"));
+  const clear = fd.get("clear") === "1";
+  const weight = clear ? null : toNum(fd.get("weight"));
+  if (!item || !Number.isInteger(week)) return { error: T_GENERIC };
+  if (!clear && (weight == null || !Number.isFinite(weight) || weight < 0 || weight > 1000)) return { error: "اكتب الوزن بالكيلو (0 لتمارين وزن الجسم)." };
+  const reps = fd.getAll("reps").map((v) => toNum(v)).filter((v): v is number => v != null);
+  if (reps.some((r) => !Number.isInteger(r) || r < 0 || r > 200)) return { error: "التكرارات أرقام صحيحة." };
+  const rir = toNum(fd.get("rir"));
+  if (rir != null && (!Number.isFinite(rir) || rir < 0 || rir > 10)) return { error: "RIR رقم من 0 إلى 10." };
+  try {
+    await asTrainee((tx) => tx.query("SELECT app.log_item($1,$2,$3,$4,$5)", [item, week, weight, reps, rir]));
+  } catch (err) { return tFail(err); }
+  const p = orderPath(fd); if (p) revalidatePath(p);
+  return { ok: true, message: clear ? "تم حذف التسجيل." : "تم الحفظ ✅" };
+}
+
+export async function rateDayAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const day = idOf(fd, "day");
+  const week = Number(fd.get("week")), rating = Number(fd.get("rating"));
+  if (!day || !Number.isInteger(week)) return { error: T_GENERIC };
+  if (!(rating >= 1 && rating <= 5)) return { error: "اختر تقييماً من 1 إلى 5." };
+  try {
+    await asTrainee((tx) => tx.query("SELECT app.rate_day($1,$2,$3)", [day, week, rating]));
+  } catch (err) { return tFail(err); }
+  const p = orderPath(fd); if (p) revalidatePath(p);
+  return { ok: true, message: "شكراً، تم حفظ تقييم اليوم." };
+}
+
+/** تبديل تمرين ببديله من القائمة + إشعار المدربة (داخل لوحة الإدارة، وبالبريد إن كان مفعّلاً) */
+export async function swapExerciseAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const item = idOf(fd, "item"), ex = idOf(fd, "exercise");
+  const no = String(fd.get("order_no") ?? "");
+  if (!item || !ex || !ORDER_NO.test(no)) return { error: "اختر التمرين البديل من القائمة." };
+  let r: { changed: boolean; from?: string; to?: string };
+  let who = "";
+  try {
+    r = await asTrainee(async (tx, u) => {
+      who = u.name;
+      return (await tx.query("SELECT app.swap_exercise($1,$2) AS r", [item, ex])).rows[0].r;
+    });
+  } catch (err) { return tFail(err); }
+  if (r.changed) {
+    const site = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+    await notifySafe(process.env.COACH_NOTIFY_EMAIL, `تبديل تمرين — ${who}`,
+      `${who} بدّل تمريناً في برنامجه:\n${r.from} ← ${r.to}\n\nالتفاصيل:\n${site}/admin/orders/${no}/program\n\nNav Coaching`);
+    revalidatePath(`/account/orders/${no}/training`);
+    revalidatePath("/admin/members");
+  }
+  return { ok: true, message: r.changed ? `تم التبديل إلى ${r.to}. وصل إشعار للمدربة.` : "هذا هو التمرين الحالي." };
+}
+
+export async function logStepsAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const block = idOf(fd, "block");
+  const week = Number(fd.get("week"));
+  const total = toNum(fd.get("total"));
+  if (!block || !Number.isInteger(week)) return { error: T_GENERIC };
+  if (total != null && (!Number.isInteger(total) || total < 0 || total > 500000)) return { error: "اكتب مجموع خطوات الأسبوع رقماً صحيحاً." };
+  try {
+    await asTrainee((tx) => tx.query("SELECT app.log_steps($1,$2,$3)", [block, week, total]));
+  } catch (err) { return tFail(err); }
+  const p = orderPath(fd); if (p) revalidatePath(p);
+  return { ok: true, message: total == null ? "تم الحذف." : "تم حفظ الخطوات." };
+}
+
+const DATE = /^\d{4}-\d{2}-\d{2}$/;
+export async function logWeightAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const date = String(fd.get("date") ?? "");
+  const kg = toNum(fd.get("kg"));
+  if (!DATE.test(date)) return { error: "اختر التاريخ." };
+  if (kg != null && (!Number.isFinite(kg) || kg < 25 || kg > 350)) return { error: "اكتب الوزن بالكيلو (مثل 72.4)." };
+  try {
+    await asTrainee((tx) => tx.query("SELECT app.log_weight($1,$2)", [date, kg]));
+  } catch (err) { return tFail(err); }
+  const p = orderPath(fd); if (p) revalidatePath(p);
+  return { ok: true, message: kg == null ? "تم حذف الوزن لهذا اليوم." : "تم حفظ الوزن." };
+}
+
+export async function logMeasurementsAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const date = String(fd.get("date") ?? "");
+  const vals = ["chest", "waist", "hips", "thigh"].map((k) => toNum(fd.get(k)));
+  if (!DATE.test(date)) return { error: "اختر التاريخ." };
+  if (vals.some((v) => v != null && !Number.isFinite(v))) return { error: "القياسات أرقام بالسنتيمتر." };
+  if (vals.every((v) => v == null)) return { error: "اكتب قياساً واحداً على الأقل." };
+  try {
+    await asTrainee((tx) => tx.query("SELECT app.log_measurements($1,$2,$3,$4,$5)", [date, ...vals]));
+  } catch (err) { return tFail(err); }
+  const p = orderPath(fd); if (p) revalidatePath(p);
+  return { ok: true, message: "تم حفظ القياسات." };
 }

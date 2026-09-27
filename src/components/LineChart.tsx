@@ -7,7 +7,7 @@ export default function LineChart({ series, goal, unit = "", height = 200, title
   const xs = [...new Set(series.flatMap((s) => s.points.map((p) => p.x)))];
   const ys = series.flatMap((s) => s.points.map((p) => p.y)).concat(goal ? [goal] : []);
   if (xs.length === 0 || ys.length === 0) return <p className="small muted">لا توجد بيانات بعد.</p>;
-  const W = 600, H = height, L = 48, R = 12, T = 12, B = 34;
+  const W = 400, H = Math.round(height * 0.75), L = 44, R = 10, T = 12, B = 30;
   let min = Math.min(...ys), max = Math.max(...ys);
   if (min === max) { min -= 1; max += 1; }
   const pad = (max - min) * 0.1; min -= pad; max += pad;
@@ -23,12 +23,12 @@ export default function LineChart({ series, goal, unit = "", height = 200, title
         {ticks.map((t) => (
           <g key={t}>
             <line x1={L} x2={W - R} y1={y(t)} y2={y(t)} stroke="var(--line)" />
-            <text x={L - 6} y={y(t) + 4} textAnchor="end" fontSize="11" fill="var(--muted)">{fmt(t)}</text>
+            <text x={L - 6} y={y(t) + 4} textAnchor="end" fontSize="13" fill="var(--muted)">{fmt(t)}</text>
           </g>
         ))}
         {goal != null && <line x1={L} x2={W - R} y1={y(goal)} y2={y(goal)} stroke="var(--ok)" strokeDasharray="6 4" />}
         {xs.map((lbl, i) => (i % every === 0 || i === xs.length - 1) && (
-          <text key={lbl} x={x(i)} y={H - 10} textAnchor="middle" fontSize="11" fill="var(--muted)">{lbl}</text>
+          <text key={lbl} x={x(i)} y={H - 10} textAnchor="middle" fontSize="13" fill="var(--muted)">{lbl}</text>
         ))}
         {series.map((s, si) => {
           const pts = s.points.map((p) => [x(xs.indexOf(p.x)), y(p.y)] as const);

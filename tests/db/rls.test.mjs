@@ -409,3 +409,98 @@ describe("الجداول المجانية", () => {
     await assert.rejects(as(COACH, "SELECT app.coach_save_free_plan($1,'test-hidden','جدول اختبار','وصف مختصر للاختبار فقط',NULL,NULL,'hidden',0,'k.exe','application/x-msdownload',9,'z')", [hidden]), /PDF/);
   });
 });
+
+describe("منصة التدريب", () => {
+  let noA, tpl, block, item, item2, day, squat, boxSquat, notAlt, legExt;
+  const exId = async (name) => (await owner.query("SELECT id FROM exercises WHERE name = $1", [name])).rows[0].id;
+  before(async () => {
+    noA = await newOrder(A, "k-training-000000001");
+    await owner.query("UPDATE orders SET status = 'active' WHERE order_no = $1", [noA]);
+    [squat, boxSquat, legExt] = [await exId("Back Squat"), await exId("Box Squat"), await exId("Leg Extension")];
+    notAlt = await exId("Barbell Bench Press").catch(() => null) ?? (await owner.query("SELECT id FROM exercises WHERE primary_muscle LIKE 'Chest%' AND status = 'approved' LIMIT 1")).rows[0].id;
+  });
+  test("المكتبة للمدربة فقط (المتدرب لا يقرأها ولا يعدّلها)", async () => {
+    assert.equal((await as(COACH, "SELECT count(*)::int n FROM exercises")).rows[0].n, 219);
+    assert.equal((await as(A, "SELECT count(*)::int n FROM exercises")).rows[0].n, 0);
+    assert.equal((await as(null, "SELECT count(*)::int n FROM exercises")).rows[0].n, 0);
+    await assert.rejects(as(A, "INSERT INTO exercises (name, primary_muscle) VALUES ('x','y')"), /row-level security/);
+    const alts = (await as(COACH, "SELECT count(*)::int n FROM exercise_alternatives WHERE exercise_id = $1", [squat])).rows[0].n;
+    assert.equal(alts, 5);
+  });
+  test("المدربة تبني قالباً وتسنده؛ المتدرب لا يرى القوالب", async () => {
+    tpl = (await as(COACH, "INSERT INTO program_templates (name, weeks) VALUES ('قالب اختبار', 5) RETURNING id")).rows[0].id;
+    const d = (await as(COACH, "INSERT INTO template_days (template_id, day_no, title) VALUES ($1, 1, 'DAY 1 — LOWER') RETURNING id", [tpl])).rows[0].id;
+    const plan = JSON.stringify(Array(5).fill({ sets: 3, reps: [12, 12, 12], rir: 3 }));
+    await as(COACH, "INSERT INTO template_items (day_id, position, exercise_id, plan) VALUES ($1,0,$2,$3), ($1,1,$4,$3)", [d, squat, plan, legExt]);
+    assert.equal((await as(A, "SELECT count(*)::int n FROM program_templates")).rows[0].n, 0);
+    await assert.rejects(as(A, "SELECT app.coach_assign_template($1,$2,current_date,NULL)", [noA, tpl]), /للمدربة فقط/);
+    block = (await as(COACH, "SELECT app.coach_assign_template($1,$2,current_date,'Block 1') AS id", [noA, tpl])).rows[0].id;
+    const items = (await owner.query("SELECT i.id, i.day_id FROM block_items i JOIN block_days d ON d.id = i.day_id WHERE d.block_id = $1 ORDER BY position", [block])).rows;
+    [item, item2] = items.map((r) => r.id); day = items[0].day_id;
+    assert.equal(items.length, 2);
+  });
+  test("المتدرب يرى برنامجه وتمارينه فقط؛ غيره لا يرى شيئاً", async () => {
+    assert.equal((await as(A, "SELECT count(*)::int n FROM blocks")).rows[0].n, 1);
+    assert.equal((await as(A, "SELECT count(*)::int n FROM block_items")).rows[0].n, 2);
+    const ex = (await as(A, "SELECT name FROM app.block_exercises($1) ORDER BY name", [block])).rows.map((r) => r.name);
+    assert.deepEqual(ex, ["Back Squat", "Leg Extension"]);
+    assert.equal((await as(A, "SELECT * FROM app.block_exercises($1)", [block])).rows[0].notes, undefined);
+    assert.equal((await as(B, "SELECT count(*)::int n FROM blocks")).rows[0].n, 0);
+    assert.equal((await as(B, "SELECT count(*)::int n FROM block_items")).rows[0].n, 0);
+    assert.equal((await as(B, "SELECT * FROM app.block_exercises($1)", [block])).rowCount, 0);
+    assert.equal((await as(B, "SELECT * FROM app.swap_options($1)", [item])).rowCount, 0);
+    // الكتابة المباشرة لا تمر (RLS: صفر صفوف)، والتمرين يبقى كما هو
+    assert.equal((await as(A, "UPDATE block_items SET exercise_id = $2 WHERE id = $1", [item, notAlt])).rowCount, 0);
+    assert.equal((await owner.query("SELECT exercise_id FROM block_items WHERE id = $1", [item])).rows[0].exercise_id, squat);
+    await assert.rejects(as(A, "INSERT INTO block_notes (block_id, body) VALUES ($1, 'x')", [block]), /row-level security/);
+  });
+  test("التسجيل: صاحب البرنامج فقط، وأسبوع ضمن المدة، ويُستبدل عند التعديل", async () => {
+    await as(A, "SELECT app.log_item($1, 1, 60, '{12,12,10}', 2)", [item]);
+    await as(A, "SELECT app.log_item($1, 1, 62.5, '{}', NULL)", [item]);
+    const l = (await as(A, "SELECT weight::float, reps, exercise_id FROM item_logs WHERE block_item_id = $1", [item])).rows;
+    assert.equal(l.length, 1); assert.equal(l[0].weight, 62.5); assert.deepEqual(l[0].reps, []); assert.equal(l[0].exercise_id, squat);
+    await assert.rejects(as(A, "SELECT app.log_item($1, 6, 60, '{}', NULL)", [item]), /الأسبوع/);
+    await assert.rejects(as(B, "SELECT app.log_item($1, 1, 60, '{}', NULL)", [item]), /غير موجود/);
+    await assert.rejects(as(A, "INSERT INTO item_logs (block_item_id, week_no, exercise_id, weight) VALUES ($1, 2, $2, 1)", [item, squat]), /permission denied/);
+    await as(A, "SELECT app.rate_day($1, 1, 4)", [day]);
+    await assert.rejects(as(A, "SELECT app.rate_day($1, 1, 9)", [day]), /1 إلى 5/);
+    await as(A, "SELECT app.log_steps($1, 1, 52000)", [block]);
+    await as(A, "SELECT app.log_weight(current_date, 72.4)");
+    await as(A, "SELECT app.log_measurements(current_date, NULL, 80, 98, NULL)");
+    await assert.rejects(as(A, "SELECT app.log_weight(current_date + 3, 72)"), /التاريخ/);
+    await assert.rejects(as(B, "SELECT app.log_weight(current_date, 72)"), /لا يوجد برنامج/);
+    assert.equal((await as(B, "SELECT count(*)::int n FROM weight_logs")).rows[0].n, 0);
+    assert.equal((await as(COACH, "SELECT count(*)::int n FROM weight_logs")).rows[0].n, 1);
+  });
+  test("التبديل: من بدائل اختيار المدربة فقط، ويُسجّل للمدربة كإشعار", async () => {
+    const opts = (await as(A, "SELECT * FROM app.swap_options($1)", [item])).rows;
+    assert.equal(opts[0].name, "Back Squat"); assert.equal(opts[0].is_coach_choice, true); assert.equal(opts[0].is_current, true);
+    assert.ok(opts.some((o) => o.name === "Box Squat"));
+    await assert.rejects(as(A, "SELECT app.swap_exercise($1,$2)", [item, notAlt]), /ليس من البدائل/);
+    await assert.rejects(as(B, "SELECT app.swap_exercise($1,$2)", [item, boxSquat]), /غير موجود/);
+    const r = (await as(A, "SELECT app.swap_exercise($1,$2) AS r", [item, boxSquat])).rows[0].r;
+    assert.deepEqual(r, { changed: true, from: "Back Squat", to: "Box Squat" });
+    // الرجوع لاختيار المدربة مسموح، والقائمة ما زالت مبنية على اختيارها
+    assert.ok((await as(A, "SELECT * FROM app.swap_options($1)", [item])).rows.some((o) => o.name === "Back Squat" && o.is_coach_choice));
+    assert.equal((await as(A, "SELECT count(*)::int n FROM exercise_swaps")).rows[0].n, 1);
+    assert.equal((await as(B, "SELECT count(*)::int n FROM exercise_swaps")).rows[0].n, 0);
+    assert.equal((await as(COACH, "SELECT count(*)::int n FROM exercise_swaps WHERE seen_at IS NULL")).rows[0].n, 1);
+    // السجل السابق يبقى باسم التمرين الذي سُجّل عليه، والجديد باسم البديل
+    await as(A, "SELECT app.log_item($1, 2, 50, '{}', NULL)", [item]);
+    const logs = (await owner.query("SELECT week_no, exercise_id FROM item_logs WHERE block_item_id = $1 ORDER BY week_no", [item])).rows;
+    assert.deepEqual(logs.map((l) => l.exercise_id), [squat, boxSquat]);
+    assert.ok((await as(A, "SELECT name FROM app.block_exercises($1)", [block])).rows.some((e) => e.name === "Back Squat"));
+    await assert.rejects(as(A, "SELECT app.coach_mark_swaps_seen($1)", [A]), /للمدربة فقط/);
+    assert.equal((await as(COACH, "SELECT app.coach_mark_swaps_seen($1) AS n", [A])).rows[0].n, 1);
+  });
+  test("البرنامج المنتهي أو الطلب غير المدفوع: لا تسجيل", async () => {
+    await owner.query("UPDATE orders SET status = 'cancelled' WHERE order_no = $1", [noA]);
+    assert.equal((await as(A, "SELECT count(*)::int n FROM blocks")).rows[0].n, 0);
+    await assert.rejects(as(A, "SELECT app.log_item($1, 1, 60, '{}', NULL)", [item]), /غير موجود/);
+    await owner.query("UPDATE orders SET status = 'active' WHERE order_no = $1", [noA]);
+    await as(COACH, "UPDATE blocks SET status = 'archived' WHERE id = $1", [block]);
+    await assert.rejects(as(A, "SELECT app.log_item($1, 1, 60, '{}', NULL)", [item]), /منتهي/);
+    await assert.rejects(as(A, "SELECT app.swap_exercise($1,$2)", [item2, squat]), /منتهي|ليس من البدائل/);
+    await assert.rejects(as(A, "SELECT app.log_weight(current_date, 70)"), /لا يوجد برنامج/);
+  });
+});

@@ -3,6 +3,7 @@ import { Fragment } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/session";
+import { withUser } from "@/lib/db";
 import { getMyFollowUp, getOrderDetail, getSettings } from "@/lib/data";
 import { SUB_LABEL, WEEKDAYS, fmtYMD, riyadhDate } from "@/lib/schedule";
 import { fmtDate, fmtDateTime, riyals, waLink } from "@/lib/format";
@@ -34,6 +35,8 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
   const entitled = ENTITLED.includes(o.status);
   const waHelp = waLink(s.contact.whatsapp, `مرحباً، عندي استفسار عن طلبي رقم ${o.order_no}`);
   const amount = o.amount_due_halalas;
+  const block = entitled ? await withUser(user.id, async (tx) => (await tx.query(
+    `SELECT name, status FROM blocks WHERE order_id = $1 ORDER BY (status = 'active') DESC, created_at DESC LIMIT 1`, [o.id])).rows[0] as { name: string; status: string } | undefined) : undefined;
 
   return (
     <section className="section tight">
@@ -56,6 +59,13 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
           </div>
           <span className={`status ${statusTone(o.status)}`} data-testid="order-status">{statusLabel(o.status, o.category)}</span>
         </div>
+
+        {block && (
+          <Link href={`/account/orders/${o.order_no}/training`} className="card program-link" data-testid="training-link">
+            <span><b>برنامج التمرين</b><span className="small muted"> · {block.name}{block.status === "active" ? "" : " (منتهي)"}</span></span>
+            <span className="btn btn-sm">سجّل تمرينك ←</span>
+          </Link>
+        )}
 
         <div className="account-layout">
           <div className="stack" style={{ ["--space" as string]: "18px" }}>

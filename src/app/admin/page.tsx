@@ -19,6 +19,7 @@ export default async function AdminHome() {
       const counts = (await tx.query("SELECT status, count(*)::int n FROM orders WHERE NOT is_demo GROUP BY status")).rows as { status: string; n: number }[];
       const newWeek = (await tx.query("SELECT count(*)::int n FROM orders WHERE NOT is_demo AND created_at > now() - interval '7 days'")).rows[0].n as number;
       const pendingReviews = (await tx.query("SELECT count(*)::int n FROM reviews WHERE status = 'pending'")).rows[0].n as number;
+      const swaps = (await tx.query("SELECT count(DISTINCT user_id)::int n FROM exercise_swaps WHERE seen_at IS NULL")).rows[0].n as number;
       const pendingCheckins = (await tx.query("SELECT count(*)::int n FROM check_ins WHERE coach_reply IS NULL")).rows[0].n as number;
       const latest = (await tx.query("SELECT order_no, product_name, offer_label, status, category, amount_due_halalas, contact_name, created_at FROM orders ORDER BY created_at DESC LIMIT 8")).rows;
       const demo = (await tx.query("SELECT (SELECT count(*) FROM products WHERE is_demo)::int + (SELECT count(*) FROM orders WHERE is_demo)::int AS n")).rows[0].n as number;
@@ -54,7 +55,7 @@ export default async function AdminHome() {
             AND (coalesce(i.health->>'weight','') = '' OR coalesce(i.health->>'height','') = '')
           ORDER BY o.created_at DESC LIMIT 20`);
       for (const o of noMeasure) alerts.push({ order_no: o.order_no, name: o.contact_name, tone: "warn", text: "الوزن أو الطول غير موجود في الاستبيان" });
-      return { counts, newWeek, pendingReviews, pendingCheckins, latest, demo, alerts };
+      return { swaps, counts, newWeek, pendingReviews, pendingCheckins, latest, demo, alerts };
     }),
     getSettings(),
   ]);
@@ -79,6 +80,7 @@ export default async function AdminHome() {
         <Link href="/admin/orders?status=awaiting_quote" className="card stat" style={{ textDecoration: "none", color: "inherit" }}><span className="muted">بانتظار تأكيد المبلغ</span><b>{c("awaiting_quote")}</b></Link>
         <Link href="/admin/orders?status=preparing" className="card stat" style={{ textDecoration: "none", color: "inherit" }}><span className="muted">قيد الإعداد</span><b>{c("preparing")}</b></Link>
         <Link href="/admin/reviews" className="card stat" style={{ textDecoration: "none", color: "inherit" }}><span className="muted">تقييمات بانتظار المراجعة</span><b>{data.pendingReviews}</b></Link>
+        <Link href="/admin/members?view=swaps" className="card stat" style={{ textDecoration: "none", color: "inherit" }} data-testid="stat-swaps"><span className="muted">متدربون بدّلوا تمارين</span><b>{data.swaps}</b><span className="small muted">لم تطّلعي عليها بعد</span></Link>
       </div>
       <section className="card" aria-labelledby="alerts-h" data-testid="coach-alerts">
         <h2 id="alerts-h" style={{ fontSize: 18, marginBottom: 12 }}>تنبيهات المتابعة <span className="small muted">(داخلية — لا تُرسل للمتدربين)</span></h2>
