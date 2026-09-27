@@ -124,6 +124,7 @@ try {
 
   // ---------- مكتبة التمارين (لا تستبدل تعديلات المدربة) ----------
   await db.query(exercisesSql());
+  await db.query(exercisesSql(undefined, "taxonomy"));
   const { rows: [{ n: exCount }] } = await db.query("SELECT count(*)::int AS n FROM exercises");
 
   await db.query("COMMIT");

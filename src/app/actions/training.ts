@@ -10,7 +10,7 @@ import { getCurrentUser } from "@/lib/session";
 import { notifySafe } from "@/lib/mail";
 import { notifyTrainee, RESULT_LABEL, CHANNEL_LABEL, type ChannelResult } from "@/lib/notify";
 import { parseReps, parseRir, type PlanWeek } from "@/lib/training";
-import { EQUIPMENT, EX_STATUS, KINDS, LEVELS, MUSCLES, PATTERNS, SECONDARY_MUSCLES, placeFor } from "@/lib/exercises";
+import { ANATOMICAL_ACTIONS, EQUIPMENT, EX_STATUS, KINDS, LEVELS, MOVEMENT_SUBCATEGORIES, MUSCLES, PATTERNS, SECONDARY_MUSCLES, SUB_PATTERNS, placeFor } from "@/lib/exercises";
 import type { ActionState } from "./client";
 
 const GENERIC = "تعذّر الحفظ. حاولي مرة أخرى.";
@@ -36,6 +36,9 @@ const exerciseSchema = z.object({
   kind: oneOf(KINDS, "نوع التمرين غير صحيح."),
   equipment: oneOf(EQUIPMENT, "المعدات غير صحيحة."),
   level: oneOf(LEVELS, "المستوى غير صحيح."),
+  sub_pattern: oneOf(SUB_PATTERNS.map(([sp]) => sp), "النمط الفرعي غير صحيح."),
+  anatomical_action: oneOf(ANATOMICAL_ACTIONS, "الحركة التشريحية غير صحيحة."),
+  movement_subcategory: oneOf(MOVEMENT_SUBCATEGORIES, "التصنيف الفرعي غير صحيح."),
   status: z.enum(Object.keys(EX_STATUS) as [keyof typeof EX_STATUS]),
   video_url: opt(500).refine((v) => !v || /^https:\/\/\S+$/.test(v), "رابط الفيديو يجب أن يبدأ بـ https://"),
   instructions: opt(4000),
@@ -51,28 +54,33 @@ export async function saveExerciseAction(_: ActionState, fd: FormData): Promise<
   const parsed = exerciseSchema.safeParse({
     id: g("id"), name: g("name"), primary_muscle: g("primary_muscle"), secondary: fd.getAll("secondary").map(String),
     pattern: g("pattern"), kind: g("kind"), equipment: g("equipment"), level: g("level"), status: g("status"),
+    sub_pattern: g("sub_pattern"), anatomical_action: g("anatomical_action"), movement_subcategory: g("movement_subcategory"),
     video_url: g("video_url"), instructions: g("instructions"), notes: g("notes"),
     source: g("source"), source_name: g("source_name"), source_url: g("source_url"),
     alternatives: [...new Set(fd.getAll("alt").map(String))],
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const v = parsed.data;
+  const parentOf = SUB_PATTERNS.find(([sp]) => sp === v.sub_pattern)?.[1];
+  if (v.sub_pattern && v.pattern && parentOf !== v.pattern) return { error: "النمط الفرعي لا يتبع نمط الحركة المختار." };
   let id = v.id;
   try {
     await asCoach(async (tx, uid) => {
       const cols = [v.name, v.primary_muscle, v.secondary.filter((m) => m !== v.primary_muscle), v.pattern, v.kind, v.equipment, v.level,
-        placeFor(v.equipment), v.video_url, v.instructions, v.notes, v.source, v.source_name, v.source_url, v.status];
+        placeFor(v.equipment), v.video_url, v.instructions, v.notes, v.source, v.source_name, v.source_url, v.status,
+        v.sub_pattern, v.anatomical_action, v.movement_subcategory];
       if (id) {
         const r = await tx.query(
           `UPDATE exercises SET name=$2, primary_muscle=$3, secondary_muscles=$4, pattern=$5, kind=$6, equipment=$7, level=$8, place=$9,
-             video_url=$10, instructions=$11, notes=$12, source=$13, source_name=$14, source_url=$15, status=$16, updated_at=now()
+             video_url=$10, instructions=$11, notes=$12, source=$13, source_name=$14, source_url=$15, status=$16,
+             sub_pattern=$17, anatomical_action=$18, movement_subcategory=$19, updated_at=now()
            WHERE id=$1`, [id, ...cols]);
         if (r.rowCount === 0) throw new Error("التمرين غير موجود.");
       } else {
         id = (await tx.query(
           `INSERT INTO exercises (name, primary_muscle, secondary_muscles, pattern, kind, equipment, level, place,
-             video_url, instructions, notes, source, source_name, source_url, status)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id`, cols)).rows[0].id;
+             video_url, instructions, notes, source, source_name, source_url, status, sub_pattern, anatomical_action, movement_subcategory)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING id`, cols)).rows[0].id;
       }
       await tx.query("DELETE FROM exercise_alternatives WHERE exercise_id = $1", [id]);
       const alts = v.alternatives.filter((a) => a !== id);
@@ -244,16 +252,19 @@ export async function addItemAction(_: ActionState, fd: FormData): Promise<Actio
   const kind = kindOf(fd), day = idOf(fd, "day");
   if (!kind || !day) return { error: GENERIC };
   const name = String(fd.get("exercise") ?? "").trim();
+  const pickedId = idOf(fd, "exercise_id");
   const reps = parseReps(String(fd.get("reps") ?? ""));
   const rir = parseRir(String(fd.get("rir") ?? ""));
-  if (!name) return { error: "اختاري التمرين من القائمة." };
+  if (!name && !pickedId) return { error: "اختاري التمرين من القائمة." };
   if (reps === null) return { error: "اكتبي المجموعات والتكرارات مثل 3x12 أو 12-10-8." };
   if (rir === undefined) return { error: "RIR رقم من 0 إلى 10." };
   const t = T[kind];
   try {
     const res = await asCoach(async (tx) => {
       const o = await ownerOfDay(tx, kind, day);
-      const ex = await exerciseByName(tx, name);
+      const ex = pickedId
+        ? ((await tx.query(`SELECT id FROM exercises WHERE id = $1 AND status = 'approved'`, [pickedId])).rows[0]?.id as string | undefined) ?? null
+        : await exerciseByName(tx, name);
       if (!ex) return { error: "التمرين غير موجود في المكتبة أو غير معتمد. اختاريه من القائمة." };
       const plan: PlanWeek[] = Array.from({ length: o.weeks }, () => ({ sets: reps.length, reps, rir }));
       const { rows: [{ pos }] } = await tx.query(`SELECT coalesce(max(position), -1) + 1 AS pos FROM ${t.items} WHERE day_id = $1`, [day]);

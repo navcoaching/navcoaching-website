@@ -1,11 +1,12 @@
 import ActionForm from "@/components/admin/ActionForm";
+import ExercisePicker, { type PickerExercise } from "@/components/admin/ExercisePicker";
 import { addDayAction, addItemAction, deleteDayAction, deleteItemAction, moveItemAction, saveDayAction, saveItemAction } from "@/app/actions/training";
 import { formatReps, planLabel, type PlanWeek } from "@/lib/training";
 import { muscleAr } from "@/lib/exercises";
 
 export type EditorItem = { id: string; name: string; plan: PlanWeek[]; note: string | null; coach_name?: string | null; logs?: number };
 export type EditorDay = { id: string; day_no: number; title: string; items: EditorItem[] };
-export type ExOption = { name: string; primary_muscle: string; equipment: string | null };
+export type ExOption = PickerExercise;
 
 /** محرر البرنامج: نفس الواجهة للقالب ولبلوك المتدرب (kind) */
 export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }: {
@@ -80,9 +81,8 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
             <summary className="btn btn-ghost btn-sm">+ إضافة تمرين</summary>
             <ActionForm action={addItemAction} submit="إضافة" resetOnSuccess>
               {hidden({ day: d.id })}
-              <div className="grid g3">
-                <div className="field"><label htmlFor={`add-${d.id}`}>التمرين (ابحثي بالاسم)</label>
-                  <input type="text" id={`add-${d.id}`} name="exercise" list="ex-options" dir="ltr" required autoComplete="off" /></div>
+              <ExercisePicker exercises={exercises} idPrefix={`add-${d.id}`} />
+              <div className="grid g2">
                 <div className="field"><label htmlFor={`addr-${d.id}`}>المجموعات × التكرارات</label>
                   <input type="text" id={`addr-${d.id}`} name="reps" dir="ltr" placeholder="3x12" /></div>
                 <div className="field"><label htmlFor={`addi-${d.id}`}>RIR</label>

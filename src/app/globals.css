@@ -734,3 +734,8 @@ input[type="date"] { width: 100%; max-width: 100%; min-width: 0; min-height: 50p
 .grid.progress-forms { grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
 .plan-week { min-width: 0; }
 .plan-week input { width: 100%; min-width: 0; }
+/* اختيار التمرين المتسلسل */
+.picker { display: grid; gap: 12px; }
+.picker-levels { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 10px 12px; }
+.picker-levels select, .picker select { width: 100%; min-width: 0; }
+.picker-step { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 12px; margin-inline-end: 4px; }

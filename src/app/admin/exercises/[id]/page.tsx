@@ -4,13 +4,14 @@ import { withUser } from "@/lib/db";
 import { requireCoach } from "@/lib/session";
 import ActionForm from "@/components/admin/ActionForm";
 import { saveExerciseAction } from "@/app/actions/training";
-import { EQUIPMENT, EX_STATUS, KINDS, LEVELS, MUSCLES, PATTERNS, SECONDARY_MUSCLES, muscleAr } from "@/lib/exercises";
+import { ANATOMICAL_ACTIONS, EQUIPMENT, EX_STATUS, KINDS, LEVELS, MOVEMENT_SUBCATEGORIES, MUSCLES, PATTERNS, SECONDARY_MUSCLES, SUB_PATTERNS, muscleAr } from "@/lib/exercises";
 import { youtubeId } from "@/lib/youtube";
 
 type Ex = {
   id: string; name: string; primary_muscle: string; secondary_muscles: string[]; pattern: string | null; kind: string | null; equipment: string | null;
   level: string | null; place: string | null; video_url: string | null; instructions: string | null; notes: string | null;
   source: string | null; source_name: string | null; source_url: string | null; rehab_category: string | null; status: string;
+  sub_pattern: string | null; anatomical_action: string | null; movement_subcategory: string | null;
 };
 type Opt = { id: string; name: string; primary_muscle: string };
 
@@ -58,6 +59,17 @@ export default async function EditExercise({ params, searchParams }: { params: P
               <input id="ex-name" name="name" type="text" dir="auto" required minLength={2} maxLength={120} defaultValue={ex?.name} /></div>
             {sel("primary_muscle", "العضلة الأساسية", MUSCLES, ex?.primary_muscle, true)}
             {sel("pattern", "تصنيف الحركة", PATTERNS, ex?.pattern)}
+            <div className="field"><label htmlFor="ex-sub_pattern">النمط الفرعي / زاوية الحركة</label>
+              <select id="ex-sub_pattern" name="sub_pattern" defaultValue={ex?.sub_pattern ?? ""}>
+                <option value="">—</option>
+                {PATTERNS.map((p) => {
+                  const subs = SUB_PATTERNS.filter(([, parent]) => parent === p);
+                  return subs.length ? <optgroup key={p} label={p}>{subs.map(([sp]) => <option key={sp} value={sp}>{sp}</option>)}</optgroup> : null;
+                })}
+              </select>
+              <span className="hint">اختاري نمطاً فرعياً تابعاً لنمط الحركة المختار.</span></div>
+            {sel("anatomical_action", "الحركة التشريحية الأساسية", ANATOMICAL_ACTIONS, ex?.anatomical_action)}
+            {sel("movement_subcategory", "التصنيف الفرعي للحركة", MOVEMENT_SUBCATEGORIES, ex?.movement_subcategory)}
             {sel("kind", "نوع التمرين", KINDS, ex?.kind)}
             {sel("equipment", "المعدات", EQUIPMENT, ex?.equipment)}
             {sel("level", "المستوى", LEVELS, ex?.level)}

@@ -60,6 +60,16 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await db.query(`UPDATE "user" SET role = 'coach' WHERE email = $1`, [coachEmail]);
   await coach.goto("/admin/exercises?q=squat");
   await expect(coach.getByTestId("admin-exercises")).toContainText("Back Squat");
+  // الفلاتر المتسلسلة في المكتبة (تُرسل تلقائياً عند التغيير)
+  await coach.goto("/admin/exercises");
+  await coach.getByLabel("العضلة").selectOption("Quadriceps / الأمامية");
+  await coach.waitForURL(/primary_muscle=/);
+  await coach.getByLabel("نمط الحركة").selectOption("Squat (Knee-dominant) / سكوات (هيمنة الركبة)");
+  await coach.waitForURL(/pattern=/);
+  await coach.getByLabel("النمط الفرعي / زاوية الحركة").selectOption("Leg Press / ضغط الأرجل");
+  await coach.waitForURL(/sub_pattern=/);
+  await expect(coach.getByTestId("admin-exercises")).toContainText("Mid Leg Press");
+  await expect(coach.getByTestId("admin-exercises")).not.toContainText("Back Squat");
   await noHorizontalScroll(coach);
 
   await coach.goto("/admin/templates/new");
@@ -67,15 +77,30 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await coach.getByRole("button", { name: "إنشاء القالب" }).click();
   await expect(coach.getByText("تم إنشاء القالب")).toBeVisible();
   const day1 = coach.getByTestId("day-1");
-  for (const [ex, reps, rir] of [["Back Squat", "3x10", "2"], ["Leg Extension", "12-12-10", "1"]]) {
-    // صندوق الإضافة يبقى مفتوحاً بعد الإضافة (لإضافة عدة تمارين متتالية)
-    if ((await day1.locator("details.add-item").getAttribute("open")) === null) await day1.getByText("+ إضافة تمرين").click();
-    await day1.getByLabel("التمرين (ابحثي بالاسم)").fill(ex);
-    await day1.getByLabel("المجموعات × التكرارات").fill(reps);
-    await day1.getByLabel("RIR", { exact: true }).fill(rir);
-    await day1.getByRole("button", { name: "إضافة", exact: true }).click();
-    await expect(day1.locator(".program-items")).toContainText(ex);
-  }
+  const addForm = day1.locator("details.add-item");
+  const openAdd = async () => { if ((await addForm.getAttribute("open")) === null) await day1.getByText("+ إضافة تمرين").click(); };
+  // 1) بالقوائم المتسلسلة: العضلة ← النمط ← النمط الفرعي ← الحركة التشريحية ← التمرين
+  await openAdd();
+  const picker = day1.getByTestId("exercise-picker");
+  await picker.getByLabel("العضلة").selectOption("Quadriceps / الأمامية");
+  await picker.getByLabel("نمط الحركة").selectOption("Squat (Knee-dominant) / سكوات (هيمنة الركبة)");
+  await picker.getByLabel("النمط الفرعي / زاوية الحركة").selectOption("Free / Bodyweight Squat / سكوات حر أو بوزن الجسم");
+  await expect(picker.getByLabel("الحركة التشريحية الأساسية")).toContainText("Knee Extension + Hip Extension");
+  const exSelect = picker.getByLabel(/^التمرين/);
+  await expect(exSelect).not.toContainText("Leg Extension");
+  await exSelect.selectOption({ label: "Back Squat — بار" });
+  await day1.getByLabel("المجموعات × التكرارات").fill("3x10");
+  await day1.getByLabel("RIR", { exact: true }).fill("2");
+  await day1.getByRole("button", { name: "إضافة", exact: true }).click();
+  await expect(day1.locator(".program-items")).toContainText("Back Squat");
+  // 2) بالبحث بالاسم
+  await openAdd();
+  await picker.getByLabel("العضلة").selectOption("");
+  await day1.getByLabel("أو ابحثي بالاسم").fill("Leg Extension");
+  await day1.getByLabel("المجموعات × التكرارات").fill("12-12-10");
+  await day1.getByLabel("RIR", { exact: true }).fill("1");
+  await day1.getByRole("button", { name: "إضافة", exact: true }).click();
+  await expect(day1.locator(".program-items")).toContainText("Leg Extension");
   await expect(day1.locator(".program-items")).toContainText("3×10 · RIR 2");
   await noHorizontalScroll(coach);
 

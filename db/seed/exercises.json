@@ -21,7 +21,9 @@
   ],
   "video_url": "https://youtu.be/bEv6CCg2BC8",
   "instructions": "ثبت البار على الترابس او الاكتاف الخلفية وشد البار وكأنك بتكسره من النص، ادفع ركبك للامام وانزل.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Free / Bodyweight Squat / سكوات حر أو بوزن الجسم",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Box Squat",
@@ -46,7 +48,9 @@
   "video_url": "https://youtube.com/shorts/9uhEh9gpwUU?si=xaTY7AJiCeQfa3by",
   "instructions": "ثبت البار على الترابس او الاكتاف الخلفية وشد البار وكأنك بتكسره من النص، ادفع ركبك للامام وانزل.",
   "notes": "تعليمات بديلة في المصدر (صف 13): ثبت البار على الترابس او الاكتاف الخلفية وشد البار وكأنك بتكسره من النص، ادفع ركبك للامام وانزل، انزل واثبت على البوكس ثانية وارفع.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Free / Bodyweight Squat / سكوات حر أو بوزن الجسم",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Hack Squat",
@@ -70,7 +74,9 @@
   ],
   "video_url": "https://youtu.be/0tn5K9NlCfo",
   "instructions": "تمسك بالمقابض لزيادة الثبات، ثبت موخرتك وظهرك السفلي كويس، انزل قد ما تقدر لكن لا تبالغ بالنزول لدرجة يتقوس ظهرك السفلي.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Machine Squat / سكوات بالجهاز",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Mid Leg Press",
@@ -94,7 +100,9 @@
   ],
   "video_url": "https://youtu.be/s9-zeWzPUmA",
   "instructions": "تمسك بالمقابض لزيادة الثبات، ثبت موخرتك وظهرك السفلي كويس، انزل قد ما تقدر لكن لا تبالغ بالنزول لدرجة يتقوس ظهرك السفلي.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Press / ضغط الأرجل",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Quads Leg Press",
@@ -118,7 +126,9 @@
   ],
   "video_url": "https://youtu.be/A218isnErfM",
   "instructions": "تمسك بالمقابض لزيادة الثبات، ثبت موخرتك وظهرك السفلي كويس، انزل قد ما تقدر لكن لا تبالغ بالنزول لدرجة يتقوس ظهرك السفلي، ثبت القدمين أسفل اللوح لاستهداف أكبر للكوادز.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Press / ضغط الأرجل",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Deficit Goblet Squat",
@@ -142,7 +152,9 @@
   ],
   "video_url": "https://youtube.com/shorts/9719SO5zvpU?si=whohbunAsXkH3j6f",
   "instructions": "وقف باتساع اكتافك تقريبًا، ادفع ركبك للامام وانزل، انزل لأقصى حد تقدر عليه بدون ما يتقوس ظهرك السفلي.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Free / Bodyweight Squat / سكوات حر أو بوزن الجسم",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Front Squat",
@@ -165,7 +177,9 @@
    "Bodyweight Squat"
   ],
   "instructions": "ثبت البار على الأكتاف، ادفع ركبك للامام وانزل.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Free / Bodyweight Squat / سكوات حر أو بوزن الجسم",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "V Squat",
@@ -189,7 +203,9 @@
   ],
   "video_url": "https://www.youtube.com/watch?v=u_GSjH58s0g",
   "instructions": "تمسك بالمقابض لزيادة الثبات، ثبت موخرتك وظهرك السفلي كويس، انزل قد ما تقدر لكن لا تبالغ بالنزول لدرجة يتقوس ظهرك السفلي.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Machine Squat / سكوات بالجهاز",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Resistance Band Squat",
@@ -213,7 +229,9 @@
   ],
   "video_url": "https://youtube.com/shorts/6rE0IYlMPZA?si=goqtRTlR_W4HSGBN",
   "instructions": "ثبت الباند علي جوانب اكتافك، ادفع ركبك للأمام وإنزل.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Free / Bodyweight Squat / سكوات حر أو بوزن الجسم",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Squat Smith Machine",
@@ -237,7 +255,9 @@
   ],
   "video_url": "https://youtu.be/oBwhrRcNWyM",
   "instructions": "ثبت البار على الترابس او الاكتاف الخلفية وشد البار وكأنك بتكسره من النص، ادفع ركبك للامام وانزل.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Machine Squat / سكوات بالجهاز",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Single Leg Press",
@@ -261,7 +281,9 @@
   ],
   "video_url": "https://youtu.be/ZYDTJaAM-gE",
   "instructions": "تمسك بالمقابض لزيادة الثبات، ثبت موخرتك وظهرك السفلي كويس، انزل قد ما تقدر لكن لا تبالغ بالنزول لدرجة يتقوس ظهرك السفلي.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Single-leg Press / ضغط رجل واحدة",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Drop Lunges",
@@ -283,7 +305,9 @@
   ],
   "video_url": "https://youtu.be/WH8lteLrMIs?si=61QSVA7iw_Z6Zr3p",
   "instructions": "تمسك بالبنش أو الجدار بيدك الثانية لزيادة الثبات.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lunge / لانج",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Beginner Lunges",
@@ -307,7 +331,9 @@
   ],
   "video_url": "https://youtu.be/QOVaHwm-Q6U",
   "instructions": "تمسك بالبنش أو الجدار بيدك الثانية لزيادة الثبات.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lunge / لانج",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Forward Lunges",
@@ -330,7 +356,9 @@
   "video_url": "https://youtu.be/_DLAdo2Pvjs",
   "instructions": "تمسك بالبنش أو الجدار بيدك الثانية لزيادة الثبات.",
   "source": "المكتبة الأصلية",
-  "rehab_category": "ضعف الألوية الكبرى / Gluteus Maximus Weakness | ضعف الألوية المتوسطة / Gluteus Medius Weakness"
+  "rehab_category": "ضعف الألوية الكبرى / Gluteus Maximus Weakness | ضعف الألوية المتوسطة / Gluteus Medius Weakness",
+  "sub_pattern": "Lunge / لانج",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Supported BSS",
@@ -352,7 +380,9 @@
   ],
   "video_url": "https://youtube.com/shorts/poBie3TTeGE?si=QSiMUYtcHhrmg8mx",
   "instructions": "وقف عند البنش او الستيب، ارفع رجلك وثبت اصابع قدمك على البنش، خذ خطوة وحدة للأمام برجلك الثانية ثم ابدأ التمرين، تمسك بالبنش أو الجدار بيدك الثانية لزيادة الثبات.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Split Squat / سبليت سكوات",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Supported Reverse Lunge",
@@ -373,7 +403,9 @@
    "Single Leg Press"
   ],
   "video_url": "https://youtu.be/WH8lteLrMIs?si=M9s9a7qOVvvyDm82",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lunge / لانج",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Smith Machine Reverse Lunge",
@@ -397,7 +429,9 @@
   ],
   "video_url": "https://youtu.be/zAVYcwnlxrQ?si=M5HL4sG-bsYBFyDQ",
   "instructions": "استخدم ارتفاع بسيط مثل الستيب ، ارفع نفسك بالضغط علي الرجل المرفوعة بتحكم بدون قفز.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lunge / لانج",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Leg Extension",
@@ -417,7 +451,9 @@
   ],
   "video_url": "https://youtu.be/gtZ4AwZVtMI",
   "instructions": "اجلس وثبت ظهرك السفلي كويس، تأكد ان مسمار الارتفاع يكون بمستوى ركبتك، امسك المقابض لزيادة الثبات، إرفع الوزن اثبت ثانية فوق ثم انزل نزول كامل بتحكم.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Extension / مد الركبة",
+  "anatomical_action": "Knee Extension / مد الركبة"
  },
  {
   "name": "Single Leg Extension",
@@ -437,7 +473,9 @@
   ],
   "video_url": "https://youtu.be/82IuSLk5zNc?si=FTMqZrmawQFRr8dN",
   "instructions": "اجلس وثبت ظهرك السفلي كويس، تأكد ان مسمار الارتفاع يكون بمستوى ركبتك، امسك المقابض لزيادة الثبات، إرفع الوزن اثبت ثانية فوق ثم انزل نزول كامل بتحكم.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Extension / مد الركبة",
+  "anatomical_action": "Knee Extension / مد الركبة"
  },
  {
   "name": "Band Leg Extension",
@@ -457,7 +495,9 @@
   ],
   "video_url": "https://youtu.be/hs7D3gDw3UM",
   "instructions": "اجلس وثبت ظهرك السفلي كويس وامسك الكرسي للثبات، اثبت ثانية فوق ثم انزل نزول كامل بتحكم.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Extension / مد الركبة",
+  "anatomical_action": "Knee Extension / مد الركبة"
  },
  {
   "name": "Sissy Squat",
@@ -480,7 +520,9 @@
   ],
   "video_url": "https://youtu.be/yONKTprKCDA",
   "instructions": "الورك ثابت طول الجولة والحركة كلها من مفصل الركبة، اذا توازنك يخرب عليك ادبل الوزن بيد واليد الثانية امسك فيها جدار او عصى",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Sissy Squat / سيسي سكوات",
+  "anatomical_action": "Knee Extension / مد الركبة"
  },
  {
   "name": "Cable Leg Extension",
@@ -500,7 +542,9 @@
   ],
   "video_url": "https://youtu.be/ebjD98gZd8E",
   "instructions": "اجلس وثبت ظهرك السفلي كويس وامسك الكرسي للثبات، اثبت ثانية فوق ثم انزل نزول كامل بتحكم.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Extension / مد الركبة",
+  "anatomical_action": "Knee Extension / مد الركبة"
  },
  {
   "name": "Standing Leg Extension",
@@ -522,7 +566,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/133/standing-leg-extension/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/133/standing-leg-extension/",
+  "sub_pattern": "Leg Extension / مد الركبة",
+  "anatomical_action": "Knee Extension / مد الركبة"
  },
  {
   "name": "Bodyweight Squat",
@@ -548,7 +594,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/135/bodyweight-squat/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/135/bodyweight-squat/",
+  "sub_pattern": "Free / Bodyweight Squat / سكوات حر أو بوزن الجسم",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Single Leg Squat",
@@ -575,7 +623,9 @@
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
   "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/136/single-leg-squat/",
-  "rehab_category": "ضعف الألوية الكبرى / Gluteus Maximus Weakness | ضعف الألوية المتوسطة / Gluteus Medius Weakness"
+  "rehab_category": "ضعف الألوية الكبرى / Gluteus Maximus Weakness | ضعف الألوية المتوسطة / Gluteus Medius Weakness",
+  "sub_pattern": "Single-leg Squat / سكوات رجل واحدة",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "DB Glutes Step Ups",
@@ -597,7 +647,9 @@
   ],
   "video_url": "https://youtube.com/shorts/GCnJiYJfboA?feature=share",
   "instructions": "استخدم ارتفاع يكون بحدود ارتفاع ركبتك أو أقل، ارفع نفسك بالضغط علي الرجل المرفوعة بتحكم بدون قفز.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Step-up / صعود",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Supported Glutes Step Ups",
@@ -617,7 +669,9 @@
   ],
   "video_url": "https://youtube.com/shorts/ZKzoOkQALaY?si=-56txwBlxSSCQYJd",
   "instructions": "استخدم ارتفاع يكون بحدود ارتفاع ركبتك أو أقل، ارفع نفسك بالضغط علي الرجل المرفوعة بتحكم بدون قفز.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Step-up / صعود",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Cable Glutes Step Ups",
@@ -637,7 +691,9 @@
    "Supported Glutes Step Ups",
    "Glute Pushdown"
   ],
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Step-up / صعود",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Glute Pushdown",
@@ -658,7 +714,9 @@
   ],
   "video_url": "https://youtube.com/shorts/8h2kZ64Sp5k?si=NLPf4tywxhDGY9em",
   "instructions": "تمسك بمقابض الجهاز، (كل ما زاد ارتفاع البنش زادت الصعوبة) + الطلوع والنزول يكون بواسطة القدم المرفوعة على البنش مو بالقدم اللي تحت، ارفع بتحكم الى أقصى ارتفاع تقدرعليه بدون ما يتقوس ظهرك السفلي، انزل لحد ما تقفل ركبتك تماما",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Step-up / صعود",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Glute Max Kickbacks",
@@ -678,7 +736,9 @@
   ],
   "video_url": "https://youtube.com/shorts/t5mwSx4uNMc?feature=share",
   "instructions": "ثبت الحبل على الكاحل، ارجع خطوة للخلف وانحني للامام قليلاً وتمسك بالكيبل لزيادة الثبات، اسحب للخلف مع انثناء بسيط بالركب.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Kickback / ركلة خلفية",
+  "anatomical_action": "Hip Extension / بسط الورك"
  },
  {
   "name": "Hip Abduction",
@@ -699,7 +759,9 @@
   ],
   "video_url": "https://youtu.be/_ARUxqrII3Y?si=Jcz5uh2Uu-IdVCS1",
   "source": "المكتبة الأصلية",
-  "rehab_category": "ضعف الألوية المتوسطة / Gluteus Medius Weakness"
+  "rehab_category": "ضعف الألوية المتوسطة / Gluteus Medius Weakness",
+  "sub_pattern": "Hip Abduction / تبعيد الورك",
+  "anatomical_action": "Hip Abduction / تبعيد الورك"
  },
  {
   "name": "Smith Machine Kickback",
@@ -718,7 +780,9 @@
    "Glute Bridge"
   ],
   "video_url": "https://youtube.com/shorts/GR4ny80bmhM?si=WeZcWM1hyfoLElM2",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Kickback / ركلة خلفية",
+  "anatomical_action": "Hip Extension / بسط الورك"
  },
  {
   "name": "Glute Medius Kickbacks",
@@ -741,7 +805,9 @@
   ],
   "video_url": "https://youtube.com/shorts/kccsnZNbMFA?si=6c-VoB8Zsz8NxoyM",
   "instructions": "ثبت الحبل على الكاحل، ارجع خطوة للخلف وانحني للامام قليلاً وتمسك بالكيبل لزيادة الثبات، اسحب للخلف وللخارج مع انثناء بسيط بالركب.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Abduction Kickback / ركلة خلفية مع تبعيد",
+  "anatomical_action": "Hip Abduction + Hip Extension / تبعيد الورك + بسط الورك"
  },
  {
   "name": "Side Step Up",
@@ -762,7 +828,9 @@
   "video_url": "https://youtube.com/shorts/xOwIRnI4VxA?si=SJOgODRmNGdfHPb4",
   "instructions": "يد فيها الوزن واليد الثانية سندها على الجدار",
   "source": "المكتبة الأصلية",
-  "rehab_category": "ضعف الألوية المتوسطة / Gluteus Medius Weakness | ضعف الألوية الصغرى / Gluteus Minimus Weakness"
+  "rehab_category": "ضعف الألوية المتوسطة / Gluteus Medius Weakness | ضعف الألوية الصغرى / Gluteus Minimus Weakness",
+  "sub_pattern": "Step-up / صعود",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Hip Thrusts Machine",
@@ -785,7 +853,9 @@
   ],
   "video_url": "https://youtube.com/shorts/0xfdeCBwoYw?si=HgJcNeB0a24gODkK",
   "instructions": "ممكن تسويه بالسميث مشين او البار الحر ، اختر بوكس او بنش يكون بمستوى اكتافك الخلفية وانت جالس، لما ترفع البار فوق المفروض ركبك تكون بنفس مستوى القدم.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hip Thrust / Bridge / بسط الورك (ثرست وجسر)",
+  "anatomical_action": "Hip Extension / بسط الورك"
  },
  {
   "name": "Hip Thrusts",
@@ -805,7 +875,9 @@
    "Glute Max Kickbacks"
   ],
   "video_url": "https://youtube.com/shorts/O0EoaP7gR1A?si=cGPZ8iIwM2mQjwSb",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hip Thrust / Bridge / بسط الورك (ثرست وجسر)",
+  "anatomical_action": "Hip Extension / بسط الورك"
  },
  {
   "name": "Glute Bridge",
@@ -827,7 +899,9 @@
   "video_url": "https://www.youtube.com/watch?v=dtlGynVdHYM",
   "instructions": "ممكن تسويه بالسميث مشين او البار الحر ، اختر بوكس او بنش يكون بمستوى اكتافك الخلفية وانت جالس، لما ترفع البار فوق المفروض ركبك تكون بنفس مستوى القدم.",
   "source": "المكتبة الأصلية",
-  "rehab_category": "ضعف الألوية الكبرى / Gluteus Maximus Weakness | آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain"
+  "rehab_category": "ضعف الألوية الكبرى / Gluteus Maximus Weakness | آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Hip Thrust / Bridge / بسط الورك (ثرست وجسر)",
+  "anatomical_action": "Hip Extension / بسط الورك"
  },
  {
   "name": "DB Floor Glute Bridge",
@@ -850,7 +924,9 @@
   ],
   "video_url": "https://youtube.com/shorts/iOrJXNUH3to?si=JySX6JMhoP2vWEVa",
   "source": "المكتبة الأصلية",
-  "rehab_category": "ضعف الألوية الكبرى / Gluteus Maximus Weakness"
+  "rehab_category": "ضعف الألوية الكبرى / Gluteus Maximus Weakness",
+  "sub_pattern": "Hip Thrust / Bridge / بسط الورك (ثرست وجسر)",
+  "anatomical_action": "Hip Extension / بسط الورك"
  },
  {
   "name": "Glute Raise",
@@ -873,7 +949,9 @@
   ],
   "video_url": "https://youtu.be/X_kL_x4m77c",
   "instructions": "ثبت رجولك تحت، الاسفنجة تكون تحت الورك أعلى الفخذ مو على الورك مباشرة، امسك وزن بيدينك بذراع مستقيمة، ارفع وكأنك تبي تدخل القلوتس جوا الاسفنجة، بمجرد ما تنقبض مؤخرتك وقف لا ترفع أكثر.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "45° Hip Extension / بسط الورك على جهاز الظهر",
+  "anatomical_action": "Hip Extension / بسط الورك"
  },
  {
   "name": "Single Hip Thrusts",
@@ -894,7 +972,9 @@
   ],
   "video_url": "https://youtube.com/shorts/ymg2AMDAwrY?si=fY8kBPTDYWRMHuAs",
   "instructions": "اختر بوكس او بنش يكون بمستوى اكتافك الخلفية وانت جالس، لما ترفع فوق المفروض ركبك تكون بنفس مستوى القدم، التمرين صعب طبيعي تواجه صعوبة بالبداية لذلك لا تستعجل باضافة الاوزان",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hip Thrust / Bridge / بسط الورك (ثرست وجسر)",
+  "anatomical_action": "Hip Extension / بسط الورك"
  },
  {
   "name": "Glute Press",
@@ -915,7 +995,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/293/glute-press/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/293/glute-press/",
+  "sub_pattern": "Kickback / ركلة خلفية",
+  "anatomical_action": "Hip Extension + Knee Extension / بسط الورك + مد الركبة"
  },
  {
   "name": "Bulgarian Split Squat",
@@ -937,7 +1019,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/366/bulgarian-split-squat/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/366/bulgarian-split-squat/",
+  "sub_pattern": "Split Squat / سبليت سكوات",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
  },
  {
   "name": "Sumo Deadlift",
@@ -962,7 +1046,9 @@
   ],
   "video_url": "https://www.youtube.com/watch?v=cDlOSfu-zHY",
   "instructions": "وقف بفتحة أرجل واسعة بحيث الركب تكون خط مستقيم مع كعب القدم و اصابع الرجل باتجاه الخارج، البار بمنتصف القدم، شد ظهرك العلوي وادفع الارض برجولك واسحب البار للأعلى، وقف لما تنقبض مؤخرتك ولا تبالغ بتقفيل حوضك.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Deadlift / ديدلفت",
+  "anatomical_action": "Hip Extension + Knee Extension / بسط الورك + مد الركبة"
  },
  {
   "name": "Conventional Deadlift",
@@ -986,7 +1072,9 @@
   ],
   "video_url": "https://youtu.be/GxsLrTzyGUU",
   "instructions": "وقف باتساع اكتافك أو أوسع شوي، البار بمنتصف القدم، شد ظهرك العلوي وادفع الارض برجولك واسحب البار للأعلى، وقف لما تنقبض مؤخرتك ولا تبالغ بتقفيل حوضك.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Deadlift / ديدلفت",
+  "anatomical_action": "Hip Extension + Knee Extension / بسط الورك + مد الركبة"
  },
  {
   "name": "BB RDL",
@@ -1010,7 +1098,9 @@
   ],
   "video_url": "https://youtu.be/mZxxJEncsyw",
   "instructions": "وقف باتساع اكتافك واحرص ان راسك ونظرك ثابتين تحت طول التمرين، انزل وادفع مؤخرتك لآخر شي تقدر عليه للخلف وكأنك بتلمس جدار خلفك مع انثناء بسيط بالركب",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Romanian / Stiff-leg Deadlift / ديدلفت روماني أو بأرجل مستقيمة",
+  "anatomical_action": "Hip Extension with Knees Nearly Fixed / بسط الورك مع ركبة شبه ثابتة"
  },
  {
   "name": "DB RDL",
@@ -1034,7 +1124,9 @@
   ],
   "video_url": "https://youtu.be/RApyTtH6qAo",
   "instructions": "وقف باتساع اكتافك واحرص ان راسك ونظرك ثابتين تحت طول التمرين، انزل وادفع مؤخرتك لآخر شي تقدر عليه للخلف وكأنك بتلمس جدار خلفك مع انثناء بسيط بالركب",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Romanian / Stiff-leg Deadlift / ديدلفت روماني أو بأرجل مستقيمة",
+  "anatomical_action": "Hip Extension with Knees Nearly Fixed / بسط الورك مع ركبة شبه ثابتة"
  },
  {
   "name": "SM SLDL",
@@ -1057,7 +1149,9 @@
    "Single DB SLDL"
   ],
   "video_url": "https://youtube.com/shorts/qlL1wnpLQj4?si=-jD_X6mIJkkI8SwX",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Romanian / Stiff-leg Deadlift / ديدلفت روماني أو بأرجل مستقيمة",
+  "anatomical_action": "Hip Extension with Knees Nearly Fixed / بسط الورك مع ركبة شبه ثابتة"
  },
  {
   "name": "Single DB RDL",
@@ -1082,7 +1176,9 @@
   "video_url": "https://youtube.com/shorts/U3prDlAbJDw?si=MRSBcSIcf9M-WQBH",
   "instructions": "وقف باتساع اكتافك واحرص ان راسك ونظرك ثابتين تحت طول التمرين، انزل وادفع مؤخرتك لآخر شي تقدر عليه للخلف وكأنك بتلمس جدار خلفك مع انثناء بسيط بالركب",
   "source": "المكتبة الأصلية",
-  "rehab_category": "ضعف الألوية الكبرى / Gluteus Maximus Weakness"
+  "rehab_category": "ضعف الألوية الكبرى / Gluteus Maximus Weakness",
+  "sub_pattern": "Romanian / Stiff-leg Deadlift / ديدلفت روماني أو بأرجل مستقيمة",
+  "anatomical_action": "Hip Extension with Knees Nearly Fixed / بسط الورك مع ركبة شبه ثابتة"
  },
  {
   "name": "SLDL",
@@ -1104,7 +1200,9 @@
   ],
   "video_url": "https://youtu.be/RApyTtH6qAo",
   "instructions": "قف باتساع اكتافك واحرص ان راسك ونظرك ثابتين تحت طول التمرين، ابدأ الحركة بدفع مؤخرتك للخلف والأعلى وانزل",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Romanian / Stiff-leg Deadlift / ديدلفت روماني أو بأرجل مستقيمة",
+  "anatomical_action": "Hip Extension with Knees Nearly Fixed / بسط الورك مع ركبة شبه ثابتة"
  },
  {
   "name": "Single DB SLDL",
@@ -1128,7 +1226,9 @@
   ],
   "video_url": "https://youtube.com/shorts/U3prDlAbJDw?si=MRSBcSIcf9M-WQBH",
   "instructions": "قف باتساع اكتافك واحرص ان راسك ونظرك ثابتين تحت طول التمرين، ابدأ الحركة بدفع مؤخرتك للخلف والأعلى وانزل",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Romanian / Stiff-leg Deadlift / ديدلفت روماني أو بأرجل مستقيمة",
+  "anatomical_action": "Hip Extension with Knees Nearly Fixed / بسط الورك مع ركبة شبه ثابتة"
  },
  {
   "name": "Good Morning",
@@ -1152,7 +1252,9 @@
   ],
   "video_url": "https://youtu.be/f23vXjoG2e8?si=9rkfUF_6XUEcQ3Xs",
   "instructions": "ثبت البار على الترابس او الاكتاف الخلفية وشد البار وكأنك بتكسره من النص، ادفع مؤخرتك لأقصى قدر تقدر عليه وكأنك بتلمس جدار خلفك.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Good Morning / قود مورنينق",
+  "anatomical_action": "Hip Extension with Knees Nearly Fixed / بسط الورك مع ركبة شبه ثابتة"
  },
  {
   "name": "Seated Leg Curl",
@@ -1175,7 +1277,9 @@
   ],
   "video_url": "https://youtu.be/o_J6MWyt5jM",
   "instructions": "اجلس على الكرسي وثبت ظهرك السفلي على المقعد تمامًا، انزل لأقصى حد تقدر عليه وارفع لحد ما تستقيم ركبتك.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Curl / ثني الركبة",
+  "anatomical_action": "Knee Flexion / ثني الركبة"
  },
  {
   "name": "Band Leg Curl",
@@ -1198,7 +1302,9 @@
   ],
   "video_url": "https://youtu.be/I-HTMUrJnxs",
   "instructions": "ثبت الباند فوق الكعب، اجلس على طرف البنش وتمسك بيدينك لزيادة الثبات، اسحب الحبل لاقصى حد تقدر عليه واترك رجلك تستقيم تمامًا في الانبساط.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Curl / ثني الركبة",
+  "anatomical_action": "Knee Flexion / ثني الركبة"
  },
  {
   "name": "Lying Leg Curl",
@@ -1221,7 +1327,9 @@
   ],
   "video_url": "https://youtu.be/vl5nUdE9mWM",
   "instructions": "حوضك ثابت على البنش، ارفع الوزن بثني ومد الركبة بدون ما يرتفع حوضك عن الكرسي",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Curl / ثني الركبة",
+  "anatomical_action": "Knee Flexion / ثني الركبة"
  },
  {
   "name": "DB Lying Leg Curl",
@@ -1244,7 +1352,9 @@
   ],
   "video_url": "https://youtu.be/ZHlBSI6JPsA?si=SpBiHxluwrYE8CTP",
   "instructions": "ركبك ثابته على الارض، ارفع الوزن بثني ومد الركبة بدون ما يرتفع حوضك",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Curl / ثني الركبة",
+  "anatomical_action": "Knee Flexion / ثني الركبة"
  },
  {
   "name": "Standing Leg Curl",
@@ -1265,7 +1375,9 @@
   ],
   "video_url": "https://youtu.be/fyF6FQOUGDI",
   "instructions": "الحركة كلها بثني ومد الركبة",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Curl / ثني الركبة",
+  "anatomical_action": "Knee Flexion / ثني الركبة"
  },
  {
   "name": "Cable Leg Curl",
@@ -1288,7 +1400,9 @@
   ],
   "video_url": "https://youtu.be/mBJXWg8ZOy0",
   "instructions": "اجلس على الكرسي وثبت ظهرك السفلي على المقعد تمامًا، ممكن تقدّم ظهرك العلوي وتمسك المقابض لزيادة الثبات، انزل لأقصى حد تقدر عليه وارفع لحد ما تستقيم ركبتك.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Curl / ثني الركبة",
+  "anatomical_action": "Knee Flexion / ثني الركبة"
  },
  {
   "name": "Supine Cable Hamstring Curl",
@@ -1311,7 +1425,9 @@
   ],
   "video_url": "https://youtube.com/shorts/sDCc1F5J8XA?si=Fi3D39aJogrB5ihd",
   "instructions": "الركبة ثبت مكانها، اسحب الحبل لاقصى حد تقدر عليه واترك رجلك تستقيم تمامًا في الانبساط.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Curl / ثني الركبة",
+  "anatomical_action": "Knee Flexion / ثني الركبة"
  },
  {
   "name": "Nordic Hamstring Curl",
@@ -1330,7 +1446,9 @@
    "Standing Leg Curl"
   ],
   "video_url": "https://youtu.be/Lgibr8od0yA?si=nfRetEkDRk55Bu0a",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Nordic (Eccentric) / نوردك (لامركزي)",
+  "anatomical_action": "Knee Flexion / ثني الركبة"
  },
  {
   "name": "Stability Ball Hamstring Curl",
@@ -1354,7 +1472,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/59/stability-ball-hamstring-curl/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/59/stability-ball-hamstring-curl/",
+  "sub_pattern": "Bridge Curl / ثني الركبة مع رفع الورك",
+  "anatomical_action": "Knee Flexion + Hip Extension / ثني الركبة + بسط الورك"
  },
  {
   "name": "Hip Hinge",
@@ -1376,7 +1496,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/33/hip-hinge/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/33/hip-hinge/",
+  "sub_pattern": "Hinge Drill / تمرين مفصلة الورك",
+  "anatomical_action": "Hip Extension with Knees Nearly Fixed / بسط الورك مع ركبة شبه ثابتة"
  },
  {
   "name": "TRX Hamstrings Curl",
@@ -1400,7 +1522,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/86/trx-reg-hamstrings-curl/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/86/trx-reg-hamstrings-curl/",
+  "sub_pattern": "Bridge Curl / ثني الركبة مع رفع الورك",
+  "anatomical_action": "Knee Flexion + Hip Extension / ثني الركبة + بسط الورك"
  },
  {
   "name": "Flat DB Chest Press",
@@ -1424,7 +1548,10 @@
   ],
   "video_url": "https://youtu.be/xphvjGDZeYE",
   "instructions": "قوّس ظهرك العلوي قليلاً، الكوع قريب قليلا من الجسم، النزول الى تساوي اليد مع الصدر تقريبا",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
  },
  {
   "name": "DB Floor Chest Press",
@@ -1447,7 +1574,10 @@
    "Push Up"
   ],
   "video_url": "https://youtube.com/shorts/UBmpZ7l5Nlk?si=kDcN-ueaTFxfKtbr",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
  },
  {
   "name": "Flat Bench Press",
@@ -1471,7 +1601,10 @@
   ],
   "video_url": "https://youtu.be/vcBig73ojpE",
   "instructions": "استلق على بنش،القبضة بنفس مستوى الاكتاف أو أوسع قليلًا، قوّس ظهرك العلوي قليلاً، انزل لين تلمس صدرك واثبت ثانية ثم ارفع.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
  },
  {
   "name": "Machine Chest Press",
@@ -1495,7 +1628,10 @@
   ],
   "video_url": "https://youtube.com/shorts/pOCRC2kpxB8?si=02xGtrfPjiYpspMv",
   "instructions": "قوّس ظهرك العلوي قليلاً، الكوع قريب قليلا من الجسم، النزول الى تساوي اليد مع الصدر تقريبا",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
  },
  {
   "name": "Feet Up Bench Press",
@@ -1519,7 +1655,10 @@
   ],
   "video_url": "https://youtu.be/HrehfM1dmBE",
   "instructions": "قوّس ظهرك العلوي قليلاً، الكوع قريب قليلا من الجسم، النزول الى تساوي اليد مع الصدر تقريبا",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
  },
  {
   "name": "Torso Elevated Push Up",
@@ -1544,7 +1683,9 @@
   "video_url": "https://youtu.be/noaPB7u4_CU",
   "instructions": "قوّس ظهرك العلوي قليلاً، الكوع قريب قليلا من الجسم، النزول الى تساوي اليد مع الصدر تقريبا",
   "notes": "تصنيف فرعي: اليدان مرفوعتان؛ زاوية الضغط بالنسبة للجذع تشبه الضغط المائل لأسفل رغم تسميته الشائعة Incline Push-up — يحدده المدرب",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Decline Press / ضغط مائل لأسفل",
+  "anatomical_action": "Horizontal Adduction + Shoulder Extension / تقريب أفقي + مد الكتف"
  },
  {
   "name": "Push Up",
@@ -1567,7 +1708,10 @@
    "Feet Up Bench Press"
   ],
   "video_url": "https://youtu.be/WDIpL0pjun0?si=utydS_A8QfRIJtJm",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
  },
  {
   "name": "Bench Press",
@@ -1591,7 +1735,10 @@
   ],
   "video_url": "https://www.youtube.com/watch?v=JvOJdUtx6UQ",
   "instructions": "استلق على بنش،القبضة بنفس مستوى الاكتاف أو أوسع قليلًا، قوّس ظهرك العلوي قليلاً، انزل لين تلمس صدرك واثبت ثانية ثم ارفع.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
  },
  {
   "name": "Paused Bench Press",
@@ -1615,7 +1762,10 @@
   ],
   "video_url": "https://www.youtube.com/shorts/Q3GmnmJISwE",
   "instructions": "استلق على بنش،القبضة بنفس مستوى الاكتاف أو أوسع قليلًا، قوّس ظهرك العلوي قليلاً، انزل لين تلمس صدرك واثبت 3 ثواني ثم ارفع.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
  },
  {
   "name": "Incline Press",
@@ -1637,7 +1787,10 @@
   ],
   "video_url": "https://youtu.be/0G2_XV7slIg",
   "instructions": "قوّس ظهرك العلوي قليلاً، الكوع قريب قليلا من الجسم، النزول الى تساوي اليد مع الصدر تقريبا",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Incline Press / ضغط مائل لأعلى",
+  "anatomical_action": "Shoulder Flexion + Horizontal Adduction / ثني الكتف + تقريب أفقي",
+  "movement_subcategory": "Incline Press / ضغط مائل لأعلى"
  },
  {
   "name": "Smith Machine Incline Press",
@@ -1660,7 +1813,10 @@
    "Flat Bench Press"
   ],
   "video_url": "https://youtu.be/EeLLZMdg6zI?si=UVsgFN7jhXMm0vW3",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Incline Press / ضغط مائل لأعلى",
+  "anatomical_action": "Shoulder Flexion + Horizontal Adduction / ثني الكتف + تقريب أفقي",
+  "movement_subcategory": "Incline Press / ضغط مائل لأعلى"
  },
  {
   "name": "Cable Chest Press",
@@ -1685,7 +1841,10 @@
   "video_url": "https://youtu.be/tAILewhtCb0",
   "instructions": "اجلس على بنش انكلاين، اضبط الكيبل بمستوى صدرك تقريبا، ادفع الوزن للأمام باتجاه الداخل، احرص ان كوعك ما يكون بنفس ارتفاع كتفك",
   "notes": "تصنيف فرعي: التعليمات تذكر بنش انكلاين، وتصنيف المصدر iso_push_chest — يُحسم بين Incline Press وعزل الصدر",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Incline Press / ضغط مائل لأعلى",
+  "anatomical_action": "Shoulder Flexion + Horizontal Adduction / ثني الكتف + تقريب أفقي",
+  "movement_subcategory": "Incline Press / ضغط مائل لأعلى"
  },
  {
   "name": "Sternal Cable Press Around",
@@ -1706,7 +1865,9 @@
   "video_url": "https://youtu.be/y8XQibXDnNo",
   "instructions": "اضبط الكيبل بمستوى صدرك تقريبا، حافظ على ذراعك قريبة من جسمك،ادفع الحبل للأمام باتجاه الداخل.",
   "notes": "تصنيف فرعي: حركة مختلطة بين الضغط والـ Fly — يُحسم بين Flat Press وعزل الصدر",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Press-around / ضغط مع تقريب",
+  "anatomical_action": "Horizontal Adduction + Elbow Extension / تقريب أفقي + مد الكوع"
  },
  {
   "name": "Machine Chest Fly",
@@ -1722,7 +1883,10 @@
    "Flat DB Chest Press",
    "DB Floor Chest Press"
   ],
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Chest Isolation / عزل الصدر",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Chest Isolation / عزل الصدر"
  },
  {
   "name": "Bar Cable Chest Press",
@@ -1745,7 +1909,10 @@
    "Feet Up Bench Press"
   ],
   "video_url": "https://youtu.be/NhD3h6RG2TA?si=SoyNTIGB-nY2KiXl",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
  },
  {
   "name": "Cable Chest Fly",
@@ -1767,7 +1934,10 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/160/standing-chest-fly/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/160/standing-chest-fly/",
+  "sub_pattern": "Chest Isolation / عزل الصدر",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Chest Isolation / عزل الصدر"
  },
  {
   "name": "Bent Knee Push-up",
@@ -1792,7 +1962,10 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/13/bent-knee-push-up/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/13/bent-knee-push-up/",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
  },
  {
   "name": "Stability Ball Push-Up",
@@ -1818,7 +1991,10 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف فرعي: الزاوية تعتمد على موضع الكرة (تحت اليدين أو القدمين) — غير محدد",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/63/stability-ball-push-up/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/63/stability-ball-push-up/",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
  },
  {
   "name": "Cable Reardelt Rows",
@@ -1842,7 +2018,10 @@
   ],
   "video_url": "https://youtu.be/uIdXVGjcfFE",
   "instructions": "ثبت نفسك بالكرسي، فتحة واسعة، الكيبل بمستوى اسفل صدرك، واسحب لما تنقبض اكتافك الخلفية.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Wide-grip Row / تجديف بقبضة واسعة",
+  "anatomical_action": "Horizontal Abduction + Scapular Retraction / تبعيد أفقي للكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
  },
  {
   "name": "Upper Back Horizontal Row",
@@ -1867,7 +2046,10 @@
   "video_url": "https://youtu.be/TSWohpfMlso",
   "instructions": "ثبت نفسك بالكرسي، فتحة واسعة، الكيبل بمستوى أعلى صدرك، واسحب لما تنقبض الترابز.",
   "source": "المكتبة الأصلية",
-  "rehab_category": "ضعف العضلة المعينية / Rhomboid Weakness"
+  "rehab_category": "ضعف العضلة المعينية / Rhomboid Weakness",
+  "sub_pattern": "Wide-grip Row / تجديف بقبضة واسعة",
+  "anatomical_action": "Horizontal Abduction + Scapular Retraction / تبعيد أفقي للكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
  },
  {
   "name": "DB Chest Supported Reardelt Row",
@@ -1891,7 +2073,10 @@
   ],
   "video_url": "https://youtube.com/shorts/x0v6GWYzI18?si=-jDt3D-ARIHouHjp",
   "instructions": "ثبت صدرك على الكرسي، فتحة واسعة، واسحب لما تنقبض اكتافك الخلفية.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Wide-grip Row / تجديف بقبضة واسعة",
+  "anatomical_action": "Horizontal Abduction + Scapular Retraction / تبعيد أفقي للكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
  },
  {
   "name": "Bent-over Barbell Row",
@@ -1914,7 +2099,10 @@
    "Seated Cable Row"
   ],
   "instructions": "ادفع مؤخرتك للخلف واثني ركبك، قبضتك بنفس مستوى اكتافك، اسحب لما تنقبض عضلات الظهر.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
  },
  {
   "name": "Cable Reardelt Fly",
@@ -1935,7 +2123,9 @@
   ],
   "video_url": "https://youtube.com/shorts/bkejPHrPkmA?si=-O8q_5e72udoPRiY",
   "notes": "تصنيف فرعي: حركة Fly (تبعيد أفقي للكتف) وليست سحباً أفقياً أو عمودياً",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Rear Delt Fly / فتح خلفي",
+  "anatomical_action": "Horizontal Abduction / تبعيد أفقي للكتف"
  },
  {
   "name": "DB Chest Supported Row",
@@ -1959,7 +2149,10 @@
   ],
   "video_url": "https://youtu.be/H75im9fAUMc",
   "instructions": "ثبت صدرك على الكرسي، فتحة واسعة، واسحب الدمبل باتجاه الورك.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
  },
  {
   "name": "Head Supported Row",
@@ -1981,7 +2174,10 @@
   ],
   "video_url": "https://youtube.com/shorts/c6lkPMhuyFA?si=eUivRGYSi0W7PmVe",
   "instructions": "راسك ثابت على البنش بدون أي ميلان بالرقبة.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
  },
  {
   "name": "Single Arm Dumbbell Row",
@@ -2005,7 +2201,10 @@
   ],
   "video_url": "https://youtu.be/QBjaGx8mS1o",
   "instructions": "اسحب باتجاه الورك.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
  },
  {
   "name": "Single Arm Cable Row",
@@ -2029,7 +2228,10 @@
   ],
   "video_url": "https://youtube.com/shorts/Qn_mHGObb8E?si=IZ0q9_tseiRIMtcs",
   "instructions": "اسحب باتجاه الورك.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
  },
  {
   "name": "Seated Cable Row",
@@ -2054,7 +2256,10 @@
   "video_url": "https://youtu.be/0G3W83dFUeY",
   "instructions": "اسحب باتجاه الورك.",
   "source": "المكتبة الأصلية",
-  "rehab_category": "ضعف العضلة المعينية / Rhomboid Weakness | تحدب الظهر / Postural Thoracic Kyphosis"
+  "rehab_category": "ضعف العضلة المعينية / Rhomboid Weakness | تحدب الظهر / Postural Thoracic Kyphosis",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
  },
  {
   "name": "Band Seated Row",
@@ -2079,7 +2284,10 @@
   "video_url": "https://youtu.be/Jy-WCFAofBY?si=9gqVby588rk1zFi9",
   "instructions": "فتحة واسعة، واسحب لما تنقبض عضلات الظهر.",
   "source": "المكتبة الأصلية",
-  "rehab_category": "ضعف العضلة المعينية / Rhomboid Weakness | تحدب الظهر / Postural Thoracic Kyphosis | وضعية الرأس للأمام / Forward Head Posture"
+  "rehab_category": "ضعف العضلة المعينية / Rhomboid Weakness | تحدب الظهر / Postural Thoracic Kyphosis | وضعية الرأس للأمام / Forward Head Posture",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
  },
  {
   "name": "Chest Supported Cable Row",
@@ -2104,7 +2312,10 @@
   "video_url": "https://youtu.be/DgHtyrQEMJ4?si=oTfTKVgD9j1H12wA",
   "instructions": "ثبت صدرك على الكرسي، فتحة واسعة، واسحب لما تنقبض عضلات الظهر.",
   "source": "المكتبة الأصلية",
-  "rehab_category": "ضعف العضلة المعينية / Rhomboid Weakness"
+  "rehab_category": "ضعف العضلة المعينية / Rhomboid Weakness",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
  },
  {
   "name": "Chest Supported Machine Row",
@@ -2127,7 +2338,10 @@
    "Single Arm Cable Row"
   ],
   "video_url": "https://youtube.com/shorts/BZrdEAiR2Xs?si=WhKaSGhR0gKeeies",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
  },
  {
   "name": "T-Bar Row",
@@ -2148,7 +2362,10 @@
    "Single Arm Cable Row"
   ],
   "video_url": "https://youtube.com/shorts/6OtcNinT0HM?si=UPfYyypfZCaN9tTA",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
  },
  {
   "name": "Lats Cable Row",
@@ -2172,7 +2389,10 @@
   ],
   "video_url": "https://youtu.be/CQkT-W18N5g",
   "instructions": "الكيبل بنفس مستوى بطنك، اسحب باتجاه الورك.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lat-focused Row / تجديف لاتس",
+  "anatomical_action": "Shoulder Extension / مد الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
  },
  {
   "name": "Upperback Pulldowns",
@@ -2195,7 +2415,10 @@
    "Negative Pull-Up"
   ],
   "video_url": "https://youtube.com/shorts/bNmvKpJSWKM?si=hy5HgBDAHkzFHcvv",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Wide-grip Pulldown / سحب علوي بقبضة واسعة",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
  },
  {
   "name": "Straight Arm Pulldown",
@@ -2214,7 +2437,10 @@
    "Negative Pull-Up"
   ],
   "video_url": "https://youtube.com/shorts/hAMcfubonDc?si=ocU_a8VQ4VzZnTg3",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Straight-arm Pull / سحب بذراع مستقيمة",
+  "anatomical_action": "Shoulder Extension + Scapular Depression / مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
  },
  {
   "name": "DB Pullover",
@@ -2238,7 +2464,10 @@
   ],
   "video_url": "https://youtu.be/ieFKuQAGYIA?si=uwqyrbKhBL6Id3_-",
   "instructions": "القبضة اوسع من الكتف شوي، اسحب باتجاه اعلى الصدر.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Straight-arm Pull / سحب بذراع مستقيمة",
+  "anatomical_action": "Shoulder Extension + Scapular Depression / مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
  },
  {
   "name": "Band Lat Pulldown",
@@ -2262,7 +2491,10 @@
   ],
   "video_url": "https://youtu.be/5R0RYj3Y9Ro",
   "instructions": "القبضة اوسع من الكتف شوي، اسحب باتجاه اعلى الصدر.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lat-focused Pull / سحب لاتس",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
  },
  {
   "name": "Band Assisted Pull Ups",
@@ -2286,7 +2518,10 @@
   ],
   "video_url": "https://youtu.be/Ks8ah-8P1b0",
   "instructions": "القبضة اوسع من الكتف شوي، اسحب باتجاه اعلى الصدر.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pull-up / Chin-up / عقلة",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
  },
  {
   "name": "Pull Ups",
@@ -2310,7 +2545,10 @@
   ],
   "video_url": "https://youtu.be/x3NPAxiMRPw?si=Mwg6U1Df5aIFpjKB",
   "instructions": "القبضة اوسع من الكتف شوي، اسحب باتجاه اعلى الصدر.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pull-up / Chin-up / عقلة",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
  },
  {
   "name": "Negative Pull-Up",
@@ -2334,7 +2572,10 @@
   ],
   "video_url": "https://youtu.be/gbPURTSxQLY?si=TvQF5zDWfU_rR1Ax",
   "instructions": "القبضة اوسع من الكتف شوي، اسحب باتجاه اعلى الصدر، نزول بطيء.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pull-up / Chin-up / عقلة",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
  },
  {
   "name": "Neutral Grip Lat Pulldown",
@@ -2357,7 +2598,10 @@
   ],
   "video_url": "https://youtu.be/kVB6SlEyjQM",
   "instructions": "القبضة بنفس مستوى الكتف، اسحب باتجاه اعلى الصدر.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lat-focused Pull / سحب لاتس",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
  },
  {
   "name": "Single Lats Pulldown",
@@ -2380,7 +2624,10 @@
   ],
   "video_url": "https://youtu.be/Qed5O9toqT8",
   "instructions": "اجلس على بنش واسند صدرك عليه، ارجع للخلف قليلا بحيث ان الكيبل ما يكون فوق راسك مباشرة، اسحب الكوع باتجاه الورك.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lat-focused Pull / سحب لاتس",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
  },
  {
   "name": "Band Assisted Chin Ups",
@@ -2403,7 +2650,10 @@
   ],
   "video_url": "https://youtu.be/i0yC-0YK6Uk?si=gNX26kIFz_THnR4p",
   "instructions": "مسكة ضيقة بمستوى الأكتاف، كل ما كان الحبل خفيف زادت المقاومة وزدات صعوبة التمرين لذلك ابدأ بحبل ثقيل وخفف كل ما تحسن مستواك.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pull-up / Chin-up / عقلة",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
  },
  {
   "name": "Chin Ups",
@@ -2425,7 +2675,10 @@
    "Upperback Pulldowns"
   ],
   "video_url": "https://youtube.com/shorts/aV9Mz9nCsMw?si=E_ullJojGO_7srW2",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pull-up / Chin-up / عقلة",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
  },
  {
   "name": "Kneeling Lat Pulldown",
@@ -2447,7 +2700,10 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/35/kneeling-lat-pulldown/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/35/kneeling-lat-pulldown/",
+  "sub_pattern": "Lat-focused Pull / سحب لاتس",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
  },
  {
   "name": "TRX Back Row",
@@ -2473,7 +2729,10 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/84/trx-reg-back-row/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/84/trx-reg-back-row/",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
  },
  {
   "name": "Shrug",
@@ -2493,7 +2752,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف فرعي: رفع الأكتاف (Shrug) ليس نمط سحب أفقي أو عمودي",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/72/shrug/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/72/shrug/",
+  "sub_pattern": "Shrug / هز الكتفين",
+  "anatomical_action": "Scapular Elevation / رفع لوح الكتف"
  },
  {
   "name": "DB Shoulder Press",
@@ -2514,7 +2775,9 @@
   ],
   "video_url": "https://youtu.be/NKeyUrDYqPk",
   "instructions": "قوّس ظهرك العلوي قليلاً، الكوع قريب من الجسم، النزول الى مستوى الاكتاف",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Shoulder Press / ضغط الكتف",
+  "anatomical_action": "Shoulder Flexion/Abduction + Elbow Extension / ثني أو تبعيد الكتف + مد الكوع"
  },
  {
   "name": "DB Standing Shoulder Press",
@@ -2534,7 +2797,9 @@
    "BB Overhead Press"
   ],
   "video_url": "https://youtube.com/shorts/wO0l5jW2NtQ?si=MVvS4F_7iFS8ji9R",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Shoulder Press / ضغط الكتف",
+  "anatomical_action": "Shoulder Flexion/Abduction + Elbow Extension / ثني أو تبعيد الكتف + مد الكوع"
  },
  {
   "name": "Machine Shoulder Press",
@@ -2555,7 +2820,9 @@
   ],
   "video_url": "https://youtu.be/3R14MnZbcpw",
   "instructions": "قوّس ظهرك العلوي قليلاً، الكوع قريب من الجسم، النزول الى مستوى الاكتاف",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Shoulder Press / ضغط الكتف",
+  "anatomical_action": "Shoulder Flexion/Abduction + Elbow Extension / ثني أو تبعيد الكتف + مد الكوع"
  },
  {
   "name": "BB Overhead Press",
@@ -2575,7 +2842,9 @@
    "Machine Shoulder Press"
   ],
   "video_url": "https://youtu.be/_RlRDWO2jfg",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Shoulder Press / ضغط الكتف",
+  "anatomical_action": "Shoulder Flexion/Abduction + Elbow Extension / ثني أو تبعيد الكتف + مد الكوع"
  },
  {
   "name": "DB Lateral Raise",
@@ -2595,7 +2864,9 @@
   ],
   "video_url": "https://youtube.com/shorts/qqntiuPmLDM?feature=share",
   "instructions": "انحني للأمام قليلًا، ارفع للأعلى الى أن تصل لمستوى الأكتاف.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lateral Raise / رفع جانبي",
+  "anatomical_action": "Shoulder Abduction / تبعيد الكتف"
  },
  {
   "name": "Seated Lateral Raise",
@@ -2613,7 +2884,9 @@
   ],
   "video_url": "https://youtube.com/shorts/v7fwGurZ9SU?feature=share",
   "instructions": "انحني للأمام قليلًا، ارفع للأعلى الى أن تصل لمستوى الأكتاف.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lateral Raise / رفع جانبي",
+  "anatomical_action": "Shoulder Abduction / تبعيد الكتف"
  },
  {
   "name": "Lateral Raise Machine",
@@ -2632,7 +2905,9 @@
    "Single Arm Cable Lateral Raise"
   ],
   "video_url": "https://youtu.be/d0pRsZ9SY5w?si=XuXb_Ti0Flow7qvW",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lateral Raise / رفع جانبي",
+  "anatomical_action": "Shoulder Abduction / تبعيد الكتف"
  },
  {
   "name": "Cable Crossover Lateral Raise",
@@ -2652,7 +2927,9 @@
   ],
   "video_url": "https://youtu.be/wKgCc5UQjoU?si=zsaz3i31PnEU9A43",
   "instructions": "الكيبل يبدأ من الأسفل، انحني للأمام قليلًا، ارفع للأعلى وتحكم بالنزول.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lateral Raise / رفع جانبي",
+  "anatomical_action": "Shoulder Abduction / تبعيد الكتف"
  },
  {
   "name": "DB Y Raises",
@@ -2672,7 +2949,9 @@
   ],
   "video_url": "https://youtu.be/lXp16YozXgk",
   "instructions": "ثبت صدرك على البنش،ارفع الوزن على شكل Y.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Y Raise (Scaption) / رفع Y بمستوى لوح الكتف",
+  "anatomical_action": "Shoulder Elevation in Scapular Plane (Scaption) / رفع الذراع بمستوى لوح الكتف"
  },
  {
   "name": "Cable Y Raises",
@@ -2692,7 +2971,9 @@
   ],
   "video_url": "https://youtube.com/shorts/P7u6PEeOn6Q?feature=share",
   "instructions": "الكيبل يبدأ من تحت،ارفع الوزن على شكل Y.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Y Raise (Scaption) / رفع Y بمستوى لوح الكتف",
+  "anatomical_action": "Shoulder Elevation in Scapular Plane (Scaption) / رفع الذراع بمستوى لوح الكتف"
  },
  {
   "name": "Single Arm DB Lateral Raise",
@@ -2712,7 +2993,9 @@
   ],
   "video_url": "https://youtu.be/Jm6GqVhWhNY",
   "instructions": "انحني للأمام قليلًا، ارفع للأعلى الى أن تصل لمستوى الأكتاف.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lateral Raise / رفع جانبي",
+  "anatomical_action": "Shoulder Abduction / تبعيد الكتف"
  },
  {
   "name": "Single Arm Cable Lateral Raise",
@@ -2732,7 +3015,9 @@
   ],
   "video_url": "https://youtu.be/J-6uEOkYAKM",
   "instructions": "الكيبل يبدأ من الأسفل، انحني للأمام قليلًا، ارفع للأعلى وتحكم بالنزول.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lateral Raise / رفع جانبي",
+  "anatomical_action": "Shoulder Abduction / تبعيد الكتف"
  },
  {
   "name": "Front Raise",
@@ -2749,7 +3034,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/54/front-raise/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/54/front-raise/",
+  "sub_pattern": "Front Raise / رفع أمامي",
+  "anatomical_action": "Shoulder Flexion / ثني الكتف"
  },
  {
   "name": "Diagonal Raise",
@@ -2768,7 +3055,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/371/diagonal-raise/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/371/diagonal-raise/",
+  "sub_pattern": "Diagonal Raise / رفع قطري",
+  "anatomical_action": "Shoulder Flexion + Abduction (Diagonal) / ثني وتبعيد الكتف (قطري)"
  },
  {
   "name": "High Row",
@@ -2785,7 +3074,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/336/high-row/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/336/high-row/",
+  "sub_pattern": "High Row / Face Pull / سحب عالٍ باتجاه الوجه",
+  "anatomical_action": "Horizontal Abduction + Scapular Retraction / تبعيد أفقي للكتف + سحب لوح الكتف"
  },
  {
   "name": "Biceps Curl",
@@ -2805,7 +3096,9 @@
    "Single Arm Cable Facing In Curls"
   ],
   "video_url": "https://youtube.com/shorts/09AYfVFf7pg?si=dcwLVAYqIbDLM6jd",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
  },
  {
   "name": "Cable Rope Curls",
@@ -2827,7 +3120,9 @@
    "Cable Facing In Curls"
   ],
   "video_url": "https://youtube.com/shorts/xNXUTJ6TBZA?si=-r-Ql97awoVZla_1",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hammer / Neutral-grip Curl / ثني بقبضة محايدة",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
  },
  {
   "name": "Cable Facing Away Curls",
@@ -2849,7 +3144,9 @@
    "Single Arm Cable Facing In Curls"
   ],
   "video_url": "https://youtu.be/fV9BpknCjGM",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
  },
  {
   "name": "DB Incline Curl",
@@ -2871,7 +3168,9 @@
    "Single Arm Cable Facing In Curls"
   ],
   "video_url": "https://youtu.be/js_StxxyxBM",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
  },
  {
   "name": "Cable Facing In Curls",
@@ -2893,7 +3192,9 @@
    "Single Arm Cable Facing In Curls"
   ],
   "video_url": "https://youtu.be/5z4y7QRTx1w",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
  },
  {
   "name": "Single Arm Cable Facing Away Curls",
@@ -2915,7 +3216,9 @@
    "Single Arm Cable Facing In Curls"
   ],
   "video_url": "https://youtube.com/shorts/6sO-pK7pTPs?feature=share",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
  },
  {
   "name": "Single Arm Cable Facing In Curls",
@@ -2937,7 +3240,9 @@
    "Single Arm Cable Facing Away Curls"
   ],
   "video_url": "https://youtube.com/shorts/I-197ZW9Ffo?si=M1Yq4R1PIpdZMXRx",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
  },
  {
   "name": "DB Preacher",
@@ -2959,7 +3264,9 @@
    "DB Incline Curl"
   ],
   "video_url": "https://youtu.be/DZJNTb-zzn0?si=SwbdZ0O_0eTOET-5",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Preacher Curl / ثني على مسند",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
  },
  {
   "name": "Preacher Curl Machine",
@@ -2981,7 +3288,9 @@
    "DB Incline Curl"
   ],
   "video_url": "https://youtube.com/shorts/TouYMA3-ua4?feature=share",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Preacher Curl / ثني على مسند",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
  },
  {
   "name": "DB Spider Curls",
@@ -3003,7 +3312,9 @@
    "Single Arm Cable Facing Away Curls"
   ],
   "video_url": "https://youtube.com/shorts/cTMjzB2_IH8?si=qsIKEEFVfEvPXwqf",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
  },
  {
   "name": "Zottman Curl",
@@ -3025,7 +3336,9 @@
    "Single Arm Cable Facing Away Curls"
   ],
   "video_url": "https://www.youtube.com/watch?v=ZXbOOIOPOi8",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
  },
  {
   "name": "Hammer Curl",
@@ -3049,7 +3362,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/10/hammer-curl/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/10/hammer-curl/",
+  "sub_pattern": "Hammer / Neutral-grip Curl / ثني بقبضة محايدة",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
  },
  {
   "name": "TRX Biceps Curl",
@@ -3074,7 +3389,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/78/trx-reg-biceps-curl/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/78/trx-reg-biceps-curl/",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
  },
  {
   "name": "DB Triceps Extensions",
@@ -3093,7 +3410,9 @@
    "Cable Crossover Pressdowns"
   ],
   "video_url": "https://youtu.be/d7SXlU5HkYM?si=WuuPa9-yeByaP5sI",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Overhead Extension / مد فوق الرأس",
+  "anatomical_action": "Elbow Extension / مد الكوع"
  },
  {
   "name": "DB Floor Triceps Extensions",
@@ -3112,7 +3431,9 @@
    "Band Triceps Pushdown"
   ],
   "video_url": "https://youtube.com/shorts/dpFav9Ve4rY?si=ZBdKK8VF4aPMpi3v",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lying Extension / مد مستلقٍ",
+  "anatomical_action": "Elbow Extension / مد الكوع"
  },
  {
   "name": "Cable Crossbody Extensions",
@@ -3132,7 +3453,9 @@
   ],
   "video_url": "https://www.youtube.com/watch?v=jtLTcED38Dg",
   "instructions": "الكيبل يبدأ بالمنتصف زي الفيديو، بحيث لما تسحب الكيبل يكون بنفس مستوى الترابس، الأكواع والأكتاف ثابتين مكانهم والحركة كلها بثني وفرد الكوع.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Cross-body Extension / مد عرضي",
+  "anatomical_action": "Elbow Extension / مد الكوع"
  },
  {
   "name": "Triceps Pushdown",
@@ -3152,7 +3475,9 @@
   ],
   "video_url": "https://youtube.com/shorts/QsoN4u6j8nM?feature=share",
   "instructions": "انحني للأمام قليلاً، امسك طرف الحبل، ثبتي اكواعك مكانها واسحب الحبل للأسفل باتجاه الخارج.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pushdown / دفع للأسفل",
+  "anatomical_action": "Elbow Extension / مد الكوع"
  },
  {
   "name": "Cable Crossover Pressdowns",
@@ -3172,7 +3497,9 @@
   ],
   "video_url": "https://youtu.be/Y3CDzx-oj3k",
   "instructions": "الكيبل يبدأ من الأعلى،انحني للأمام قليلاً، امسك طرف الحبل، ثبتي اكواعك مكانها واسحب الحبل للأسفل باتجاه الخارج.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pushdown / دفع للأسفل",
+  "anatomical_action": "Elbow Extension / مد الكوع"
  },
  {
   "name": "Band Triceps Pushdown",
@@ -3192,7 +3519,9 @@
   ],
   "video_url": "https://youtube.com/shorts/mYs1rEYtZK4?si=k8vdZxNNEB5wj2CA",
   "instructions": "الكيبل يبدأ من الأعلى،انحني للأمام قليلاً، امسك طرف الحبل، ثبتي اكواعك مكانها واسحب الحبل للأسفل باتجاه الخارج.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pushdown / دفع للأسفل",
+  "anatomical_action": "Elbow Extension / مد الكوع"
  },
  {
   "name": "Single Cable Triceps Pressdowns",
@@ -3212,7 +3541,9 @@
   ],
   "video_url": "https://youtu.be/8rl4ioij6lc",
   "instructions": "الكيبل يبدأ من الأعلى،انحني للأمام قليلاً، امسك طرف الحبل، ثبتي اكواعك مكانها واسحب الحبل للأسفل باتجاه الخارج.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pushdown / دفع للأسفل",
+  "anatomical_action": "Elbow Extension / مد الكوع"
  },
  {
   "name": "Cable Overhead Extension",
@@ -3232,7 +3563,9 @@
   ],
   "video_url": "https://www.youtube.com/shorts/Q3bO1Fh4734",
   "instructions": "اترك الحبل يسحب معصمك وكوعك ثابت لما تستطيل التراي ثم ارفع الوزن لما تستقيم اليد، كوعك ثابت طول الوقت والحركة ثني ومد من مفصل الكوع، ممكن تطبق كل يد لحالها اذا كان اسهل لك.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Overhead Extension / مد فوق الرأس",
+  "anatomical_action": "Elbow Extension / مد الكوع"
  },
  {
   "name": "Triceps Dips",
@@ -3251,7 +3584,9 @@
    "Cable Crossbody Extensions"
   ],
   "video_url": "https://youtube.com/shorts/SpSE_A5L-YA?si=bSAzRM9SBuX-3mE0",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Dip / متوازي",
+  "anatomical_action": "Shoulder Extension + Elbow Extension / مد الكتف + مد الكوع"
  },
  {
   "name": "Triceps Kickback",
@@ -3271,7 +3606,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/55/triceps-kickback/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/55/triceps-kickback/",
+  "sub_pattern": "Triceps Kickback / ركلة الترايسبس",
+  "anatomical_action": "Elbow Extension / مد الكوع"
  },
  {
   "name": "Plank",
@@ -3296,7 +3633,9 @@
   "video_url": "https://youtu.be/pvIjsG5Svck?si=cTP8ZyfMAJPfaEhw",
   "instructions": "لما ترتفع الاكتاف تكون فوق الكوع والرجل ممتدة بالكامل.",
   "source": "المكتبة الأصلية",
-  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain"
+  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Anti-Extension / مقاومة البسط",
+  "anatomical_action": "Isometric Anti-Extension / تثبيت الجذع ضد البسط"
  },
  {
   "name": "deadbug",
@@ -3317,7 +3656,9 @@
   "video_url": "https://youtu.be/g_BYB0R-4Ws?si=D4nwJri73eBqJRqL",
   "notes": "اسم مشابه موجود في المكتبة (deadbug / dead bug) — تُراجَع قبل الحذف أو الدمج",
   "source": "المكتبة الأصلية",
-  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain"
+  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Anti-Extension / مقاومة البسط",
+  "anatomical_action": "Isometric Anti-Extension / تثبيت الجذع ضد البسط"
  },
  {
   "name": "Band Dead Bug",
@@ -3337,7 +3678,9 @@
   ],
   "video_url": "https://youtube.com/shorts/iW_CtYtzbeU?si=Epequw3rqA3_TwTr",
   "source": "المكتبة الأصلية",
-  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain"
+  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Anti-Extension / مقاومة البسط",
+  "anatomical_action": "Isometric Anti-Extension / تثبيت الجذع ضد البسط"
  },
  {
   "name": "Side Plank",
@@ -3361,7 +3704,9 @@
   ],
   "instructions": "لما ترتفع الاكتاف تكون فوق الكوع والرجل ممتدة بالكامل.",
   "source": "المكتبة الأصلية",
-  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain | ضعف الألوية المتوسطة / Gluteus Medius Weakness"
+  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain | ضعف الألوية المتوسطة / Gluteus Medius Weakness",
+  "sub_pattern": "Anti-Lateral Flexion / مقاومة الميلان الجانبي",
+  "anatomical_action": "Isometric Anti-Lateral Flexion / تثبيت الجذع ضد الميلان"
  },
  {
   "name": "McGill Big 3",
@@ -3381,7 +3726,9 @@
   ],
   "video_url": "https://youtu.be/jZylx81_kfg?si=_jP064GZIzvEvzyN",
   "source": "المكتبة الأصلية",
-  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain"
+  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Mixed (McGill Big 3) / مختلط",
+  "anatomical_action": "Isometric Trunk Stabilization / تثبيت الجذع"
  },
  {
   "name": "Suitcase Carry",
@@ -3400,7 +3747,9 @@
   ],
   "video_url": "https://youtu.be/BaRMAhD7SP4?si=KkiMH8OSIEz_TB53",
   "notes": "نفس التمرين ورد أيضاً تحت التصنيف «Functional Training» (صف المصدر 160) || رابط آخر في المصدر (صف 160): https://youtu.be/BaRMAhD7SP4?si=dCR2n2VSPaHhxfL3",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Suitcase Carry / حمل جانبي",
+  "anatomical_action": "Isometric Trunk + Grip Under Load / تثبيت الجذع والقبضة أثناء المشي"
  },
  {
   "name": "Single Leg Raise",
@@ -3439,7 +3788,9 @@
   ],
   "video_url": "https://youtu.be/ToJeyhydUxU?si=Z5dv34foxX4VtRH6",
   "instructions": "الحركة عبارة عن ثني للعمود الفقري وكأنك تقرب صدرك لوركك.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Crunch / كرنش",
+  "anatomical_action": "Trunk Flexion / ثني الجذع"
  },
  {
   "name": "Leg Raises",
@@ -3456,7 +3807,9 @@
    "Crunch"
   ],
   "video_url": "https://youtube.com/shorts/UqmbxvOgnX4?si=U3pDG4Jf0x1mtC_7",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Reverse Crunch / Leg Raise / كرنش عكسي ورفع الأرجل",
+  "anatomical_action": "Hip Flexion + Posterior Pelvic Tilt / ثني الورك + إمالة الحوض للخلف"
  },
  {
   "name": "Bosu Ball Crunch",
@@ -3475,7 +3828,9 @@
    "Reverse Crunch"
   ],
   "video_url": "https://youtube.com/shorts/KjvDgHPxXcg?si=zad59CHC6Y-calzi",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Crunch / كرنش",
+  "anatomical_action": "Trunk Flexion / ثني الجذع"
  },
  {
   "name": "Bent Knee V-Up",
@@ -3494,7 +3849,9 @@
    "Crunch"
   ],
   "video_url": "https://youtu.be/sbyFIM30_G8?si=dED0NQSRS44dz5G9",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "V-up / في أب",
+  "anatomical_action": "Trunk Flexion + Hip Flexion / ثني الجذع + ثني الورك"
  },
  {
   "name": "Reverse Crunch",
@@ -3513,7 +3870,9 @@
    "Crunch"
   ],
   "video_url": "https://youtube.com/shorts/esYVzdEfs04?si=N44MZZHlVeSQc1S3",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Reverse Crunch / Leg Raise / كرنش عكسي ورفع الأرجل",
+  "anatomical_action": "Hip Flexion + Posterior Pelvic Tilt / ثني الورك + إمالة الحوض للخلف"
  },
  {
   "name": "Belly Breathing",
@@ -3531,7 +3890,9 @@
   ],
   "video_url": "https://youtube.com/shorts/Shk8cmgv0Ew?si=mXkcj9PH6eH_tLcd",
   "instructions": "نفس عميق من الانف ننفخ فيه البطن ثم نطلعه من الفم ببطئ مع ضغط البطن للداخل اثناء اخراج النفس",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Diaphragmatic Breathing / تنفس حجابي",
+  "anatomical_action": "Diaphragmatic Breathing + Abdominal Bracing / تنفس حجابي + شد البطن"
  },
  {
   "name": "Dead Bug",
@@ -3553,7 +3914,9 @@
   "instructions": "نحرك الرجلين ببطئ قليلا و بتحكم باستخدام عضلات البطن",
   "notes": "اسم مشابه موجود في المكتبة (deadbug / dead bug) — تُراجَع قبل الحذف أو الدمج",
   "source": "المكتبة الأصلية",
-  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain"
+  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Anti-Extension / مقاومة البسط",
+  "anatomical_action": "Isometric Anti-Extension / تثبيت الجذع ضد البسط"
  },
  {
   "name": "Reverse Tabletop Bridge",
@@ -3574,7 +3937,9 @@
   ],
   "video_url": "https://youtu.be/d1yE9cGtPWo?si=2aoNqmUAN054rP75",
   "instructions": "اخذ نفس اثناء الطلوع، اثبت ثواني فوق واشد عضلات بطني، اطلع النفس اثناء النزول",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hip Thrust / Bridge / بسط الورك (ثرست وجسر)",
+  "anatomical_action": "Hip Extension / بسط الورك"
  },
  {
   "name": "Bird Dog",
@@ -3598,7 +3963,9 @@
   ],
   "video_url": "https://youtube.com/shorts/L91QMACdA6Q?si=KBnuQDcm9WcUXxxI",
   "source": "المكتبة الأصلية",
-  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain"
+  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Anti-Rotation / مقاومة الدوران",
+  "anatomical_action": "Isometric Anti-Rotation / تثبيت الجذع ضد الدوران"
  },
  {
   "name": "Pelvic Tilting",
@@ -3616,7 +3983,9 @@
   ],
   "video_url": "https://youtube.com/shorts/DqqUIfMuDX4?si=uzl0SRl_M9guUT3j",
   "instructions": "الحركة من الحوض، اخذ نفس وادف حوضي للاعلى قليلا، اطلع النفس اثناء نزول الحوض والصق اسفل ظهري بالارض",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pelvic Tilt / إمالة الحوض",
+  "anatomical_action": "Posterior Pelvic Tilt / إمالة الحوض للخلف"
  },
  {
   "name": "Crunch",
@@ -3637,7 +4006,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/52/crunch/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/52/crunch/",
+  "sub_pattern": "Crunch / كرنش",
+  "anatomical_action": "Trunk Flexion / ثني الجذع"
  },
  {
   "name": "Standing Wood Chop",
@@ -3654,7 +4025,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/108/standing-wood-chop/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/108/standing-wood-chop/",
+  "sub_pattern": "Rotation / Chop / دوران وتقطيع",
+  "anatomical_action": "Trunk Rotation / دوران الجذع"
  },
  {
   "name": "Russian Twist",
@@ -3674,7 +4047,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/65/russian-twist/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/65/russian-twist/",
+  "sub_pattern": "Rotation / Chop / دوران وتقطيع",
+  "anatomical_action": "Trunk Rotation / دوران الجذع"
  },
  {
   "name": "Cable Twisted",
@@ -3693,7 +4068,9 @@
    "Russian Twist",
    "Plank"
   ],
-  "source": "إضافة المدربة"
+  "source": "إضافة المدربة",
+  "sub_pattern": "Rotation / Chop / دوران وتقطيع",
+  "anatomical_action": "Trunk Rotation / دوران الجذع"
  },
  {
   "name": "Calves On Leg Press",
@@ -3712,7 +4089,9 @@
   ],
   "video_url": "https://youtu.be/XdtWVYFVhGU",
   "instructions": "ثبت أصابعك أو مقدمة رجلك على الجهاز، لا تبالغ بالوزن، انزل بكعبك لين تمتد بطاتك بشكل كامل ثم ادفع.",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Calf Raise / رفع الكعب",
+  "anatomical_action": "Ankle Plantar Flexion / ثني أخمصي للكاحل"
  },
  {
   "name": "Calves Raise",
@@ -3729,7 +4108,9 @@
   ],
   "video_url": "https://youtu.be/H6WptvjXkgw",
   "instructions": "حط تحت اقدامك بليتس أو أي شي يرفعك عن الأرض، انزل من اصابعك اقصى نزول ثم ادفع للأعلى",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Calf Raise / رفع الكعب",
+  "anatomical_action": "Ankle Plantar Flexion / ثني أخمصي للكاحل"
  },
  {
   "name": "Calf Raise (Machine)",
@@ -3749,7 +4130,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/294/calf-raise/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/294/calf-raise/",
+  "sub_pattern": "Calf Raise / رفع الكعب",
+  "anatomical_action": "Ankle Plantar Flexion / ثني أخمصي للكاحل"
  },
  {
   "name": "Calf Raises (Barbell)",
@@ -3769,7 +4152,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/51/calf-raises/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/51/calf-raises/",
+  "sub_pattern": "Calf Raise / رفع الكعب",
+  "anatomical_action": "Ankle Plantar Flexion / ثني أخمصي للكاحل"
  },
  {
   "name": "High-Load Heel Raise (Towel Under Toes)",
@@ -3789,7 +4174,9 @@
   "source": "مصدر خارجي موثوق",
   "source_name": "Rathleff et al. 2015 — Scand J Med Sci Sports (RCT)",
   "source_url": "https://doi.org/10.1111/sms.12313",
-  "rehab_category": "اللفافة الأخمصية / Plantar Fasciopathy"
+  "rehab_category": "اللفافة الأخمصية / Plantar Fasciopathy",
+  "sub_pattern": "Calf Raise / رفع الكعب",
+  "anatomical_action": "Ankle Plantar Flexion / ثني أخمصي للكاحل"
  },
  {
   "name": "Adductor Slides",
@@ -3804,7 +4191,9 @@
   ],
   "video_url": "https://youtu.be/6U7dfuxaX9g?si=lkH35E7tZxGBePBj",
   "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «adductor strength»)",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Adductor Slide / انزلاق للتقريب",
+  "anatomical_action": "Hip Adduction / تقريب الورك"
  },
  {
   "name": "Adductor Machine",
@@ -3821,7 +4210,9 @@
   ],
   "video_url": "https://youtu.be/SU1LQhq3o2g?si=_55FKBOlcn8Ilw4X",
   "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «adductor»)",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Adductor Machine / جهاز التقريب",
+  "anatomical_action": "Hip Adduction / تقريب الورك"
  },
  {
   "name": "Side Lunge",
@@ -3843,7 +4234,9 @@
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
   "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/50/side-lunge/",
-  "rehab_category": "ضعف الألوية المتوسطة / Gluteus Medius Weakness"
+  "rehab_category": "ضعف الألوية المتوسطة / Gluteus Medius Weakness",
+  "sub_pattern": "Lateral Lunge / لانج جانبي",
+  "anatomical_action": "Knee/Hip Extension + Hip Adduction / مد الركبة والورك + تقريب الورك"
  },
  {
   "name": "Seated Abductor Machine",
@@ -3863,7 +4256,9 @@
   ],
   "video_url": "https://youtube.com/shorts/riEMreTHNbM?si=wE3vfJBYQY7j_oJ2",
   "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «adductor strength»)",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hip Abduction / تبعيد الورك",
+  "anatomical_action": "Hip Abduction / تبعيد الورك"
  },
  {
   "name": "Hip Abductor Plank",
@@ -3886,7 +4281,9 @@
   ],
   "video_url": "https://youtu.be/2lB5RL91yWo?si=WRm9rUORpFK6dXPl",
   "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «adductor strength»)",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hip Abduction / تبعيد الورك",
+  "anatomical_action": "Hip Abduction / تبعيد الورك"
  },
  {
   "name": "Dirty Dog",
@@ -3910,7 +4307,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/109/dirty-dog/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/109/dirty-dog/",
+  "sub_pattern": "Hip Abduction / تبعيد الورك",
+  "anatomical_action": "Hip Abduction / تبعيد الورك"
  },
  {
   "name": "Hip Hitch (Pelvic Drop)",
@@ -3932,7 +4331,9 @@
   "source": "مصدر خارجي موثوق",
   "source_name": "Ganderton et al. — GMin/GMed EMG (RMIT University)",
   "source_url": "https://research-repository.rmit.edu.au/articles/journal_contribution/Gluteus_Minimus_and_Gluteus_Medius_Muscle_Activity_during_Common_Rehabilitation_Exercises_in_Healthy_Postmenopausal_Women/27572301",
-  "rehab_category": "ضعف الألوية المتوسطة / Gluteus Medius Weakness | ضعف الألوية الصغرى / Gluteus Minimus Weakness"
+  "rehab_category": "ضعف الألوية المتوسطة / Gluteus Medius Weakness | ضعف الألوية الصغرى / Gluteus Minimus Weakness",
+  "sub_pattern": "Pelvic Drop (Stance Leg) / تثبيت الحوض برجل الارتكاز",
+  "anatomical_action": "Hip Abduction of Stance Leg / تبعيد ورك رجل الارتكاز"
  },
  {
   "name": "Rotator Cuff",
@@ -3947,7 +4348,9 @@
   ],
   "video_url": "https://youtu.be/mO8YJAxVG2M?si=KL_llR6Z47Yt89uk",
   "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «Functional Training»)",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "External Rotation / دوران خارجي",
+  "anatomical_action": "Shoulder External Rotation / دوران خارجي للكتف"
  },
  {
   "name": "Shoulder I-Y-T-W Series",
@@ -3968,7 +4371,9 @@
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
   "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/237/shoulder-stability-mobility-series-i-y-t-w-formations/",
-  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis | وضعية الرأس للأمام / Forward Head Posture | ضعف العضلة المعينية / Rhomboid Weakness"
+  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis | وضعية الرأس للأمام / Forward Head Posture | ضعف العضلة المعينية / Rhomboid Weakness",
+  "sub_pattern": "I-Y-T-W / تمارين I-Y-T-W",
+  "anatomical_action": "Scapular Retraction/Depression + Arm Elevation / سحب وخفض لوح الكتف مع رفع الذراع"
  },
  {
   "name": "Supine Snow Angel (Wipers)",
@@ -3991,7 +4396,9 @@
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
   "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/124/supine-snow-angel-wipers-exercise/",
-  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis | وضعية الرأس للأمام / Forward Head Posture"
+  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis | وضعية الرأس للأمام / Forward Head Posture",
+  "sub_pattern": "Snow Angel / الملاك",
+  "anatomical_action": "Shoulder Abduction/Adduction + Scapular Control / تبعيد وتقريب الكتف مع تحكم لوح الكتف"
  },
  {
   "name": "Back Extension",
@@ -4014,7 +4421,9 @@
   "video_url": "https://youtu.be/bs7S3RFyIYs?si=tDLl3OYuDBIwK4Fj",
   "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «Functional Training»)",
   "source": "المكتبة الأصلية",
-  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain | تحدب الظهر / Postural Thoracic Kyphosis"
+  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain | تحدب الظهر / Postural Thoracic Kyphosis",
+  "sub_pattern": "Back Extension / بسط الظهر",
+  "anatomical_action": "Hip Extension + Spinal Extension / بسط الورك + بسط العمود الفقري"
  },
  {
   "name": "Supermans",
@@ -4039,7 +4448,9 @@
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
   "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/9/supermans/",
-  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis | آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain"
+  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis | آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Prone Extension / بسط على البطن",
+  "anatomical_action": "Spinal Extension / بسط العمود الفقري"
  },
  {
   "name": "Stability Ball Reverse Extensions",
@@ -4061,7 +4472,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/64/stability-ball-reverse-extensions/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/64/stability-ball-reverse-extensions/",
+  "sub_pattern": "Reverse Extension / بسط عكسي",
+  "anatomical_action": "Hip Extension + Spinal Extension / بسط الورك + بسط العمود الفقري"
  },
  {
   "name": "Contralateral Limb Raises",
@@ -4085,7 +4498,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/53/contralateral-limb-raises/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/53/contralateral-limb-raises/",
+  "sub_pattern": "Prone Extension / بسط على البطن",
+  "anatomical_action": "Spinal Extension / بسط العمود الفقري"
  },
  {
   "name": "Inner Thigh Stretch",
@@ -4106,7 +4521,9 @@
   "video_url": "https://youtube.com/shorts/uqCfJYKojLU?si=Gev0VeOwVp5z6gB2",
   "instructions": "الضغط والدفع يكون من جهة الفخذ ، لا تدفع من ركبتك!",
   "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «stretch»)",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Adductor Stretch / إطالة المقربات",
+  "anatomical_action": "Hip Abduction (Adductor Stretch) / تبعيد الورك (إطالة المقربات)"
  },
  {
   "name": "Hips Stretch",
@@ -4126,7 +4543,8 @@
   ],
   "video_url": "https://youtube.com/shorts/uqCfJYKojLU?si=Gev0VeOwVp5z6gB2",
   "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «stretch»)",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hip Stretch / إطالة الورك"
  },
  {
   "name": "Kneeling Hip-flexor Stretch",
@@ -4147,7 +4565,9 @@
   "instructions": "من وضع الركوع: الركبة الخلفية تحت الورك والقدم الأمامية أمامك والركبة فوق الكاحل. شد البطن وادفع الحوض للأمام دون تقويس أسفل الظهر، واعصر مؤخرة الجهة الخلفية لزيادة الإطالة. اثبت 30–45 ثانية، 2–5 مرات.",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/142/kneeling-hip-flexor-stretch/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/142/kneeling-hip-flexor-stretch/",
+  "sub_pattern": "Hip Flexor Stretch / إطالة ثانيات الورك",
+  "anatomical_action": "Hip Extension (End Range) / بسط الورك في نهاية المدى"
  },
  {
   "name": "Supine Hamstrings Stretch",
@@ -4168,7 +4588,9 @@
   "instructions": "استلقِ على ظهرك وارفع رجلاً واحدة ومدّها ببطء مع سحب أصابع القدم نحوك، دون أي حركة في الحوض أو أسفل الظهر. اثبت 15–30 ثانية، 2–4 مرات لكل رجل.",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/235/supine-hamstrings-stretch/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/235/supine-hamstrings-stretch/",
+  "sub_pattern": "Hamstring Stretch / إطالة الخلفية",
+  "anatomical_action": "Hip Flexion with Knee Extended / ثني الورك مع مد الركبة"
  },
  {
   "name": "Side Lying Quadriceps Stretch",
@@ -4189,7 +4611,9 @@
   "instructions": "استلقِ على جنبك وشد البطن، واسحب كعب الرجل العلوية نحو المؤخرة بيدك مع إبقاء الركبة في خط الورك. اثبت 30–45 ثانية، 2–5 مرات لكل جهة.",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/149/side-lying-quadriceps-stretch/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/149/side-lying-quadriceps-stretch/",
+  "sub_pattern": "Quadriceps Stretch / إطالة الأمامية",
+  "anatomical_action": "Knee Flexion + Hip Extension (End Range) / ثني الركبة + بسط الورك"
  },
  {
   "name": "Standing Dorsi-Flexion (Calf Stretch)",
@@ -4211,7 +4635,9 @@
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
   "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/152/standing-dorsi-flexion-calf-stretch/",
-  "rehab_category": "اللفافة الأخمصية / Plantar Fasciopathy"
+  "rehab_category": "اللفافة الأخمصية / Plantar Fasciopathy",
+  "sub_pattern": "Calf Stretch / إطالة البطات",
+  "anatomical_action": "Ankle Dorsiflexion / ثني ظهري للكاحل"
  },
  {
   "name": "Cat-Cow",
@@ -4233,7 +4659,9 @@
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
   "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/15/cat-cow/",
-  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis | آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain"
+  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis | آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Spinal Mobility / مرونة العمود الفقري",
+  "anatomical_action": "Spinal Flexion/Extension / ثني وبسط العمود الفقري"
  },
  {
   "name": "Standing Lunge Stretch",
@@ -4254,7 +4682,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/137/standing-lunge-stretch/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/137/standing-lunge-stretch/",
+  "sub_pattern": "Hip Flexor Stretch / إطالة ثانيات الورك",
+  "anatomical_action": "Hip Extension (End Range) / بسط الورك في نهاية المدى"
  },
  {
   "name": "Plantar Fascia-Specific Stretch",
@@ -4277,7 +4707,9 @@
   "source": "مصدر خارجي موثوق",
   "source_name": "Rathleff et al. 2015 — Scand J Med Sci Sports (RCT)",
   "source_url": "https://doi.org/10.1111/sms.12313",
-  "rehab_category": "اللفافة الأخمصية / Plantar Fasciopathy"
+  "rehab_category": "اللفافة الأخمصية / Plantar Fasciopathy",
+  "sub_pattern": "Plantar Fascia Stretch / إطالة اللفافة الأخمصية",
+  "anatomical_action": "Toe Extension + Ankle Dorsiflexion / مد أصابع القدم + ثني ظهري"
  },
  {
   "name": "Lateral Bound",
@@ -4298,7 +4730,9 @@
   ],
   "video_url": "https://www.youtube.com/watch?v=soqQy4dzEts",
   "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «Functional Training»)",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lateral Jump / قفز جانبي",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
  },
  {
   "name": "Box Jumps",
@@ -4315,7 +4749,9 @@
   "place": "نادي",
   "status": "approved",
   "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «CrossFit»)",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Vertical Jump / قفز عمودي",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
  },
  {
   "name": "Squat Jump",
@@ -4336,7 +4772,9 @@
   "instructions": "قف بعرض الحوض، ادفع الورك للخلف وانزل، ثم اقفز بقوة بمدّ الكاحل والركبة والورك معاً. انزل بهدوء على منتصف القدم مع دفع الورك للخلف ودون قفل الركب. ابدأ بقفزات صغيرة حتى تتقن الهبوط.",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/222/squat-jump/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/222/squat-jump/",
+  "sub_pattern": "Vertical Jump / قفز عمودي",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
  },
  {
   "name": "Tuck Jump",
@@ -4357,7 +4795,9 @@
   "instructions": "استخدم الذراعين للزخم: أرجعهما للخلف عند النزول وأرجحهما للأمام والأعلى عند القفز، واسحب الركبتين نحو الصدر في الهواء.",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/180/tuck-jump/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/180/tuck-jump/",
+  "sub_pattern": "Vertical Jump / قفز عمودي",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
  },
  {
   "name": "Cycled Split-Squat Jump",
@@ -4379,7 +4819,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/234/cycled-split-squat-jump/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/234/cycled-split-squat-jump/",
+  "sub_pattern": "Split Jump / قفز سبليت",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
  },
  {
   "name": "Lateral Cone Jumps",
@@ -4401,7 +4843,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/120/lateral-cone-jumps/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/120/lateral-cone-jumps/",
+  "sub_pattern": "Lateral Jump / قفز جانبي",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
  },
  {
   "name": "Forward Linear Jumps",
@@ -4423,7 +4867,9 @@
   "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
   "source": "مصدر خارجي موثوق",
   "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
-  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/177/forward-linear-jumps/"
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/177/forward-linear-jumps/",
+  "sub_pattern": "Horizontal Jump / قفز أمامي",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
  },
  {
   "name": "Jogging",
@@ -4444,7 +4890,9 @@
    "Snatch",
    "Clean"
   ],
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Running / جري",
+  "anatomical_action": "Gait: Alternating Hip/Knee Extension / نمط المشي والجري"
  },
  {
   "name": "Wall Ball",
@@ -4465,7 +4913,9 @@
    "Snatch",
    "Clean"
   ],
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Squat to Throw / سكوات مع رمي",
+  "anatomical_action": "Knee/Hip Extension + Shoulder Flexion / مد الركبة والورك + ثني الكتف"
  },
  {
   "name": "Snatch",
@@ -4486,7 +4936,9 @@
    "Jogging",
    "Wall Ball"
   ],
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Snatch / سناتش",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
  },
  {
   "name": "Clean",
@@ -4507,7 +4959,9 @@
    "Jogging",
    "Wall Ball"
   ],
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Clean / كلين",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
  },
  {
   "name": "Turkish Get-Up",
@@ -4528,7 +4982,9 @@
    "Kettlebell Swing"
   ],
   "video_url": "https://www.youtube.com/watch?v=0bWRPC49-KI",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Turkish Get-Up / النهوض التركي",
+  "anatomical_action": "Multi-joint Integrated / حركة متعددة المفاصل"
  },
  {
   "name": "Crab Reach (Thoracic Bridge)",
@@ -4550,7 +5006,9 @@
   ],
   "video_url": "https://www.youtube.com/watch?v=fgsUe3Lc3hI",
   "source": "المكتبة الأصلية",
-  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis"
+  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis",
+  "sub_pattern": "Thoracic Bridge / جسر صدري",
+  "anatomical_action": "Hip Extension + Thoracic Rotation / بسط الورك + دوران الصدر"
  },
  {
   "name": "Sled Pull/Push",
@@ -4572,7 +5030,9 @@
    "Kettlebell Swing"
   ],
   "video_url": "https://www.youtube.com/watch?v=3KWK7SIdPz4",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Sled Push / Pull / دفع وسحب الزلاجة",
+  "anatomical_action": "Hip/Knee Extension in Gait / بسط الورك والركبة بنمط المشي"
  },
  {
   "name": "Farmer’s Walk",
@@ -4591,7 +5051,9 @@
    "Kettlebell Swing"
   ],
   "video_url": "https://www.youtube.com/watch?v=hx24PM6gXs8",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Farmer's Walk / مشي المزارع",
+  "anatomical_action": "Isometric Trunk + Grip Under Load / تثبيت الجذع والقبضة أثناء المشي"
  },
  {
   "name": "90s Transition",
@@ -4612,7 +5074,9 @@
    "Kettlebell Swing"
   ],
   "video_url": "https://www.youtube.com/watch?v=ogU-azeGe_k",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hip Rotation Mobility (90/90) / مرونة دوران الورك",
+  "anatomical_action": "Hip Internal/External Rotation / دوران الورك الداخلي والخارجي"
  },
  {
   "name": "Prone Swimmer",
@@ -4634,7 +5098,9 @@
   ],
   "video_url": "https://www.youtube.com/watch?v=M8a1cgnhyqk",
   "source": "المكتبة الأصلية",
-  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis | وضعية الرأس للأمام / Forward Head Posture"
+  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis | وضعية الرأس للأمام / Forward Head Posture",
+  "sub_pattern": "Prone Swimmer / سبّاح على البطن",
+  "anatomical_action": "Shoulder Extension/Abduction + Rotation / مد وتبعيد الكتف مع الدوران"
  },
  {
   "name": "Kettlebell Swing",
@@ -4656,7 +5122,9 @@
   ],
   "video_url": "https://www.youtube.com/watch?v=d94xX-AQZ0A",
   "notes": "نفس التمرين ورد أيضاً تحت التصنيف «CrossFit» (صف المصدر 168)",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Ballistic Hinge (Swing) / مفصلة انفجارية (سوينق)",
+  "anatomical_action": "Hip Extension (Ballistic) / بسط الورك الانفجاري"
  },
  {
   "name": "left over db",
@@ -4690,7 +5158,9 @@
    "Kettlebell Swing"
   ],
   "video_url": "https://youtu.be/cxaAqmdlrgk?si=2YRAIgFFXPAvDadG",
-  "source": "المكتبة الأصلية"
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Scapular Protraction / دفع لوح الكتف",
+  "anatomical_action": "Scapular Protraction / دفع لوح الكتف"
  },
  {
   "name": "Isometric Wrist Extension",
@@ -4703,7 +5173,9 @@
   "source": "مصدر خارجي موثوق",
   "source_name": "JOSPT CPG 2022 — Lateral Elbow Pain (Lucado et al.)",
   "source_url": "https://www.orthopt.org/uploads/content_files/files/jospt.2022.0302.pdf",
-  "rehab_category": "مرفق التنس / Lateral Elbow Tendinopathy"
+  "rehab_category": "مرفق التنس / Lateral Elbow Tendinopathy",
+  "sub_pattern": "Isometric / ثابت",
+  "anatomical_action": "Wrist Extension / مد الرسغ"
  },
  {
   "name": "Eccentric Wrist Extension",
@@ -4716,7 +5188,9 @@
   "source": "مصدر خارجي موثوق",
   "source_name": "JOSPT CPG 2022 — Lateral Elbow Pain (Lucado et al.)",
   "source_url": "https://www.orthopt.org/uploads/content_files/files/jospt.2022.0302.pdf",
-  "rehab_category": "مرفق التنس / Lateral Elbow Tendinopathy"
+  "rehab_category": "مرفق التنس / Lateral Elbow Tendinopathy",
+  "sub_pattern": "Eccentric / لامركزي",
+  "anatomical_action": "Wrist Extension / مد الرسغ"
  },
  {
   "name": "Chin Tuck (Deep Neck Flexor)",
@@ -4731,6 +5205,8 @@
   "source": "مصدر خارجي موثوق",
   "source_name": "Sheikhhoseini et al. 2018 — JMPT (Systematic review, FHP)",
   "source_url": "https://pubmed.ncbi.nlm.nih.gov/30107937/",
-  "rehab_category": "وضعية الرأس للأمام / Forward Head Posture"
+  "rehab_category": "وضعية الرأس للأمام / Forward Head Posture",
+  "sub_pattern": "Chin Tuck / سحب الذقن",
+  "anatomical_action": "Upper Cervical Flexion + Retraction / ثني علوي للرقبة مع سحبها للخلف"
  }
 ]

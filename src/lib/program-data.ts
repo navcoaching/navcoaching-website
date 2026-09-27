@@ -20,7 +20,9 @@ export async function loadProgramDays(tx: Tx, kind: "template" | "block", ownerI
 }
 
 export async function loadExerciseOptions(tx: Tx): Promise<ExOption[]> {
-  return (await tx.query(`SELECT name, primary_muscle, equipment FROM exercises WHERE status = 'approved' ORDER BY name`)).rows;
+  return (await tx.query(
+    `SELECT id, name, equipment, primary_muscle, pattern, sub_pattern, anatomical_action, movement_subcategory
+       FROM exercises WHERE status = 'approved' ORDER BY name`)).rows;
 }
 
 // =====================================================================
