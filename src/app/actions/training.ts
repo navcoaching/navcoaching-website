@@ -12,6 +12,10 @@ import { notifyTrainee, RESULT_LABEL, CHANNEL_LABEL, type ChannelResult } from "
 import { parseReps, parseRir, type PlanWeek } from "@/lib/training";
 import { ANATOMICAL_ACTIONS, EQUIPMENT, EX_STATUS, KINDS, LEVELS, MOVEMENT_SUBCATEGORIES, MUSCLES, PATTERNS, SECONDARY_MUSCLES, SUB_PATTERNS, placeFor } from "@/lib/exercises";
 import type { ActionState } from "./client";
+import { allow } from "@/lib/rate";
+import { cleanUpload, UploadError } from "@/lib/uploads";
+import { matchExercises, type DayItem, type ExtractedExercise } from "@/lib/workout-import";
+import { readWorkoutImage, visionEnabled, VisionError } from "@/lib/workout-vision";
 
 const GENERIC = "تعذّر الحفظ. حاولي مرة أخرى.";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -596,4 +600,85 @@ export async function logMeasurementsAction(_: ActionState, fd: FormData): Promi
   } catch (err) { return tFail(err); }
   const p = orderPath(fd); if (p) revalidatePath(p);
   return { ok: true, message: "تم حفظ القياسات." };
+}
+
+// ---------- تعبئة التسجيل من صورة تطبيق خارجي (Strong وغيره) ----------
+export type ImportPreview = ActionState & {
+  rows?: { external: string; key: string; itemId: string | null; how: string | null; weight: number | null; reps: number[]; rir: number | null }[];
+  items?: { id: string; name: string }[];
+};
+
+/** يقرأ الصورة ويطابق التمارين ويرجع معاينة للمراجعة. لا يحفظ شيئاً ولا يخزّن الصورة. */
+export async function readWorkoutImageAction(_: ImportPreview, fd: FormData): Promise<ImportPreview> {
+  const u = await getCurrentUser();
+  if (!u) return { error: "سجّل الدخول أولاً." };
+  const orderNo = String(fd.get("order_no") ?? "");
+  const day = idOf(fd, "day");
+  if (!ORDER_NO.test(orderNo) || !day) return { error: T_GENERIC };
+  if (!visionEnabled()) return { error: "قراءة الصور غير مفعّلة حالياً." };
+  if (!(await allow(`vision:u:${u.id}`, 10, 3600))) return { error: "وصلت الحد (10 صور في الساعة). حاول لاحقاً أو سجّل يدوياً." };
+
+  const ctx = await withUser(u.id, async (tx) => {
+    const { rows: [b] } = await tx.query(
+      `SELECT b.id FROM block_days d JOIN blocks b ON b.id = d.block_id JOIN orders o ON o.id = b.order_id
+        WHERE d.id = $1 AND o.order_no = $2 AND b.user_id = $3 AND b.status = 'active'`, [day, orderNo, u.id]);
+    if (!b) return null;
+    const items = (await tx.query(
+      `SELECT i.id, i.exercise_id, e.name FROM block_items i JOIN app.block_exercises($2) e ON e.id = i.exercise_id
+        WHERE i.day_id = $1 ORDER BY i.position, i.id`, [day, b.id])).rows as DayItem[];
+    const aliases = new Map<string, string>((await tx.query(
+      `SELECT external_name, exercise_id FROM exercise_aliases WHERE user_id = $1`, [u.id])).rows.map((r) => [r.external_name, r.exercise_id]));
+    return { items, aliases };
+  });
+  if (!ctx) return { error: "البرنامج غير موجود أو منتهي." };
+
+  let extracted: ExtractedExercise[];
+  try {
+    const img = await cleanUpload(fd.get("image") as File | null, "image");
+    extracted = await readWorkoutImage(img.data, img.mime);
+  } catch (err) {
+    if (err instanceof UploadError || err instanceof VisionError) return { error: err.message };
+    console.error("[vision]", (err as Error).message);
+    return { error: "تعذّرت قراءة الصورة الآن. سجّل يدوياً أو حاول لاحقاً." };
+  }
+  const rows = matchExercises(extracted, ctx.items, ctx.aliases).map((r) => ({
+    external: r.external, key: r.key, itemId: r.itemId, how: r.how,
+    weight: r.log?.weight ?? null, reps: r.log?.reps ?? [], rir: r.log?.rir ?? null,
+  }));
+  return { ok: true, rows, items: ctx.items.map((i) => ({ id: i.id, name: i.name })) };
+}
+
+/** يحفظ ما راجعه المتدرب: تسجيل كل تمرين (app.log_item) وربط الأسماء الجديدة للمرات الجاية */
+export async function saveImportedLogsAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const week = Number(fd.get("week"));
+  const count = Math.min(30, Number(fd.get("count")) || 0);
+  if (!Number.isInteger(week) || week < 1) return { error: T_GENERIC };
+  const entries: { item: string; weight: number; reps: number[]; rir: number | null; key: string; how: string }[] = [];
+  for (let k = 0; k < count; k++) {
+    const item = String(fd.get(`item_${k}`) ?? "");
+    if (!item) continue; // «تجاهل»
+    if (!UUID.test(item)) return { error: T_GENERIC };
+    const weight = toNum(fd.get(`weight_${k}`));
+    if (weight == null || !Number.isFinite(weight) || weight < 0 || weight > 1000) return { error: `اكتب الوزن بالكيلو للتمرين ${k + 1}.` };
+    const reps = String(fd.get(`reps_${k}`) ?? "").split(/[^0-9٠-٩]+/).filter(Boolean).map((v) => toNum(v)!);
+    if (!reps.length || reps.length > 10 || reps.some((r) => !Number.isInteger(r) || r < 0 || r > 200)) return { error: `التكرارات للتمرين ${k + 1} أرقام مفصولة بفواصل.` };
+    const rir = toNum(fd.get(`rir_${k}`));
+    if (rir != null && (!Number.isFinite(rir) || rir < 0 || rir > 10)) return { error: "RIR رقم من 0 إلى 10." };
+    if (entries.some((e) => e.item === item)) return { error: "ربطت تمرينين من الصورة بنفس تمرين البرنامج. اختر «تجاهل» لأحدهما." };
+    entries.push({ item, weight, reps, rir, key: String(fd.get(`key_${k}`) ?? "").slice(0, 120), how: String(fd.get(`how_${k}`) ?? "") });
+  }
+  if (!entries.length) return { error: "ما فيه تمارين للحفظ. اربط تمريناً واحداً على الأقل." };
+  try {
+    await asTrainee(async (tx) => {
+      for (const e of entries) {
+        await tx.query("SELECT app.log_item($1,$2,$3,$4,$5)", [e.item, week, e.weight, e.reps, e.rir]);
+        if (e.key && e.how !== "alias" && e.how !== "name") {
+          const ex = (await tx.query("SELECT exercise_id FROM block_items WHERE id = $1", [e.item])).rows[0]?.exercise_id;
+          if (ex) await tx.query("SELECT app.save_exercise_alias($1,$2)", [e.key, ex]);
+        }
+      }
+    });
+  } catch (err) { return tFail(err); }
+  const p = orderPath(fd); if (p) revalidatePath(p);
+  return { ok: true, message: `تم حفظ ${entries.length} ${entries.length === 1 ? "تمرين" : "تمارين"} ✅` };
 }

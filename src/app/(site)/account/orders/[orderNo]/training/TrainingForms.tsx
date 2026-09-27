@@ -1,7 +1,10 @@
 "use client";
-import { useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 import { FormMessage, Submit, useFormAction } from "@/components/FormBits";
-import { logItemAction, logMeasurementsAction, logStepsAction, logWeightAction, rateDayAction, swapExerciseAction } from "@/app/actions/training";
+import {
+  logItemAction, logMeasurementsAction, logStepsAction, logWeightAction, rateDayAction, readWorkoutImageAction, saveImportedLogsAction, swapExerciseAction,
+  type ImportPreview,
+} from "@/app/actions/training";
 
 type Log = { weight: number; reps: number[]; rir: number | null } | null;
 
@@ -143,5 +146,91 @@ export function StepsForm({ orderNo, block, weeks, week, values }: { orderNo: st
       <FormMessage state={state} />
       <div><Submit pending={pending} className="btn btn-sm">حفظ الخطوات</Submit></div>
     </form>
+  );
+}
+
+const HOW: Record<string, [string, string]> = {
+  alias: ["مربوط سابقاً", "ok"], name: ["مطابقة بالاسم", "ok"], partial: ["مطابقة تقريبية — تأكد", "action"],
+};
+
+/** تعبئة تسجيل اليوم من لقطة شاشة تطبيق خارجي (Strong وغيره): قراءة ← مراجعة وربط ← حفظ */
+export function ImportFromImage({ orderNo, day, week }: { orderNo: string; day: string; week: number }) {
+  const [round, setRound] = useState(0);
+  return (
+    <details className="card import-image" data-testid="import-image">
+      <summary style={{ cursor: "pointer", minHeight: 44, fontWeight: 700 }}>📷 تعبئة من صورة (Strong وغيره)</summary>
+      <ImportFlow key={round} orderNo={orderNo} day={day} week={week} again={() => setRound((r) => r + 1)} />
+    </details>
+  );
+}
+
+function ImportFlow({ orderNo, day, week, again }: { orderNo: string; day: string; week: number; again: () => void }) {
+  const [preview, read, reading] = useActionState<ImportPreview, FormData>(readWorkoutImageAction, {});
+  const save = useFormAction(saveImportedLogsAction);
+  const rows = preview.rows ?? [];
+  const onRead = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (reading) return;
+    const fd = new FormData(e.currentTarget);
+    startTransition(() => read(fd));
+  };
+  const done = save.state.ok;
+  return (
+      <div className="stack" style={{ ["--space" as string]: "12px", marginTop: 10 }}>
+        {done ? (
+          <>
+            <FormMessage state={save.state} />
+            <button type="button" className="btn btn-ghost btn-sm" style={{ width: "fit-content" }} onClick={again}>صورة أخرى</button>
+          </>
+        ) : (
+          <>
+            <form onSubmit={onRead} className="form">
+              <input type="hidden" name="order_no" value={orderNo} />
+              <input type="hidden" name="day" value={day} />
+              <div className="field">
+                <label htmlFor={`img-${day}`}>لقطة شاشة لتمرين اليوم من تطبيقك</label>
+                <input id={`img-${day}`} name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+                <span className="hint">نقرأ التمارين والأوزان والتكرارات، وتراجعها قبل الحفظ. الصورة لا تُحفظ في الموقع، وتُرسل لخدمة قراءة الصور (Anthropic) للقراءة فقط.</span>
+              </div>
+              {preview.error && <p className="alert err" role="alert">{preview.error}</p>}
+              <div><Submit className="btn btn-sm" pending={reading} pendingText="جارٍ قراءة الصورة… (حتى 30 ثانية)">اقرأ الصورة</Submit></div>
+            </form>
+
+            {rows.length > 0 && (
+              <form onSubmit={save.onSubmit} className="form import-review" data-testid="import-review" key={rows.map((r) => r.key).join("|")}>
+                <input type="hidden" name="order_no" value={orderNo} />
+                <input type="hidden" name="week" value={week} />
+                <input type="hidden" name="count" value={rows.length} />
+                <p className="small muted" style={{ margin: 0 }}>راجع الأرقام قبل الحفظ. الوزن = أثقل مجموعة عمل بالكيلو، والإحماء لا يُحسب.</p>
+                {rows.map((r, k) => (
+                  <fieldset key={k} className="import-row">
+                    <legend><bdi dir="ltr">{r.external}</bdi>{" "}
+                      {r.how ? <span className={`status ${HOW[r.how][1]}`}>{HOW[r.how][0]}</span> : <span className="status muted">اختر التمرين</span>}</legend>
+                    <input type="hidden" name={`key_${k}`} value={r.key} />
+                    <input type="hidden" name={`how_${k}`} value={r.how ?? ""} />
+                    <div className="field">
+                      <label htmlFor={`it-${k}`}>يقابله في برنامجك</label>
+                      <select id={`it-${k}`} name={`item_${k}`} defaultValue={r.itemId ?? ""}>
+                        <option value="">تجاهل</option>
+                        {(preview.items ?? []).map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}
+                      </select>
+                    </div>
+                    <div className="import-nums">
+                      <div className="field"><label htmlFor={`w-${k}`}>الوزن (كغ)</label>
+                        <input id={`w-${k}`} name={`weight_${k}`} type="text" inputMode="decimal" dir="ltr" defaultValue={r.weight ?? ""} /></div>
+                      <div className="field"><label htmlFor={`r-${k}`}>التكرارات</label>
+                        <input id={`r-${k}`} name={`reps_${k}`} type="text" inputMode="numeric" dir="ltr" defaultValue={r.reps.join(", ")} /></div>
+                      <div className="field"><label htmlFor={`rir-${k}`}>RIR</label>
+                        <input id={`rir-${k}`} name={`rir_${k}`} type="text" inputMode="decimal" dir="ltr" defaultValue={r.rir ?? ""} /></div>
+                    </div>
+                  </fieldset>
+                ))}
+                <FormMessage state={save.state} />
+                <div><Submit className="btn" pending={save.pending} pendingText="جارٍ الحفظ…">حفظ الكل</Submit></div>
+              </form>
+            )}
+          </>
+        )}
+      </div>
   );
 }

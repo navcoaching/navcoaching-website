@@ -702,3 +702,22 @@ describe("الحالات: تفعيل مباشر بعد الدفع، وانتها
     assert.ok(!(await as(COACH, "SELECT app.expire_subscriptions() AS n")).rows[0].n.includes(past));
   });
 });
+
+describe("ربط أسماء التمارين من التطبيقات الخارجية", () => {
+  test("لصاحبه فقط، ولتمرين موجود في برنامجه فقط", async () => {
+    const noA = await newOrder(A, "k-alias-000000000001", "int1");
+    await owner.query("UPDATE orders SET status = 'active' WHERE order_no = $1", [noA]);
+    const ex = (await owner.query("SELECT id FROM exercises ORDER BY name LIMIT 2")).rows;
+    const { rows: [b] } = await owner.query(
+      `INSERT INTO blocks (order_id, user_id, name, start_date, weeks) SELECT id, user_id, 'b', current_date, 4 FROM orders WHERE order_no = $1 RETURNING id`, [noA]);
+    const { rows: [d] } = await owner.query(`INSERT INTO block_days (block_id, day_no, title) VALUES ($1, 1, 'D1') RETURNING id`, [b.id]);
+    await owner.query(`INSERT INTO block_items (day_id, position, exercise_id, coach_exercise_id, plan) VALUES ($1, 1, $2, $2, '[]')`, [d.id, ex[0].id]);
+    await as(A, "SELECT app.save_exercise_alias('leg press', $1)", [ex[0].id]);
+    await as(A, "SELECT app.save_exercise_alias('leg press', $1)", [ex[0].id]); // تكرار آمن
+    await assert.rejects(as(A, "SELECT app.save_exercise_alias('x', $1)", [ex[1].id]), /غير موجود في برنامجك/);
+    await assert.rejects(as(B, "SELECT app.save_exercise_alias('leg press', $1)", [ex[0].id]), /غير موجود في برنامجك/);
+    assert.equal((await as(A, "SELECT count(*)::int n FROM exercise_aliases")).rows[0].n, 1);
+    assert.equal((await as(B, "SELECT count(*)::int n FROM exercise_aliases")).rows[0].n, 0);
+    await assert.rejects(as(A, "INSERT INTO exercise_aliases (user_id, external_name, exercise_id) VALUES ($1, 'y', $2)", [A, ex[1].id]), /permission denied/);
+  });
+});

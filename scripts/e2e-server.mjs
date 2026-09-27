@@ -27,6 +27,7 @@ const env = {
   RESEND_API_KEY: "",
   MAIL_FROM: "",
   E2E_MAILBOX: "1",
+  WORKOUT_VISION_MOCK: "1",
   CRON_SECRET: "e2e-cron-secret-0123456789",
   NEXT_DIST_DIR: ".next-e2e",
 };

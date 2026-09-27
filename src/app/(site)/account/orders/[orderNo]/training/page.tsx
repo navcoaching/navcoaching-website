@@ -10,7 +10,8 @@ import { muscleAr } from "@/lib/exercises";
 import { loadAdherence, loadAllLifts, loadBlockData, loadBodyData, type BlockRow } from "@/lib/program-data";
 import AdherenceBar from "@/components/account/AdherenceBar";
 import ProgressView from "@/components/training/ProgressView";
-import { ItemLogForm, MeasureForm, RateDayForm, StepsForm, SwapForm, WeightForm } from "./TrainingForms";
+import { ImportFromImage, ItemLogForm, MeasureForm, RateDayForm, StepsForm, SwapForm, WeightForm } from "./TrainingForms";
+import { visionEnabled } from "@/lib/workout-vision";
 
 export const metadata: Metadata = { title: "برنامج التمرين", robots: { index: false } };
 
@@ -129,6 +130,7 @@ export default async function TrainingPage({ params, searchParams }: { params: P
             {day && (
               <div className="stack" style={{ ["--space" as string]: "12px" }}>
                 <h2 style={{ fontSize: 20 }}>{day.title} <span className="small muted">— الأسبوع {week}</span></h2>
+                {!readOnly && day.items.length > 0 && visionEnabled() && <ImportFromImage orderNo={o.order_no} day={day.id} week={week} />}
                 {day.items.map((it, idx) => {
                   const ex = data.exercises.get(it.exercise_id);
                   const plan = it.plan[week - 1];

@@ -812,3 +812,7 @@ h2 .count { display: inline-grid; place-items: center; min-inline-size: 26px; bl
 .today-macros b { font-size: 15px; }
 @media (max-width: 480px) { .today-macros { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .supp-mini { margin: 4px 0 0; padding-inline-start: 18px; display: grid; gap: 2px; overflow-wrap: anywhere; }
+/* تعبئة التسجيل من صورة */
+.import-row { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 0; display: grid; gap: 8px; min-width: 0; }
+.import-row legend { padding-inline: 6px; font-weight: 700; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.import-nums { display: grid; grid-template-columns: 1fr 1.4fr 0.8fr; gap: 8px; }
