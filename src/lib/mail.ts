@@ -1,6 +1,7 @@
 import "server-only";
 import { Resend } from "resend";
 import { pool } from "./db";
+import { renderEmail } from "./email-template";
 
 /**
  * الإرسال عبر Resend فقط عند توفر RESEND_API_KEY و MAIL_FROM.
@@ -41,7 +42,7 @@ export async function sendMail(to: string, subject: string, text: string, html?:
 export async function notifySafe(to: string | undefined | null, subject: string, text: string) {
   if (!to) return;
   try {
-    await sendMail(to, subject, text);
+    await sendMail(to, subject, text, await coachHtml(subject, text));
   } catch (err) {
     console.error("[notify] skipped:", (err as Error).message);
   }
@@ -63,4 +64,20 @@ export async function mailBrand(q: { query: (sql: string) => Promise<{ rows: { k
     site: (process.env.NEXT_PUBLIC_SITE_URL || "https://navcoaching.com").replace(/\/$/, ""),
     whatsapp: v.contact?.whatsapp, instagram: v.contact?.instagram, legalName: v.legal?.name, cr: v.legal?.cr,
   };
+}
+
+/** تنبيه المدربة بنفس تصميم بريد المتدرب، مع زر لصفحة الطلب في لوحة الإدارة إن وُجد رقم طلب */
+async function coachHtml(subject: string, text: string) {
+  try {
+    const brand = await mailBrand(pool);
+    const no = `${subject}\n${text}`.match(/NAV-\d{6}-[A-Z0-9]{5}/)?.[0];
+    const body = text.replace(/\n*Nav Coaching\s*$/, "").replace(/\n*التفاصيل في لوحة الإدارة\.?\s*$/, "");
+    return renderEmail({
+      kicker: "تنبيه للمدربة", name: "الكوتش ساره", brand, message: body,
+      headline: subject.replace(/\s*[—-]?\s*NAV-\d{6}-[A-Z0-9]{5}/, "").trim() || subject,
+      cta: { label: no ? "فتح الطلب في لوحة الإدارة" : "فتح لوحة الإدارة", url: `${brand.site}/admin${no ? `/orders/${no}` : ""}` },
+    });
+  } catch {
+    return undefined; // يُرسل النص العادي فقط
+  }
 }

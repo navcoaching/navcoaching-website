@@ -238,7 +238,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                   const cls = current === -1 ? (when ? "done" : "") : i < current ? "done" : i === current ? "now" : "";
                   return <li key={st.key} className={cls}>{st.label}{when && <span className="when">{fmtDateTime(when)}</span>}</li>;
                 })}
-                {o.status === "cancelled" && <li className="now">ملغي<span className="when">{fmtDateTime(o.updated_at)}</span></li>}
+                {o.status === "cancelled" && <li className="now">تم إلغاء الطلب<span className="when">{fmtDateTime(o.updated_at)}</span></li>}
               </ol>
             </div>
             <div className="card flat">

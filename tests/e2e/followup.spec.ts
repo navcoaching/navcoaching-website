@@ -128,6 +128,8 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   // ---------- 4) صفحة الطلب: الاشتراك، الاستبيان القديم، الأسابيع ----------
   await coach.goto(`/admin/orders/${orderNo}`);
   await expect(coach.getByText("قريب من الانتهاء").first()).toBeVisible();
+  await expect(coach.getByTestId("intake").locator("summary")).toContainText("قياسات ناقصة");
+  await coach.getByTestId("intake").locator("summary").click();
   await expect(coach.getByText("(نطاق من الاستبيان القديم)")).toBeVisible();
   await expect(coach.getByRole("button", { name: "اطلبي منه تحديثهما" })).toBeVisible();
   const week1 = coach.locator("tr", { has: coach.locator("td", { hasText: /^1$/ }) });
@@ -196,6 +198,8 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   expect(hm.health.health_notes).toBe("آلام في الركبة اليسرى"); // لم تُمس بقية البيانات الصحية
   await coach.goto(`/admin/orders/${orderNo}`);
   await expect(coach.getByRole("button", { name: "اطلبي منه تحديثهما" })).toHaveCount(0);
+  await expect(coach.getByTestId("intake").locator("summary")).not.toContainText("قياسات ناقصة");
+  await coach.getByTestId("intake").locator("summary").click();
   await expect(coach.getByText("62 كغ")).toBeVisible();
 
   // ---------- 10) «إرسال تنبيه المراجعة الآن»: معاينة، تأكيد بالنص، نتيجة لكل قناة، مهلة ----------
@@ -531,7 +535,7 @@ test("الجداول المجانية: عرض، طلب بعد الدخول، ت�
   expect(res.headers().location).toContain("plan=notfound");
   await other.goto(href);
   await expect(other.getByText("تعذّر تحميل الملف")).toBeVisible();
-  await expect(other.getByText("ما طلبت أي جدول مجاني بعد.")).toBeVisible();
+  await expect(other.getByTestId("my-free-plans")).toHaveCount(0); // لم يطلب جداول، فلا تظهر إلا رسالة الخطأ
   await other.context().close();
 
   // ---------- الإدارة: عدد الطلبات، والإخفاء يمنع الطلب الجديد ويُبقي الملف لمن طلبه ----------

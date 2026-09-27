@@ -32,6 +32,8 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
   const coach = await requireCoach();
   const [data, s] = await Promise.all([
     withUser(coach.id, async (tx) => {
+      // الاشتراكات التي مرّ يوم انتهائها تصبح «انتهى الاشتراك» (احتياط إن لم تعمل التذكيرات المجدولة)
+      await tx.query("SELECT app.expire_subscriptions()");
       const counts = (await tx.query("SELECT status, count(*)::int n FROM orders WHERE NOT is_demo GROUP BY status")).rows as { status: string; n: number }[];
       const newWeek = (await tx.query("SELECT count(*)::int n FROM orders WHERE NOT is_demo AND created_at > now() - interval '7 days'")).rows[0].n as number;
       const pendingReviews = (await tx.query("SELECT count(*)::int n FROM reviews WHERE status = 'pending'")).rows[0].n as number;

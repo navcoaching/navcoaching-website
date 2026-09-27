@@ -10,7 +10,7 @@ import { ANSWER_LABELS, EXPECTATIONS_Q } from "@/lib/intake";
 import ActionForm from "@/components/admin/ActionForm";
 import PackageTag from "@/components/admin/PackageTag";
 import Details from "@/components/admin/Details";
-import { AdminNotes, Subscription } from "./FollowUp";
+import { AdminNotes, NotifLog, ReviewWeeks, SendReview, SubscriptionCard, loadSubscription } from "./FollowUp";
 import StatusBar from "./StatusBar";
 import AdherenceBar from "@/components/account/AdherenceBar";
 import GrantedAlert from "@/components/admin/GrantedAlert";
@@ -56,6 +56,7 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
       { wants_renewal: boolean; reason: string; experience: string; created_at: string; seen_at: string | null } | undefined;
     return { adherence, links, survey };
   }) : null;
+  const sub = await loadSubscription(coach.id, o);
   const next = coachNextSteps(o.status, o.category);
   const phoneDigits = o.contact_phone.replace(/\D/g, "");
 
@@ -76,6 +77,20 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
       {o.is_demo && <p className="alert warn">طلب تجريبي — ليس طلباً حقيقياً.</p>}
       {created && <p className="alert ok" role="status">تم إنشاء الطلب يدوياً. أضيفي ملف البرنامج أو الرابط من «ملفات العميل». المتدرب يدخل ببريده <bdi dir="ltr">{o.user_email}</bdi> ويشوفه في حسابه.</p>}
       {o.source === "manual" && !intake && <p className="alert info">طلب يدوي أضافته المدربة — بدون استبيان من الموقع.</p>}
+
+      {/* ---------- برنامج التمرين (المنصة) ---------- */}
+      {o.category !== "consult" && (
+        <div className="card row" style={{ justifyContent: "space-between" }} data-testid="program-card">
+          <div>
+            <h2 style={{ fontSize: 19, marginBottom: 4 }}>برنامج التمرين</h2>
+            <p className="small muted" style={{ margin: 0 }}>
+              {program.active ? <>البرنامج الحالي: <b>{program.active}</b></> : program.blocks ? "لا يوجد برنامج نشط." : "لم يُسند برنامج بعد."}
+              {program.unseen > 0 && <> · <span className="status action">{program.unseen} تبديل تمرين جديد</span></>}
+            </p>
+          </div>
+          <Link className="btn btn-sm" href={`/admin/orders/${o.order_no}/program`}>{program.active ? "فتح البرنامج والسجلات" : "إسناد برنامج"}</Link>
+        </div>
+      )}
 
       <AdminNotes coachId={coach.id} o={o} />
 
@@ -105,12 +120,16 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
             <a className="btn btn-ghost btn-sm" style={{ width: "fit-content" }} href={waLink(phoneDigits, `مرحباً ${o.contact_name}، بخصوص طلبك رقم ${o.order_no}`)} target="_blank" rel="noopener">مراسلة العميل على واتساب</a>
           </div>
 
-          <Subscription coachId={coach.id} o={o} />
+          <ReviewWeeks o={o} d={sub} />
 
           {/* ---------- الاستبيان (الجدول الداخلي intakes) ---------- */}
           {intake && (
-            <div className="card stack">
-              <h2 style={{ fontSize: 19 }}>استبيان المتدرب</h2>
+            <details className="card stack intake-card" data-testid="intake">
+              <summary style={{ cursor: "pointer", minHeight: 44 }}>
+                <h2 style={{ fontSize: 19, display: "inline" }}>استبيان المتدرب</h2>
+                {intake.health_flag && <span className="status action" style={{ marginInlineStart: 8 }}>تحتاج مراعاة</span>}
+                {missingMeasures && <span className="status action" style={{ marginInlineStart: 8 }}>قياسات ناقصة</span>}
+              </summary>
               <div className="alert info" style={{ display: "block" }}>
                 <b>{EXPECTATIONS_Q}</b>
                 <p style={{ marginTop: 6, whiteSpace: "pre-wrap" }}>{answers.expectations ? String(answers.expectations) : "— (أُرسل الاستبيان قبل إضافة هذا السؤال)"}</p>
@@ -141,7 +160,7 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
                   {Object.entries(intake.health).map(([k, v]) => <Fragment key={k}><dt>{ANSWER_LABELS[k] ?? k}</dt><dd>{show(v)}</dd></Fragment>)}
                 </dl>
               </div>
-            </div>
+            </details>
           )}
 
           {/* ---------- استبيان نهاية البرنامج (خاص بالمدربة) ---------- */}
@@ -185,30 +204,6 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
                   <Link href={`/admin/orders/${l.order_no}`}><bdi className="num">{l.order_no}</bdi></Link> · {statusLabel(l.status, "follow")}
                 </p>
               ))}
-            </div>
-          )}
-
-          {/* ---------- برنامج التمرين (المنصة) ---------- */}
-          {o.category !== "consult" && (
-            <div className="card row" style={{ justifyContent: "space-between" }} data-testid="program-card">
-              <div>
-                <h2 style={{ fontSize: 19, marginBottom: 4 }}>برنامج التمرين</h2>
-                <p className="small muted" style={{ margin: 0 }}>
-                  {program.active ? <>البرنامج الحالي: <b>{program.active}</b></> : program.blocks ? "لا يوجد برنامج نشط." : "لم يُسند برنامج بعد."}
-                  {program.unseen > 0 && <> · <span className="status action">{program.unseen} تبديل تمرين جديد</span></>}
-                </p>
-              </div>
-              <Link className="btn btn-sm" href={`/admin/orders/${o.order_no}/program`}>{program.active ? "فتح البرنامج والسجلات" : "إسناد برنامج"}</Link>
-            </div>
-          )}
-
-          {o.category !== "consult" && (
-            <div className="card row" style={{ justifyContent: "space-between" }} data-testid="nutrition-card">
-              <div>
-                <h2 style={{ fontSize: 19, marginBottom: 4 }}>التغذية والمكملات</h2>
-                <p className="small muted" style={{ margin: 0 }}>الأهداف اليومية، الجداول الغذائية، روتين المكملات، وسجل أكل المتدرب.</p>
-              </div>
-              <Link className="btn btn-sm" href={`/admin/orders/${o.order_no}/nutrition`}>فتح</Link>
             </div>
           )}
 
@@ -262,6 +257,16 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
               {review && (<><dt>التقييم</dt><dd><Link href="/admin/reviews">{review.status === "pending" ? "بانتظار المراجعة" : review.status}</Link></dd></>)}
             </dl>
           </div>
+          <SubscriptionCard o={o} d={sub} />
+          <SendReview o={o} d={sub} />
+          {o.category !== "consult" && (
+            <div className="card stack" data-testid="nutrition-card">
+              <h2 style={{ fontSize: 17 }}>التغذية والمكملات</h2>
+              <p className="small muted" style={{ margin: 0 }}>الأهداف اليومية، الجداول الغذائية، روتين المكملات، وسجل أكل المتدرب.</p>
+              <Link className="btn btn-sm" style={{ width: "fit-content" }} href={`/admin/orders/${o.order_no}/nutrition`}>فتح التغذية والمكملات</Link>
+            </div>
+          )}
+          <NotifLog log={sub.log} />
           {proofs.length > 0 && (
             <div className="card stack">
               <h2 style={{ fontSize: 17 }}>الإيصالات</h2>

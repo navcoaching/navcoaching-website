@@ -117,6 +117,13 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await noHorizontalScroll(coach);
 
   // ---------- المتدرب: التسجيل ----------
+  // «برنامجي» في حسابي: أيام تمرين الأسبوع الحالي مباشرة
+  await trainee.goto("/account");
+  const todayTraining = trainee.getByTestId("today-training");
+  await expect(todayTraining).toContainText("برنامجك الحالي");
+  await expect(todayTraining.locator("li")).not.toHaveCount(0);
+  await expect(trainee.getByRole("heading", { name: "جداولي المجانية" })).toHaveCount(0); // لم يطلب جداول مجانية
+  await noHorizontalScroll(trainee);
   await trainee.goto(`/account/orders/${orderNo}`);
   await trainee.getByTestId("training-link").click();
   await trainee.waitForURL(/\/training/);

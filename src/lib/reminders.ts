@@ -38,8 +38,10 @@ const firstName = (n: string) => n.trim().split(/\s+/)[0] ?? n;
  * كل تذكير يُرسل مرة واحدة لكل مناسبة وقناة (occasion_key فريد).
  */
 export async function runReminders(now = new Date(), opts: { ignoreQuietHours?: boolean } = {}) {
+  // انتهاء الاشتراكات يعمل في أي ساعة (لا يرسل شيئاً)
+  const expired = await withUser(SYSTEM_USER, async (tx) => (await tx.query("SELECT app.expire_subscriptions() AS nos")).rows[0].nos as string[]);
   const hour = Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Riyadh", hour: "numeric", hourCycle: "h23" }).format(now));
-  if (!opts.ignoreQuietHours && (hour < 9 || hour >= 21)) return { skipped: "خارج ساعات الإرسال", sent: [] };
+  if (!opts.ignoreQuietHours && (hour < 9 || hour >= 21)) return { skipped: "خارج ساعات الإرسال", expired, sent: [] };
   const today = riyadhDate(now);
 
   return withUser(SYSTEM_USER, async (tx) => {
@@ -76,6 +78,6 @@ export async function runReminders(now = new Date(), opts: { ignoreQuietHours?: 
           kind: "review_missed", subject: "مراجعتك الأسبوعية", text, occasion: `review_missed:${missed.due}` }) });
       }
     }
-    return { today, checked: orders.length, sent };
+    return { today, expired, checked: orders.length, sent };
   });
 }

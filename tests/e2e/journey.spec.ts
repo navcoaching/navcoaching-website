@@ -162,7 +162,10 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await coach.goto(`/admin/orders?q=${orderNo}`);
   await noHorizontalScroll(coach);
   await coach.getByRole("link", { name: orderNo }).click();
-  await expect(coach.getByText("تحتاج مراعاة")).toBeVisible(); // تنبيه البيانات الصحية للمدربة فقط
+  // الاستبيان مطوي، وشارة «تحتاج مراعاة» ظاهرة في عنوانه
+  await expect(coach.getByTestId("intake").locator("summary")).toContainText("تحتاج مراعاة"); // تنبيه البيانات الصحية للمدربة فقط
+  await expect(coach.getByText("ألم خفيف أسفل الظهر")).toBeHidden();
+  await coach.getByTestId("intake").locator("summary").click();
   await expect(coach.getByText("ألم خفيف أسفل الظهر")).toBeVisible();
   // العمر الدقيق والسؤال الجديد يظهران للمدربة
   await expect(coach.getByText("29 سنة")).toBeVisible();
@@ -171,13 +174,13 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await expect(coach.getByText("68.5 كغ")).toBeVisible();
   // تغيير الحالة من الشريط الثابت: قائمة الانتقالات المسموحة فقط
   const bar = coach.getByTestId("status-bar");
-  await bar.getByLabel("تغيير الحالة إلى").selectOption({ label: "اعتماد الدفع" });
+  await bar.getByLabel("تغيير الحالة إلى").selectOption({ label: "قيد الإعداد (تأكيد الدفع)" });
   await bar.getByRole("button", { name: "تحديث" }).click();
   await expect(coach.locator(".status").first()).not.toHaveText("قيد الإعداد"); // مربع تأكيد وصول المبلغ إلزامي
   await bar.locator('input[name="bank_confirmed"]').check();
   await bar.getByRole("button", { name: "تحديث" }).click();
   await expect(coach.locator(".status").first()).toHaveText("قيد الإعداد");
-  await expect(bar.getByLabel("تغيير الحالة إلى")).not.toContainText("اعتماد الدفع");
+  await expect(bar.getByLabel("تغيير الحالة إلى")).not.toContainText("قيد الإعداد (تأكيد الدفع)");
 
   const add = coach.locator("form", { has: coach.getByRole("button", { name: "إضافة", exact: true }) });
   await add.locator('input[name="title"]').fill("ملف البرنامج — الشهر الأول");
@@ -334,11 +337,11 @@ test("المدربة تخفي طلباً من القائمة وتحذف المل
   await coach.goto(`/admin/orders/${orderNo}`);
   await expect(coach.getByText("الحذف النهائي متاح للطلبات الملغاة فقط.")).toBeVisible();
   const cancel = coach.getByTestId("status-bar");
-  await cancel.getByLabel("تغيير الحالة إلى").selectOption({ label: "إلغاء الطلب" });
+  await cancel.getByLabel("تغيير الحالة إلى").selectOption({ label: "تم إلغاء الطلب" });
   await cancel.getByLabel("السبب (يظهر للعميل)").fill("طلب تجريبي");
   coach.once("dialog", (d) => d.accept());
   await cancel.getByRole("button", { name: "تحديث" }).click();
-  await expect(coach.locator(".status").first()).toHaveText("ملغي");
+  await expect(coach.locator(".status").first()).toHaveText("تم إلغاء الطلب");
   await coach.getByText("حذف نهائي").first().click();
   const del = coach.locator("form", { has: coach.getByRole("button", { name: "حذف نهائي" }) });
   await del.locator('input[name="confirm"]').fill(orderNo);

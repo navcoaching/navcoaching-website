@@ -15,6 +15,7 @@ export type EmailInput = {
   code?: string;                 // رمز الدخول (بريد OTP)
   cta?: { label: string; url: string };
   brand: EmailBrand;
+  kicker?: string;               // نص الترويسة بجانب الشعار (الافتراضي: شكراً لاختيارك)
 };
 
 const C = { ink: "#07142a", navy: "#284da0", cyan: "#4cc5ed", cyanInk: "#0a6a8f", paper: "#f3f6fa", soft: "#eef3f8", line: "#d8e1ea", text: "#15233a", muted: "#56667a" };
@@ -22,7 +23,9 @@ const FONT = "'IBM Plex Sans Arabic', Tahoma, Arial, sans-serif";
 
 export const esc = (s: unknown) =>
   String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-const nl2br = (s: string) => esc(s).replace(/\n/g, "<br>");
+const nl2br = (s: string) => esc(s).replace(/\n/g, "<br>")
+  .replace(/https?:\/\/[^\s<]+/g, (u) => `<a href="${u}" style="color:${C.cyanInk};word-break:break-all" dir="ltr">${u}</a>`)
+  .replace(/NAV-\d{6}-[A-Z0-9]{5}/g, (n) => `<span dir="ltr" style="white-space:nowrap">${n}</span>`);
 
 export const sar = (h: number | null) => (h == null ? "بانتظار تأكيد المبلغ" : `${(h / 100).toLocaleString("en-US", { maximumFractionDigits: 2 })} ر.س`);
 
@@ -64,7 +67,7 @@ export function statusCopy(status: string, category: string): { headline: string
 
 const STATUS_WORD: Record<string, string> = {
   awaiting_quote: "بانتظار تأكيد المبلغ", awaiting_payment: "بانتظار الدفع", payment_review: "جارٍ التحقق من الدفع", preparing: "مؤكد",
-  active: "نشط", delivered: "تم التسليم", completed: "مكتمل", cancelled: "ملغي",
+  active: "نشط", delivered: "تم التسليم", completed: "مكتمل", cancelled: "تم إلغاء الطلب",
 };
 
 function stepper(order: EmailOrder) {
@@ -139,7 +142,7 @@ export function renderEmail(input: EmailInput): string {
     : "";
   const statusLine = o
     ? `<p style="margin:18px 0 0;font:400 16px/1.9 ${FONT};color:${C.text};text-align:center">[ Nav Coaching ] أصبحت حالة طلبك
-        <a href="${esc(link)}" style="color:${C.cyanInk};font-weight:700;white-space:nowrap" dir="ltr">${esc(o.orderNo)}</a> ${esc(STATUS_WORD[o.status] ?? o.status)}</p>`
+        <a href="${esc(link)}" style="color:${C.cyanInk};font-weight:700;white-space:nowrap" dir="ltr">${esc(o.orderNo)}</a> ${esc(o.status === "completed" && o.category === "follow" ? "انتهى الاشتراك" : STATUS_WORD[o.status] ?? o.status)}</p>`
     : "";
   const code = input.code
     ? `<div style="margin:22px auto 0;text-align:center"><span dir="ltr" style="display:inline-block;background:${C.soft};border:1px dashed ${C.cyanInk};border-radius:14px;padding:14px 26px;font:700 32px/1 'Courier New',monospace;letter-spacing:8px;color:${C.ink}">${esc(input.code)}</span></div>`
@@ -158,7 +161,7 @@ export function renderEmail(input: EmailInput): string {
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.soft};border-radius:16px"><tr>
         <td align="center" style="padding:16px 12px">
           <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-            <td style="font:700 15px ${FONT};color:${C.text};padding-left:12px">شكراً لاختيارك</td>
+            <td style="font:700 15px ${FONT};color:${C.text};padding-left:12px">${esc(input.kicker ?? "شكراً لاختيارك")}</td>
             <td><img src="${esc(b.site)}/email/logo.png" width="130" alt="Nav Coaching" style="display:block;border:0;height:auto"></td>
           </tr></table>
         </td></tr></table>

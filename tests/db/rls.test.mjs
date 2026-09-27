@@ -675,3 +675,30 @@ describe("استبيان نهاية البرنامج", () => {
     await assert.rejects(as(A, "INSERT INTO exit_surveys (order_id, user_id, wants_renewal, reason, experience) SELECT id, user_id, true, 'x1', 'x2' FROM orders LIMIT 1"), /permission denied/);
   });
 });
+
+describe("الحالات: تفعيل مباشر بعد الدفع، وانتهاء الاشتراك تلقائياً", () => {
+  test("من «بانتظار الدفع» إلى «تفعيل البرنامج» بتأكيد وصول المبلغ فقط، ولباقات المتابعة فقط", async () => {
+    const no = await newOrder(A, "k-status-000000000001", "int1");
+    await assert.rejects(as(COACH, "SELECT app.coach_transition($1, 'active', NULL, false)", [no]), /كشف الحساب/);
+    await as(COACH, "SELECT app.coach_transition($1, 'active', NULL, true)", [no]);
+    const o = (await owner.query("SELECT status, paid_at IS NOT NULL AS paid, sub_start_at IS NOT NULL AS started FROM orders WHERE order_no = $1", [no])).rows[0];
+    assert.deepEqual(o, { status: "active", paid: true, started: true });
+    const files = await newOrder(A, "k-status-000000000002", "diy");
+    await assert.rejects(as(COACH, "SELECT app.coach_transition($1, 'active', NULL, true)", [files]), /غير مسموح/);
+    await assert.rejects(as(A, "SELECT app.coach_transition($1, 'active', NULL, true)", [files]), /للمدربة فقط/);
+  });
+  test("انتهاء الاشتراك تلقائياً بعد يوم انتهائه فقط، ومرة واحدة", async () => {
+    const past = await newOrder(A, "k-status-000000000003", "int1");
+    const today = await newOrder(A, "k-status-000000000004", "int1");
+    await owner.query("UPDATE orders SET status = 'active' WHERE order_no = ANY($1)", [[past, today]]);
+    await owner.query("UPDATE orders SET sub_end_at = now() - interval '2 days' WHERE order_no = $1", [past]);
+    await owner.query("UPDATE orders SET sub_end_at = now() WHERE order_no = $1", [today]);
+    await assert.rejects(as(A, "SELECT app.expire_subscriptions()"), /للمدربة فقط/);
+    const nos = (await as(COACH, "SELECT app.expire_subscriptions() AS n")).rows[0].n;
+    assert.ok(nos.includes(past) && !nos.includes(today));
+    assert.equal((await owner.query("SELECT status FROM orders WHERE order_no = $1", [past])).rows[0].status, "completed");
+    assert.equal((await owner.query("SELECT status FROM orders WHERE order_no = $1", [today])).rows[0].status, "active");
+    assert.match((await owner.query("SELECT e.note FROM order_events e JOIN orders o ON o.id = e.order_id WHERE o.order_no = $1 ORDER BY e.id DESC LIMIT 1", [past])).rows[0].note, /تلقائياً/);
+    assert.ok(!(await as(COACH, "SELECT app.expire_subscriptions() AS n")).rows[0].n.includes(past));
+  });
+});

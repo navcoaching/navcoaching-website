@@ -157,6 +157,8 @@ test("التغذية والمكملات: الأهداف، الجداول، ال�
   await trainee.goto("/account");
   const mine = trainee.getByTestId("my-program");
   await expect(mine).toContainText("التغذية والمكملات");
+  await expect(mine.getByTestId("today-nutrition")).toContainText("السعرات");
+  await expect(mine.getByTestId("today-supplements")).toContainText("مغنيسيوم سترات");
   await expect(mine.getByTestId("expiry-alert")).toContainText("ينتهي خلال 3 أيام");
   await expect(mine.getByTestId("expiry-alert").getByRole("button", { name: "جدّد بخصم 10%" })).toBeVisible();
   await trainee.getByTestId("renewal-popup").getByRole("button", { name: "لاحقاً" }).click();
@@ -168,7 +170,7 @@ test("التغذية والمكملات: الأهداف، الجداول، ال�
   await coach.goto(`/admin/orders/${orderNo}`);
   await coach.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
   await expect(coach.getByTestId("status-bar")).toBeInViewport();
-  await expect(coach.getByTestId("status-bar").getByLabel("تغيير الحالة إلى")).toContainText("إنهاء (مكتمل)");
+  await expect(coach.getByTestId("status-bar").getByLabel("تغيير الحالة إلى")).toContainText("انتهى الاشتراك (إنهاء الآن)");
   await noHorizontalScroll(coach);
 
   // ---------- مستخدم آخر لا يرى ----------

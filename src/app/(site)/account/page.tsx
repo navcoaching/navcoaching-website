@@ -49,16 +49,11 @@ export default async function Account({ searchParams }: { searchParams: Promise<
               </Link>
             ))
           )}
-          <section id="free-plans" className="stack" aria-labelledby="fp-h" style={{ ["--space" as string]: "12px", scrollMarginTop: 90 }}>
+          {(freePlans.length > 0 || planMsg) && <section id="free-plans" className="stack" aria-labelledby="fp-h" style={{ ["--space" as string]: "12px", scrollMarginTop: 90 }}>
             <h2 id="fp-h" style={{ fontSize: 22 }}>جداولي المجانية</h2>
             {planMsg === "unavailable" && <p className="alert warn" role="alert">ملف هذا الجدول غير متاح مؤقتاً. حاول لاحقاً، وإذا استمرت المشكلة راسلنا على واتساب.</p>}
             {planMsg === "notfound" && <p className="alert err" role="alert">تعذّر تحميل الملف: الرابط غير صالح أو لا يخص حسابك.</p>}
-            {freePlans.length === 0 ? (
-              <div className="card stack">
-                <p>ما طلبت أي جدول مجاني بعد.</p>
-                <Link href="/free-plans" className="btn btn-ghost" style={{ width: "fit-content" }}>تصفح الجداول المجانية</Link>
-              </div>
-            ) : (
+            {freePlans.length === 0 ? null : (
               <ul className="fp-mine" data-testid="my-free-plans">
                 {freePlans.map((p) => (
                   <li key={p.request_id}>
@@ -72,7 +67,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
                 ))}
               </ul>
             )}
-          </section>
+          </section>}
         </div>
         <aside className="stack">
           <div className="card stack">

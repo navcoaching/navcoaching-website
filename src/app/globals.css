@@ -360,7 +360,7 @@ bdi, .ltr { unicode-bidi: isolate; direction: ltr; }
 .steps > li p { color: var(--on-dark-muted); }
 
 /* نظرة داخل البرنامج */
-.shots { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); }
+.shots { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); align-items: start; }
 .shot { margin: 0; display: grid; gap: 10px; }
 .shot button { all: unset; cursor: zoom-in; position: relative; display: block; border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); background: #fff; }
 .shot button:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
@@ -800,3 +800,15 @@ input[type="date"] { width: 100%; max-width: 100%; min-width: 0; min-height: 50p
 .dash-list .form { margin-top: 4px; }
 h2 .count { display: inline-grid; place-items: center; min-inline-size: 26px; block-size: 26px; padding-inline: 6px; border-radius: 999px; background: var(--surface-2); font-size: 14px; vertical-align: middle; }
 .ok-text { color: var(--ok); font-weight: 600; }
+/* «برنامجي» في حسابي: أيام التمرين، تغذية اليوم، والمكملات */
+.program-today { border-top: 1px solid var(--line); padding-top: 14px; }
+.today-days { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.today-days a > span:last-child { white-space: nowrap; }
+.today-days a { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 48px; padding: 10px 12px; border-radius: 12px; background: var(--surface-2); color: var(--text); text-decoration: none; border: 1px solid transparent; }
+.today-days a:hover { border-color: var(--cyan); }
+.today-days a.done { background: var(--ok-bg); color: var(--ok); }
+.today-macros { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.today-macros > div { display: grid; gap: 2px; padding: 8px 10px; border-radius: 10px; background: var(--surface-2); }
+.today-macros b { font-size: 15px; }
+@media (max-width: 480px) { .today-macros { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.supp-mini { margin: 4px 0 0; padding-inline-start: 18px; display: grid; gap: 2px; overflow-wrap: anywhere; }

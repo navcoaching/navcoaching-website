@@ -6,6 +6,7 @@ import { waLink } from "@/lib/format";
 import { loadRenewals, type RenewalInfo } from "@/lib/renewal";
 import { loadAdherence } from "@/lib/program-data";
 import AdherenceBar from "./AdherenceBar";
+import ProgramTodayView, { loadProgramToday, type ProgramToday } from "./ProgramToday";
 import RenewalPopup, { RenewButton, RenewPrice } from "./RenewalPopup";
 
 type O = {
@@ -93,7 +94,9 @@ export default async function MyProgram({ userId, orders }: { userId: string; or
         adherence.set(o.id, await loadAdherence(tx, { ...o, sub_start_at: o.sub_start_at ?? null, sub_end_at: o.sub_end_at ?? null },
           Number(r?.review_window_days ?? DEFAULT_REMINDERS.review_window_days), today));
       }
-      return { blocks, nutrition, soon, renewals, adherence };
+      const todayPlan = new Map<string, ProgramToday>();
+      for (const o of current) todayPlan.set(o.id, await loadProgramToday(tx, o.id, userId, today));
+      return { blocks, nutrition, soon, renewals, adherence, todayPlan };
     }),
     getSettings(),
   ]);
@@ -126,6 +129,7 @@ export default async function MyProgram({ userId, orders }: { userId: string; or
                 </p>
               )}
               {adherence && (!start || start <= today) && <AdherenceBar a={adherence} />}
+              {(!start || start <= today) && info.todayPlan.get(o.id) && <ProgramTodayView orderNo={o.order_no} p={info.todayPlan.get(o.id)!} />}
               <div className="row my-program-links" style={{ gap: 8 }}>
                 {info.blocks.has(o.id) && <Link className="btn btn-sm" href={`/account/orders/${o.order_no}/training`}>🏋️ برنامج التمرين</Link>}
                 {info.nutrition.has(o.id) && <Link className="btn btn-sm" href={`/account/orders/${o.order_no}/nutrition`}>🥗 التغذية والمكملات</Link>}
