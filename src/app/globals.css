@@ -832,3 +832,8 @@ h2 .count { display: inline-grid; place-items: center; min-inline-size: 26px; bl
   .account-side a, .account-side .off { white-space: nowrap; min-height: 40px; padding: 8px 12px; font-size: 14.5px; }
 }
 @media (max-width: 1180px) { .account-content .account-layout { grid-template-columns: minmax(0, 1fr); } }
+/* «حسابي»: المحتوى بعرض كامل بجانب القائمة، وبطاقات الإعدادات شبكة تحته */
+.account-home { grid-template-columns: minmax(0, 1fr) !important; }
+.account-settings { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); align-items: start; }
+.account-settings > * { margin: 0 !important; }
+.account-settings .settings-title { grid-column: 1 / -1; font-size: 22px; }

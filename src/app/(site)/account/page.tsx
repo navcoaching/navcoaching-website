@@ -17,7 +17,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
 
   return (
     <section className="section tight">
-      <div className="wrap account-layout">
+      <div className="wrap account-layout account-home">
         <div className="stack" style={{ ["--space" as string]: "18px" }}>
           <div>
             <span className="eyebrow">حسابي</span>
@@ -69,7 +69,8 @@ export default async function Account({ searchParams }: { searchParams: Promise<
             )}
           </section>}
         </div>
-        <aside className="stack">
+        <aside className="account-settings" aria-labelledby="settings-h">
+          <h2 id="settings-h" className="settings-title">إعدادات الحساب</h2>
           <div className="card stack">
             <h2 style={{ fontSize: 18 }}>بياناتي</h2>
             <p className="small muted">البريد: <bdi dir="ltr">{user.email}</bdi></p>
