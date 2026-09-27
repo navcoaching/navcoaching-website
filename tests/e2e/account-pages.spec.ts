@@ -47,18 +47,18 @@ test("حساب المتدرب: التقدم، سجل الماكروز، التع
                          contact_name, contact_phone, idempotency_key, paid_at, sub_start_at, sub_end_at, review_weekday)
      VALUES ($1,$2,$3,$4,'follow',$5,$6,3,$7,$7,'active','سارة صفحات','+966500000000',$1, now(), now() - interval '3 days', now() + interval '80 days', 1) RETURNING id`,
     [orderNo, u.id, p.id, p.offer_id, p.name, p.label, p.price_halalas]);
-  const { rows: [b] } = await db.query(`INSERT INTO blocks (order_id, user_id, name, start_date, weeks) VALUES ($1,$2,'بلوك الصفحات',current_date - 3,4) RETURNING id`, [o.id, u.id]);
+  const { rows: [b] } = await db.query(`INSERT INTO blocks (order_id, user_id, name, start_date, weeks) VALUES ($1,$2,'بلوك الصفحات',(now() AT TIME ZONE 'Asia/Riyadh')::date - 3,4) RETURNING id`, [o.id, u.id]);
   const { rows: [d] } = await db.query(`INSERT INTO block_days (block_id, day_no, title) VALUES ($1,1,'DAY 1') RETURNING id`, [b.id]);
   const { rows: [it] } = await db.query(
     `INSERT INTO block_items (day_id, position, exercise_id, coach_exercise_id, plan) SELECT $1, 1, id, id, $2 FROM exercises WHERE name = 'Mid Leg Press' RETURNING id`,
     [d.id, JSON.stringify(Array(4).fill({ sets: 3, reps: [10, 10, 10], rir: 2 }))]);
   await db.query(`INSERT INTO item_logs (block_item_id, week_no, exercise_id, weight, reps, rir) SELECT $1, 1, exercise_id, 80, '{10,10,9}', 2 FROM block_items WHERE id = $1`, [it.id]);
-  await db.query(`INSERT INTO weight_logs (user_id, logged_on, kg) VALUES ($1, current_date - 3, 70.4), ($1, current_date, 69.8)`, [u.id]);
-  await db.query(`INSERT INTO body_measurements (user_id, measured_on, waist) VALUES ($1, current_date - 3, 80), ($1, current_date, 79)`, [u.id]);
+  await db.query(`INSERT INTO weight_logs (user_id, logged_on, kg) VALUES ($1, (now() AT TIME ZONE 'Asia/Riyadh')::date - 3, 70.4), ($1, (now() AT TIME ZONE 'Asia/Riyadh')::date, 69.8)`, [u.id]);
+  await db.query(`INSERT INTO body_measurements (user_id, measured_on, waist) VALUES ($1, (now() AT TIME ZONE 'Asia/Riyadh')::date - 3, 80), ($1, (now() AT TIME ZONE 'Asia/Riyadh')::date, 79)`, [u.id]);
   await db.query(`INSERT INTO nutrition_targets (order_id, kcal, protein, carbs, fat, rules) VALUES ($1, 1885, 125, 200, 62, 'الصيام: لا تتجاوز 12 ساعة صيام.')`, [o.id]);
   await db.query(
     `INSERT INTO food_logs (user_id, order_id, log_date, kind, name, protein, carbs, fat)
-     VALUES ($1,$2,current_date,'lunch','غداء',50,100,20), ($1,$2,current_date - 1,'lunch','غداء',40,80,10), ($1,$2,current_date - 1,'dinner','عشاء',30,40,10)`, [u.id, o.id]);
+     VALUES ($1,$2,(now() AT TIME ZONE 'Asia/Riyadh')::date,'lunch','غداء',50,100,20), ($1,$2,(now() AT TIME ZONE 'Asia/Riyadh')::date - 1,'lunch','غداء',40,80,10), ($1,$2,(now() AT TIME ZONE 'Asia/Riyadh')::date - 1,'dinner','عشاء',30,40,10)`, [u.id, o.id]);
 
   // «حسابي»: التعليمات والقائمة
   await page.goto("/account");
@@ -97,6 +97,11 @@ test("حساب المتدرب: التقدم، سجل الماكروز، التع
   await noHorizontalScroll(page);
   await table.getByRole("link", { name: "اليوم" }).click();
   await expect(page.getByTestId("log-date")).toHaveText("اليوم");
+
+  // المراجعة الأسبوعية: رابط «سجّلت تمرين هذا الأسبوع؟»
+  await page.goto(`/account/orders/${orderNo}`);
+  await page.getByTestId("checkin-training").getByRole("link", { name: /افتح جدول التمرين/ }).click();
+  await expect(page).toHaveURL(new RegExp(`/account/orders/${orderNo}/training$`));
 
   // الدليل المصوّر
   await page.goto("/account/guide");

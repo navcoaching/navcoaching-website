@@ -192,6 +192,11 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
             {o.category === "follow" && s.checkins?.enabled && (o.status === "active" || checkins.length > 0) && (
               <div className="card stack" id="checkin" style={{ scrollMarginTop: 90 }}>
                 <h2 style={{ fontSize: 20 }}>المراجعة الأسبوعية</h2>
+                {o.status === "active" && block?.status === "active" && (
+                  <p className="small alert info" style={{ margin: 0 }} data-testid="checkin-training">
+                    سجّلت تمرين هذا الأسبوع؟ <Link href={`/account/orders/${o.order_no}/training`}>افتح جدول التمرين ←</Link>
+                  </p>
+                )}
                 {o.status === "active" && <CheckinForm orderNo={o.order_no} questions={s.checkins.questions} />}
                 {checkins.map((c) => (
                   <details key={c.id} className="card flat">
