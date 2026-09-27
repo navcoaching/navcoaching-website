@@ -127,6 +127,7 @@ try {
   // ---------- مكتبة التمارين (لا تستبدل تعديلات المدربة) ----------
   await db.query(exercisesSql());
   await db.query(exercisesSql(undefined, "taxonomy"));
+  await db.query(exercisesSql(undefined, "rehab"));
   // ---------- قوالب التغذية والمكملات (لا تستبدل الموجود) ----------
   await db.query(nutritionSql());
   // ---------- قاعدة الأكل (USDA) إن وُلّد ملفها ----------

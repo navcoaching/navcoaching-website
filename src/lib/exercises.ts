@@ -68,3 +68,19 @@ export function resetAfter(chosen: Partial<Record<TaxonomyKey, string>>, key: Ta
 
 /** الجزء العربي من القيمة «English / عربي» (إن وُجد) */
 export const arPart = (v: string) => v.split(" / ").slice(-1)[0] ?? v;
+
+// ---------- التصنيف التأهيلي / العلاجي (ورقة «مكتبة التمارين» العمود AT: التصنيفات التأهيلية المعتمدة) ----------
+export const REHAB_CATEGORIES = [
+  "تحدب الظهر / Postural Thoracic Kyphosis", "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "ضعف الألوية الكبرى / Gluteus Maximus Weakness", "ضعف الألوية المتوسطة / Gluteus Medius Weakness", "ضعف الألوية الصغرى / Gluteus Minimus Weakness",
+  "مرفق التنس / Lateral Elbow Tendinopathy", "اللفافة الأخمصية / Plantar Fasciopathy", "وضعية الرأس للأمام / Forward Head Posture",
+  "ضعف العضلة المعينية / Rhomboid Weakness",
+] as const;
+export const REHAB_PHASES = ["مبكرة", "مبكرة–متوسطة", "متوسطة", "متقدمة"] as const;
+export const REHAB_LOADS = ["منخفض", "منخفض–متوسط", "متوسط", "مرتفع"] as const;
+export const REHAB_REVIEW = { specialist: "معتمد من مختص", needs_review: "يحتاج مراجعة أخصائي", not_approved: "غير معتمد" } as const;
+export type RehabReview = keyof typeof REHAB_REVIEW;
+export const REHAB_DISCLAIMER = "تنبيه: هذا التصنيف لأغراض تنظيمية وتعليمية فقط، ولا يُعد تشخيصاً أو خطة علاج فردية. يُستخدم التمرين التأهيلي بعد تقييم واعتماد أخصائي علاج طبيعي أو طبيب مختص، خصوصاً عند وجود ألم مستمر، إصابة حادة، خدر، ضعف عصبي، أو أعراض متزايدة.";
+export const REHAB_STOP = "أوقفي التمرين وراجعي مختصاً إذا زاد الألم بوضوح، ظهر خدر أو تنميل، ضعف مفاجئ، فقدان توازن، أو ألم يمتد للطرف.";
+/** «أ | ب» → قائمة */
+export const splitPipes = (v: string | null | undefined) => (v ?? "").split("|").map((s) => s.trim()).filter(Boolean);

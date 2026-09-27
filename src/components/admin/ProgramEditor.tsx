@@ -21,7 +21,14 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
         {exercises.map((e) => <option key={e.name} value={e.name}>{muscleAr(e.primary_muscle)}{e.equipment ? ` · ${e.equipment}` : ""}</option>)}
       </datalist>
       {days.map((d) => (
-        <section key={d.id} className="card stack program-day" style={{ ["--space" as string]: "12px" }} data-testid={`day-${d.day_no}`}>
+        <section key={d.id} className="card program-day" data-testid={`day-${d.day_no}`}>
+          <details open className="day-fold">
+          <summary className="day-toggle" data-testid={`fold-${d.day_no}`}>
+            <b>اليوم {d.day_no}: <bdi dir="ltr">{d.title}</bdi></b>
+            <span className="small muted">{d.items.length} تمارين</span>
+            <span className="btn btn-ghost btn-sm day-toggle-btn" aria-hidden="true"><span className="when-open">طيّ اليوم ▴</span><span className="when-closed">فتح اليوم ▾</span></span>
+          </summary>
+          <div className="stack" style={{ ["--space" as string]: "12px", marginTop: 12 }}>
           <div className="row" style={{ justifyContent: "space-between", alignItems: "end", gap: 10 }}>
             <ActionForm action={saveDayAction} className="form inline-form" submit="حفظ العنوان" submitClass="btn btn-ghost btn-sm">
               {hidden({ day: d.id })}
@@ -90,6 +97,8 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
               </div>
               <span className="hint">تُطبّق على كل الأسابيع، ثم عدّلي كل أسبوع من التمرين نفسه.</span>
             </ActionForm>
+          </details>
+          </div>
           </details>
         </section>
       ))}

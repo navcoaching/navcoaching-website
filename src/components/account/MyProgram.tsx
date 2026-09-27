@@ -6,13 +6,14 @@ import { waLink } from "@/lib/format";
 import { loadRenewals, type RenewalInfo } from "@/lib/renewal";
 import { loadAdherence } from "@/lib/program-data";
 import AdherenceBar from "./AdherenceBar";
+import ProgramInstructions from "./ProgramInstructions";
 import ProgramTodayView, { loadProgramToday, type ProgramToday } from "./ProgramToday";
 import RenewalPopup, { RenewButton, RenewPrice } from "./RenewalPopup";
 
 type O = {
   id: string; order_no: string; status: string; category: string; months: number; product_name: string; offer_label: string;
   offer_id?: string | null; list_price_halalas: number; review_weekday?: number | null; renewal_kind?: string | null;
-  product_slug?: string | null; sub_start_at?: string | null; sub_end_at?: string | null;
+  product_slug?: string | null; contact_name?: string | null; sub_start_at?: string | null; sub_end_at?: string | null;
 };
 
 /** تنبيه قرب انتهاء الباقة أو انتهائها (يُستخدم أعلى «حسابي» وصفحة الطلب) */
@@ -136,6 +137,7 @@ export default async function MyProgram({ userId, orders }: { userId: string; or
                 <Link className="btn btn-ghost btn-sm" href={`/account/orders/${o.order_no}`}>تفاصيل الطلب والمراجعات</Link>
               </div>
             </div>
+            {o.category === "follow" && <ProgramInstructions o={o} p={info.todayPlan.get(o.id)} />}
           </div>
         );
       })}

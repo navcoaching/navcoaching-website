@@ -21,11 +21,15 @@ export default async function AccountLayout({ children }: { children: React.Reac
   const links: AccountLink[] = [
     { href: "/account", label: "طلباتي", icon: "🧾", exact: true },
     { href: base && cur?.training ? `${base}/training` : null, label: "جدول التمرين", icon: "🏋️" },
+    { href: base ? `${base}/progress` : null, label: "التقدم", icon: "📈" },
     { href: base && cur?.nutrition ? `${base}/nutrition` : null, label: "التغذية والمكملات", icon: "🥗" },
+    { href: base && cur?.nutrition ? `${base}/nutrition/log` : null, label: "سجل الماكروز", icon: "📊" },
     { href: base ? `${base}#checkin` : null, label: "المراجعة الأسبوعية", icon: "📝" },
+    { href: cur ? "/account#instructions" : null, label: "التعليمات", icon: "📋" },
+  { href: "/account/guide", label: "دليل الاستخدام", icon: "📖" },
   ];
   return (
-    <div className="wrap account-shell">
+    <div className="account-shell">
       <AccountNav links={links} />
       <div className="account-content">{children}</div>
     </div>

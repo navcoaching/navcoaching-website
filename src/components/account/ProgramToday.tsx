@@ -6,7 +6,7 @@ import { loadRoutine, type Routine } from "@/lib/nutrition-data";
 
 export type ProgramToday = {
   block: { name: string; week: number; weeks: number; days: { id: string; day_no: number; title: string; items: number; logged: number }[] } | null;
-  target: { kcal: number | null; protein: number | null; carbs: number | null; fat: number | null } | null;
+  target: { kcal: number | null; protein: number | null; carbs: number | null; fat: number | null; rules: string | null } | null;
   eaten: { kcal: number; protein: number; carbs: number; fat: number };
   plans: { id: string; name: string }[];
   routine: Routine | null;
@@ -27,7 +27,7 @@ export async function loadProgramToday(tx: Tx, orderId: string, userId: string, 
     block = { name: b.name, week, weeks: b.weeks, days };
   }
   const target = (await tx.query(
-    `SELECT kcal, protein::float, carbs::float, fat::float FROM nutrition_targets WHERE order_id = $1`, [orderId])).rows[0] ?? null;
+    `SELECT kcal, protein::float, carbs::float, fat::float, rules FROM nutrition_targets WHERE order_id = $1`, [orderId])).rows[0] ?? null;
   const logs = (await tx.query(
     `SELECT protein::float, carbs::float, fat::float FROM food_logs WHERE order_id = $1 AND user_id = $2 AND log_date = $3`, [orderId, userId, today])).rows;
   const plans = (await tx.query(

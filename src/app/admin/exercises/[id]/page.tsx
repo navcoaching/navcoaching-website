@@ -4,7 +4,7 @@ import { withUser } from "@/lib/db";
 import { requireCoach } from "@/lib/session";
 import ActionForm from "@/components/admin/ActionForm";
 import { saveExerciseAction } from "@/app/actions/training";
-import { ANATOMICAL_ACTIONS, EQUIPMENT, EX_STATUS, KINDS, LEVELS, MOVEMENT_SUBCATEGORIES, MUSCLES, PATTERNS, SECONDARY_MUSCLES, SUB_PATTERNS, muscleAr } from "@/lib/exercises";
+import { ANATOMICAL_ACTIONS, EQUIPMENT, EX_STATUS, KINDS, LEVELS, MOVEMENT_SUBCATEGORIES, MUSCLES, PATTERNS, REHAB_CATEGORIES, REHAB_DISCLAIMER, REHAB_LOADS, REHAB_PHASES, REHAB_REVIEW, SECONDARY_MUSCLES, SUB_PATTERNS, muscleAr, splitPipes } from "@/lib/exercises";
 import { youtubeId } from "@/lib/youtube";
 
 type Ex = {
@@ -12,6 +12,8 @@ type Ex = {
   level: string | null; place: string | null; video_url: string | null; instructions: string | null; notes: string | null;
   source: string | null; source_name: string | null; source_url: string | null; rehab_category: string | null; status: string;
   sub_pattern: string | null; anatomical_action: string | null; movement_subcategory: string | null;
+  rehab_goal: string | null; rehab_phase: string | null; rehab_load: string | null; rehab_safety: string | null;
+  rehab_evidence: string | null; rehab_refs: string | null; rehab_review: string | null;
 };
 type Opt = { id: string; name: string; primary_muscle: string };
 
@@ -121,7 +123,37 @@ export default async function EditExercise({ params, searchParams }: { params: P
               <div className="field"><label htmlFor="ex-surl">رابط المصدر</label><input id="ex-surl" name="source_url" type="url" dir="ltr" maxLength={500} defaultValue={ex?.source_url ?? ""} /></div>
             </div>
           </div>
-          {ex?.rehab_category && <p className="small muted">التصنيف التأهيلي (من الملف): {ex.rehab_category}</p>}
+          <details className="rehab-edit" open={Boolean(ex?.rehab_category)} data-testid="rehab-edit">
+            <summary style={{ cursor: "pointer", minHeight: 40, fontWeight: 700 }}>التصنيف التأهيلي / العلاجي</summary>
+            <div className="stack" style={{ ["--space" as string]: "12px", marginTop: 8 }}>
+              <p className="small alert warn" style={{ margin: 0 }}>{REHAB_DISCLAIMER}</p>
+              <fieldset className="field"><legend>التصنيف (يمكن أكثر من واحد)</legend>
+                <div className="check-grid">
+                  {REHAB_CATEGORIES.map((c) => (
+                    <label key={c} className="check"><input type="checkbox" name="rehab_category" value={c} defaultChecked={splitPipes(ex?.rehab_category).includes(c)} /><span>{c}</span></label>
+                  ))}
+                </div>
+              </fieldset>
+              <div className="field"><label htmlFor="ex-rgoal">الهدف الحركي أو العلاجي</label>
+                <input id="ex-rgoal" name="rehab_goal" type="text" maxLength={300} defaultValue={ex?.rehab_goal ?? ""} /></div>
+              <div className="grid g3">
+                {sel("rehab_phase", "المرحلة المقترحة", REHAB_PHASES, ex?.rehab_phase)}
+                {sel("rehab_load", "مستوى التحميل", REHAB_LOADS, ex?.rehab_load)}
+                <div className="field"><label htmlFor="ex-rehab_review">حالة المراجعة العلاجية</label>
+                  <select id="ex-rehab_review" name="rehab_review" defaultValue={ex?.rehab_review ?? ""}>
+                    <option value="">—</option>
+                    {Object.entries(REHAB_REVIEW).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                  </select></div>
+              </div>
+              <div className="field"><label htmlFor="ex-rsafety">ملاحظات السلامة</label>
+                <textarea id="ex-rsafety" name="rehab_safety" maxLength={1000} rows={2} defaultValue={ex?.rehab_safety ?? ""} /></div>
+              <div className="field"><label htmlFor="ex-revidence">مصدر الدليل</label>
+                <textarea id="ex-revidence" name="rehab_evidence" maxLength={1000} rows={2} dir="auto" defaultValue={ex?.rehab_evidence ?? ""} /></div>
+              <div className="field"><label htmlFor="ex-rrefs">روابط المراجع</label>
+                <input id="ex-rrefs" name="rehab_refs" type="text" dir="ltr" maxLength={2000} defaultValue={ex?.rehab_refs ?? ""} />
+                <span className="hint">أكثر من رابط؟ افصلي بينها بـ « | ».</span></div>
+            </div>
+          </details>
         </ActionForm>
       </div>
     </div>

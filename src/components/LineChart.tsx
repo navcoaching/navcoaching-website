@@ -27,7 +27,7 @@ export default function LineChart({ series, goal, unit = "", height = 200, title
           </g>
         ))}
         {goal != null && <line x1={L} x2={W - R} y1={y(goal)} y2={y(goal)} stroke="var(--ok)" strokeDasharray="6 4" />}
-        {xs.map((lbl, i) => (i % every === 0 || i === xs.length - 1) && (
+        {xs.map((lbl, i) => (i === xs.length - 1 || (i % every === 0 && xs.length - 1 - i >= Math.max(1, every * 0.75))) && (
           <text key={lbl} x={x(i)} y={H - 10} textAnchor="middle" fontSize="13" fill="var(--muted)">{lbl}</text>
         ))}
         {series.map((s, si) => {

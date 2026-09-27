@@ -10,7 +10,7 @@ import { getCurrentUser } from "@/lib/session";
 import { notifySafe } from "@/lib/mail";
 import { notifyTrainee, RESULT_LABEL, CHANNEL_LABEL, type ChannelResult } from "@/lib/notify";
 import { parseReps, parseRir, type PlanWeek } from "@/lib/training";
-import { ANATOMICAL_ACTIONS, EQUIPMENT, EX_STATUS, KINDS, LEVELS, MOVEMENT_SUBCATEGORIES, MUSCLES, PATTERNS, SECONDARY_MUSCLES, SUB_PATTERNS, placeFor } from "@/lib/exercises";
+import { ANATOMICAL_ACTIONS, EQUIPMENT, EX_STATUS, KINDS, LEVELS, MOVEMENT_SUBCATEGORIES, MUSCLES, PATTERNS, REHAB_CATEGORIES, REHAB_LOADS, REHAB_PHASES, REHAB_REVIEW, SECONDARY_MUSCLES, SUB_PATTERNS, placeFor, type RehabReview } from "@/lib/exercises";
 import type { ActionState } from "./client";
 import { allow } from "@/lib/rate";
 import { cleanUpload, UploadError } from "@/lib/uploads";
@@ -51,6 +51,14 @@ const exerciseSchema = z.object({
   source_name: opt(200),
   source_url: opt(500).refine((v) => !v || /^https?:\/\/\S+$/.test(v), "رابط المصدر غير صحيح."),
   alternatives: z.array(z.string().regex(UUID)).max(12, "الحد الأعلى 12 بديلاً."),
+  rehab_categories: z.array(z.string().refine((v) => (REHAB_CATEGORIES as readonly string[]).includes(v), "التصنيف التأهيلي غير صحيح.")).max(9),
+  rehab_goal: opt(300),
+  rehab_phase: oneOf(REHAB_PHASES, "المرحلة غير صحيحة."),
+  rehab_load: oneOf(REHAB_LOADS, "مستوى التحميل غير صحيح."),
+  rehab_safety: opt(1000),
+  rehab_evidence: opt(1000),
+  rehab_refs: opt(2000).refine((v) => !v || v.split("|").every((u) => /^https?:\/\/\S+$/.test(u.trim())), "روابط المراجع يجب أن تبدأ بـ https:// ويُفصل بينها بـ |"),
+  rehab_review: z.union([z.literal(""), z.enum(Object.keys(REHAB_REVIEW) as [RehabReview])]).transform((v) => v || null),
 });
 
 export async function saveExerciseAction(_: ActionState, fd: FormData): Promise<ActionState> {
@@ -62,6 +70,9 @@ export async function saveExerciseAction(_: ActionState, fd: FormData): Promise<
     video_url: g("video_url"), instructions: g("instructions"), notes: g("notes"),
     source: g("source"), source_name: g("source_name"), source_url: g("source_url"),
     alternatives: [...new Set(fd.getAll("alt").map(String))],
+    rehab_categories: [...new Set(fd.getAll("rehab_category").map(String))],
+    rehab_goal: g("rehab_goal"), rehab_phase: g("rehab_phase"), rehab_load: g("rehab_load"), rehab_safety: g("rehab_safety"),
+    rehab_evidence: g("rehab_evidence"), rehab_refs: g("rehab_refs"), rehab_review: g("rehab_review"),
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const v = parsed.data;
@@ -72,19 +83,23 @@ export async function saveExerciseAction(_: ActionState, fd: FormData): Promise<
     await asCoach(async (tx, uid) => {
       const cols = [v.name, v.primary_muscle, v.secondary.filter((m) => m !== v.primary_muscle), v.pattern, v.kind, v.equipment, v.level,
         placeFor(v.equipment), v.video_url, v.instructions, v.notes, v.source, v.source_name, v.source_url, v.status,
-        v.sub_pattern, v.anatomical_action, v.movement_subcategory];
+        v.sub_pattern, v.anatomical_action, v.movement_subcategory,
+        v.rehab_categories.length ? v.rehab_categories.join(" | ") : null, v.rehab_goal, v.rehab_phase, v.rehab_load, v.rehab_safety, v.rehab_evidence,
+        v.rehab_refs ? v.rehab_refs.split("|").map((u) => u.trim()).filter(Boolean).join(" | ") : null, v.rehab_review];
       if (id) {
         const r = await tx.query(
           `UPDATE exercises SET name=$2, primary_muscle=$3, secondary_muscles=$4, pattern=$5, kind=$6, equipment=$7, level=$8, place=$9,
              video_url=$10, instructions=$11, notes=$12, source=$13, source_name=$14, source_url=$15, status=$16,
-             sub_pattern=$17, anatomical_action=$18, movement_subcategory=$19, updated_at=now()
+             sub_pattern=$17, anatomical_action=$18, movement_subcategory=$19, rehab_category=$20, rehab_goal=$21, rehab_phase=$22,
+             rehab_load=$23, rehab_safety=$24, rehab_evidence=$25, rehab_refs=$26, rehab_review=$27, updated_at=now()
            WHERE id=$1`, [id, ...cols]);
         if (r.rowCount === 0) throw new Error("التمرين غير موجود.");
       } else {
         id = (await tx.query(
           `INSERT INTO exercises (name, primary_muscle, secondary_muscles, pattern, kind, equipment, level, place,
-             video_url, instructions, notes, source, source_name, source_url, status, sub_pattern, anatomical_action, movement_subcategory)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING id`, cols)).rows[0].id;
+             video_url, instructions, notes, source, source_name, source_url, status, sub_pattern, anatomical_action, movement_subcategory,
+             rehab_category, rehab_goal, rehab_phase, rehab_load, rehab_safety, rehab_evidence, rehab_refs, rehab_review)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26) RETURNING id`, cols)).rows[0].id;
       }
       await tx.query("DELETE FROM exercise_alternatives WHERE exercise_id = $1", [id]);
       const alts = v.alternatives.filter((a) => a !== id);
