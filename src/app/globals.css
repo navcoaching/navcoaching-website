@@ -816,3 +816,19 @@ h2 .count { display: inline-grid; place-items: center; min-inline-size: 26px; bl
 .import-row { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 0; display: grid; gap: 8px; min-width: 0; }
 .import-row legend { padding-inline: 6px; font-weight: 700; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .import-nums { display: grid; grid-template-columns: 1fr 1.4fr 0.8fr; gap: 8px; }
+/* قائمة حساب المتدرب (مثل لوحة الإدارة) */
+.account-shell { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 24px; align-items: start; padding-top: 28px; }
+.account-content { min-width: 0; }
+.account-content > .section.tight { padding-top: 0; }
+.account-content .wrap { padding-inline: 0; max-width: none; }
+.account-side { position: sticky; top: calc(var(--header-h) + 16px); display: grid; gap: 4px; padding: 12px; border-radius: var(--r-lg); background: var(--ink); }
+.account-side a, .account-side .off { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 10px 12px; border-radius: 10px; color: var(--on-dark); text-decoration: none; font-weight: 600; }
+.account-side a:hover, .account-side a[aria-current="page"] { background: var(--ink-3); color: #fff; }
+.account-side a[aria-current="page"] { box-shadow: inset -3px 0 0 var(--cyan); }
+.account-side .off { color: var(--on-dark-muted); opacity: .6; cursor: default; }
+@media (max-width: 900px) {
+  .account-shell { grid-template-columns: minmax(0, 1fr); gap: 14px; padding-top: 14px; }
+  .account-side { top: var(--header-h); z-index: 15; display: flex; overflow-x: auto; padding: 6px; border-radius: 14px; scrollbar-width: none; }
+  .account-side a, .account-side .off { white-space: nowrap; min-height: 40px; padding: 8px 12px; font-size: 14.5px; }
+}
+@media (max-width: 1180px) { .account-content .account-layout { grid-template-columns: minmax(0, 1fr); } }

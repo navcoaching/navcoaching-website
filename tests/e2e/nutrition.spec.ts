@@ -143,7 +143,7 @@ test("التغذية والمكملات: الأهداف، الجداول، ال�
   await trainee.getByRole("link", { name: "جداولي الغذائية" }).click();
   await expect(trainee.getByTestId("my-plan")).toContainText("مكرونة بيني");
   await noHorizontalScroll(trainee);
-  await trainee.getByRole("link", { name: "المكملات" }).click();
+  await trainee.getByRole("link", { name: "المكملات", exact: true }).click();
   await expect(trainee.getByTestId("my-supplements")).toContainText("مغنيسيوم سترات");
   await noHorizontalScroll(trainee);
 

@@ -190,7 +190,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
 
             {/* ---------- المراجعة الأسبوعية ---------- */}
             {o.category === "follow" && s.checkins?.enabled && (o.status === "active" || checkins.length > 0) && (
-              <div className="card stack">
+              <div className="card stack" id="checkin" style={{ scrollMarginTop: 90 }}>
                 <h2 style={{ fontSize: 20 }}>المراجعة الأسبوعية</h2>
                 {o.status === "active" && <CheckinForm orderNo={o.order_no} questions={s.checkins.questions} />}
                 {checkins.map((c) => (

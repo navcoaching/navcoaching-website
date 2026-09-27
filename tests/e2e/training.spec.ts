@@ -123,6 +123,11 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await expect(todayTraining).toContainText("برنامجك الحالي");
   await expect(todayTraining.locator("li")).not.toHaveCount(0);
   await expect(trainee.getByRole("heading", { name: "جداولي المجانية" })).toHaveCount(0); // لم يطلب جداول مجانية
+  // القائمة الجانبية: طلباتي (الحالية) وجدول التمرين يفتح برنامجه
+  const nav = trainee.getByTestId("account-nav");
+  await expect(nav.getByRole("link", { name: "طلباتي" })).toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link", { name: "جدول التمرين" })).toHaveAttribute("href", `/account/orders/${orderNo}/training`);
+  await expect(nav.getByRole("link", { name: "المراجعة الأسبوعية" })).toHaveAttribute("href", `/account/orders/${orderNo}#checkin`);
   await noHorizontalScroll(trainee);
   await trainee.goto(`/account/orders/${orderNo}`);
   await trainee.getByTestId("training-link").click();
