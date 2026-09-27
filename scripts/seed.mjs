@@ -6,6 +6,7 @@
 import { readFile } from "node:fs/promises";
 import pg from "pg";
 import { loadEnv } from "./env.mjs";
+import { exercisesSql } from "./exercises-sql.mjs";
 
 loadEnv();
 const force = process.argv.includes("--force");
@@ -121,8 +122,12 @@ try {
     }
   }
 
+  // ---------- مكتبة التمارين (لا تستبدل تعديلات المدربة) ----------
+  await db.query(exercisesSql());
+  const { rows: [{ n: exCount }] } = await db.query("SELECT count(*)::int AS n FROM exercises");
+
   await db.query("COMMIT");
-  console.log(`✓ استيراد: ${catalog.packages.length} منتجات، ${content.faqs.length} أسئلة، ${content.policies.length} سياسات، ${site.testimonials.length} تقييمات سابقة`);
+  console.log(`✓ استيراد: ${catalog.packages.length} منتجات، ${content.faqs.length} أسئلة، ${content.policies.length} سياسات، ${site.testimonials.length} تقييمات سابقة، ${exCount} تمريناً في المكتبة`);
 } catch (err) {
   await db.query("ROLLBACK");
   throw err;
