@@ -504,3 +504,61 @@ describe("منصة التدريب", () => {
     await assert.rejects(as(A, "SELECT app.log_weight(current_date, 70)"), /لا يوجد برنامج/);
   });
 });
+
+describe("التغذية والمكملات", () => {
+  let noA, tpl, meal, routineTpl, myPlan;
+  before(async () => {
+    noA = await newOrder(A, "k-nutrition-00000001");
+    await owner.query("UPDATE orders SET status = 'active' WHERE order_no = $1", [noA]);
+    tpl = (await owner.query("SELECT id FROM nutrition_plans WHERE order_id IS NULL AND name = 'الجدول الغذائي 1'")).rows[0].id;
+    routineTpl = (await owner.query("SELECT id FROM supplement_routines WHERE order_id IS NULL LIMIT 1")).rows[0].id;
+  });
+  test("القوالب مستوردة ومحسوبة، ولا يراها غير المدربة", async () => {
+    const t = (await as(COACH, `SELECT round(sum(i.protein*4 + i.carbs*4 + i.fat*9), 1)::float AS kcal FROM plan_items i JOIN plan_meals m ON m.id = i.meal_id WHERE m.plan_id = $1`, [tpl])).rows[0].kcal;
+    assert.equal(t, 1748.5); // نفس «الحالي» في ورقة تغذية ١
+    assert.equal((await as(A, "SELECT count(*)::int n FROM nutrition_plans")).rows[0].n, 0);
+    assert.equal((await as(A, "SELECT count(*)::int n FROM supplement_items")).rows[0].n, 0);
+    await assert.rejects(as(A, "INSERT INTO nutrition_plans (name) VALUES ('x')"), /row-level security/);
+  });
+  test("الإسناد ينسخ القالب للمتدرب فقط، وتعديل النسخة لا يغيّر القالب", async () => {
+    await assert.rejects(as(A, "SELECT app.coach_assign_nutrition($1,$2)", [noA, tpl]), /للمدربة فقط/);
+    myPlan = (await as(COACH, "SELECT app.coach_assign_nutrition($1,$2) AS id", [noA, tpl])).rows[0].id;
+    await as(COACH, "SELECT app.coach_assign_supplements($1,$2)", [noA, routineTpl]);
+    await as(COACH, "INSERT INTO nutrition_targets (order_id, kcal, protein, carbs, fat) SELECT id, 1885, 125, 200, 62 FROM orders WHERE order_no = $1", [noA]);
+    await as(COACH, "UPDATE plan_items SET protein = 99 WHERE meal_id IN (SELECT id FROM plan_meals WHERE plan_id = $1)", [myPlan]);
+    assert.equal((await owner.query("SELECT count(*)::int n FROM plan_items i JOIN plan_meals m ON m.id = i.meal_id WHERE m.plan_id = $1 AND i.protein = 99", [tpl])).rows[0].n, 0);
+    assert.equal((await as(A, "SELECT count(*)::int n FROM nutrition_plans")).rows[0].n, 1);
+    assert.ok((await as(A, "SELECT count(*)::int n FROM plan_items")).rows[0].n > 0);
+    assert.equal((await as(A, "SELECT count(*)::int n FROM supplement_items")).rows[0].n, 11);
+    assert.equal((await as(A, "SELECT kcal FROM nutrition_targets")).rows[0].kcal, 1885);
+    assert.equal((await as(B, "SELECT count(*)::int n FROM nutrition_plans")).rows[0].n, 0);
+    assert.equal((await as(B, "SELECT count(*)::int n FROM nutrition_targets")).rows[0].n, 0);
+    meal = (await as(A, "SELECT id FROM plan_meals ORDER BY position LIMIT 1")).rows[0].id;
+  });
+  test("سجل الأكل: من وجبات المتدرب أو إدخال حر، لصاحبه فقط", async () => {
+    await as(A, "SELECT app.log_food($1, current_date, 'breakfast', $2, NULL, 0, 0, 0)", [noA, meal]);
+    await as(A, "SELECT app.log_food($1, current_date, 'snack', NULL, 'تفاحة', 0.5, 25, 0.3)", [noA]);
+    const rows = (await as(A, "SELECT name, protein::float FROM food_logs ORDER BY id")).rows;
+    assert.equal(rows.length, 2); assert.match(rows[0].name, /الجدول الغذائي 1/); assert.equal(rows[1].protein, 0.5);
+    await assert.rejects(as(A, "SELECT app.log_food($1, current_date, 'lunch', NULL, '', 1, 1, 1)", [noA]), /اسم الأكلة/);
+    await assert.rejects(as(A, "SELECT app.log_food($1, current_date + 1, 'lunch', NULL, 'x', 1, 1, 1)", [noA]), /التاريخ/);
+    const tplMeal = (await owner.query("SELECT id FROM plan_meals WHERE plan_id = $1 LIMIT 1", [tpl])).rows[0].id;
+    await assert.rejects(as(A, "SELECT app.log_food($1, current_date, 'lunch', $2, NULL, 0, 0, 0)", [noA, tplMeal]), /غير موجودة في جداولك/);
+    await assert.rejects(as(B, "SELECT app.log_food($1, current_date, 'lunch', NULL, 'x', 1, 1, 1)", [noA]), /غير موجود/);
+    assert.equal((await as(B, "SELECT count(*)::int n FROM food_logs")).rows[0].n, 0);
+    assert.equal((await as(COACH, "SELECT count(*)::int n FROM food_logs")).rows[0].n, 2);
+    const id = (await as(A, "SELECT id FROM food_logs ORDER BY id DESC LIMIT 1")).rows[0].id;
+    await assert.rejects(as(B, "SELECT app.delete_food_log($1)", [id]), /غير موجود/);
+    await as(A, "SELECT app.delete_food_log($1)", [id]);
+    await assert.rejects(as(A, "INSERT INTO food_logs (user_id, order_id, log_date, kind, name, protein, carbs, fat) SELECT $1, id, current_date, 'lunch', 'x', 1, 1, 1 FROM orders LIMIT 1", [A]), /permission denied/);
+  });
+  test("الطلب غير المدفوع أو الجدول المخفي: لا يظهر", async () => {
+    await as(COACH, "UPDATE nutrition_plans SET archived = true WHERE id = $1", [myPlan]);
+    assert.equal((await as(A, "SELECT count(*)::int n FROM nutrition_plans")).rows[0].n, 0);
+    await as(COACH, "UPDATE nutrition_plans SET archived = false WHERE id = $1", [myPlan]);
+    await owner.query("UPDATE orders SET status = 'cancelled' WHERE order_no = $1", [noA]);
+    assert.equal((await as(A, "SELECT count(*)::int n FROM nutrition_plans")).rows[0].n, 0);
+    assert.equal((await as(A, "SELECT count(*)::int n FROM supplement_routines")).rows[0].n, 0);
+    await assert.rejects(as(A, "SELECT app.log_food($1, current_date, 'lunch', NULL, 'x', 1, 1, 1)", [noA]), /غير موجود/);
+  });
+});

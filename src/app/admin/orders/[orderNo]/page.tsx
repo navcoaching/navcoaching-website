@@ -151,6 +151,16 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
             </div>
           )}
 
+          {o.category !== "consult" && (
+            <div className="card row" style={{ justifyContent: "space-between" }} data-testid="nutrition-card">
+              <div>
+                <h2 style={{ fontSize: 19, marginBottom: 4 }}>التغذية والمكملات</h2>
+                <p className="small muted" style={{ margin: 0 }}>الأهداف اليومية، الجداول الغذائية، روتين المكملات، وسجل أكل المتدرب.</p>
+              </div>
+              <Link className="btn btn-sm" href={`/admin/orders/${o.order_no}/nutrition`}>فتح</Link>
+            </div>
+          )}
+
           {/* ---------- الملفات ---------- */}
           <div className="card stack">
             <h2 style={{ fontSize: 19 }}>ملفات وروابط البرنامج</h2>

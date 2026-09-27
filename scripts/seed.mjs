@@ -7,6 +7,7 @@ import { readFile } from "node:fs/promises";
 import pg from "pg";
 import { loadEnv } from "./env.mjs";
 import { exercisesSql } from "./exercises-sql.mjs";
+import { nutritionSql } from "./nutrition-sql.mjs";
 
 loadEnv();
 const force = process.argv.includes("--force");
@@ -125,6 +126,8 @@ try {
   // ---------- مكتبة التمارين (لا تستبدل تعديلات المدربة) ----------
   await db.query(exercisesSql());
   await db.query(exercisesSql(undefined, "taxonomy"));
+  // ---------- قوالب التغذية والمكملات (لا تستبدل الموجود) ----------
+  await db.query(nutritionSql());
   const { rows: [{ n: exCount }] } = await db.query("SELECT count(*)::int AS n FROM exercises");
 
   await db.query("COMMIT");
