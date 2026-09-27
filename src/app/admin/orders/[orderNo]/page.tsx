@@ -11,6 +11,7 @@ import ActionForm from "@/components/admin/ActionForm";
 import PackageTag from "@/components/admin/PackageTag";
 import Details from "@/components/admin/Details";
 import { AdminNotes, Subscription } from "./FollowUp";
+import StatusBar from "./StatusBar";
 import {
   addDeliverableAction, archiveOrderAction, deleteOrderAction, removeDeliverableAction, replyCheckinAction, requestMeasurementsAction, setAmountAction, transitionAction,
 } from "@/app/actions/admin";
@@ -52,6 +53,8 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
         </div>
         <span className={`status ${statusTone(o.status)}`}>{statusLabel(o.status, o.category)}</span>
       </div>
+      <StatusBar orderNo={o.order_no} current={statusLabel(o.status, o.category)} steps={next}
+        amount={o.amount_due_halalas == null ? "—" : riyals(o.amount_due_halalas)} />
       {o.is_demo && <p className="alert warn">طلب تجريبي — ليس طلباً حقيقياً.</p>}
       {created && <p className="alert ok" role="status">تم إنشاء الطلب يدوياً. أضيفي ملف البرنامج أو الرابط من «ملفات العميل». المتدرب يدخل ببريده <bdi dir="ltr">{o.user_email}</bdi> ويشوفه في حسابه.</p>}
       {o.source === "manual" && !intake && <p className="alert info">طلب يدوي أضافته المدربة — بدون استبيان من الموقع.</p>}
@@ -80,21 +83,7 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
                 </div>
               </div>
             )}
-            {next.length === 0 && <p className="muted">لا توجد إجراءات متاحة لهذه الحالة.</p>}
-            {next.map((n) => (
-              <ActionForm key={n.to} action={transitionAction} submit={n.label} submitClass={n.to === "cancelled" ? "btn btn-danger btn-sm" : "btn btn-sm"}
-                confirm={n.to === "cancelled" ? "تأكيد إلغاء الطلب؟" : undefined} className="form card flat">
-                <input type="hidden" name="order_no" value={o.order_no} />
-                <input type="hidden" name="to" value={n.to} />
-                {n.needsBank && (
-                  <label className="check"><input type="checkbox" name="bank_confirmed" required /><span>تأكدت من وصول المبلغ ({riyals(o.amount_due_halalas)}) في كشف حساب المؤسسة ومطابقته لرقم الطلب.</span></label>
-                )}
-                <div className="field">
-                  <label>{n.needsNote ? "السبب (يظهر للعميل) *" : "ملاحظة تظهر للعميل (اختياري)"}</label>
-                  <input name="note" type="text" maxLength={500} required={n.needsNote} />
-                </div>
-              </ActionForm>
-            ))}
+            {o.status !== "awaiting_quote" && o.status !== "payment_review" && <p className="small muted" style={{ margin: 0 }}>غيّري حالة الطلب من الشريط أعلى الصفحة.</p>}
             <a className="btn btn-ghost btn-sm" style={{ width: "fit-content" }} href={waLink(phoneDigits, `مرحباً ${o.contact_name}، بخصوص طلبك رقم ${o.order_no}`)} target="_blank" rel="noopener">مراسلة العميل على واتساب</a>
           </div>
 

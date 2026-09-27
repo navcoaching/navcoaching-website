@@ -142,7 +142,8 @@ export async function getMyFollowUp(userId: string, o: { id: string; order_no: s
     const { rows: [{ s }] } = await tx.query("SELECT app.review_schedule() AS s");
     const r = { ...DEFAULT_REMINDERS, ...(s ?? {}) };
     const weeks = await loadWeekState(tx, { ...o, sub_start_at: start, sub_end_at: end, review_weekday: o.review_weekday ?? null }, r);
-    return { weeks, state: subscriptionState({ status: o.status, sub_start_at: start, sub_end_at: end }, Math.max(0, ...r.sub_expiry_days)) };
+    const soonDays = Math.max(0, ...r.sub_expiry_days);
+    return { weeks, soonDays, state: subscriptionState({ status: o.status, sub_start_at: start, sub_end_at: end }, soonDays) };
   });
 }
 

@@ -169,11 +169,15 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await expect(coach.getByText("ماذا تتوقع مني أثناء التدريب؟")).toBeVisible();
   await expect(coach.getByText("متابعة أسبوعية واضحة وتعديل البرنامج حسب تقدمي")).toBeVisible();
   await expect(coach.getByText("68.5 كغ")).toBeVisible();
-  const approve = coach.locator("form", { has: coach.getByRole("button", { name: "اعتماد الدفع" }) });
-  await approve.locator('input[name="bank_confirmed"]').check();
-  await approve.getByRole("button", { name: "اعتماد الدفع" }).click();
+  // تغيير الحالة من الشريط الثابت: قائمة الانتقالات المسموحة فقط
+  const bar = coach.getByTestId("status-bar");
+  await bar.getByLabel("تغيير الحالة إلى").selectOption({ label: "اعتماد الدفع" });
+  await bar.getByRole("button", { name: "تحديث" }).click();
+  await expect(coach.locator(".status").first()).not.toHaveText("قيد الإعداد"); // مربع تأكيد وصول المبلغ إلزامي
+  await bar.locator('input[name="bank_confirmed"]').check();
+  await bar.getByRole("button", { name: "تحديث" }).click();
   await expect(coach.locator(".status").first()).toHaveText("قيد الإعداد");
-  await expect(coach.getByText("اعتماد الدفع")).toHaveCount(0);
+  await expect(bar.getByLabel("تغيير الحالة إلى")).not.toContainText("اعتماد الدفع");
 
   const add = coach.locator("form", { has: coach.getByRole("button", { name: "إضافة", exact: true }) });
   await add.locator('input[name="title"]').fill("ملف البرنامج — الشهر الأول");
@@ -187,8 +191,8 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await expect(page.getByText("ملف البرنامج — الشهر الأول")).toHaveCount(0);
 
   await coach.reload();
-  const activate = coach.locator("form", { has: coach.getByRole("button", { name: "تفعيل البرنامج" }) });
-  await activate.getByRole("button", { name: "تفعيل البرنامج" }).click();
+  await coach.getByTestId("status-bar").getByLabel("تغيير الحالة إلى").selectOption({ label: "تفعيل البرنامج" });
+  await coach.getByTestId("status-bar").getByRole("button", { name: "تحديث" }).click();
   await expect(coach.locator(".status").first()).toHaveText("البرنامج نشط");
   // تاريخ البدء يُضبط تلقائياً عند التفعيل، والنهاية = البدء + مدة الباقة
   const { rows: [sub] } = await db.query("SELECT sub_start_at, sub_end_at, months FROM orders WHERE order_no = $1", [orderNo]);
@@ -329,10 +333,12 @@ test("المدربة تخفي طلباً من القائمة وتحذف المل
 
   await coach.goto(`/admin/orders/${orderNo}`);
   await expect(coach.getByText("الحذف النهائي متاح للطلبات الملغاة فقط.")).toBeVisible();
-  const cancel = coach.locator("form", { has: coach.getByRole("button", { name: "إلغاء الطلب" }) });
-  await cancel.locator('input[name="note"]').fill("طلب تجريبي");
+  const cancel = coach.getByTestId("status-bar");
+  await cancel.getByLabel("تغيير الحالة إلى").selectOption({ label: "إلغاء الطلب" });
+  await cancel.getByLabel("السبب (يظهر للعميل)").fill("طلب تجريبي");
   coach.once("dialog", (d) => d.accept());
-  await cancel.getByRole("button", { name: "إلغاء الطلب" }).click();
+  await cancel.getByRole("button", { name: "تحديث" }).click();
+  await expect(coach.locator(".status").first()).toHaveText("ملغي");
   await coach.getByText("حذف نهائي").first().click();
   const del = coach.locator("form", { has: coach.getByRole("button", { name: "حذف نهائي" }) });
   await del.locator('input[name="confirm"]').fill(orderNo);

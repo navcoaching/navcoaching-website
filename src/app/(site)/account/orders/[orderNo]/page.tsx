@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/session";
 import { withUser } from "@/lib/db";
+import { ExpiryAlert } from "@/components/account/MyProgram";
 import { getMyFollowUp, getOrderDetail, getSettings } from "@/lib/data";
 import { SUB_LABEL, WEEKDAYS, fmtYMD, riyadhDate } from "@/lib/schedule";
 import { fmtDate, fmtDateTime, riyals, waLink } from "@/lib/format";
@@ -69,6 +70,8 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
             <span className="btn btn-sm">سجّل تمرينك ←</span>
           </Link>
         )}
+
+        {follow && <ExpiryAlert o={o} soonDays={follow.soonDays} whatsapp={s.contact.whatsapp} />}
 
         {hasNutrition && (
           <Link href={`/account/orders/${o.order_no}/nutrition`} className="card program-link" data-testid="nutrition-link">

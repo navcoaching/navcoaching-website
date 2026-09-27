@@ -151,6 +151,25 @@ test("التغذية والمكملات: الأهداف، الجداول، ال�
   await coach.goto(`/admin/orders/${orderNo}/nutrition`);
   await expect(coach.getByTestId("food-log-review")).toContainText("635"); // شورما 382.5 + رز 200غ 252.6
 
+  // ---------- «برنامجي» أعلى حسابي + تنبيه قرب انتهاء الباقة (3 أيام) ----------
+  await db.query(
+    `UPDATE orders SET sub_start_at = now() - interval '27 days', sub_end_at = ((now() AT TIME ZONE 'Asia/Riyadh')::date + 3 + time '12:00') AT TIME ZONE 'Asia/Riyadh' WHERE order_no = $1`, [orderNo]);
+  await trainee.goto("/account");
+  const mine = trainee.getByTestId("my-program");
+  await expect(mine).toContainText("التغذية والمكملات");
+  await expect(mine.getByTestId("expiry-alert")).toContainText("ينتهي خلال 3 أيام");
+  await expect(mine.getByRole("link", { name: "تجديد الباقة" })).toBeVisible();
+  await noHorizontalScroll(trainee);
+  await trainee.goto(`/account/orders/${orderNo}`);
+  await expect(trainee.getByTestId("expiry-alert")).toBeVisible();
+
+  // ---------- شريط حالة الطلب ثابت أثناء التمرير ----------
+  await coach.goto(`/admin/orders/${orderNo}`);
+  await coach.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect(coach.getByTestId("status-bar")).toBeInViewport();
+  await expect(coach.getByTestId("status-bar").getByLabel("تغيير الحالة إلى")).toContainText("إنهاء (مكتمل)");
+  await noHorizontalScroll(coach);
+
   // ---------- مستخدم آخر لا يرى ----------
   const other = await newPage(browser, project + "-o");
   await login(other, `other-nu-${project}@e2e.test`);

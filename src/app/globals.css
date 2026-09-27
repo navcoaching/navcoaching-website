@@ -767,3 +767,14 @@ input[type="date"] { width: 100%; max-width: 100%; min-width: 0; min-height: 50p
 .food-results { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 320px; overflow-y: auto; }
 .food-results button { width: 100%; text-align: start; display: grid; gap: 2px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: inherit; cursor: pointer; min-height: 48px; }
 .food-results button:hover, .food-results button:focus-visible { border-color: var(--cyan); }
+
+/* شريط حالة الطلب الثابت (لوحة الإدارة) */
+.status-bar { position: sticky; top: 0; z-index: 20; display: grid; gap: 8px; padding: 10px 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-1); }
+.status-bar-row { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; }
+.status-bar select { width: auto; min-width: 0; max-width: 100%; flex: 0 1 240px; min-height: 42px; padding-block: 6px; }
+.status-bar input[type="text"] { flex: 1 1 200px; min-width: 0; min-height: 42px; padding-block: 6px; }
+.status-bar .status-bar-wide { width: 100%; }
+.status-bar .alert { margin: 0; }
+@media (max-width: 900px) { .status-bar { top: calc(62px + env(safe-area-inset-top)); } }
+.my-program { border: 2px solid var(--cyan); }
+.expiry-alert .btn { text-decoration: none; }
