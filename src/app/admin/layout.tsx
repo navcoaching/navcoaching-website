@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: { default: "لوحة الإدارة",
 export const dynamic = "force-dynamic";
 
 const NAV = [
-  ["/admin", "الرئيسية"], ["/admin/orders", "الطلبات"], ["/admin/members", "الأعضاء"], ["/admin/packages", "الباقات والمتدربين"], ["/admin/products", "المنتجات"], ["/admin/exercises", "مكتبة التمارين"], ["/admin/free-plans", "الجداول المجانية"], ["/admin/reviews", "التقييمات"],
+  ["/admin", "الرئيسية"], ["/admin/orders", "الطلبات"], ["/admin/members", "الأعضاء"], ["/admin/packages", "الباقات والمتدربين"], ["/admin/products", "المنتجات"], ["/admin/exercises", "مكتبة التمارين"], ["/admin/templates", "قوالب البرامج"], ["/admin/free-plans", "الجداول المجانية"], ["/admin/reviews", "التقييمات"],
   ["/admin/content", "المحتوى والإعدادات"], ["/admin/media", "الصور"], ["/", "الموقع ↗"],
 ];
 

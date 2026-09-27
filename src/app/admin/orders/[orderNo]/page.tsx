@@ -33,6 +33,11 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
     Object.fromEntries((await tx.query(
       `SELECT DISTINCT e.actor_id, u.name FROM order_events e JOIN "user" u ON u.id = e.actor_id JOIN orders o ON o.id = e.order_id WHERE o.order_no = $1`,
       [orderNo])).rows.map((r) => [r.actor_id, r.name])));
+  const program = await withUser(coach.id, async (tx) => (await tx.query(
+    `SELECT (SELECT name FROM blocks WHERE order_id = $1 AND status = 'active') AS active,
+            (SELECT count(*)::int FROM blocks WHERE order_id = $1) AS blocks,
+            (SELECT count(*)::int FROM exercise_swaps s JOIN blocks b ON b.id = s.block_id WHERE b.order_id = $1 AND s.seen_at IS NULL) AS unseen`,
+    [o.id])).rows[0] as { active: string | null; blocks: number; unseen: number });
   const next = coachNextSteps(o.status, o.category);
   const phoneDigits = o.contact_phone.replace(/\D/g, "");
 
@@ -129,6 +134,20 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
                   {Object.entries(intake.health).map(([k, v]) => <Fragment key={k}><dt>{ANSWER_LABELS[k] ?? k}</dt><dd>{show(v)}</dd></Fragment>)}
                 </dl>
               </div>
+            </div>
+          )}
+
+          {/* ---------- برنامج التمرين (المنصة) ---------- */}
+          {o.category !== "consult" && (
+            <div className="card row" style={{ justifyContent: "space-between" }} data-testid="program-card">
+              <div>
+                <h2 style={{ fontSize: 19, marginBottom: 4 }}>برنامج التمرين</h2>
+                <p className="small muted" style={{ margin: 0 }}>
+                  {program.active ? <>البرنامج الحالي: <b>{program.active}</b></> : program.blocks ? "لا يوجد برنامج نشط." : "لم يُسند برنامج بعد."}
+                  {program.unseen > 0 && <> · <span className="status action">{program.unseen} تبديل تمرين جديد</span></>}
+                </p>
+              </div>
+              <Link className="btn btn-sm" href={`/admin/orders/${o.order_no}/program`}>{program.active ? "فتح البرنامج والسجلات" : "إسناد برنامج"}</Link>
             </div>
           )}
 

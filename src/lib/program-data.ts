@@ -1,0 +1,80 @@
+import type { Tx } from "@/lib/db";
+import type { EditorDay, ExOption } from "@/components/admin/ProgramEditor";
+import { normalizePlan, type PlanWeek } from "@/lib/training";
+
+/** أيام وتمارين قالب أو بلوك (للمدربة) */
+export async function loadProgramDays(tx: Tx, kind: "template" | "block", ownerId: string): Promise<(EditorDay & { items: (EditorDay["items"][number] & { plan: PlanWeek[] })[] })[]> {
+  const days = kind === "template"
+    ? (await tx.query(`SELECT id, day_no, title FROM template_days WHERE template_id = $1 ORDER BY day_no`, [ownerId])).rows
+    : (await tx.query(`SELECT id, day_no, title FROM block_days WHERE block_id = $1 ORDER BY day_no`, [ownerId])).rows;
+  const items = kind === "template"
+    ? (await tx.query(
+        `SELECT i.id, i.day_id, e.name, i.plan, i.note FROM template_items i JOIN exercises e ON e.id = i.exercise_id
+          JOIN template_days d ON d.id = i.day_id WHERE d.template_id = $1 ORDER BY i.position, i.id`, [ownerId])).rows
+    : (await tx.query(
+        `SELECT i.id, i.day_id, e.name, i.plan, i.note, CASE WHEN i.coach_exercise_id <> i.exercise_id THEN c.name END AS coach_name,
+                (SELECT count(*)::int FROM item_logs l WHERE l.block_item_id = i.id) AS logs
+           FROM block_items i JOIN exercises e ON e.id = i.exercise_id JOIN exercises c ON c.id = i.coach_exercise_id
+           JOIN block_days d ON d.id = i.day_id WHERE d.block_id = $1 ORDER BY i.position, i.id`, [ownerId])).rows;
+  return days.map((d) => ({ ...d, items: items.filter((i) => i.day_id === d.id) }));
+}
+
+export async function loadExerciseOptions(tx: Tx): Promise<ExOption[]> {
+  return (await tx.query(`SELECT name, primary_muscle, equipment FROM exercises WHERE status = 'approved' ORDER BY name`)).rows;
+}
+
+// =====================================================================
+// بيانات البرنامج للعرض (المتدرب والمدربة). أسماء التمارين تأتي من app.block_exercises
+// لأن المتدرب لا يقرأ جدول المكتبة مباشرة.
+// =====================================================================
+export type BlockRow = { id: string; order_id: string; user_id: string; name: string; start_date: string; weeks: number; instructions: string | null; steps_goal_week: number; status: string };
+export type BlockExercise = { id: string; name: string; primary_muscle: string; secondary_muscles: string[]; video_url: string | null; instructions: string | null };
+export type BlockItem = { id: string; day_id: string; position: number; exercise_id: string; coach_exercise_id: string; plan: PlanWeek[]; note: string | null };
+export type BlockDay = { id: string; day_no: number; title: string; items: BlockItem[] };
+export type ItemLog = { block_item_id: string; week_no: number; exercise_id: string; weight: number; reps: number[]; rir: number | null; logged_at: string };
+export type BlockData = {
+  block: BlockRow; days: BlockDay[]; exercises: Map<string, BlockExercise>; logs: ItemLog[];
+  ratings: { block_day_id: string; week_no: number; rating: number }[]; steps: { week_no: number; total: number }[];
+  notes: { id: number; week_no: number | null; body: string; created_at: string }[];
+};
+
+export async function loadBlockData(tx: Tx, block: BlockRow): Promise<BlockData> {
+  const days = (await tx.query(`SELECT id, day_no, title FROM block_days WHERE block_id = $1 ORDER BY day_no`, [block.id])).rows;
+  const items = (await tx.query(
+    `SELECT i.id, i.day_id, i.position, i.exercise_id, i.coach_exercise_id, i.plan, i.note
+       FROM block_items i JOIN block_days d ON d.id = i.day_id WHERE d.block_id = $1 ORDER BY i.position, i.id`, [block.id])).rows;
+  const exercises = new Map<string, BlockExercise>(
+    (await tx.query(`SELECT * FROM app.block_exercises($1)`, [block.id])).rows.map((e) => [e.id, e]));
+  const logs = (await tx.query(
+    `SELECT l.block_item_id, l.week_no, l.exercise_id, l.weight::float AS weight, l.reps, l.rir::float AS rir, l.logged_at
+       FROM item_logs l JOIN block_items i ON i.id = l.block_item_id JOIN block_days d ON d.id = i.day_id WHERE d.block_id = $1`, [block.id])).rows;
+  const ratings = (await tx.query(
+    `SELECT r.block_day_id, r.week_no, r.rating FROM day_ratings r JOIN block_days d ON d.id = r.block_day_id WHERE d.block_id = $1`, [block.id])).rows;
+  const steps = (await tx.query(`SELECT week_no, total FROM step_logs WHERE block_id = $1 ORDER BY week_no`, [block.id])).rows;
+  const notes = (await tx.query(`SELECT id, week_no, body, created_at FROM block_notes WHERE block_id = $1 ORDER BY created_at DESC`, [block.id])).rows;
+  return {
+    block, exercises, logs, ratings, steps, notes,
+    days: days.map((d) => ({ ...d, items: items.filter((i) => i.day_id === d.id).map((i) => ({ ...i, plan: normalizePlan(i.plan, block.weeks) })) })),
+  };
+}
+
+export type BodyData = { weights: { logged_on: string; kg: number }[]; measurements: { measured_on: string; chest: number | null; waist: number | null; hips: number | null; thigh: number | null }[] };
+export async function loadBodyData(tx: Tx, userId: string): Promise<BodyData> {
+  return {
+    weights: (await tx.query(`SELECT logged_on::text, kg::float AS kg FROM weight_logs WHERE user_id = $1 ORDER BY logged_on`, [userId])).rows,
+    measurements: (await tx.query(
+      `SELECT measured_on::text, chest::float, waist::float, hips::float, thigh::float FROM body_measurements WHERE user_id = $1 ORDER BY measured_on`, [userId])).rows,
+  };
+}
+
+/** كل تسجيلات المتدرب عبر كل برامجه (للأرقام القياسية) */
+export async function loadAllLifts(tx: Tx, userId: string) {
+  const blocks = (await tx.query(`SELECT id FROM blocks WHERE user_id = $1`, [userId])).rows.map((r) => r.id as string);
+  const names = new Map<string, string>();
+  for (const b of blocks) for (const e of (await tx.query(`SELECT id, name FROM app.block_exercises($1)`, [b])).rows) names.set(e.id, e.name);
+  const rows = (await tx.query(
+    `SELECT l.exercise_id, l.weight::float AS weight, l.logged_at::text FROM item_logs l
+       JOIN block_items i ON i.id = l.block_item_id JOIN block_days d ON d.id = i.day_id JOIN blocks b ON b.id = d.block_id
+      WHERE b.user_id = $1 AND l.weight > 0`, [userId])).rows;
+  return rows.map((r) => ({ ...r, name: names.get(r.exercise_id) ?? "—" })) as { exercise_id: string; name: string; weight: number; logged_at: string }[];
+}
