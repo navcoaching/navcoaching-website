@@ -443,10 +443,9 @@ dialog.lightbox .lb-bar { display: flex; justify-content: space-between; align-i
 .foot-grid ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .foot-grid ul a { display: inline-block; padding: 6px 0; }
 .social { display: flex; gap: 12px; }
-.site-footer .social a { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; color: #fff; transition: transform .2s var(--ease); }
-.site-footer .social a.wa { background: #25d366; }
-.site-footer .social a.ig { background: linear-gradient(45deg, #f9ce34, #ee2a7b 55%, #6228d7); }
-.site-footer .social a:hover { color: #fff; transform: scale(1.07); }
+/* أيقونات بألوان الهوية (كحلي + سماوي) بدل ألوان المنصات الصارخة */
+.site-footer .social a { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; color: var(--cyan); background: var(--ink-3); border: 1px solid rgba(76, 197, 237, 0.35); transition: transform .2s var(--ease), background-color .2s var(--ease), color .2s var(--ease); }
+.site-footer .social a:hover, .site-footer .social a:focus-visible { color: var(--ink); background: var(--cyan); border-color: var(--cyan); transform: scale(1.07); }
 .foot-legal { border-top: 1px solid var(--ink-3); margin-top: 36px; padding-top: 20px; font-size: 13.5px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
 .wa-float {
