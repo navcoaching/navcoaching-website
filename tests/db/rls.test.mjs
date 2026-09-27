@@ -562,3 +562,35 @@ describe("التغذية والمكملات", () => {
     await assert.rejects(as(A, "SELECT app.log_food($1, current_date, 'lunch', NULL, 'x', 1, 1, 1)", [noA]), /غير موجود/);
   });
 });
+
+describe("قاعدة الأكل بالغرامات", () => {
+  let noA, rice;
+  before(async () => {
+    noA = await newOrder(A, "k-foods-000000000001");
+    await owner.query("UPDATE orders SET status = 'active' WHERE order_no = $1", [noA]);
+  });
+  test("الإضافة للمدربة فقط، والقراءة للمسجّلين (النشط فقط)", async () => {
+    await assert.rejects(as(A, "INSERT INTO foods (name_ar, kcal_100, protein_100, carbs_100, fat_100) VALUES ('صنف', 1, 1, 1, 1)"), /row-level security/);
+    rice = (await as(COACH, "INSERT INTO foods (name_ar, name_en, kcal_100, protein_100, carbs_100, fat_100, serving_g) VALUES ('رز اختبار مطبوخ', 'Test rice', 130, 2.7, 28.2, 0.3, 150) RETURNING id")).rows[0].id;
+    await as(COACH, "INSERT INTO foods (name_ar, kcal_100, protein_100, carbs_100, fat_100, active) VALUES ('صنف مخفي', 1, 0, 0, 0, false)");
+    assert.equal((await as(A, "SELECT count(*)::int n FROM foods WHERE name_ar LIKE 'رز اختبار%'")).rows[0].n, 1);
+    assert.equal((await as(A, "SELECT count(*)::int n FROM foods WHERE name_ar = 'صنف مخفي'")).rows[0].n, 0);
+    assert.equal((await as(null, "SELECT count(*)::int n FROM foods")).rows[0].n, 0);
+  });
+  test("التسجيل بالغرامات: قاعدة البيانات تحسب الماكروز", async () => {
+    await as(A, "SELECT app.log_food_grams($1, current_date, 'lunch', $2, 150)", [noA, rice]);
+    const r = (await as(A, "SELECT name, grams::float, protein::float, carbs::float, fat::float, source FROM food_logs WHERE food_id = $1", [rice])).rows[0];
+    assert.deepEqual(r, { name: "رز اختبار مطبوخ — 150غ", grams: 150, protein: 4.1, carbs: 42.3, fat: 0.5, source: "food" });
+    await assert.rejects(as(A, "SELECT app.log_food_grams($1, current_date, 'lunch', $2, 0)", [noA, rice]), /بالغرام/);
+    await assert.rejects(as(A, "SELECT app.log_food_grams($1, current_date, 'lunch', $2, 5000)", [noA, rice]), /بالغرام/);
+    await assert.rejects(as(B, "SELECT app.log_food_grams($1, current_date, 'lunch', $2, 100)", [noA, rice]), /غير موجود/);
+    const hidden = (await owner.query("SELECT id FROM foods WHERE name_ar = 'صنف مخفي'")).rows[0].id;
+    await assert.rejects(as(A, "SELECT app.log_food_grams($1, current_date, 'lunch', $2, 100)", [noA, hidden]), /الصنف غير موجود/);
+  });
+  test("FatSecret: القيم لكل 100غ تُحسب في القاعدة، وتسجيل الجداول يُعلَّم plan", async () => {
+    await as(A, "SELECT app.log_food_external($1, current_date, 'snack', 'Greek Yogurt (Almarai)', 170, 10, 4, 0)", [noA]);
+    const r = (await as(A, "SELECT protein::float, carbs::float, source FROM food_logs WHERE source = 'fatsecret'")).rows[0];
+    assert.deepEqual(r, { protein: 17, carbs: 6.8, source: "fatsecret" });
+    await assert.rejects(as(A, "SELECT app.log_food_external($1, current_date, 'snack', 'x', 100, 150, 0, 0)", [noA]), /غير صحيحة/);
+  });
+});

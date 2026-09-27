@@ -19,7 +19,7 @@ const env = { ...process.env, ENV_FILE: "/dev/null", DATABASE_URL_OWNER: TMP_URL
 execFileSync("node", ["scripts/migrate.mjs"], { env, stdio: "inherit" });
 execFileSync("node", ["scripts/seed.mjs"], { env, stdio: "inherit" });
 
-const tables = ["products", "product_offers", "site_settings", "faqs", "policies", "reviews", "exercises", "exercise_alternatives"];
+const tables = ["products", "product_offers", "site_settings", "faqs", "policies", "reviews", "exercises", "exercise_alternatives", "foods"];
 const data = execFileSync("pg_dump", ["--data-only", "--inserts", "--on-conflict-do-nothing", "--no-owner", "--no-privileges", ...tables.flatMap((t) => ["-t", `public.${t}`]), TMP_URL], { encoding: "utf8" })
   // نحذف أسطر الإعداد والتعليقات فقط؛ قيم النصوص قد تمتد على عدة أسطر فلا نقصّها
   .split("\n").filter((l) => !/^(SET |SELECT pg_catalog\.set_config|--( |$)|\\)/.test(l) && l !== "--").join("\n").trim();

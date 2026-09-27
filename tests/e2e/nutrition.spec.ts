@@ -88,6 +88,21 @@ test("التغذية والمكملات: الأهداف، الجداول، ال�
   await expect(coach.getByTestId("trainee-plans")).toContainText("الجدول الغذائي 2");
   await noHorizontalScroll(coach);
 
+  // ---------- المدربة: صنف في قاعدة الأكل ----------
+  const foodName = `رز بسمتي مطبوخ ${project}`;
+  await coach.goto("/admin/foods");
+  await coach.getByText("+ صنف جديد").click();
+  await coach.getByLabel("الاسم بالعربي").first().fill(foodName);
+  await coach.getByLabel("بروتين").first().fill("2.7");
+  await coach.getByLabel("كارب").first().fill("28.2");
+  await coach.getByLabel("دهون").first().fill("0.3");
+  await coach.getByLabel("الحصة الافتراضية (غ)").first().fill("150");
+  await coach.getByRole("button", { name: "إضافة الصنف" }).click();
+  await expect(coach.getByText("تمت إضافة الصنف")).toBeVisible();
+  await coach.goto(`/admin/foods?q=${encodeURIComponent(foodName)}`);
+  await expect(coach.getByTestId("admin-foods")).toContainText(foodName);
+  await noHorizontalScroll(coach);
+
   // ---------- المتدرب: سجل اليوم ----------
   await trainee.goto(`/account/orders/${orderNo}`);
   await trainee.getByTestId("nutrition-link").click();
@@ -113,6 +128,18 @@ test("التغذية والمكملات: الأهداف، الجداول، ال�
   await trainee.getByRole("button", { name: "حذف تفاحة" }).click();
   await expect(trainee.getByTestId("food-log-list")).not.toContainText("تفاحة");
 
+  // البحث بالغرام: يختار الصنف ويكتب الكمية، وتظهر الماكروز قبل الحفظ
+  await form.getByRole("radio", { name: "العشاء" }).check();
+  await form.getByRole("radio", { name: "ابحث بالغرام" }).check();
+  await form.getByLabel("ابحث عن أكل").fill(`بسمتي مطبوخ ${project}`);
+  await form.getByTestId("food-results").getByRole("button", { name: new RegExp(foodName) }).click();
+  await expect(form.getByLabel("الكمية (غرام)")).toHaveValue("150");
+  await form.getByLabel("الكمية (غرام)").fill("200");
+  await expect(form.getByTestId("grams-preview")).toContainText("كارب 56.4");
+  await form.getByRole("button", { name: "إضافة" }).click();
+  await expect(trainee.getByTestId("food-log-list")).toContainText(`${foodName} — 200غ`);
+  await noHorizontalScroll(trainee);
+
   await trainee.getByRole("link", { name: "جداولي الغذائية" }).click();
   await expect(trainee.getByTestId("my-plan")).toContainText("مكرونة بيني");
   await noHorizontalScroll(trainee);
@@ -121,8 +148,8 @@ test("التغذية والمكملات: الأهداف، الجداول، ال�
   await noHorizontalScroll(trainee);
 
   // ---------- المدربة ترى سجل الأكل ----------
-  await coach.reload();
-  await expect(coach.getByTestId("food-log-review")).toContainText("383");
+  await coach.goto(`/admin/orders/${orderNo}/nutrition`);
+  await expect(coach.getByTestId("food-log-review")).toContainText("635"); // شورما 382.5 + رز 200غ 252.6
 
   // ---------- مستخدم آخر لا يرى ----------
   const other = await newPage(browser, project + "-o");

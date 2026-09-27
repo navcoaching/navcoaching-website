@@ -471,3 +471,80 @@ export async function deleteFoodLogAction(_: ActionState, fd: FormData): Promise
   revalidatePath(`/account/orders/${orderNo}/nutrition`);
   return { ok: true, message: "تم الحذف." };
 }
+
+/** من قاعدة الأكل بالغرامات: قاعدة البيانات تحسب الماكروز من قيم 100غ */
+export async function logFoodGramsAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const u = await getCurrentUser();
+  if (!u) return { error: "سجّل الدخول أولاً." };
+  const orderNo = s(fd, "order_no"), date = s(fd, "date");
+  const kind = kindOf(s(fd, "kind"));
+  const grams = toNum(s(fd, "grams"));
+  const source = s(fd, "source");
+  if (!ORDER_NO.test(orderNo) || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return { error: T_GENERIC };
+  if (!kind) return { error: "اختر الوجبة (فطور، غداء، عشاء، سناك)." };
+  if (grams == null || !Number.isFinite(grams) || grams < 1 || grams > 3000) return { error: "اكتب الكمية بالغرام (من 1 إلى 3000)." };
+  try {
+    if (source === "fatsecret") {
+      const { fatsecretEnabled, fatsecretGet } = await import("@/lib/fatsecret");
+      if (!fatsecretEnabled()) throw bad("البحث الخارجي غير مفعّل.");
+      // القيم تُجلب من FatSecret هنا على الخادم، لا من المتصفح
+      const f = await fatsecretGet(s(fd, "food"));
+      if (!f) throw bad("تعذّر جلب بيانات هذا الصنف. جرّب صنفاً آخر.");
+      const name = f.brand ? `${f.name} (${f.brand})` : f.name;
+      await withUser(u.id, (tx) => tx.query("SELECT app.log_food_external($1,$2,$3,$4,$5,$6,$7,$8)",
+        [orderNo, date, kind, name, grams, f.protein_100, f.carbs_100, f.fat_100]));
+    } else {
+      const food = id(fd, "food");
+      if (!food) throw bad("اختر الصنف من نتائج البحث.");
+      await withUser(u.id, (tx) => tx.query("SELECT app.log_food_grams($1,$2,$3,$4,$5)", [orderNo, date, kind, food, grams]));
+    }
+  } catch (err) {
+    const m = (err as Error).message;
+    if (m.startsWith("fatsecret")) { console.error("[fatsecret]", m); return { error: "تعذّر الاتصال بقاعدة FatSecret الآن. جرّب لاحقاً أو اختر من قاعدة الموقع." }; }
+    return { error: m.startsWith("user:") ? m.slice(5) : dbErrorMessage(err) ?? T_GENERIC };
+  }
+  revalidatePath(`/account/orders/${orderNo}/nutrition`);
+  return { ok: true, message: "تمت الإضافة ✅" };
+}
+
+// =====================================================================
+// قاعدة الأكل (المدربة)
+// =====================================================================
+export async function saveFoodItemAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const fid = id(fd, "id");
+  let newId = "";
+  try {
+    const name_ar = s(fd, "name_ar");
+    if (name_ar.length < 2 || name_ar.length > 120) throw bad("اكتبي الاسم بالعربي.");
+    const name_en = text(s(fd, "name_en"), 160, "الاسم بالإنجليزي");
+    const category = text(s(fd, "category"), 60, "الفئة");
+    const p = macro(fd, "protein_100", "البروتين", 100), c = macro(fd, "carbs_100", "الكارب", 100), f = macro(fd, "fat_100", "الدهون", 100);
+    if (p + c + f > 100.5) throw bad("مجموع البروتين والكارب والدهون لا يتجاوز 100غ لكل 100غ.");
+    const kcalIn = toNum(s(fd, "kcal_100"));
+    const kcal = kcalIn == null ? Math.round((p * 4 + c * 4 + f * 9) * 10) / 10 : kcalIn;
+    if (!Number.isFinite(kcal) || kcal < 0 || kcal > 950) throw bad("السعرات لكل 100غ بين 0 و 950.");
+    const servingIn = toNum(s(fd, "serving_g"));
+    if (servingIn != null && (!Number.isFinite(servingIn) || servingIn < 1 || servingIn > 3000)) throw bad("الحصة بالغرام بين 1 و 3000.");
+    const servingLabel = text(s(fd, "serving_label"), 60, "وصف الحصة");
+    const active = fd.get("active") !== "off";
+    const vals = [name_ar, name_en, category, kcal, p, c, f, servingIn, servingLabel, active];
+    await asCoach(async (tx) => {
+      if (fid) {
+        const r = await tx.query(
+          `UPDATE foods SET name_ar=$2, name_en=$3, category=$4, kcal_100=$5, protein_100=$6, carbs_100=$7, fat_100=$8, serving_g=$9, serving_label=$10, active=$11, updated_at=now() WHERE id=$1`,
+          [fid, ...vals]);
+        if (!r.rowCount) throw new Error("gone");
+      } else {
+        newId = (await tx.query(
+          `INSERT INTO foods (name_ar, name_en, category, kcal_100, protein_100, carbs_100, fat_100, serving_g, serving_label, active, source)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'coach') RETURNING id`, vals)).rows[0].id;
+      }
+    });
+  } catch (err) {
+    if ((err as { code?: string }).code === "23505") return { error: "يوجد صنف بنفس الاسم العربي." };
+    return fail(err);
+  }
+  revalidatePath("/admin/foods");
+  if (newId) return { ok: true, message: "تمت إضافة الصنف، ويظهر للمتدربين في البحث." };
+  return { ok: true, message: "تم الحفظ." };
+}

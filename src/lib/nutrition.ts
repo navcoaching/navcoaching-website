@@ -40,3 +40,11 @@ export const DEFAULT_RULES = [
 ].join("\n");
 
 export const IMPORTANCE = ["مهم جداً", "مُنصَح به", "اختياري", "عند الحاجة فقط"] as const;
+
+export type Per100 = { protein_100: number; carbs_100: number; fat_100: number; kcal_100?: number | null };
+/** ماكروز كمية بالغرام من قيم 100غ (نفس حساب app.log_food_grams) */
+export function scaleFood(f: Per100, grams: number) {
+  const k = grams / 100;
+  const p = Math.round(Number(f.protein_100) * k * 10) / 10, c = Math.round(Number(f.carbs_100) * k * 10) / 10, fat = Math.round(Number(f.fat_100) * k * 10) / 10;
+  return { protein: p, carbs: c, fat, kcal: Math.round(kcalOf({ protein: p, carbs: c, fat })) };
+}
