@@ -158,7 +158,8 @@ test("التغذية والمكملات: الأهداف، الجداول، ال�
   const mine = trainee.getByTestId("my-program");
   await expect(mine).toContainText("التغذية والمكملات");
   await expect(mine.getByTestId("expiry-alert")).toContainText("ينتهي خلال 3 أيام");
-  await expect(mine.getByRole("link", { name: "تجديد الباقة" })).toBeVisible();
+  await expect(mine.getByTestId("expiry-alert").getByRole("button", { name: "جدّد بخصم 10%" })).toBeVisible();
+  await trainee.getByTestId("renewal-popup").getByRole("button", { name: "لاحقاً" }).click();
   await noHorizontalScroll(trainee);
   await trainee.goto(`/account/orders/${orderNo}`);
   await expect(trainee.getByTestId("expiry-alert")).toBeVisible();

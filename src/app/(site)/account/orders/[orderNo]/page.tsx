@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/session";
 import { withUser } from "@/lib/db";
 import { ExpiryAlert } from "@/components/account/MyProgram";
+import AdherenceBar from "@/components/account/AdherenceBar";
 import { getMyFollowUp, getOrderDetail, getSettings } from "@/lib/data";
 import { SUB_LABEL, WEEKDAYS, fmtYMD, riyadhDate } from "@/lib/schedule";
 import { fmtDate, fmtDateTime, riyals, waLink } from "@/lib/format";
@@ -15,7 +16,7 @@ import { CancelForm, CheckinForm, ClearDraft, MeasurementsForm, ReviewForm, Uplo
 
 export const metadata: Metadata = { title: "تفاصيل الطلب", robots: { index: false } };
 
-export default async function OrderPage({ params, searchParams }: { params: Promise<{ orderNo: string }>; searchParams: Promise<{ new?: string }> }) {
+export default async function OrderPage({ params, searchParams }: { params: Promise<{ orderNo: string }>; searchParams: Promise<{ new?: string; renewed?: string }> }) {
   const { orderNo } = await params;
   const user = await requireUser(`/account/orders/${orderNo}`);
   const [detail, s, sp] = await Promise.all([getOrderDetail(user.id, orderNo), getSettings(), searchParams]);
@@ -56,10 +57,18 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
           </div>
         )}
 
+        {sp.renewed && o.status === "awaiting_payment" && (
+          <div className="alert ok" role="status" data-testid="renewed-alert">
+            <div><b>تم إنشاء طلب التجديد بخصم 10%.</b> حوّل المبلغ وارفع الإيصال بالأسفل، ويبدأ اشتراكك الجديد بعد نهاية الحالي.</div>
+          </div>
+        )}
+
         <div className="row" style={{ justifyContent: "space-between" }}>
           <div>
             <h1 style={{ fontSize: "clamp(24px,4vw,34px)" }}>{o.product_name}</h1>
             <p className="muted">{o.offer_label} · طلب رقم <bdi className="num">{o.order_no}</bdi> · {fmtDate(o.created_at)}</p>
+            {o.renewal_kind === "renewal" && <p className="small" style={{ margin: 0 }}>🔁 تجديد بخصم 10%: <s className="muted num">{riyals(o.list_price_halalas)}</s> ← <b className="num">{riyals(o.amount_due_halalas)}</b></p>}
+            {o.renewal_kind === "reward" && <p className="small" style={{ margin: 0 }}>🎁 مكافأة الالتزام: 3 أشهر مجاناً</p>}
           </div>
           <span className={`status ${statusTone(o.status)}`} data-testid="order-status">{statusLabel(o.status, o.category)}</span>
         </div>
@@ -71,7 +80,8 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
           </Link>
         )}
 
-        {follow && <ExpiryAlert o={o} soonDays={follow.soonDays} whatsapp={s.contact.whatsapp} />}
+        {follow && <ExpiryAlert o={o} soonDays={follow.soonDays} whatsapp={s.contact.whatsapp} renewal={follow.renewal} />}
+        {follow?.adherence && o.status === "active" && <AdherenceBar a={follow.adherence} />}
 
         {hasNutrition && (
           <Link href={`/account/orders/${o.order_no}/nutrition`} className="card program-link" data-testid="nutrition-link">

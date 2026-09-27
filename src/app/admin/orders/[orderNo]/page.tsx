@@ -12,16 +12,21 @@ import PackageTag from "@/components/admin/PackageTag";
 import Details from "@/components/admin/Details";
 import { AdminNotes, Subscription } from "./FollowUp";
 import StatusBar from "./StatusBar";
+import AdherenceBar from "@/components/account/AdherenceBar";
+import GrantedAlert from "@/components/admin/GrantedAlert";
+import { loadAdherence } from "@/lib/program-data";
+import { loadReminders } from "@/lib/reminders";
+import { pct } from "@/lib/adherence";
 import {
-  addDeliverableAction, archiveOrderAction, deleteOrderAction, removeDeliverableAction, replyCheckinAction, requestMeasurementsAction, setAmountAction, transitionAction,
+  addDeliverableAction, grantRewardAction, archiveOrderAction, deleteOrderAction, removeDeliverableAction, replyCheckinAction, requestMeasurementsAction, setAmountAction, transitionAction,
 } from "@/app/actions/admin";
 
 const show = (v: unknown) => (Array.isArray(v) ? v.join("، ") : v == null || v === "" ? "—" : String(v));
 
-export default async function AdminOrder({ params, searchParams }: { params: Promise<{ orderNo: string }>; searchParams: Promise<{ created?: string }> }) {
+export default async function AdminOrder({ params, searchParams }: { params: Promise<{ orderNo: string }>; searchParams: Promise<{ created?: string; granted?: string; sent?: string }> }) {
   const coach = await requireCoach();
   const { orderNo } = await params;
-  const { created } = await searchParams;
+  const { created, granted, sent } = await searchParams;
   const detail = await getOrderDetail(coach.id, orderNo);
   if (!detail) notFound();
   const { order: o, events, proofs, deliverables, checkins, intake, review } = detail;
@@ -39,6 +44,15 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
             (SELECT count(*)::int FROM blocks WHERE order_id = $1) AS blocks,
             (SELECT count(*)::int FROM exercise_swaps s JOIN blocks b ON b.id = s.block_id WHERE b.order_id = $1 AND s.seen_at IS NULL) AS unseen`,
     [o.id])).rows[0] as { active: string | null; blocks: number; unseen: number });
+  const retention = o.category === "follow" ? await withUser(coach.id, async (tx) => {
+    const r = await loadReminders(tx);
+    const adherence = ["active", "completed"].includes(o.status) ? await loadAdherence(tx, o, r.review_window_days) : null;
+    const links = (await tx.query(
+      `SELECT order_no, status, renewal_kind, 'next' AS dir FROM orders WHERE renewal_of = $1
+       UNION ALL SELECT order_no, status, NULL, 'prev' FROM orders WHERE id = $2 ORDER BY 4`, [o.id, o.renewal_of ?? null])).rows as
+      { order_no: string; status: string; renewal_kind: string | null; dir: "next" | "prev" }[];
+    return { adherence, links };
+  }) : null;
   const next = coachNextSteps(o.status, o.category);
   const phoneDigits = o.contact_phone.replace(/\D/g, "");
 
@@ -55,6 +69,7 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
       </div>
       <StatusBar orderNo={o.order_no} current={statusLabel(o.status, o.category)} steps={next}
         amount={o.amount_due_halalas == null ? "—" : riyals(o.amount_due_halalas)} />
+      {granted && <GrantedAlert no={granted} sent={sent === "1"} />}
       {o.is_demo && <p className="alert warn">طلب تجريبي — ليس طلباً حقيقياً.</p>}
       {created && <p className="alert ok" role="status">تم إنشاء الطلب يدوياً. أضيفي ملف البرنامج أو الرابط من «ملفات العميل». المتدرب يدخل ببريده <bdi dir="ltr">{o.user_email}</bdi> ويشوفه في حسابه.</p>}
       {o.source === "manual" && !intake && <p className="alert info">طلب يدوي أضافته المدربة — بدون استبيان من الموقع.</p>}
@@ -123,6 +138,32 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
                   {Object.entries(intake.health).map(([k, v]) => <Fragment key={k}><dt>{ANSWER_LABELS[k] ?? k}</dt><dd>{show(v)}</dd></Fragment>)}
                 </dl>
               </div>
+            </div>
+          )}
+
+          {/* ---------- الالتزام والتجديد ---------- */}
+          {retention && (retention.adherence || retention.links.length > 0) && (
+            <div className="card stack" data-testid="retention-card" style={{ ["--space" as string]: "10px" }}>
+              <h2 style={{ fontSize: 19 }}>الالتزام والتجديد</h2>
+              {retention.adherence && <AdherenceBar a={retention.adherence} coach />}
+              {retention.adherence && retention.adherence.scored > 0 && (
+                <p className="small muted" style={{ margin: 0 }}>
+                  آخر الأسابيع: {retention.adherence.weeks.slice(-6).map((w) => `الأسبوع ${w.no}: ${pct(w.score)}`).join("، ")}.
+                  {" "}الدرجة = متوسط تسجيل التمرين والمراجعة الأسبوعية.
+                </p>
+              )}
+              {retention.adherence?.eligible && !retention.adherence.rewarded && (
+                <ActionForm action={grantRewardAction} submit="منح 3 أشهر مجاناً" confirm="منح المتدرب اشتراكاً مجانياً لـ 3 أشهر يبدأ بعد نهاية اشتراكه الحالي؟">
+                  <input type="hidden" name="order_no" value={o.order_no} />
+                  <input type="hidden" name="back" value={`/admin/orders/${o.order_no}`} />
+                </ActionForm>
+              )}
+              {retention.links.map((l) => (
+                <p key={l.order_no} className="small" style={{ margin: 0 }}>
+                  {l.dir === "prev" ? "امتداد للاشتراك " : l.renewal_kind === "reward" ? "🎁 مكافأة الالتزام: " : "🔁 طلب تجديد: "}
+                  <Link href={`/admin/orders/${l.order_no}`}><bdi className="num">{l.order_no}</bdi></Link> · {statusLabel(l.status, "follow")}
+                </p>
+              ))}
             </div>
           )}
 

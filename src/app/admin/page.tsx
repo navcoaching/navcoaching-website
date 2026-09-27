@@ -2,17 +2,33 @@ import Link from "next/link";
 import { withUser } from "@/lib/db";
 import { requireCoach } from "@/lib/session";
 import { mailConfigured } from "@/lib/mail";
-import { fmtDate, riyals } from "@/lib/format";
+import { riyals } from "@/lib/format";
 import { statusLabel, statusTone } from "@/lib/status";
 import { getSettings } from "@/lib/data";
 import { youtubeId } from "@/lib/youtube";
 import { whatsappConfigured } from "@/lib/notify";
 import { loadReminders, loadWeekState } from "@/lib/reminders";
 import { daysBetween, fmtYMD, riyadhDate, subscriptionState } from "@/lib/schedule";
+import { loadRenewals } from "@/lib/renewal";
+import { loadAdherence } from "@/lib/program-data";
+import { pct } from "@/lib/adherence";
+import ActionForm from "@/components/admin/ActionForm";
+import { grantRewardAction } from "@/app/actions/admin";
+import GrantedAlert from "@/components/admin/GrantedAlert";
 
 type Alert = { order_no: string; name: string; text: string; tone: "warn" | "info" | "bad" };
+type Todo = { order_no: string; name: string; text: string; href: string; tone: "warn" | "info" | "bad"; grant?: boolean };
+type Ending = { order_no: string; name: string; product: string; end: string; left: number; renewal: string; tone: "warn" | "bad" | "ok" };
 
-export default async function AdminHome() {
+// الطلبات التي تنتظر إجراء منكِ أولاً، ثم التي تنتظر المتدرب
+const INCOMPLETE = ["payment_review", "awaiting_quote", "preparing", "awaiting_payment"];
+const ago = (iso: string, today: string) => {
+  const d = daysBetween(riyadhDate(iso), today);
+  return d <= 0 ? "اليوم" : d === 1 ? "منذ يوم" : d === 2 ? "منذ يومين" : `منذ ${d} أيام`;
+};
+
+export default async function AdminHome({ searchParams }: { searchParams: Promise<{ granted?: string; sent?: string }> }) {
+  const sp = await searchParams;
   const coach = await requireCoach();
   const [data, s] = await Promise.all([
     withUser(coach.id, async (tx) => {
@@ -20,8 +36,10 @@ export default async function AdminHome() {
       const newWeek = (await tx.query("SELECT count(*)::int n FROM orders WHERE NOT is_demo AND created_at > now() - interval '7 days'")).rows[0].n as number;
       const pendingReviews = (await tx.query("SELECT count(*)::int n FROM reviews WHERE status = 'pending'")).rows[0].n as number;
       const swaps = (await tx.query("SELECT count(DISTINCT user_id)::int n FROM exercise_swaps WHERE seen_at IS NULL")).rows[0].n as number;
-      const pendingCheckins = (await tx.query("SELECT count(*)::int n FROM check_ins WHERE coach_reply IS NULL")).rows[0].n as number;
-      const latest = (await tx.query("SELECT order_no, product_name, offer_label, status, category, amount_due_halalas, contact_name, created_at FROM orders ORDER BY created_at DESC LIMIT 8")).rows;
+      const incomplete = (await tx.query(
+        `SELECT order_no, product_name, status, category, amount_due_halalas, contact_name, created_at, renewal_kind FROM orders
+          WHERE NOT is_demo AND archived_at IS NULL AND status = ANY($1::text[])
+          ORDER BY array_position($1::text[], status), created_at LIMIT 40`, [INCOMPLETE])).rows;
       const demo = (await tx.query("SELECT (SELECT count(*) FROM products WHERE is_demo)::int + (SELECT count(*) FROM orders WHERE is_demo)::int AS n")).rows[0].n as number;
 
       // تنبيهات داخلية للمدربة (لا تُرسل لأحد): قرب انتهاء الاشتراك، مراجعات قريبة أو فائتة، قياسات ناقصة
@@ -29,14 +47,59 @@ export default async function AdminHome() {
       const r = await loadReminders(tx);
       const soon = Math.max(0, ...r.sub_expiry_days);
       const alerts: Alert[] = [];
+      const todos: Todo[] = [];
+      const ending: Ending[] = [];
       const { rows: subs } = await tx.query(
-        `SELECT id, order_no, user_id, contact_name, product_name, status, sub_start_at, sub_end_at, review_weekday
+        `SELECT id, order_no, user_id, contact_name, product_name, status, category, months, offer_id, list_price_halalas, renewal_kind,
+                sub_start_at, sub_end_at, review_weekday
            FROM orders WHERE status = 'active' AND category = 'follow' AND sub_start_at IS NOT NULL AND NOT is_demo AND archived_at IS NULL
           ORDER BY sub_end_at`);
+      const renewals = await loadRenewals(tx, subs, (o) => daysBetween(today, riyadhDate(o.sub_end_at)));
+
+      // (ب) ما يحتاج تعديلاً منكِ
+      for (const x of (await tx.query(
+        `SELECT o.order_no, o.contact_name, count(*)::int n FROM check_ins c JOIN orders o ON o.id = c.order_id
+          WHERE c.coach_reply IS NULL AND NOT o.is_demo GROUP BY 1, 2 ORDER BY min(c.created_at)`)).rows) {
+        todos.push({ order_no: x.order_no, name: x.contact_name, tone: "warn", href: `/admin/orders/${x.order_no}`,
+          text: x.n === 1 ? "مراجعة أسبوعية بدون رد" : `${x.n} مراجعات أسبوعية بدون رد` });
+      }
+      for (const x of (await tx.query(
+        `SELECT o.order_no, o.contact_name, count(*)::int n FROM exercise_swaps s JOIN blocks b ON b.id = s.block_id JOIN orders o ON o.id = b.order_id
+          WHERE s.seen_at IS NULL AND NOT o.is_demo GROUP BY 1, 2 ORDER BY min(s.created_at)`)).rows) {
+        todos.push({ order_no: x.order_no, name: x.contact_name, tone: "info", href: `/admin/orders/${x.order_no}/program`,
+          text: x.n === 1 ? "بدّل تمريناً — راجعي التبديل" : `بدّل ${x.n} تمارين — راجعي التبديلات` });
+      }
+      for (const x of (await tx.query(
+        `SELECT o.order_no, o.contact_name, b.start_date::text AS start_date, b.weeks FROM orders o
+           LEFT JOIN blocks b ON b.order_id = o.id AND b.status = 'active'
+          WHERE o.status = 'active' AND o.category = 'follow' AND NOT o.is_demo AND o.archived_at IS NULL
+            AND (o.sub_start_at IS NULL OR o.sub_start_at <= now() + interval '3 days')
+            AND (b.id IS NULL OR b.start_date + b.weeks * 7 <= current_date + 3)
+          ORDER BY o.sub_start_at NULLS FIRST`)).rows) {
+        const endsOn = x.start_date ? fmtYMD(new Date(Date.parse(`${x.start_date}T00:00:00Z`) + (x.weeks * 7 - 1) * 86_400_000).toISOString().slice(0, 10)) : null;
+        todos.push({ order_no: x.order_no, name: x.contact_name, tone: "bad", href: `/admin/orders/${x.order_no}/program`,
+          text: endsOn ? `برنامج التمرين الحالي ينتهي ${endsOn} — جهّزي البرنامج التالي` : "لا يوجد برنامج تمرين مُسند" });
+      }
+
       for (const o of subs) {
-        if (subscriptionState(o, soon, today) === "ending_soon") {
+        // (ج) اشتراكات قربت تنتهي
+        const state = subscriptionState(o, soon, today);
+        if (state === "ending_soon" || state === "expired") {
           const left = daysBetween(today, riyadhDate(o.sub_end_at));
-          alerts.push({ order_no: o.order_no, name: o.contact_name, tone: "warn", text: `الاشتراك ينتهي ${fmtYMD(riyadhDate(o.sub_end_at))} (متبقٍ ${left} يوم)` });
+          const rn = renewals.get(o.id);
+          ending.push({ order_no: o.order_no, name: o.contact_name, product: o.product_name, end: fmtYMD(riyadhDate(o.sub_end_at)), left,
+            renewal: rn?.kind === "renewed" ? (rn.reward ? "🎁 مكافأة مفعّلة" : "✓ جدّد")
+              : rn?.kind === "pending" ? (rn.status === "awaiting_payment" ? "طلب التجديد بانتظار الدفع" : "إيصال التجديد بانتظار التحقق")
+              : rn?.kind === "offer" ? "عرض الخصم ظاهر له — لم يجدد بعد" : "لم يجدد بعد",
+            tone: rn?.kind === "renewed" ? "ok" : left < 0 ? "bad" : "warn" });
+        }
+        // مستحقو مكافأة الالتزام
+        if (o.months >= 3 && o.renewal_kind !== "reward") {
+          const a = await loadAdherence(tx, o, r.review_window_days, today);
+          if (a?.eligible && !a.rewarded) {
+            todos.unshift({ order_no: o.order_no, name: o.contact_name, tone: "info", href: `/admin/orders/${o.order_no}`, grant: true,
+              text: `🎉 التزام ${pct(a.avg)} خلال ${a.scored} أسبوعاً — مستحق 3 أشهر مجاناً` });
+          }
         }
         const weeks = await loadWeekState(tx, o, r, today);
         const next = weeks.find((w) => w.status !== "done" && w.windowEnd >= today);
@@ -55,7 +118,7 @@ export default async function AdminHome() {
             AND (coalesce(i.health->>'weight','') = '' OR coalesce(i.health->>'height','') = '')
           ORDER BY o.created_at DESC LIMIT 20`);
       for (const o of noMeasure) alerts.push({ order_no: o.order_no, name: o.contact_name, tone: "warn", text: "الوزن أو الطول غير موجود في الاستبيان" });
-      return { swaps, counts, newWeek, pendingReviews, pendingCheckins, latest, demo, alerts };
+      return { swaps, counts, newWeek, pendingReviews, incomplete, todos, ending, demo, alerts, today };
     }),
     getSettings(),
   ]);
@@ -73,6 +136,7 @@ export default async function AdminHome() {
   return (
     <div className="stack" style={{ ["--space" as string]: "22px" }}>
       <h1>أهلاً {coach.name.split(" ")[0]}</h1>
+      {sp.granted && <GrantedAlert no={sp.granted} sent={sp.sent === "1"} />}
       {data.demo > 0 && <p className="alert warn">توجد بيانات تجريبية ({data.demo}) في قاعدة البيانات. لا تُنشر في الإنتاج — احذفيها قبل الإطلاق.</p>}
       <div className="grid g4">
         <Link href="/admin/orders?status=awaiting_payment" className="card stat" style={{ textDecoration: "none", color: "inherit" }} data-testid="stat-new-orders"><span className="muted">طلبات جديدة بانتظار الدفع</span><b>{c("awaiting_payment")}</b><span className="small muted">{data.newWeek} طلب خلال آخر 7 أيام</span></Link>
@@ -94,22 +158,64 @@ export default async function AdminHome() {
           </ul>
         )}
       </section>
-      <div className="grid g2" style={{ alignItems: "start" }}>
-        <div className="card">
-          <h2 style={{ fontSize: 18, marginBottom: 12 }}>أحدث الطلبات</h2>
-          {data.latest.length === 0 ? <p className="muted">لا توجد طلبات بعد.</p> : (
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }} className="stack">
-              {data.latest.map((o) => (
-                <li key={o.order_no} className="row" style={{ justifyContent: "space-between" }}>
-                  <Link href={`/admin/orders/${o.order_no}`}><bdi className="num">{o.order_no}</bdi></Link>
-                  <span className="small">{o.contact_name} · {o.product_name} · {riyals(o.amount_due_halalas)} · {fmtDate(o.created_at)}</span>
-                  <span className={`status ${statusTone(o.status)}`}>{statusLabel(o.status, o.category)}</span>
+      <div className="grid g3 dash-lists" style={{ alignItems: "start" }}>
+        <section className="card" aria-labelledby="inc-h" data-testid="dash-incomplete">
+          <h2 id="inc-h" style={{ fontSize: 18, marginBottom: 12 }}>طلبات تحتاج إكمال <span className="count">{data.incomplete.length}</span></h2>
+          {data.incomplete.length === 0 ? <p className="muted">لا توجد طلبات معلّقة.</p> : (
+            <ul className="dash-list">
+              {data.incomplete.map((o) => (
+                <li key={o.order_no}>
+                  <div className="row" style={{ justifyContent: "space-between", gap: 8 }}>
+                    <Link href={`/admin/orders/${o.order_no}`}><b>{o.contact_name}</b></Link>
+                    <span className={`status ${statusTone(o.status)}`}>{statusLabel(o.status, o.category)}</span>
+                  </div>
+                  <span className="small muted">
+                    {o.renewal_kind === "renewal" ? "🔁 تجديد · " : ""}{o.product_name} · {riyals(o.amount_due_halalas)} · {ago(o.created_at, data.today)}
+                  </span>
                 </li>
               ))}
             </ul>
           )}
-          <p className="small" style={{ marginTop: 12 }}>مراجعات أسبوعية بدون رد: <Link href="/admin/orders?status=active">{data.pendingCheckins}</Link></p>
-        </div>
+        </section>
+        <section className="card" aria-labelledby="todo-h" data-testid="dash-todos">
+          <h2 id="todo-h" style={{ fontSize: 18, marginBottom: 12 }}>تحتاج تعديل منكِ <span className="count">{data.todos.length}</span></h2>
+          {data.todos.length === 0 ? <p className="muted">لا شيء بانتظارك الآن 👌</p> : (
+            <ul className="dash-list">
+              {data.todos.map((t, i) => (
+                <li key={i} className={t.tone} data-testid={t.grant ? "reward-eligible" : undefined}>
+                  <Link href={t.href}><b>{t.name}</b></Link>
+                  <span className="small">{t.text}</span>
+                  {t.grant && (
+                    <ActionForm action={grantRewardAction} className="form" submit="منح 3 أشهر مجاناً" submitClass="btn btn-sm"
+                      confirm={`منح ${t.name} اشتراكاً مجانياً لـ 3 أشهر يبدأ بعد نهاية اشتراكه الحالي؟`}>
+                      <input type="hidden" name="order_no" value={t.order_no} />
+                      <input type="hidden" name="back" value="/admin" />
+                    </ActionForm>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+        <section className="card" aria-labelledby="end-h" data-testid="dash-ending">
+          <h2 id="end-h" style={{ fontSize: 18, marginBottom: 12 }}>اشتراكات قربت تنتهي <span className="count">{data.ending.length}</span></h2>
+          {data.ending.length === 0 ? <p className="muted">لا توجد اشتراكات تنتهي قريباً.</p> : (
+            <ul className="dash-list">
+              {data.ending.map((e) => (
+                <li key={e.order_no} className={e.tone === "ok" ? "" : e.tone}>
+                  <div className="row" style={{ justifyContent: "space-between", gap: 8 }}>
+                    <Link href={`/admin/orders/${e.order_no}`}><b>{e.name}</b></Link>
+                    <span className="small num">{e.left < 0 ? `انتهى منذ ${-e.left} يوم` : e.left === 0 ? "ينتهي اليوم" : e.left === 1 ? "باقي يوم" : e.left === 2 ? "باقي يومين" : `باقي ${e.left} أيام`}</span>
+                  </div>
+                  <span className="small muted">{e.product} · {e.end}</span>
+                  <span className={`small ${e.tone === "ok" ? "ok-text" : ""}`}>{e.renewal}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
+      <div className="grid g2" style={{ alignItems: "start" }}>
         <div className="card">
           <h2 style={{ fontSize: 18, marginBottom: 12 }}>حالة الإعداد</h2>
           <ul className="checklist">

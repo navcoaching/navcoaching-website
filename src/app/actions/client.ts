@@ -229,3 +229,29 @@ export async function requestFreePlanAction(_: FreePlanState, fd: FormData): Pro
     return { error: dbErrorMessage(err) ?? GENERIC };
   }
 }
+
+// ---------- تجديد الاشتراك بخصم (آخر 5 أيام) ----------
+export async function renewAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await getCurrentUser();
+  if (!user) return { error: "سجّل الدخول أولاً." };
+  const orderNo = String(fd.get("order_no") ?? "");
+  if (!(await allow(`renew:u:${user.id}`, 10, 3600))) return { error: LIMITED };
+  let r: { no: string; product_name: string; amount_due_halalas: number; created: boolean };
+  try {
+    r = await withUser(user.id, async (tx) => {
+      const before = (await tx.query(
+        "SELECT count(*)::int n FROM orders WHERE renewal_of = (SELECT id FROM orders WHERE order_no = $1) AND renewal_kind = 'renewal' AND status <> 'cancelled'", [orderNo])).rows[0].n;
+      const no = (await tx.query("SELECT app.create_renewal($1) AS no", [orderNo])).rows[0].no as string;
+      const o = (await tx.query("SELECT product_name, amount_due_halalas FROM orders WHERE order_no = $1", [no])).rows[0];
+      return { no, ...o, created: before === 0 };
+    });
+  } catch (err) {
+    return { error: dbErrorMessage(err) ?? GENERIC };
+  }
+  if (r.created) {
+    await notifySafe(process.env.COACH_NOTIFY_EMAIL, `طلب تجديد بخصم 10% — ${r.no}`,
+      `طلب تجديد جديد بخصم 10%\nرقم الطلب: ${r.no}\nالبرنامج: ${r.product_name}\nالمبلغ: ${riyals(r.amount_due_halalas)}\nالاشتراك السابق: ${orderNo}\n\nالتفاصيل في لوحة الإدارة.`);
+  }
+  revalidatePath("/account");
+  redirect(`/account/orders/${r.no}?renewed=1`);
+}

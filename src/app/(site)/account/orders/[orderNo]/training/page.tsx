@@ -4,10 +4,11 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/session";
 import { withUser } from "@/lib/db";
 import { fmtDate, fmtDateTime } from "@/lib/format";
-import { riyadhDate } from "@/lib/schedule";
+import { DEFAULT_REMINDERS, riyadhDate } from "@/lib/schedule";
 import { currentWeek, effective, planLabel } from "@/lib/training";
 import { muscleAr } from "@/lib/exercises";
-import { loadAllLifts, loadBlockData, loadBodyData, type BlockRow } from "@/lib/program-data";
+import { loadAdherence, loadAllLifts, loadBlockData, loadBodyData, type BlockRow } from "@/lib/program-data";
+import AdherenceBar from "@/components/account/AdherenceBar";
 import ProgressView from "@/components/training/ProgressView";
 import { ItemLogForm, MeasureForm, RateDayForm, StepsForm, SwapForm, WeightForm } from "./TrainingForms";
 
@@ -24,7 +25,8 @@ export default async function TrainingPage({ params, searchParams }: { params: P
   const tab = sp.tab === "progress" ? "progress" : "program";
 
   const res = await withUser(user.id, async (tx) => {
-    const { rows: [o] } = await tx.query(`SELECT id, order_no, user_id, product_name, status FROM orders WHERE order_no = $1`, [orderNo]);
+    const { rows: [o] } = await tx.query(
+      `SELECT id, order_no, user_id, product_name, status, category, months, sub_start_at, sub_end_at, review_weekday, renewal_kind FROM orders WHERE order_no = $1`, [orderNo]);
     if (!o || o.user_id !== user.id) return null;
     // RLS: البلوك يظهر لصاحبه فقط بعد تأكيد الدفع
     const blocks = (await tx.query(
@@ -43,7 +45,10 @@ export default async function TrainingPage({ params, searchParams }: { params: P
     }
     const body = tab === "progress" ? await loadBodyData(tx, user.id) : null;
     const lifts = tab === "progress" ? await loadAllLifts(tx, user.id) : [];
-    return { o, blocks, block, data, wk, week, day, swaps, body, lifts };
+    const { rows: [{ r }] } = await tx.query("SELECT app.review_schedule() AS r");
+    const adherence = o.status === "active" && o.category === "follow"
+      ? await loadAdherence(tx, o, Number(r?.review_window_days ?? DEFAULT_REMINDERS.review_window_days), today) : null;
+    return { o, blocks, block, data, wk, week, day, swaps, body, lifts, adherence };
   });
   if (!res) notFound();
   const { o, blocks, block } = res;
@@ -58,7 +63,7 @@ export default async function TrainingPage({ params, searchParams }: { params: P
       </div></section>
     );
   }
-  const { data, wk, week, day, swaps, body, lifts } = res as Required<typeof res> & { data: NonNullable<Awaited<ReturnType<typeof loadBlockData>>> };
+  const { data, wk, week, day, swaps, body, lifts, adherence } = res as Required<typeof res> & { data: NonNullable<Awaited<ReturnType<typeof loadBlockData>>> };
   const readOnly = block.status !== "active";
   const link = (over: Partial<SP>) => {
     const q = new URLSearchParams(Object.entries({ tab, week: String(week), day: day?.id, block: sp.block, ...over }).filter(([, v]) => v) as [string, string][]);
@@ -80,6 +85,7 @@ export default async function TrainingPage({ params, searchParams }: { params: P
             {readOnly && <> · <span className="status muted">منتهي (للقراءة فقط)</span></>}
           </p>
         </div>
+        {adherence && <AdherenceBar a={adherence} />}
         {blocks.length > 1 && (
           <nav className="pill-nav" aria-label="البرامج">
             {blocks.map((b) => <Link key={b.id} href={`${base}?block=${b.id}`} aria-current={b.id === block.id ? "true" : undefined}>{b.name}{b.status === "active" ? "" : " (سابق)"}</Link>)}

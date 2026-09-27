@@ -594,3 +594,58 @@ describe("قاعدة الأكل بالغرامات", () => {
     await assert.rejects(as(A, "SELECT app.log_food_external($1, current_date, 'snack', 'x', 100, 150, 0, 0)", [noA]), /غير صحيحة/);
   });
 });
+
+describe("التجديد بخصم ومكافأة الالتزام", () => {
+  // اشتراك A بباقة 3 أشهر ينتهي بعد 4 أيام
+  let noA;
+  before(async () => {
+    noA = await newOrder(A, "k-renew-00000000001", "int3");
+    await owner.query("UPDATE orders SET status = 'active' WHERE order_no = $1", [noA]);
+    await owner.query("UPDATE orders SET sub_start_at = now() - interval '86 days', sub_end_at = now() + interval '4 days' WHERE order_no = $1", [noA]);
+  });
+  test("خارج آخر 5 أيام: مرفوض", async () => {
+    await owner.query("UPDATE orders SET sub_end_at = now() + interval '9 days' WHERE order_no = $1", [noA]);
+    await assert.rejects(as(A, "SELECT app.create_renewal($1)", [noA]), /آخر 5 أيام/);
+    await owner.query("UPDATE orders SET sub_end_at = now() - interval '2 days' WHERE order_no = $1", [noA]);
+    await assert.rejects(as(A, "SELECT app.create_renewal($1)", [noA]), /آخر 5 أيام/);
+    await owner.query("UPDATE orders SET sub_end_at = now() + interval '4 days' WHERE order_no = $1", [noA]);
+  });
+  test("مستخدم آخر لا يجدد طلب غيره، والطلب غير النشط لا يُجدَّد", async () => {
+    await assert.rejects(as(B, "SELECT app.create_renewal($1)", [noA]), /غير موجود/);
+    const pending = await newOrder(A, "k-renew-00000000002", "int3");
+    await assert.rejects(as(A, "SELECT app.create_renewal($1)", [pending]), /لا يقبل التجديد/);
+  });
+  test("التجديد: 90% من سعر الباقة الحالي، مرة واحدة، مع نسخة الاستبيان", async () => {
+    const r1 = (await as(A, "SELECT app.create_renewal($1) AS no", [noA])).rows[0].no;
+    const r2 = (await as(A, "SELECT app.create_renewal($1) AS no", [noA])).rows[0].no;
+    assert.equal(r1, r2);
+    const o = (await as(A, "SELECT status, list_price_halalas, amount_due_halalas, months, renewal_kind FROM orders WHERE order_no = $1", [r1])).rows[0];
+    assert.deepEqual(o, { status: "awaiting_payment", list_price_halalas: 155000, amount_due_halalas: 139500, months: 3, renewal_kind: "renewal" });
+    assert.equal((await as(A, "SELECT count(*)::int n FROM intakes i JOIN orders o ON o.id = i.order_id WHERE o.order_no = $1", [r1])).rows[0].n, 1);
+    assert.match((await as(A, "SELECT note FROM order_events e JOIN orders o ON o.id = e.order_id WHERE o.order_no = $1", [r1])).rows[0].note, /خصم 10%/);
+    // المبلغ لا يتغير من المتدرب
+    await assert.rejects(as(A, "UPDATE orders SET amount_due_halalas = 1 WHERE order_no = $1 RETURNING 1", [r1]).then((r) => { if (r.rowCount === 0) throw new Error("permission denied"); }), /permission denied/);
+  });
+  test("عند التفعيل يبدأ التجديد من نهاية الاشتراك الحالي", async () => {
+    const r = (await as(A, "SELECT order_no FROM orders WHERE renewal_kind = 'renewal'")).rows[0].order_no;
+    await owner.query("UPDATE orders SET status = 'active' WHERE order_no = $1", [r]);
+    const d = (await owner.query(
+      "SELECT n.sub_start_at = o.sub_end_at AS same, n.sub_end_at = o.sub_end_at + interval '3 months' AS plus3, n.review_weekday = o.review_weekday AS wd FROM orders n JOIN orders o ON o.id = n.renewal_of WHERE n.order_no = $1", [r])).rows[0];
+    assert.deepEqual(d, { same: true, plus3: true, wd: true });
+  });
+  test("المكافأة: للمدربة فقط، 90% فأكثر، مرة واحدة، وتبدأ بعد آخر اشتراك", async () => {
+    await assert.rejects(as(A, "SELECT app.coach_grant_reward($1, 0.95)", [noA]), /للمدربة فقط/);
+    await assert.rejects(as(COACH, "SELECT app.coach_grant_reward($1, 0.89)", [noA]), /أقل من 90/);
+    const short = await newOrder(A, "k-renew-00000000003", "int1");
+    await owner.query("UPDATE orders SET status = 'active' WHERE order_no = $1", [short]);
+    await assert.rejects(as(COACH, "SELECT app.coach_grant_reward($1, 0.95)", [short]), /3 أشهر فأكثر/);
+    const rw = (await as(COACH, "SELECT app.coach_grant_reward($1, 0.93) AS no", [noA])).rows[0].no;
+    await assert.rejects(as(COACH, "SELECT app.coach_grant_reward($1, 0.95)", [noA]), /من قبل/);
+    const o = (await owner.query(
+      "SELECT r.status, r.amount_due_halalas, r.months, r.sub_start_at = (SELECT sub_end_at FROM orders WHERE renewal_kind = 'renewal' AND renewal_of = r.renewal_of) AS after_renewal FROM orders r WHERE r.order_no = $1", [rw])).rows[0];
+    assert.deepEqual(o, { status: "active", amount_due_halalas: 0, months: 3, after_renewal: true });
+    assert.equal((await as(A, "SELECT count(*)::int n FROM loyalty_rewards")).rows[0].n, 1);
+    assert.equal((await as(B, "SELECT count(*)::int n FROM loyalty_rewards")).rows[0].n, 0);
+    await assert.rejects(as(A, "INSERT INTO loyalty_rewards (order_id) SELECT id FROM orders LIMIT 1"), /permission denied/);
+  });
+});

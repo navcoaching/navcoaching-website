@@ -144,7 +144,8 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   // ---------- 6) تنبيهات داخلية للمدربة في الرئيسية ----------
   await coach.goto("/admin");
   const alerts = coach.getByTestId("coach-alerts");
-  await expect(alerts.locator("li", { hasText: orderNo }).filter({ hasText: "الاشتراك ينتهي" })).toHaveCount(1);
+  // قرب انتهاء الاشتراك انتقل إلى قائمة «اشتراكات قربت تنتهي»
+  await expect(coach.getByTestId("dash-ending").locator("li", { has: coach.locator(`a[href="/admin/orders/${orderNo}"]`) })).toHaveCount(1);
   await expect(alerts.locator("li", { hasText: orderNo }).filter({ hasText: "لم تصل مراجعة الأسبوع 2" })).toHaveCount(1);
   await expect(alerts.locator("li", { hasText: orderNo }).filter({ hasText: "مراجعة الأسبوع 3" })).toHaveCount(1);
   await expect(alerts.locator("li", { hasText: orderNo }).filter({ hasText: "الوزن أو الطول" })).toHaveCount(1);

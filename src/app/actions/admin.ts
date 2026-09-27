@@ -9,6 +9,7 @@ import { cleanUpload, newKey, UploadError } from "@/lib/uploads";
 import { storage } from "@/lib/storage";
 import { CHANNEL_LABEL, RESULT_LABEL, notifyTrainee, type ChannelResult } from "@/lib/notify";
 import { loadReminders, loadWeekState, reviewMessage } from "@/lib/reminders";
+import { loadAdherence } from "@/lib/program-data";
 import { statusLabel } from "@/lib/status";
 import { youtubeId } from "@/lib/youtube";
 import type { ActionState } from "./client";
@@ -641,4 +642,32 @@ export async function saveFreePlanAction(_: ActionState, fd: FormData): Promise<
   revalidatePath("/admin/free-plans");
   if (!v.id) redirect(`/admin/free-plans/${id}?created=1`);
   return { ok: true, message: uploaded ? "تم الحفظ ورفع ملف PDF الجديد." : "تم الحفظ." };
+}
+
+// ---------- مكافأة الالتزام: 3 أشهر مجاناً (يُعاد حساب الاستحقاق هنا قبل المنح) ----------
+export async function grantRewardAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const orderNo = String(fd.get("order_no") ?? "");
+  let res: { no: string; results: ChannelResult[] } | { error: string };
+  try {
+    res = await asCoach(async (tx) => {
+      const { rows: [o] } = await tx.query(
+        `SELECT id, order_no, user_id, category, months, status, sub_start_at, sub_end_at, review_weekday, renewal_kind FROM orders WHERE order_no = $1`, [orderNo]);
+      if (!o) return { error: "الطلب غير موجود." };
+      const r = await loadReminders(tx);
+      const a = await loadAdherence(tx, o, r.review_window_days);
+      if (!a?.eligible || a.avg == null) return { error: "المتدرب غير مستحق حالياً (يلزم التزام 90% فأكثر خلال 12 أسبوعاً مكتملاً)." };
+      const no = (await tx.query("SELECT app.coach_grant_reward($1, $2) AS no", [orderNo, a.avg])).rows[0].no as string;
+      const results = await notifyTrainee(tx, { orderId: o.id, orderNo: no, userId: o.user_id }, {
+        kind: "status", subject: "مكافأة التزامك 🎁",
+        text: "مبروك! بسبب التزامك خلال اشتراكك، أضفنا لك 3 أشهر مجاناً تبدأ بعد نهاية اشتراكك الحالي." });
+      return { no, results };
+    });
+  } catch (err) { return fail(err); }
+  if ("error" in res) return { error: res.error };
+  revalidatePath("/admin");
+  revalidatePath(`/admin/orders/${orderNo}`);
+  // العنصر يختفي من القائمة بعد المنح، فالنتيجة تظهر في الصفحة عبر الرابط
+  const back = String(fd.get("back") ?? "");
+  const sent = res.results.some((r) => r.status === "sent") ? "1" : "0";
+  redirect(`${back.startsWith("/admin") && !back.startsWith("//") ? back : "/admin"}?granted=${encodeURIComponent(res.no)}&sent=${sent}`);
 }

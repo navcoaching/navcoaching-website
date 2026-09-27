@@ -777,3 +777,26 @@ input[type="date"] { width: 100%; max-width: 100%; min-width: 0; min-height: 50p
 @media (max-width: 900px) { .status-bar { top: calc(62px + env(safe-area-inset-top)); } }
 .my-program { border: 2px solid var(--cyan); }
 .expiry-alert .btn { text-decoration: none; }
+
+/* ---------- الالتزام والتجديد ---------- */
+.adherence { padding: 12px 14px; border-radius: var(--r); background: var(--surface-2); }
+.adherence .streak { font-size: 14px; font-weight: 600; color: var(--warn); background: var(--warn-bg); padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.meter { position: relative; block-size: 12px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.meter > span { position: absolute; inset-block: 0; inset-inline-start: 0; border-radius: 999px; background: var(--cyan-ink); transition: inline-size .4s var(--ease); }
+.meter.good > span { background: var(--ok); }
+.meter.mid > span { background: #c98a1a; }
+.meter.low > span { background: var(--err); }
+.meter > i { position: absolute; inset-block: 0; inline-size: 2px; background: var(--text); opacity: .45; }
+.renew-price { display: inline-flex; gap: 10px; align-items: baseline; font-size: 18px; }
+.renew-price s { font-size: 15px; }
+.renew-form { display: grid; gap: 8px; }
+.modal-backdrop { position: fixed; inset: 0; z-index: 60; background: rgba(7, 20, 42, 0.55); display: grid; place-items: center; padding: 16px; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+.modal { inline-size: min(460px, 100%); max-block-size: calc(100dvh - 32px); overflow: auto; box-shadow: var(--shadow-2); }
+.dash-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-block-size: 520px; overflow: auto; }
+.dash-list li { display: grid; gap: 4px; padding: 10px 12px; border-radius: 10px; background: var(--paper); border-inline-start: 4px solid var(--line); }
+.dash-list li.warn { border-inline-start-color: #c98a1a; }
+.dash-list li.bad { border-inline-start-color: #c0392b; }
+.dash-list li.info { border-inline-start-color: var(--cyan-ink); }
+.dash-list .form { margin-top: 4px; }
+h2 .count { display: inline-grid; place-items: center; min-inline-size: 26px; block-size: 26px; padding-inline: 6px; border-radius: 999px; background: var(--surface-2); font-size: 14px; vertical-align: middle; }
+.ok-text { color: var(--ok); font-weight: 600; }
