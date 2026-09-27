@@ -18,7 +18,7 @@ import { loadAdherence } from "@/lib/program-data";
 import { loadReminders } from "@/lib/reminders";
 import { pct } from "@/lib/adherence";
 import {
-  addDeliverableAction, grantRewardAction, archiveOrderAction, deleteOrderAction, removeDeliverableAction, replyCheckinAction, requestMeasurementsAction, setAmountAction, transitionAction,
+  addDeliverableAction, grantRewardAction, markSurveySeenAction, archiveOrderAction, deleteOrderAction, removeDeliverableAction, replyCheckinAction, requestMeasurementsAction, setAmountAction, transitionAction,
 } from "@/app/actions/admin";
 
 const show = (v: unknown) => (Array.isArray(v) ? v.join("، ") : v == null || v === "" ? "—" : String(v));
@@ -51,7 +51,10 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
       `SELECT order_no, status, renewal_kind, 'next' AS dir FROM orders WHERE renewal_of = $1
        UNION ALL SELECT order_no, status, NULL, 'prev' FROM orders WHERE id = $2 ORDER BY 4`, [o.id, o.renewal_of ?? null])).rows as
       { order_no: string; status: string; renewal_kind: string | null; dir: "next" | "prev" }[];
-    return { adherence, links };
+    const survey = (await tx.query(
+      `SELECT wants_renewal, reason, experience, created_at, seen_at FROM exit_surveys WHERE order_id = $1`, [o.id])).rows[0] as
+      { wants_renewal: boolean; reason: string; experience: string; created_at: string; seen_at: string | null } | undefined;
+    return { adherence, links, survey };
   }) : null;
   const next = coachNextSteps(o.status, o.category);
   const phoneDigits = o.contact_phone.replace(/\D/g, "");
@@ -138,6 +141,24 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
                   {Object.entries(intake.health).map(([k, v]) => <Fragment key={k}><dt>{ANSWER_LABELS[k] ?? k}</dt><dd>{show(v)}</dd></Fragment>)}
                 </dl>
               </div>
+            </div>
+          )}
+
+          {/* ---------- استبيان نهاية البرنامج (خاص بالمدربة) ---------- */}
+          {retention?.survey && (
+            <div className="card stack" data-testid="exit-survey-answers" style={{ ["--space" as string]: "10px" }}>
+              <h2 style={{ fontSize: 19 }}>استبيان نهاية البرنامج {!retention.survey.seen_at && <span className="status action">جديد</span>}</h2>
+              <p className="small muted" style={{ margin: 0 }}>{fmtDateTime(retention.survey.created_at)} · خاص بكِ ولا يُنشر</p>
+              <dl className="kv small">
+                <dt>رغبة بالتجديد</dt><dd><b>{retention.survey.wants_renewal ? "نعم" : "لا"}</b></dd>
+                <dt>السبب</dt><dd style={{ whiteSpace: "pre-wrap" }}>{retention.survey.reason}</dd>
+                <dt>تجربته</dt><dd style={{ whiteSpace: "pre-wrap" }}>{retention.survey.experience}</dd>
+              </dl>
+              {!retention.survey.seen_at && (
+                <ActionForm action={markSurveySeenAction} submit="اطّلعت عليه" submitClass="btn btn-ghost btn-sm">
+                  <input type="hidden" name="order_no" value={o.order_no} />
+                </ActionForm>
+              )}
             </div>
           )}
 

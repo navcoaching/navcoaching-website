@@ -150,3 +150,57 @@ test("التجديد بخصم 10%، الالتزام والـ streak، لوحة 
   await login(other, `other-rt-${project}@e2e.test`);
   expect((await other.goto(`/account/orders/${orderNo}`))?.status()).toBe(404);
 });
+
+test("استبيان نهاية البرنامج وتحته التقييم، ويصل للمدربة", async ({ browser }, info) => {
+  const project = info.project.name;
+  const coachEmail = `coach-ex-${project}@e2e.test`;
+  const traineeEmail = `trainee-ex-${project}@e2e.test`;
+  const name = `متدربة نهاية ${project}`;
+  const coach = await newPage(browser, project + "-c");
+  await login(coach, coachEmail, "/admin");
+  await db.query(`UPDATE "user" SET role = 'coach' WHERE email = $1`, [coachEmail]);
+  const trainee = await newPage(browser, project + "-t");
+  await login(trainee, traineeEmail);
+  const { orderNo } = await endingOrder(traineeEmail, name);
+  // انتهى الاشتراك أمس
+  await db.query(`UPDATE orders SET sub_end_at = now() - interval '1 day' WHERE order_no = $1`, [orderNo]);
+
+  await trainee.goto("/account");
+  const card = trainee.getByTestId("exit-survey");
+  await expect(card).toContainText("ولله الحمد انتهى البرنامج، لكن لم تنتهِ رحلتك في التطور النفسي والجسدي.");
+  await expect(card).toContainText("عندك رغبة بالتجديد؟");
+  await expect(card.getByTestId("exit-review").getByRole("button", { name: "أرسل التقييم" })).toBeVisible();
+  await noHorizontalScroll(trainee);
+  await card.getByRole("radio", { name: "نعم" }).check();
+  await card.getByLabel(/وضّح لي الله يعافيك السبب/).fill("حابة أكمل على نفس المستوى");
+  await card.getByLabel(/كيف كانت تجربتك معي/).fill("تجربة ممتازة ومتابعة دقيقة كل أسبوع");
+  await card.getByRole("button", { name: "أرسل ردك" }).click();
+  await expect(card).toContainText("شكراً لك، وصلني ردك");
+  await card.locator("#rbody").fill("برنامج رائع ومتابعة مستمرة، أنصح فيه بقوة");
+  await card.getByRole("button", { name: "أرسل التقييم" }).click();
+  await expect(card).toContainText("وصل تقييمك");
+  expect((await db.query("SELECT count(*)::int n FROM dev_mailbox WHERE recipient = 'coach-notify@e2e.test' AND subject = $1", [`استبيان نهاية البرنامج — ${name}`])).rows[0].n).toBe(1);
+
+  // اكتمل الاستبيان والتقييم: البطاقة تبقى يوماً برسالة الشكر ثم تختفي من «حسابي»، وتبقى النتيجة في صفحة الطلب
+  await trainee.goto("/account");
+  await expect(trainee.getByTestId("exit-survey")).toContainText("وصلني ردك");
+  await db.query(`UPDATE exit_surveys SET created_at = now() - interval '2 days' WHERE order_id = (SELECT id FROM orders WHERE order_no = $1)`, [orderNo]);
+  await db.query(`UPDATE reviews SET created_at = now() - interval '2 days' WHERE order_id = (SELECT id FROM orders WHERE order_no = $1)`, [orderNo]);
+  await trainee.goto("/account");
+  await expect(trainee.getByTestId("exit-survey")).toHaveCount(0);
+  await trainee.goto(`/account/orders/${orderNo}`);
+  await expect(trainee.getByTestId("exit-survey")).toContainText("وصلني ردك");
+
+  // المدربة
+  await coach.goto("/admin");
+  const todo = coach.getByTestId("dash-todos").locator("li", { hasText: name }).filter({ hasText: "استبيان نهاية البرنامج" });
+  await expect(todo).toContainText("يرغب بالتجديد");
+  await coach.goto(`/admin/orders/${orderNo}`);
+  const ans = coach.getByTestId("exit-survey-answers");
+  await expect(ans).toContainText("حابة أكمل على نفس المستوى");
+  await expect(ans).toContainText("تجربة ممتازة");
+  await ans.getByRole("button", { name: "اطّلعت عليه" }).click();
+  await expect(ans.getByRole("button", { name: "اطّلعت عليه" })).toHaveCount(0);
+  await coach.goto("/admin");
+  await expect(coach.getByTestId("dash-todos").locator("li", { hasText: name }).filter({ hasText: "استبيان نهاية البرنامج" })).toHaveCount(0);
+});

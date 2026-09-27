@@ -64,6 +64,12 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           text: x.n === 1 ? "مراجعة أسبوعية بدون رد" : `${x.n} مراجعات أسبوعية بدون رد` });
       }
       for (const x of (await tx.query(
+        `SELECT o.order_no, o.contact_name, s.wants_renewal FROM exit_surveys s JOIN orders o ON o.id = s.order_id
+          WHERE s.seen_at IS NULL AND NOT o.is_demo ORDER BY s.created_at`)).rows) {
+        todos.push({ order_no: x.order_no, name: x.contact_name, tone: x.wants_renewal ? "info" : "warn", href: `/admin/orders/${x.order_no}`,
+          text: `ردّ على استبيان نهاية البرنامج — ${x.wants_renewal ? "يرغب بالتجديد" : "لا يرغب بالتجديد"}` });
+      }
+      for (const x of (await tx.query(
         `SELECT o.order_no, o.contact_name, count(*)::int n FROM exercise_swaps s JOIN blocks b ON b.id = s.block_id JOIN orders o ON o.id = b.order_id
           WHERE s.seen_at IS NULL AND NOT o.is_demo GROUP BY 1, 2 ORDER BY min(s.created_at)`)).rows) {
         todos.push({ order_no: x.order_no, name: x.contact_name, tone: "info", href: `/admin/orders/${x.order_no}/program`,

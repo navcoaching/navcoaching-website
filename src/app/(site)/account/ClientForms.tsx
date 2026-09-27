@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  cancelOrderAction, savePrefsAction, submitCheckinAction, submitReviewAction, updateMeasurementsAction, updateProfileAction, uploadProofAction,
+  cancelOrderAction, savePrefsAction, submitCheckinAction, submitExitSurveyAction, submitReviewAction, updateMeasurementsAction, updateProfileAction, uploadProofAction,
 } from "@/app/actions/client";
 import { FormMessage, Submit, useFormAction } from "@/components/FormBits";
 import { authClient } from "@/lib/auth-client";
@@ -159,6 +159,38 @@ export function MeasurementsForm({ orderNo }: { orderNo: string }) {
       </div>
       <FormMessage state={state} />
       <Submit pending={pending} className="btn btn-sm">حفظ القياسات</Submit>
+    </form>
+  );
+}
+
+export function ExitSurveyForm({ orderNo }: { orderNo: string }) {
+  const { state, onSubmit, pending } = useFormAction(submitExitSurveyAction);
+  if (state.ok) return <FormMessage state={state} />;
+  const fe = state.fieldErrors ?? {};
+  return (
+    <form onSubmit={onSubmit} className="form" data-testid="exit-survey-form">
+      <input type="hidden" name="order_no" value={orderNo} />
+      <fieldset className="field">
+        <legend>1- عندك رغبة بالتجديد؟ <span className="req">*</span></legend>
+        <div className="choices">
+          <label className="choice"><input type="radio" name="wants_renewal" value="yes" required /><span>نعم</span></label>
+          <label className="choice"><input type="radio" name="wants_renewal" value="no" /><span>لا</span></label>
+        </div>
+        {fe.wants_renewal && <span className="err-msg">{fe.wants_renewal}</span>}
+      </fieldset>
+      <div className="field">
+        <label htmlFor={`ex-reason-${orderNo}`}>سواء الإجابة نعم أم لا، وضّح لي الله يعافيك السبب <span className="req">*</span></label>
+        <textarea id={`ex-reason-${orderNo}`} name="reason" required minLength={2} maxLength={1000} style={{ minHeight: 80 }} aria-invalid={fe.reason ? true : undefined} />
+        {fe.reason && <span className="err-msg">{fe.reason}</span>}
+      </div>
+      <div className="field">
+        <label htmlFor={`ex-exp-${orderNo}`}>2- باختصار كيف كانت تجربتك معي؟ <span className="req">*</span></label>
+        <textarea id={`ex-exp-${orderNo}`} name="experience" required minLength={2} maxLength={2000} style={{ minHeight: 100 }} aria-invalid={fe.experience ? true : undefined} />
+        <span className="hint">ردك يصل للمدربة فقط ولا يُنشر. للتقييم العام استخدم خانة التقييم بالأسفل.</span>
+        {fe.experience && <span className="err-msg">{fe.experience}</span>}
+      </div>
+      <FormMessage state={state} />
+      <Submit pending={pending} className="btn">أرسل ردك</Submit>
     </form>
   );
 }

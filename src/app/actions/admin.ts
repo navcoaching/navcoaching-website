@@ -671,3 +671,14 @@ export async function grantRewardAction(_: ActionState, fd: FormData): Promise<A
   const sent = res.results.some((r) => r.status === "sent") ? "1" : "0";
   redirect(`${back.startsWith("/admin") && !back.startsWith("//") ? back : "/admin"}?granted=${encodeURIComponent(res.no)}&sent=${sent}`);
 }
+
+// ---------- استبيان نهاية البرنامج: «اطّلعت عليه» ----------
+export async function markSurveySeenAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const orderNo = String(fd.get("order_no") ?? "");
+  try {
+    await asCoach((tx) => tx.query("SELECT app.coach_mark_survey_seen($1)", [orderNo]));
+  } catch (err) { return fail(err); }
+  revalidatePath("/admin");
+  revalidatePath(`/admin/orders/${orderNo}`);
+  return { ok: true, message: "تم." };
+}

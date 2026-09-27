@@ -6,6 +6,7 @@ import { requireUser } from "@/lib/session";
 import { withUser } from "@/lib/db";
 import { ExpiryAlert } from "@/components/account/MyProgram";
 import AdherenceBar from "@/components/account/AdherenceBar";
+import { EndOfProgramCard, loadEndOfProgram } from "@/components/account/EndOfProgram";
 import { getMyFollowUp, getOrderDetail, getSettings } from "@/lib/data";
 import { SUB_LABEL, WEEKDAYS, fmtYMD, riyadhDate } from "@/lib/schedule";
 import { fmtDate, fmtDateTime, riyals, waLink } from "@/lib/format";
@@ -40,6 +41,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
   const hasNutrition = entitled ? await withUser(user.id, async (tx) => (await tx.query(
     `SELECT EXISTS (SELECT 1 FROM nutrition_targets WHERE order_id = $1) OR EXISTS (SELECT 1 FROM nutrition_plans WHERE order_id = $1 AND NOT archived)
             OR EXISTS (SELECT 1 FROM supplement_routines WHERE order_id = $1 AND NOT archived) AS x`, [o.id])).rows[0].x as boolean) : false;
+  const endOfProgram = entitled ? (await withUser(user.id, (tx) => loadEndOfProgram(tx, [o]))).get(o.id) ?? null : null;
   const block = entitled ? await withUser(user.id, async (tx) => (await tx.query(
     `SELECT name, status FROM blocks WHERE order_id = $1 ORDER BY (status = 'active') DESC, created_at DESC LIMIT 1`, [o.id])).rows[0] as { name: string; status: string } | undefined) : undefined;
 
@@ -205,8 +207,13 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
               </div>
             )}
 
+            {/* ---------- نهاية البرنامج: الاستبيان ثم التقييم ---------- */}
+            {endOfProgram && (
+              <EndOfProgramCard orderNo={o.order_no} product={o.product_name} name={user.name} survey={endOfProgram.survey} review={endOfProgram.review} />
+            )}
+
             {/* ---------- التقييم ---------- */}
-            {entitled && (
+            {entitled && !endOfProgram && (
               <div className="card stack">
                 <h2 style={{ fontSize: 20 }}>قيّم تجربتك</h2>
                 {review ? (

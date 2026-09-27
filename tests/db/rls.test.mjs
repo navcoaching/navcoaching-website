@@ -649,3 +649,29 @@ describe("التجديد بخصم ومكافأة الالتزام", () => {
     await assert.rejects(as(A, "INSERT INTO loyalty_rewards (order_id) SELECT id FROM orders LIMIT 1"), /permission denied/);
   });
 });
+
+describe("استبيان نهاية البرنامج", () => {
+  let noA;
+  before(async () => {
+    noA = await newOrder(A, "k-exit-000000000001", "int1");
+    await owner.query("UPDATE orders SET status = 'active' WHERE order_no = $1", [noA]);
+  });
+  test("قبل نهاية الاشتراك: مرفوض", async () => {
+    await owner.query("UPDATE orders SET sub_end_at = now() + interval '3 days' WHERE order_no = $1", [noA]);
+    await assert.rejects(as(A, "SELECT app.submit_exit_survey($1, true, 'حاب أكمل', 'ممتازة')", [noA]), /عند نهاية البرنامج/);
+  });
+  test("عند النهاية: صاحب الطلب فقط، مرة واحدة، والمدربة تقرأ وتعلّم «اطّلعت»", async () => {
+    await owner.query("UPDATE orders SET sub_end_at = now() - interval '1 day' WHERE order_no = $1", [noA]);
+    await assert.rejects(as(B, "SELECT app.submit_exit_survey($1, true, 'سبب', 'تجربة')", [noA]), /غير موجود/);
+    await assert.rejects(as(A, "SELECT app.submit_exit_survey($1, true, ' ', 'تجربة')", [noA]), /السبب/);
+    await as(A, "SELECT app.submit_exit_survey($1, false, 'ظروف سفر', 'تجربة رائعة ومتابعة دقيقة')", [noA]);
+    await assert.rejects(as(A, "SELECT app.submit_exit_survey($1, true, 'سبب', 'تجربة')", [noA]), /من قبل/);
+    assert.equal((await as(B, "SELECT count(*)::int n FROM exit_surveys")).rows[0].n, 0);
+    assert.equal((await as(A, "SELECT count(*)::int n FROM exit_surveys")).rows[0].n, 1);
+    await assert.rejects(as(A, "SELECT app.coach_mark_survey_seen($1)", [noA]), /للمدربة فقط/);
+    await as(COACH, "SELECT app.coach_mark_survey_seen($1)", [noA]);
+    const r = (await as(COACH, "SELECT wants_renewal, reason, seen_at IS NOT NULL AS seen FROM exit_surveys")).rows[0];
+    assert.deepEqual(r, { wants_renewal: false, reason: "ظروف سفر", seen: true });
+    await assert.rejects(as(A, "INSERT INTO exit_surveys (order_id, user_id, wants_renewal, reason, experience) SELECT id, user_id, true, 'x1', 'x2' FROM orders LIMIT 1"), /permission denied/);
+  });
+});

@@ -255,3 +255,33 @@ export async function renewAction(_: ActionState, fd: FormData): Promise<ActionS
   revalidatePath("/account");
   redirect(`/account/orders/${r.no}?renewed=1`);
 }
+
+// ---------- استبيان نهاية البرنامج (للمدربة فقط، غير منشور) ----------
+export async function submitExitSurveyAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await getCurrentUser();
+  if (!user) return { error: "سجّل الدخول أولاً." };
+  const orderNo = String(fd.get("order_no") ?? "");
+  const wants = fd.get("wants_renewal");
+  const reason = String(fd.get("reason") ?? "").trim();
+  const experience = String(fd.get("experience") ?? "").trim();
+  const fieldErrors: Record<string, string> = {};
+  if (wants !== "yes" && wants !== "no") fieldErrors.wants_renewal = "اختر نعم أو لا.";
+  if (reason.length < 2) fieldErrors.reason = "وضّح السبب باختصار.";
+  if (experience.length < 2) fieldErrors.experience = "اكتب باختصار كيف كانت تجربتك.";
+  if (Object.keys(fieldErrors).length) return { error: "راجع الحقول المحددة.", fieldErrors };
+  if (!(await allow(`exit:u:${user.id}`, 5, 3600))) return { error: LIMITED };
+  let who: string;
+  try {
+    who = await withUser(user.id, async (tx) => {
+      await tx.query("SELECT app.submit_exit_survey($1,$2,$3,$4)", [orderNo, wants === "yes", reason, experience]);
+      return (await tx.query("SELECT contact_name FROM orders WHERE order_no = $1", [orderNo])).rows[0]?.contact_name ?? "";
+    });
+  } catch (err) {
+    return { error: dbErrorMessage(err) ?? GENERIC };
+  }
+  await notifySafe(process.env.COACH_NOTIFY_EMAIL, `استبيان نهاية البرنامج — ${who}`,
+    `رد ${who} على استبيان نهاية البرنامج (${orderNo}):\n\nرغبة بالتجديد: ${wants === "yes" ? "نعم" : "لا"}\nالسبب: ${reason}\n\nتجربته: ${experience}\n\nNav Coaching`);
+  revalidatePath("/account");
+  revalidatePath(`/account/orders/${orderNo}`);
+  return { ok: true, message: "شكراً لك، وصلني ردك 🤍" };
+}

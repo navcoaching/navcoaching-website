@@ -6,6 +6,7 @@ import { fmtDate, riyals } from "@/lib/format";
 import { statusLabel, statusTone } from "@/lib/status";
 import { PrefsForm, ProfileForm, SignOut } from "./ClientForms";
 import MyProgram from "@/components/account/MyProgram";
+import EndOfProgramList from "@/components/account/EndOfProgram";
 
 export const metadata: Metadata = { title: "حسابي", robots: { index: false } };
 
@@ -24,6 +25,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
           </div>
           {denied && <p className="alert warn">لوحة الإدارة للمدربة فقط.</p>}
           {needsAction.length > 0 && <p className="alert warn">عندك {needsAction.length === 1 ? "طلب يحتاج" : `${needsAction.length} طلبات تحتاج`} إجراء منك.</p>}
+          <EndOfProgramList userId={user.id} name={user.name} orders={orders} />
           <MyProgram userId={user.id} orders={orders} />
           <h2 style={{ fontSize: 22 }}>طلباتي</h2>
           {orders.length === 0 ? (
