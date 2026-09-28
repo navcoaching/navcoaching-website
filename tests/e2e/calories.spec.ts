@@ -137,11 +137,11 @@ test("السعرات التلقائية: تنحسب لمتدرب جديد بشا
   const { rows: [u] } = await db.query(`SELECT id FROM "user" WHERE email = $1`, [email]);
   const { rows: [p] } = await db.query(`SELECT p.id, p.name, o.id AS offer_id, o.label, o.price_halalas FROM products p JOIN product_offers o ON o.product_id = p.id WHERE p.slug = 'intensive' AND o.months = 3`);
   const orderNo = (await db.query("SELECT app.new_order_no() AS no")).rows[0].no as string;
-  // قيد الإعداد، بدون هدف سعرات. أنثى 30 سنة 165 سم 74 كغ، 4 أيام × ساعة، 3,000–6,000 خطوة، نزول دهون
+  // نشط، بدون هدف سعرات. أنثى 30 سنة 165 سم 74 كغ، 4 أيام × ساعة، 3,000–6,000 خطوة، نزول دهون
   const { rows: [o] } = await db.query(
     `INSERT INTO orders (order_no, user_id, product_id, offer_id, category, product_name, offer_label, months, list_price_halalas, amount_due_halalas, status,
-                         contact_name, contact_phone, idempotency_key, paid_at)
-     VALUES ($1,$2,$3,$4,'follow',$5,$6,3,$7,$7,'preparing',$8,'+966500000000',$1, now()) RETURNING id`,
+                         contact_name, contact_phone, idempotency_key, paid_at, sub_start_at, sub_end_at)
+     VALUES ($1,$2,$3,$4,'follow',$5,$6,3,$7,$7,'active',$8,'+966500000000',$1, now(), now(), now() + interval '80 days') RETURNING id`,
     [orderNo, u.id, p.id, p.offer_id, p.name, p.label, p.price_halalas, name]);
   await db.query(
     `INSERT INTO intakes (order_id, user_id, answers, health, media_consent, consent_terms_at, consent_whatsapp_at)
@@ -184,9 +184,16 @@ test("السعرات التلقائية: تنحسب لمتدرب جديد بشا
   await expect(list).not.toContainText(far);
   await noHorizontalScroll(coach);
 
+  // المتدرب ما يشوف السعرات قبل التأكيد
+  await trainee.goto(`/account/orders/${orderNo}/nutrition`);
+  await expect(trainee.locator("main")).not.toContainText(fmt);
+
   // تأكيد الحسبة
   await auto.getByRole("button", { name: "أكدت الحسبة" }).click();
+  await coach.reload();
   await expect(coach.getByTestId("auto-kcal")).toHaveCount(0);
+  await trainee.reload();
+  await expect(trainee.getByTestId("macro-summary")).toContainText(fmt);
   const { rows: [t] } = await db.query(`SELECT kcal, kcal_source, kcal_confirmed_at IS NOT NULL AS ok FROM nutrition_targets WHERE order_id = $1`, [o.id]);
   expect(t).toEqual({ kcal: expected, kcal_source: "coach", ok: true });
 

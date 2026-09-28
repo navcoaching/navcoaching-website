@@ -18,7 +18,7 @@ export default function CalorieSuggest({ orderNo, st }: { orderNo: string; st: C
         <div className="alert warn stack" style={{ ["--space" as string]: "8px", flexDirection: "column", alignItems: "stretch" }} data-testid="auto-kcal">
           <b><span className="status action" data-testid="auto-badge">⏳ بانتظار تأكيدك</span> حُسبت السعرات تلقائياً: <span className="num">{n0(st.target.kcal)}</span> سعرة</b>
           <ul className="small" style={{ margin: 0, paddingInlineStart: 18 }}>{basis(p, st.weight).map((b) => <li key={b}>{b}</li>)}</ul>
-          <span className="small muted">تأكدي أن البيانات صحيحة ثم اضغطي «أكدت الحسبة». لو فيها خطأ عدّليها من «بيانات الحساب» وتتحدث الحسبة، أو اكتبي الرقم بنفسك في «الأرقام الغذائية اليومية». البروتين والكارب والدهون ما تنحط تلقائياً.</span>
+          <span className="small muted">المتدرب ما يشوف الرقم حتى تأكدينه. تأكدي أن البيانات صحيحة ثم اضغطي «أكدت الحسبة». لو فيها خطأ عدّليها من «بيانات الحساب» وتتحدث الحسبة، أو اكتبي الرقم بنفسك في «الأرقام الغذائية اليومية». البروتين والكارب والدهون ما تنحط تلقائياً.</span>
           <ActionForm action={confirmAutoKcalAction} submit="أكدت الحسبة" submitClass="btn btn-sm">
             <input type="hidden" name="order_no" value={orderNo} />
             <input type="hidden" name="kcal" value={st.target.kcal} />

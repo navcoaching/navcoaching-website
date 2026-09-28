@@ -159,5 +159,5 @@ export async function confirmAutoKcalAction(_: ActionState, fd: FormData): Promi
   revalidatePath(`/admin/orders/${orderNo}/nutrition`);
   revalidatePath(`/account/orders/${orderNo}/nutrition`);
   revalidatePath("/admin");
-  return { ok: true, message: "تم تأكيد الحسبة." };
+  return { ok: true, message: "تم تأكيد الحسبة، وصارت تظهر للمتدرب." };
 }
