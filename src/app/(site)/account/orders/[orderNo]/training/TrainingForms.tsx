@@ -19,6 +19,15 @@ export function ItemLogForm({ orderNo, item, week, target, targetRir, log }: {
   const [w, setW] = useState<string[]>(() => Array.from({ length: MAX_SETS }, (_, i) =>
     log ? String(log.weights?.[i] ?? (i === 0 || !log.weights ? log.weight : "")) : ""));
   const [r, setR] = useState<string[]>(() => Array.from({ length: MAX_SETS }, (_, i) => (log?.reps[i] != null ? String(log.reps[i]) : "")));
+  // الجولات اللي عدّلها المتدرب بنفسه (ما تتغيّر تلقائياً). التسجيل المحفوظ يُعتبر معدّلاً
+  const [tw, setTw] = useState<boolean[]>(() => Array.from({ length: MAX_SETS }, () => Boolean(log)));
+  const [tr, setTr] = useState<boolean[]>(() => Array.from({ length: MAX_SETS }, () => Boolean(log)));
+  /** كتابة وزن/تكرارات جولة: الجولات اللي بعدها (غير المعدّلة) تأخذ نفس القيمة تلقائياً */
+  const typed = (kind: "w" | "r", i: number, v: string) => {
+    const touched = kind === "w" ? tw : tr;
+    (kind === "w" ? setW : setR)((a) => a.map((x, j) => (j === i || (j > i && !touched[j]) ? v : x)));
+    (kind === "w" ? setTw : setTr)((a) => a.map((x, j) => (j === i ? true : x)));
+  };
   const p = `${item}-${week}`;
   // 1RM مباشر من المدخلات (الفارغ يأخذ السابق/المستهدف)
   const num = (v: string) => { const n = Number(v.replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d))).replace(",", ".")); return v.trim() && Number.isFinite(n) ? n : null; };
@@ -35,6 +44,8 @@ export function ItemLogForm({ orderNo, item, week, target, targetRir, log }: {
     const ins = <T,>(a: T[], v: T) => [...a.slice(0, i + 1), v, ...a.slice(i + 1)].slice(0, MAX_SETS);
     setW((a) => ins(a, effW(i) != null ? String(effW(i)) : ""));
     setR((a) => ins(a, effR(i) != null ? String(effR(i)) : ""));
+    setTw((a) => ins(a, true));
+    setTr((a) => ins(a, true));
     setSets(sets + 1);
   };
   return (
@@ -48,10 +59,10 @@ export function ItemLogForm({ orderNo, item, week, target, targetRir, log }: {
           <div className="set-row" key={i}>
             <span className="set-no">{i + 1}</span>
             <input name="set_weight" type="text" inputMode="decimal" dir="ltr" aria-label={`وزن الجولة ${i + 1}`} value={w[i]} required={i === 0}
-              placeholder={i > 0 ? (num(w[i - 1]) != null ? w[i - 1] : "نفس السابق") : "كغ"} onChange={(e) => setW((a) => a.map((v, j) => (j === i ? e.target.value : v)))} />
+              placeholder={i > 0 ? (num(w[i - 1]) != null ? w[i - 1] : "نفس السابق") : "كغ"} onChange={(e) => typed("w", i, e.target.value)} />
             <span className="muted" aria-hidden="true">×</span>
             <input name="reps" type="text" inputMode="numeric" dir="ltr" aria-label={`تكرارات الجولة ${i + 1}`} value={r[i]}
-              placeholder={target[i] != null ? String(target[i]) : ""} onChange={(e) => setR((a) => a.map((v, j) => (j === i ? e.target.value : v)))} />
+              placeholder={target[i] != null ? String(target[i]) : ""} onChange={(e) => typed("r", i, e.target.value)} />
             <button type="button" className="set-dup" onClick={() => duplicate(i)} disabled={sets >= MAX_SETS}
               aria-label={`تكرار الجولة ${i + 1}`} title="تكرار الجولة بنفس الوزن والعدّات">⧉</button>
           </div>
@@ -65,7 +76,7 @@ export function ItemLogForm({ orderNo, item, week, target, targetRir, log }: {
         <label htmlFor={`r-${p}`}>RIR</label>
         <input id={`r-${p}`} name="rir" type="number" inputMode="decimal" step="0.5" min={0} max={10} dir="ltr" placeholder={targetRir != null ? String(targetRir) : ""} defaultValue={log?.rir ?? ""} />
       </div>
-      <p className="hint" style={{ margin: 0 }}>⧉ يكرر الجولة بنفس الوزن والعدّات. الوزن الفارغ = نفس وزن الجولة السابقة، والتكرارات الفارغة = المستهدف.</p>
+      <p className="hint" style={{ margin: 0 }}>اكتب وزن وعدّات الجولة الأولى وتتعبّى الجولات اللي بعدها تلقائياً، وعدّل أي جولة اختلفت. ⧉ يكرر الجولة.</p>
       {est > 0 && <p className="small one-rm" data-testid="one-rm" style={{ margin: 0 }}>🏆 أعلى وزن تقديري لتكرار واحد (1RM): <b className="num">{est}</b> كغ</p>}
       <FormMessage state={state} />
       <div className="row" style={{ gap: 8 }}>

@@ -171,7 +171,11 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await expect(card).toContainText("3×10 · RIR 2");
   // وزن لكل جولة: الجولة الثانية فارغة = نفس وزن الأولى، والتكرارات الفارغة = المستهدف
   await card.getByLabel("وزن الجولة 1").fill("60");
+  // الجولات اللي بعدها تتعبّى تلقائياً بنفس الوزن
+  await expect(card.getByLabel("وزن الجولة 2")).toHaveValue("60");
+  await expect(card.getByLabel("وزن الجولة 3")).toHaveValue("60");
   await card.getByLabel("وزن الجولة 3").fill("65");
+  await expect(card.getByLabel("وزن الجولة 2")).toHaveValue("60"); // اللي قبلها ما تتغيّر
   await card.getByLabel("تكرارات الجولة 3").fill("8");
   await expect(card.getByTestId("one-rm")).toContainText("82.5"); // 65 × (1 + 8/30) = 82.3
   // ⧉ تكرار الجولة 3 بنفس الوزن والعدّات، و«+ جولة» تنسخ آخر جولة ثم تتعدّل
