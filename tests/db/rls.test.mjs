@@ -755,3 +755,31 @@ describe("إشعارات الجوال (Web Push)", () => {
     assert.equal(d.column_default, "true");
   });
 });
+
+describe("السعرات المقترحة والإيميل اليومي", () => {
+  test("المتدرب يحدّث ملفه لاشتراكه الفعّال فقط وبالحدود، والمدربة تعدّل", async () => {
+    const no = await newOrder(A, `cal-${Date.now()}-aaaaaaaa`);
+    const { rows: [o] } = await owner.query("UPDATE orders SET status = 'active' WHERE order_no = $1 RETURNING id", [no]);
+    await as(A, "SELECT app.update_my_calorie_profile($1, 165, 1.2, 4, 60, 'female', 30, 0.8)", [no]);
+    let p = (await as(A, "SELECT sex, age, paf::float, eb_factor::float, height_cm::float FROM calorie_profiles WHERE order_id = $1", [o.id])).rows[0];
+    assert.deepEqual(p, { sex: "female", age: 30, paf: 1.2, eb_factor: 0.8, height_cm: 165 });
+    // التحديث اللاحق لا يغيّر قيم البداية (الجنس والعمر والهدف)
+    await as(A, "SELECT app.update_my_calorie_profile($1, NULL, 1.0, 5, 45, 'male', 50, 1.1)", [no]);
+    p = (await as(A, "SELECT sex, age, paf::float, training_days, eb_factor::float, height_cm::float FROM calorie_profiles WHERE order_id = $1", [o.id])).rows[0];
+    assert.deepEqual(p, { sex: "female", age: 30, paf: 1, training_days: 5, eb_factor: 0.8, height_cm: 165 });
+    await assert.rejects(as(A, "SELECT app.update_my_calorie_profile($1, 165, 1.7, 4, 60, NULL, NULL, NULL)", [no]), /نشاطك/);
+    await assert.rejects(as(A, "SELECT app.update_my_calorie_profile($1, 300, 1.1, 4, 60, NULL, NULL, NULL)", [no]), /الطول/);
+    await assert.rejects(as(B, "SELECT app.update_my_calorie_profile($1, 165, 1.1, 4, 60, NULL, NULL, NULL)", [no]), /غير موجود/);
+    // الكتابة المباشرة للمتدرب ممنوعة، والمستخدم الآخر لا يرى الملف
+    assert.equal((await as(A, "UPDATE calorie_profiles SET eb_factor = 1.3 WHERE order_id = $1", [o.id])).rowCount, 0);
+    assert.equal((await as(B, "SELECT 1 FROM calorie_profiles WHERE order_id = $1", [o.id])).rowCount, 0);
+    assert.equal((await as(COACH, "UPDATE calorie_profiles SET dismissed_kcal = 1800 WHERE order_id = $1", [o.id])).rowCount, 1);
+  });
+  test("سجل الإيميل اليومي: مرة واحدة لكل يوم، وللمدربة/النظام فقط", async () => {
+    const day = "2026-01-05";
+    assert.equal((await as(COACH, "INSERT INTO coach_digests (day, items) VALUES ($1, 3) ON CONFLICT (day) DO NOTHING", [day])).rowCount, 1);
+    assert.equal((await as(COACH, "INSERT INTO coach_digests (day, items) VALUES ($1, 3) ON CONFLICT (day) DO NOTHING", [day])).rowCount, 0);
+    await assert.rejects(as(A, "INSERT INTO coach_digests (day) VALUES ('2026-01-06')"), /row-level security/);
+    assert.equal((await as(A, "SELECT 1 FROM coach_digests")).rowCount, 0);
+  });
+});

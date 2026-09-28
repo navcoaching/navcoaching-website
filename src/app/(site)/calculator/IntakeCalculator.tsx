@@ -1,25 +1,9 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { calculateIntake, validateIntake, type BmrMethod, type IntakeErrors, type IntakeInput, type IntakeResult } from "@/lib/calories";
+import { EB_GOALS as GOALS, PAF_LEVELS as PAF, calculateIntake, validateIntake, type BmrMethod, type IntakeErrors, type IntakeInput, type IntakeResult } from "@/lib/calories";
 
 // مستويات النشاط خارج التمرين (عامل النشاط البدني). القيم إرشادية وقابلة للتعديل هنا.
-const PAF = [
-  { v: "1.0", l: "قليل الحركة (أقل من 5,000 خطوة)" },
-  { v: "1.1", l: "خفيف (5,000–7,500 خطوة)" },
-  { v: "1.2", l: "متوسط (7,500–10,000 خطوة)" },
-  { v: "1.3", l: "نشيط (10,000–12,500 خطوة)" },
-  { v: "1.4", l: "نشيط جداً (+12,500 خطوة أو عمل بدني)" },
-];
-// عامل توازن الطاقة: أقل من 1 = عجز، أكثر من 1 = فائض
-const GOALS = [
-  { v: "0.75", l: "تنشيف سريع (عجز 25٪)" },
-  { v: "0.8", l: "تنشيف (عجز 20٪)" },
-  { v: "0.9", l: "تنشيف تدريجي (عجز 10٪)" },
-  { v: "1", l: "المحافظة على الوزن" },
-  { v: "1.05", l: "تضخيم نظيف (فائض 5٪)" },
-  { v: "1.1", l: "تضخيم (فائض 10٪)" },
-];
 const METHODS: { v: BmrMethod; t: string; d: string }[] = [
   { v: "cunningham", t: "أعرف نسبة الدهون", d: "الأدق: يعتمد على الكتلة الخالية من الدهون (معادلة Cunningham)." },
   { v: "tenhaaf", t: "ما أعرف نسبة الدهون", d: "يعتمد على الوزن والطول والعمر والجنس (معادلة Ten Haaf) — مناسبة للأشخاص الرياضيين." },
@@ -62,7 +46,7 @@ export default function IntakeCalculator({ idPrefix = "i" }: { idPrefix?: string
       {errors[k] && <span className="err-msg">{errors[k]}</span>}
     </div>
   );
-  const select = (k: "paf" | "ebFactor" | "trainingDays", label: string, opts: { v: string; l: string }[]) => (
+  const select = (k: "paf" | "ebFactor" | "trainingDays", label: string, opts: readonly { v: string; l: string }[]) => (
     <div className="field">
       <label htmlFor={id(k)}>{label} <span className="req">*</span></label>
       <select id={id(k)} value={raw[k]} onChange={(e) => set(k, e.target.value)}>

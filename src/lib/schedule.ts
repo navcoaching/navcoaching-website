@@ -80,6 +80,7 @@ export const fmtYMD = (ymd: string) =>
 export type Reminders = {
   sub_expiry_days: number[]; sub_expiry_text: string; review_lead_days: number; review_window_days: number;
   review_text: string; missed_review_text: string; manual_cooldown_minutes: number;
+  coach_digest: boolean; // إيميل يومي للمدربة بأسماء مراجعات اليوم
 };
 export const DEFAULT_REMINDERS: Reminders = {
   sub_expiry_days: [7, 3],
@@ -89,4 +90,5 @@ export const DEFAULT_REMINDERS: Reminders = {
   review_text: "مرحباً {name}، تذكير بمراجعتك الأسبوعية: المراجعة مفتوحة من {window_start} إلى {window_end}.",
   missed_review_text: "مرحباً {name}، ما وصلتنا مراجعة الأسبوع المنتهي في {window_end}. متى ما تيسّر لك، حدّثها عشان نتابع تقدمك.",
   manual_cooldown_minutes: 10,
+  coach_digest: true,
 };

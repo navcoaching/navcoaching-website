@@ -8,6 +8,8 @@ import ActionForm from "@/components/admin/ActionForm";
 import { assignNutritionAction, assignSupplementsAction, saveTargetsAction } from "@/app/actions/nutrition";
 import { DEFAULT_RULES, sumMacros, targetCheck, type Target } from "@/lib/nutrition";
 import { loadPlans, loadRoutine } from "@/lib/nutrition-data";
+import { loadCalorieState } from "@/lib/calorie-data";
+import CalorieSuggest from "@/components/admin/CalorieSuggest";
 
 type Log = { log_date: string; protein: number; carbs: number; fat: number };
 
@@ -17,11 +19,11 @@ export default async function OrderNutrition({ params }: { params: Promise<{ ord
   const { orderNo } = await params;
   const today = riyadhDate();
   const data = await withUser(coach.id, async (tx) => {
-    const { rows: [o] } = await tx.query(`SELECT id, order_no, contact_name, product_name, status FROM orders WHERE order_no = $1`, [orderNo]);
+    const { rows: [o] } = await tx.query(`SELECT id, order_no, user_id, contact_name, product_name, status FROM orders WHERE order_no = $1`, [orderNo]);
     if (!o) return null;
     const target = (await tx.query(`SELECT kcal, protein::float, carbs::float, fat::float, rules, updated_at FROM nutrition_targets WHERE order_id = $1`, [o.id])).rows[0] as (Target & { rules: string | null; updated_at: string }) | undefined;
     return {
-      o, target,
+      o, target, cal: await loadCalorieState(tx, o.id, o.user_id),
       plans: await loadPlans(tx, { orderId: o.id }),
       templates: (await tx.query(`SELECT id, name FROM nutrition_plans WHERE order_id IS NULL AND NOT archived ORDER BY position, created_at`)).rows as { id: string; name: string }[],
       routine: await loadRoutine(tx, { orderId: o.id }),
@@ -32,7 +34,7 @@ export default async function OrderNutrition({ params }: { params: Promise<{ ord
     };
   });
   if (!data) notFound();
-  const { o, target, plans, templates, routine, routineTemplates, logs } = data;
+  const { o, target, cal, plans, templates, routine, routineTemplates, logs } = data;
   const check = target ? targetCheck(target) : null;
   const days = [...new Set(logs.map((l) => l.log_date))];
   const entitled = ["active", "delivered", "completed"].includes(o.status);
@@ -61,6 +63,8 @@ export default async function OrderNutrition({ params }: { params: Promise<{ ord
           <span className="hint">نقطة البداية للسعرات من «حاسبة السعرات» في الموقع، ثم تُعدَّل حسب تقدم المتدرب.</span>
         </ActionForm>
       </section>
+
+      <CalorieSuggest orderNo={o.order_no} st={cal} />
 
       <section className="card stack" data-testid="trainee-plans">
         <h2 style={{ fontSize: 19 }}>الجداول الغذائية للمتدرب</h2>

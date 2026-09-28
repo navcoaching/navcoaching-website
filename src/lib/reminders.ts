@@ -1,4 +1,5 @@
 import "server-only";
+import { sendCoachDigest } from "./coach-digest";
 import { withUser, type Tx } from "./db";
 import { notifyTrainee, type ChannelResult } from "./notify";
 import {
@@ -46,6 +47,8 @@ export async function runReminders(now = new Date(), opts: { ignoreQuietHours?: 
 
   return withUser(SYSTEM_USER, async (tx) => {
     const r = await loadReminders(tx);
+    // إيميل يومي للمدربة بأسماء مراجعات اليوم (مرة واحدة في اليوم)
+    const digest = await sendCoachDigest(tx, r, today);
     const { rows: orders } = await tx.query<ActiveOrder>(
       `SELECT id, order_no, user_id, contact_name, product_name, sub_start_at, sub_end_at, review_weekday
          FROM orders WHERE status = 'active' AND category = 'follow' AND sub_start_at IS NOT NULL AND NOT is_demo`);
@@ -78,6 +81,6 @@ export async function runReminders(now = new Date(), opts: { ignoreQuietHours?: 
           kind: "review_missed", subject: "مراجعتك الأسبوعية", text, occasion: `review_missed:${missed.due}` }) });
       }
     }
-    return { today, expired, checked: orders.length, sent };
+    return { today, expired, checked: orders.length, sent, digest };
   });
 }

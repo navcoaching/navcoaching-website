@@ -6,6 +6,8 @@ import { withUser } from "@/lib/db";
 import { personalRecords } from "@/lib/training";
 import { loadAllLifts, loadBlockData, loadBodyData, type BlockRow } from "@/lib/program-data";
 import ProgressView from "@/components/training/ProgressView";
+import { loadCalorieState } from "@/lib/calorie-data";
+import BodyInfoForm from "./BodyInfoForm";
 
 export const metadata: Metadata = { title: "التقدم", robots: { index: false } };
 
@@ -19,16 +21,17 @@ export default async function ProgressPage({ params }: { params: Promise<{ order
   const user = await requireUser(`/account/orders/${orderNo}/progress`);
 
   const res = await withUser(user.id, async (tx) => {
-    const { rows: [o] } = await tx.query(`SELECT id, order_no, user_id FROM orders WHERE order_no = $1`, [orderNo]);
+    const { rows: [o] } = await tx.query(`SELECT id, order_no, user_id, status, category FROM orders WHERE order_no = $1`, [orderNo]);
     if (!o || o.user_id !== user.id) return null;
     const { rows: [block] } = await tx.query(
       `SELECT id, order_id, user_id, name, start_date::text, weeks, instructions, steps_goal_week, status FROM blocks
         WHERE order_id = $1 ORDER BY (status = 'active') DESC, created_at DESC LIMIT 1`, [o.id]);
     const data = block ? await loadBlockData(tx, block as BlockRow) : null;
-    return { o, data, body: await loadBodyData(tx, user.id), lifts: await loadAllLifts(tx, user.id) };
+    const editable = o.category === "follow" && ["active", "delivered"].includes(o.status);
+    return { o, data, body: await loadBodyData(tx, user.id), lifts: await loadAllLifts(tx, user.id), cal: editable ? await loadCalorieState(tx, o.id, user.id) : null };
   });
   if (!res) notFound();
-  const { o, data, body, lifts } = res;
+  const { o, data, body, lifts, cal } = res;
 
   const w = body.weights;
   const waist = body.measurements.filter((m) => m.waist != null);
@@ -55,6 +58,13 @@ export default async function ProgressPage({ params }: { params: Promise<{ order
           ))}
         </div>
         <ProgressView data={data} body={body} lifts={lifts} />
+        {cal && (
+          <section className="card stack" aria-labelledby="bi-h">
+            <h2 id="bi-h" style={{ fontSize: 18 }}>حدّث بياناتك</h2>
+            <p className="small muted" style={{ margin: 0 }}>إذا تغيّر نشاطك أو أيام تمرينك، حدّثها هنا عشان تكون سعراتك مناسبة لك.</p>
+            <BodyInfoForm orderNo={o.order_no} height={cal.profile.height_cm} paf={cal.profile.paf} days={cal.profile.training_days} minutes={cal.profile.minutes} />
+          </section>
+        )}
       </div>
     </section>
   );

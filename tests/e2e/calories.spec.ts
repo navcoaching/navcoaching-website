@@ -1,0 +1,128 @@
+// السعرات المقترحة (المتدرب يحدّث بياناته ← اقتراح للمدربة ← تجاهل/اعتماد) + الإيميل اليومي للمدربة. قاعدة nav_e2e.
+import { test, expect, type Page, type Browser } from "@playwright/test";
+import pg from "pg";
+
+const OWNER = process.env.E2E_DATABASE_URL_OWNER ?? "postgres://nav_owner:nav_owner_dev@localhost:5432/nav_e2e";
+const CRON_SECRET = "e2e-cron-secret-0123456789";
+const COACH_MAIL = "coach-notify@e2e.test";
+const db = new pg.Pool({ connectionString: OWNER, max: 2 });
+test.afterAll(async () => { await db.end(); });
+
+let ip = 240;
+async function newPage(browser: Browser, tag: string) {
+  const ctx = await browser.newContext({ ...test.info().project.use, extraHTTPHeaders: { "x-forwarded-for": `10.15.${tag.length}.${ip++}` } });
+  return ctx.newPage();
+}
+async function latestOtp(email: string) {
+  for (let i = 0; i < 20; i++) {
+    const { rows } = await db.query("SELECT body FROM dev_mailbox WHERE recipient = $1 AND subject LIKE 'رمز الدخول%' ORDER BY id DESC LIMIT 1", [email]);
+    const m = rows[0]?.body.match(/رمز الدخول: (\d{6})/);
+    if (m) return m[1];
+    await new Promise((r) => setTimeout(r, 250));
+  }
+  throw new Error("OTP not found");
+}
+async function login(page: Page, email: string, next = "/account") {
+  await page.goto(`/login?next=${encodeURIComponent(next)}`);
+  await page.getByLabel("البريد الإلكتروني").fill(email);
+  await page.getByRole("button", { name: "أرسل رمز الدخول" }).click();
+  await page.getByLabel("رمز الدخول").fill(await latestOtp(email));
+  await page.getByRole("button", { name: "دخول" }).click();
+  await page.waitForURL((u) => !u.pathname.startsWith("/login"));
+}
+async function noHorizontalScroll(page: Page) {
+  const [sw, iw] = await page.evaluate(() => [document.documentElement.scrollWidth, window.innerWidth]);
+  expect(sw, `horizontal overflow on ${page.url()}`).toBeLessThanOrEqual(iw);
+}
+
+test("السعرات المقترحة: المتدرب يحدّث نشاطه، والمدربة تتجاهل ثم تعتمد، والإيميل اليومي", async ({ browser }, info) => {
+  const project = info.project.name;
+  const email = `trainee-cal-${project}@e2e.test`;
+  const name = `هند سعرات ${project}`;
+  const trainee = await newPage(browser, project);
+  await login(trainee, email);
+
+  // اشتراك نشط بدأ قبل 7 أيام، ومراجعته تبدأ اليوم، واستبيان: أنثى 30 سنة 165 سم، 4 أيام × ساعة، 3,000–6,000 خطوة، نزول دهون
+  const { rows: [u] } = await db.query(`SELECT id FROM "user" WHERE email = $1`, [email]);
+  const { rows: [p] } = await db.query(`SELECT p.id, p.name, o.id AS offer_id, o.label, o.price_halalas FROM products p JOIN product_offers o ON o.product_id = p.id WHERE p.slug = 'intensive' AND o.months = 3`);
+  const orderNo = (await db.query("SELECT app.new_order_no() AS no")).rows[0].no as string;
+  const riyadhToday = `(now() AT TIME ZONE 'Asia/Riyadh')::date`;
+  const { rows: [o] } = await db.query(
+    `INSERT INTO orders (order_no, user_id, product_id, offer_id, category, product_name, offer_label, months, list_price_halalas, amount_due_halalas, status,
+                         contact_name, contact_phone, idempotency_key, paid_at, sub_start_at, sub_end_at, review_weekday)
+     VALUES ($1,$2,$3,$4,'follow',$5,$6,3,$7,$7,'active',$8,'+966500000000',$1, now(),
+             (${riyadhToday} - 7)::timestamp AT TIME ZONE 'Asia/Riyadh' + interval '10 hours', now() + interval '80 days',
+             extract(dow FROM ${riyadhToday})::int) RETURNING id`,
+    [orderNo, u.id, p.id, p.offer_id, p.name, p.label, p.price_halalas, name]);
+  await db.query(
+    `INSERT INTO intakes (order_id, user_id, answers, health, media_consent, consent_terms_at, consent_whatsapp_at)
+     VALUES ($1,$2,$3,$4,'لا',now(),now())`,
+    [o.id, u.id, JSON.stringify({ gender: "أنثى", age: 30, days: "4 أيام", duration: "ساعة", steps: "3,000 – 6,000", goal: "نزول دهون" }), JSON.stringify({ weight: 74, height: 165 })]);
+  await db.query(`INSERT INTO nutrition_targets (order_id, kcal, protein, carbs, fat) VALUES ($1, 2100, 125, 250, 62)`, [o.id]);
+  await db.query(`INSERT INTO weight_logs (user_id, logged_on, kg) VALUES ($1, ${riyadhToday}, 70)`, [u.id]);
+
+  // المتدرب: «حدّث بياناتك» — نشاط أقل
+  await trainee.goto(`/account/orders/${orderNo}/progress`);
+  const form = trainee.getByTestId("body-info-form");
+  await expect(form.getByLabel("الطول (سم)")).toHaveValue("165");
+  await form.getByLabel("نشاطك اليومي خارج التمرين").selectOption("1.0");
+  await form.getByRole("button", { name: "حفظ بياناتي" }).click();
+  await expect(form).toContainText("المدربة تراجع");
+  const { rows: [prof] } = await db.query(`SELECT sex, age, paf::float, training_days, minutes, eb_factor::float FROM calorie_profiles WHERE order_id = $1`, [o.id]);
+  expect(prof).toEqual({ sex: "female", age: 30, paf: 1, training_days: 4, minutes: 60, eb_factor: 0.8 });
+  await noHorizontalScroll(trainee);
+  // المتدرب لا يرى الرقم المقترح
+  await trainee.goto(`/account/orders/${orderNo}/nutrition`);
+  await expect(trainee.locator("body")).not.toContainText("1,755");
+
+  // المدربة: الاقتراح في لوحة الإدارة وصفحة التغذية
+  const coachEmail = `coach-cal-${project}@e2e.test`;
+  const coach = await newPage(browser, project + "-c");
+  await login(coach, coachEmail, "/admin");
+  await db.query(`UPDATE "user" SET role = 'coach' WHERE email = $1`, [coachEmail]);
+  await coach.goto("/admin");
+  await expect(coach.locator("li", { hasText: name }).filter({ hasText: "سعرات مقترحة جديدة: 1,755" })).toBeVisible();
+  await coach.goto(`/admin/orders/${orderNo}/nutrition`);
+  const card = coach.getByTestId("calorie-suggest");
+  // Ten Haaf: 70 كغ، 165 سم، 30 سنة، نشاط 1.0، 4 أيام × 60 دقيقة، عجز 20% → 1755
+  await expect(card.getByTestId("suggestion")).toContainText("مقترح: 1,755 سعرة بدل 2,100 (-345)");
+  await expect(card.getByTestId("suggestion")).toContainText("كارب 174غ"); // (1755 − 125×4 − 62×9) ÷ 4
+  await noHorizontalScroll(coach);
+
+  // تجاهل: يختفي ولا يتكرر نفس الرقم
+  await card.getByRole("button", { name: "تجاهل" }).click();
+  await expect(card.getByTestId("no-suggestion")).toBeVisible();
+  expect((await db.query(`SELECT dismissed_kcal FROM calorie_profiles WHERE order_id = $1`, [o.id])).rows[0].dismissed_kcal).toBe(1755);
+
+  // المدربة تعدّل البيانات (5 أيام تمرين) → اقتراح جديد → اعتماد
+  await card.locator("details summary").click();
+  await card.getByLabel("أيام التمرين").fill("5");
+  await card.getByRole("button", { name: "حفظ البيانات" }).click();
+  await expect(card.getByText("تم حفظ بيانات الحساب")).toBeVisible();
+  await coach.reload();
+  await expect(coach.getByTestId("suggestion")).toContainText("مقترح: 1,815 سعرة");
+  coach.once("dialog", (d) => d.accept());
+  await coach.getByTestId("calorie-suggest").getByRole("button", { name: "اعتماد" }).click();
+  // بعد الاعتماد يصير الهدف = المقترح، فيختفي الاقتراح
+  await expect(coach.getByTestId("no-suggestion")).toBeVisible();
+  await expect(coach.getByTestId("targets").getByLabel("السعرات")).toHaveValue("1815");
+  const { rows: [t] } = await db.query(`SELECT kcal, protein::float, carbs::float, fat::float FROM nutrition_targets WHERE order_id = $1`, [o.id]);
+  expect(t).toEqual({ kcal: 1815, protein: 125, carbs: 189, fat: 62 }); // (1815 − 500 − 558) ÷ 4 = 189.25
+  await trainee.goto(`/account/orders/${orderNo}/nutrition`);
+  await expect(trainee.getByTestId("macro-summary")).toContainText("1,815");
+
+  // الإيميل اليومي: مرة واحدة فقط، وفيه اسم المتدرب (مراجعته تبدأ اليوم)
+  await db.query(`DELETE FROM coach_digests WHERE day = ${riyadhToday}`);
+  const before = (await db.query(`SELECT max(id) AS id FROM dev_mailbox`)).rows[0].id ?? 0;
+  const run = () => coach.request.post("/api/cron/reminders", { headers: { "x-cron-secret": CRON_SECRET }, data: { ignore_quiet_hours: true } });
+  expect((await run()).status()).toBe(200);
+  const mails = async () => (await db.query(
+    `SELECT subject, body FROM dev_mailbox WHERE id > $1 AND recipient = $2 AND subject LIKE 'مراجعات اليوم%'`, [before, COACH_MAIL])).rows;
+  const got = await mails();
+  expect(got.length).toBe(1);
+  expect(got[0].body).toContain("مراجعات تبدأ اليوم");
+  expect(got[0].body).toContain(name);
+  expect(got[0].body).toContain(`/admin/orders/${orderNo}`);
+  expect((await run()).status()).toBe(200);
+  expect((await mails()).length).toBe(1);
+});

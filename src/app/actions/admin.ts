@@ -450,6 +450,7 @@ export async function saveSettingAction(_: ActionState, fd: FormData): Promise<A
         review_text: g("review_text").slice(0, 400),
         missed_review_text: g("missed_review_text").slice(0, 400),
         manual_cooldown_minutes: int("manual_cooldown_minutes", 1, 1440),
+        coach_digest: fd.get("coach_digest") === "on",
       };
       break;
     }

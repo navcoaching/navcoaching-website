@@ -151,6 +151,9 @@ export default async function AdminContent() {
           <div className="field"><label htmlFor="rem-sub">نص تذكير انتهاء الاشتراك</label><textarea id="rem-sub" name="sub_expiry_text" maxLength={400} defaultValue={rem.sub_expiry_text} /></div>
           <div className="field"><label htmlFor="rem-review">نص تذكير المراجعة الأسبوعية</label><textarea id="rem-review" name="review_text" maxLength={400} defaultValue={rem.review_text} /></div>
           <div className="field"><label htmlFor="rem-missed">نص التذكير اللطيف عند فوات المراجعة</label><textarea id="rem-missed" name="missed_review_text" maxLength={400} defaultValue={rem.missed_review_text} /></div>
+          <label className="check"><input type="checkbox" name="coach_digest" defaultChecked={rem.coach_digest} />
+            <span>إيميل يومي لي (9 صباحاً) بأسماء مراجعات اليوم، والمراجعات المفتوحة، والتي تنتظر ردّي، والسعرات المقترحة</span></label>
+          <span className="hint">يُرسل لبريد تنبيهات المدربة (COACH_NOTIFY_EMAIL)، وفقط إذا فيه أسماء.</span>
         </ActionForm>
       </section>
 
