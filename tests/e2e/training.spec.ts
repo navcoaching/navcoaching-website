@@ -140,16 +140,21 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await card.getByLabel("وزن الجولة 3").fill("65");
   await card.getByLabel("تكرارات الجولة 3").fill("8");
   await expect(card.getByTestId("one-rm")).toContainText("82.5"); // 65 × (1 + 8/30) = 82.3
+  // ⧉ تكرار الجولة 3 بنفس الوزن والعدّات، و«+ جولة» تنسخ آخر جولة ثم تتعدّل
+  await card.getByRole("button", { name: "تكرار الجولة 3" }).click();
+  await expect(card.getByLabel("وزن الجولة 4")).toHaveValue("65");
+  await expect(card.getByLabel("تكرارات الجولة 4")).toHaveValue("8");
   await card.getByRole("button", { name: "+ جولة" }).click();
-  await card.getByLabel("وزن الجولة 4").fill("50");
-  await card.getByLabel("تكرارات الجولة 4").fill("12");
+  await expect(card.getByLabel("وزن الجولة 5")).toHaveValue("65");
+  await card.getByLabel("وزن الجولة 5").fill("50");
+  await card.getByLabel("تكرارات الجولة 5").fill("12");
   await card.getByRole("button", { name: "حفظ", exact: true }).click();
   await expect(card.getByText("تم الحفظ ✅")).toBeVisible();
   await expect(card.getByLabel("مسجّل")).toBeVisible();
   const log = (await db.query(
     `SELECT l.weight::float, l.weights::float[], l.reps, l.week_no FROM item_logs l JOIN block_items i ON i.id = l.block_item_id JOIN block_days d ON d.id = i.day_id
        JOIN blocks b ON b.id = d.block_id JOIN orders o ON o.id = b.order_id WHERE o.order_no = $1`, [orderNo])).rows;
-  expect(log).toEqual([{ weight: 65, weights: [60, 60, 65, 50], reps: [10, 10, 8, 12], week_no: 1 }]);
+  expect(log).toEqual([{ weight: 65, weights: [60, 60, 65, 65, 50], reps: [10, 10, 8, 8, 12], week_no: 1 }]);
   await trainee.reload();
   await expect(trainee.getByTestId("exercise-card").first().getByLabel("وزن الجولة 3")).toHaveValue("65");
   await expect(trainee.getByTestId("exercise-card").first()).toContainText("أعلى وزن تقديري (1RM): 82.5 كغ");

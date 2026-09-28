@@ -910,8 +910,11 @@ h2 .count { display: inline-grid; place-items: center; min-inline-size: 26px; bl
 .gamers-note { color: #9fb0c9; font-size: 13px; padding-inline: 4px; }
 @media (max-width: 860px) { .gamers-banner { grid-template-columns: minmax(0, 1fr); } }
 /* تسجيل التمرين: وزن × تكرارات لكل جولة */
-.set-rows { display: grid; gap: 6px; max-width: 380px; }
-.set-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) 14px minmax(0, 1fr); gap: 8px; align-items: center; }
+.set-rows { display: grid; gap: 6px; max-width: 420px; }
+.set-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) 14px minmax(0, 1fr) 40px; gap: 8px; align-items: center; }
+.set-dup { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--accent-text); font-size: 18px; cursor: pointer; }
+.set-dup:hover:not(:disabled) { border-color: var(--cyan); }
+.set-dup:disabled { opacity: 0.4; cursor: default; }
 .set-row input { text-align: center; padding-inline: 6px; min-width: 0; }
 .set-head { font-size: 12.5px; }
 .set-head span { text-align: center; }

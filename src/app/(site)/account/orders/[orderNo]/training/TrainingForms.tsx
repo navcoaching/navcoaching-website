@@ -26,13 +26,24 @@ export function ItemLogForm({ orderNo, item, week, target, targetRir, log }: {
   const ws: number[] = [], rs: number[] = [];
   for (let i = 0; i < sets; i++) { lastW = num(w[i]) ?? lastW; const rr = num(r[i]) ?? target[i]; if (rr != null) { ws.push(lastW); rs.push(rr); } }
   const est = num(w[0]) != null ? bestOneRm(ws, rs) : 0;
+  // القيمة الفعلية لجولة (الفارغ = السابق للوزن، والمستهدف للتكرارات)
+  const effW = (i: number) => { let v: number | null = null; for (let j = 0; j <= i; j++) v = num(w[j]) ?? v; return v; };
+  const effR = (i: number) => num(r[i]) ?? target[i] ?? null;
+  /** تكرار الجولة: جولة جديدة بعدها بنفس الوزن والتكرارات (مثل Hevy) */
+  const duplicate = (i: number) => {
+    if (sets >= MAX_SETS) return;
+    const ins = <T,>(a: T[], v: T) => [...a.slice(0, i + 1), v, ...a.slice(i + 1)].slice(0, MAX_SETS);
+    setW((a) => ins(a, effW(i) != null ? String(effW(i)) : ""));
+    setR((a) => ins(a, effR(i) != null ? String(effR(i)) : ""));
+    setSets(sets + 1);
+  };
   return (
     <form className="form log-form" onSubmit={onSubmit} data-testid={`log-${item}`}>
       <input type="hidden" name="order_no" value={orderNo} />
       <input type="hidden" name="item" value={item} />
       <input type="hidden" name="week" value={week} />
       <div className="set-rows" role="group" aria-label="الجولات">
-        <div className="set-row set-head small muted" aria-hidden="true"><span>الجولة</span><span>الوزن (كغ)</span><span /><span>التكرارات</span></div>
+        <div className="set-row set-head small muted" aria-hidden="true"><span>الجولة</span><span>الوزن (كغ)</span><span /><span>التكرارات</span><span /></div>
         {Array.from({ length: sets }, (_, i) => (
           <div className="set-row" key={i}>
             <span className="set-no">{i + 1}</span>
@@ -41,10 +52,12 @@ export function ItemLogForm({ orderNo, item, week, target, targetRir, log }: {
             <span className="muted" aria-hidden="true">×</span>
             <input name="reps" type="text" inputMode="numeric" dir="ltr" aria-label={`تكرارات الجولة ${i + 1}`} value={r[i]}
               placeholder={target[i] != null ? String(target[i]) : ""} onChange={(e) => setR((a) => a.map((v, j) => (j === i ? e.target.value : v)))} />
+            <button type="button" className="set-dup" onClick={() => duplicate(i)} disabled={sets >= MAX_SETS}
+              aria-label={`تكرار الجولة ${i + 1}`} title="تكرار الجولة بنفس الوزن والعدّات">⧉</button>
           </div>
         ))}
         <div className="row" style={{ gap: 8 }}>
-          {sets < MAX_SETS && <button type="button" className="btn btn-ghost btn-sm" onClick={() => setSets(sets + 1)}>+ جولة</button>}
+          {sets < MAX_SETS && <button type="button" className="btn btn-ghost btn-sm" onClick={() => duplicate(sets - 1)}>+ جولة</button>}
           {sets > Math.max(1, target.length) && <button type="button" className="btn btn-ghost btn-sm" onClick={() => setSets(sets - 1)}>− جولة</button>}
         </div>
       </div>
@@ -52,7 +65,7 @@ export function ItemLogForm({ orderNo, item, week, target, targetRir, log }: {
         <label htmlFor={`r-${p}`}>RIR</label>
         <input id={`r-${p}`} name="rir" type="number" inputMode="decimal" step="0.5" min={0} max={10} dir="ltr" placeholder={targetRir != null ? String(targetRir) : ""} defaultValue={log?.rir ?? ""} />
       </div>
-      <p className="hint" style={{ margin: 0 }}>الوزن الفارغ = نفس وزن الجولة السابقة، والتكرارات الفارغة = المستهدف.</p>
+      <p className="hint" style={{ margin: 0 }}>⧉ يكرر الجولة بنفس الوزن والعدّات. الوزن الفارغ = نفس وزن الجولة السابقة، والتكرارات الفارغة = المستهدف.</p>
       {est > 0 && <p className="small one-rm" data-testid="one-rm" style={{ margin: 0 }}>🏆 أعلى وزن تقديري لتكرار واحد (1RM): <b className="num">{est}</b> كغ</p>}
       <FormMessage state={state} />
       <div className="row" style={{ gap: 8 }}>
