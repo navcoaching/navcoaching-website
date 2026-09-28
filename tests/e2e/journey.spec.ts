@@ -344,10 +344,17 @@ test("المدربة تخفي طلباً من القائمة وتحذف المل
   await expect(coach.getByText("الحذف النهائي متاح للطلبات الملغاة فقط.")).toBeVisible();
   const cancel = coach.getByTestId("status-bar");
   await cancel.getByLabel("تغيير الحالة إلى").selectOption({ label: "تم إلغاء الطلب" });
-  await cancel.getByLabel("السبب (يظهر للعميل)").fill("طلب تجريبي");
+  await cancel.getByLabel("السبب (يظهر للعميل").fill("طلب تجريبي");
   coach.once("dialog", (d) => d.accept());
   await cancel.getByRole("button", { name: "تحديث" }).click();
   await expect(coach.locator(".status").first()).toHaveText("تم إلغاء الطلب");
+  // سبب الإلغاء يوصل للعميل: في البريد/واتساب، وأعلى صفحة طلبه
+  const sent = (await db.query(
+    `SELECT n.channel, n.body FROM notification_log n JOIN orders o ON o.id = n.order_id WHERE o.order_no = $1 AND n.kind = 'status' ORDER BY n.id DESC LIMIT 3`, [orderNo])).rows;
+  expect(sent.find((r) => r.channel === "email")?.body).toContain("ملاحظة من المدربة: طلب تجريبي");
+  await coach.goto(`/account/orders/${orderNo}`); // الطلب باسم نفس الحساب
+  await expect(coach.getByTestId("cancel-reason")).toContainText("طلب تجريبي");
+  await coach.goto(`/admin/orders/${orderNo}`);
   await coach.getByText("حذف نهائي").first().click();
   const del = coach.locator("form", { has: coach.getByRole("button", { name: "حذف نهائي" }) });
   await del.locator('input[name="confirm"]').fill(orderNo);

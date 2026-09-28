@@ -32,6 +32,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
   const follow = await getMyFollowUp(user.id, o);
   const today = riyadhDate();
   const messages = events.filter(isMessage).reverse(); // الأحدث أولاً
+  const cancelNote = o.status === "cancelled" ? [...events].reverse().find((e) => e.to_status === "cancelled" && e.from_status !== "cancelled")?.note ?? null : null;
   const currentWeek = follow?.weeks.find((w) => w.status !== "done" && w.windowEnd >= today);
   const lastMissed = follow?.weeks.filter((w) => w.status === "missed").pop();
   const h = intake?.health ?? {};
@@ -153,7 +154,12 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
               )}
               {o.status === "delivered" && <p>ملفاتك جاهزة بالأسفل، وهي لك مدى الحياة.</p>}
               {o.status === "completed" && <p>{review ? "شكراً لك! وصلنا تقييمك." : "انتهت الخدمة. يسعدنا تكتب تقييمك لتجربتك بالأسفل."}</p>}
-              {o.status === "cancelled" && <p>هذا الطلب ملغي. إذا تحتاج مساعدة تواصل معنا.</p>}
+              {o.status === "cancelled" && (
+                <div className="stack" style={{ ["--space" as string]: "6px" }} data-testid="cancel-reason">
+                  <p style={{ margin: 0 }}>هذا الطلب ملغي. إذا تحتاج مساعدة تواصل معنا.</p>
+                  {cancelNote && <p className="alert info" style={{ margin: 0 }}><b>ملاحظة المدربة:</b> {cancelNote}</p>}
+                </div>
+              )}
 
               {["awaiting_quote", "awaiting_payment"].includes(o.status) && <CancelForm orderNo={o.order_no} />}
             </div>

@@ -56,8 +56,10 @@ export type NotifyTarget = { orderId: string; orderNo: string; userId: string };
 export async function notifyTrainee(
   tx: Tx,
   target: NotifyTarget,
-  opts: { kind: string; subject: string; text: string; occasion?: string | null; channels?: Channel[] },
+  opts: { kind: string; subject: string; text: string; occasion?: string | null; channels?: Channel[]; note?: string | null },
 ): Promise<ChannelResult[]> {
+  // ملاحظة المدربة للعميل (مثل سبب الإلغاء): تُضاف للبريد وواتساب، وإشعار الجوال يبقى مختصراً
+  const note = opts.note?.trim() ? `ملاحظة من المدربة: ${opts.note.trim()}` : "";
   const site = process.env.NEXT_PUBLIC_SITE_URL ?? "";
   const link = `${site}/account/orders/${target.orderNo}`;
   const { rows: [info] } = await tx.query(
@@ -79,7 +81,7 @@ export async function notifyTrainee(
       offer: info.offer_label, amountHalalas: info.amount_due_halalas, paymentMethod: info.payment_method };
     if (opts.kind === "status") {
       const c = statusCopy(info.status, info.category);
-      return renderEmail({ name: first, headline: c.headline, message: c.message || opts.text, order, brand });
+      return renderEmail({ name: first, headline: c.headline, message: [c.message || opts.text, note].filter(Boolean).join("\n\n"), order, brand });
     }
     return renderEmail({ name: first, headline: opts.subject, message: opts.text, brand, cta: { label: "افتح حسابك", url: link } });
   };
@@ -89,7 +91,8 @@ export async function notifyTrainee(
   const hasDevice = pushConfigured() && Number((await tx.query("SELECT count(*) FROM push_subscriptions WHERE user_id = $1", [target.userId])).rows[0].count) > 0;
   const channels = opts.channels ?? (["email", "whatsapp", ...(hasDevice ? ["push"] : [])] as Channel[]);
   for (const channel of channels) {
-    const body = channel === "email" ? `${opts.text}\n\nالتفاصيل في حسابك:\n${link}\n\nNav Coaching` : opts.text;
+    const text = channel === "push" || !note ? opts.text : `${opts.text}\n\n${note}`;
+    const body = channel === "email" ? `${text}\n\nالتفاصيل في حسابك:\n${link}\n\nNav Coaching` : text;
     const { rows: [claim] } = await tx.query("SELECT app.notify_claim($1,$2,$3,$4,$5,$6) AS id",
       [target.orderId, target.userId, opts.kind, channel, opts.occasion ?? null, body]);
     if (!claim.id) { results.push({ channel, status: "duplicate", detail: "أُرسل لهذه المناسبة سابقاً" }); continue; }

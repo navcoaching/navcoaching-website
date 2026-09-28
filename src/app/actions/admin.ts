@@ -46,12 +46,12 @@ function summarize(results: ChannelResult[]) {
   return " الإشعار: " + results.map((r) => `${CHANNEL_LABEL[r.channel]} — ${RESULT_LABEL[r.status]}${r.detail ? ` (${r.detail})` : ""}`).join("، ") + ".";
 }
 
-async function notifyStatus(tx: Tx, orderNo: string) {
+async function notifyStatus(tx: Tx, orderNo: string, note?: string) {
   const o = await orderTarget(tx, orderNo);
   if (!o) return [];
   return notifyTrainee(tx, { orderId: o.id, orderNo, userId: o.user_id }, {
     kind: "status", subject: `تحديث على طلبك ${orderNo}`,
-    text: `حالة طلبك ${orderNo} الآن: ${statusLabel(o.status, o.category)}.`,
+    text: `حالة طلبك ${orderNo} الآن: ${statusLabel(o.status, o.category)}.`, note,
   });
 }
 
@@ -65,7 +65,7 @@ export async function transitionAction(_: ActionState, fd: FormData): Promise<Ac
   try {
     results = await asCoach(async (tx) => {
       await tx.query("SELECT app.coach_transition($1,$2,$3,$4)", [orderNo, to, note, bank]);
-      return notifyStatus(tx, orderNo);
+      return notifyStatus(tx, orderNo, note);
     });
   } catch (err) { return fail(err); }
   revalidatePath(`/admin/orders/${orderNo}`);
@@ -81,7 +81,7 @@ export async function setAmountAction(_: ActionState, fd: FormData): Promise<Act
   try {
     results = await asCoach(async (tx) => {
       await tx.query("SELECT app.coach_set_amount($1,$2,$3)", [orderNo, Math.round(amount * 100), note]);
-      return notifyStatus(tx, orderNo);
+      return notifyStatus(tx, orderNo, note);
     });
   } catch (err) { return fail(err); }
   revalidatePath(`/admin/orders/${orderNo}`);

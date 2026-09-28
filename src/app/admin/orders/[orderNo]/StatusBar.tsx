@@ -24,14 +24,14 @@ export default function StatusBar({ orderNo, current, steps, amount }: { orderNo
               {steps.map((s) => <option key={s.to} value={s.to}>{s.label}</option>)}
             </select>
             {step && !step.needsNote && (
-              <input name="note" type="text" maxLength={500} placeholder="ملاحظة للعميل (اختياري)" aria-label="ملاحظة تظهر للعميل (اختياري)" />
+              <input name="note" type="text" maxLength={500} placeholder="ملاحظة للعميل تُرسل له (اختياري)" aria-label="ملاحظة تظهر للعميل وتُرسل له بالإيميل وواتساب (اختياري)" />
             )}
             <Submit pending={pending} pendingText="جارٍ…" className={`btn btn-sm ${step?.to === "cancelled" ? "btn-danger" : ""}`} disabled={!step || pending}>تحديث</Submit>
           </>
         )}
       </div>
       {step?.needsNote && (
-        <input name="note" type="text" maxLength={500} required placeholder="السبب (يظهر للعميل) *" aria-label="السبب (يظهر للعميل)" className="status-bar-wide" />
+        <input name="note" type="text" maxLength={500} required placeholder="السبب (يُرسل للعميل) *" aria-label="السبب (يظهر للعميل ويُرسل له بالإيميل وواتساب)" className="status-bar-wide" />
       )}
       {step?.needsBank && (
         <label className="check small"><input type="checkbox" name="bank_confirmed" required /><span>تأكدت من وصول المبلغ ({amount}) في كشف حساب المؤسسة ومطابقته لرقم الطلب.</span></label>
