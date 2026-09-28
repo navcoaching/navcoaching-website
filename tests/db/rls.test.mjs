@@ -551,7 +551,7 @@ describe("التغذية والمكملات", () => {
     const rows = (await as(A, "SELECT name, protein::float FROM food_logs ORDER BY id")).rows;
     assert.equal(rows.length, 2); assert.match(rows[0].name, /الجدول الغذائي 1/); assert.equal(rows[1].protein, 0.5);
     await assert.rejects(as(A, "SELECT app.log_food($1, current_date, 'lunch', NULL, '', 1, 1, 1)", [noA]), /اسم الأكلة/);
-    await assert.rejects(as(A, "SELECT app.log_food($1, current_date + 1, 'lunch', NULL, 'x', 1, 1, 1)", [noA]), /التاريخ/);
+    await assert.rejects(as(A, "SELECT app.log_food($1, (now() AT TIME ZONE 'Asia/Riyadh')::date + 1, 'lunch', NULL, 'x', 1, 1, 1)", [noA]), /التاريخ/);
     const tplMeal = (await owner.query("SELECT id FROM plan_meals WHERE plan_id = $1 LIMIT 1", [tpl])).rows[0].id;
     await assert.rejects(as(A, "SELECT app.log_food($1, current_date, 'lunch', $2, NULL, 0, 0, 0)", [noA, tplMeal]), /غير موجودة في جداولك/);
     await assert.rejects(as(B, "SELECT app.log_food($1, current_date, 'lunch', NULL, 'x', 1, 1, 1)", [noA]), /غير موجود/);

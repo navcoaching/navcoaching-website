@@ -1,6 +1,6 @@
 import ActionForm from "@/components/admin/ActionForm";
-import { applyCalorieSuggestionAction, confirmAutoKcalAction, dismissCalorieSuggestionAction, saveCalorieProfileAction } from "@/app/actions/calories";
-import { EB_GOALS, PAF_LEVELS } from "@/lib/calories";
+import { applyCalorieSuggestionAction, confirmAutoKcalAction, dismissCalorieSuggestionAction, fillMacrosAction, saveCalorieProfileAction } from "@/app/actions/calories";
+import { EB_GOALS, MACRO_DEFAULTS, PAF_LEVELS } from "@/lib/calories";
 import { basis, explain, targetKcal } from "@/lib/calorie-suggest";
 import type { CalorieState } from "@/lib/calorie-data";
 
@@ -46,6 +46,22 @@ export default function CalorieSuggest({ orderNo, st }: { orderNo: string; st: C
             : `لا يوجد تغيير مقترح. حسب البيانات الحالية: ${now != null ? n0(now) : "—"} سعرة (${st.weight.kg} كغ).`}
         </p>
       )}
+      {st.macros && st.target?.kcal != null && (() => {
+        const t = st.target, empty = t.protein == null && t.carbs == null && t.fat == null;
+        return (
+          <div className="card flat stack" style={{ ["--space" as string]: "8px" }} data-testid="macro-suggest">
+            <b>الماكروز المقترحة لـ <span className="num">{n0(t.kcal!)}</span> سعرة</b>
+            <span className="small" data-testid="macro-values">بروتين <b className="num">{st.macros.protein}</b>غ · دهون <b className="num">{st.macros.fat}</b>غ · كارب <b className="num">{st.macros.carbs}</b>غ</span>
+            <span className="small muted">البروتين {MACRO_DEFAULTS.proteinPerKg} غ/كغ والدهون {MACRO_DEFAULTS.fatPerKg} غ/كغ من وزن {st.weight!.kg} كغ، والكارب الباقي من السعرات.</span>
+            {st.macros.lowCarb && <span className="small err-text">تنبيه: الكارب قليل جداً مع هذي السعرات.</span>}
+            {empty ? (
+              <ActionForm action={fillMacrosAction} submit="تعبئة الماكروز" submitClass="btn btn-ghost btn-sm">
+                <input type="hidden" name="order_no" value={orderNo} />
+              </ActionForm>
+            ) : <span className="small muted">للتعديل: «الأرقام الغذائية اليومية» فوق.</span>}
+          </div>
+        );
+      })()}
       <p className="small muted" style={{ margin: 0 }}>يُحسب بحاسبة الموقع (Henselmans) من متوسط وزن آخر 7 أيام وبيانات المتدرب، ويظهر الاقتراح عند فرق 50 سعرة أو أكثر. المتدرب لا يرى الرقم المقترح حتى تعتمديه.</p>
       <details className="card flat" open={!st.stored || st.missing.length > 0}>
         <summary style={{ cursor: "pointer", minHeight: 40, fontWeight: 700 }}>بيانات الحساب {st.stored ? "" : "(مبدئية من الاستبيان)"}</summary>

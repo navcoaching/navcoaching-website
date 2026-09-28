@@ -2,6 +2,7 @@
 import { test, expect, type Page, type Browser } from "@playwright/test";
 import pg from "pg";
 import { profileFromIntake, targetKcal } from "../../src/lib/calorie-suggest.ts";
+import { macrosFor } from "../../src/lib/calories.ts";
 
 const OWNER = process.env.E2E_DATABASE_URL_OWNER ?? "postgres://nav_owner:nav_owner_dev@localhost:5432/nav_e2e";
 const CRON_SECRET = "e2e-cron-secret-0123456789";
@@ -196,6 +197,19 @@ test("السعرات التلقائية: تنحسب لمتدرب جديد بشا
   await expect(trainee.getByTestId("macro-summary")).toContainText(fmt);
   const { rows: [t] } = await db.query(`SELECT kcal, kcal_source, kcal_confirmed_at IS NOT NULL AS ok FROM nutrition_targets WHERE order_id = $1`, [o.id]);
   expect(t).toEqual({ kcal: expected, kcal_source: "coach", ok: true });
+
+  // الماكروز المقترحة (بروتين ودهون من الوزن، والكارب الباقي) وتعبئتها بضغطة
+  const mk = macrosFor(expected, 74);
+  const ms = coach.getByTestId("macro-suggest");
+  await expect(ms.getByTestId("macro-values")).toContainText(`بروتين ${mk.protein}غ`);
+  await expect(ms.getByTestId("macro-values")).toContainText(`كارب ${mk.carbs}غ`);
+  await ms.getByRole("button", { name: "تعبئة الماكروز" }).click();
+  await coach.reload();
+  await expect(coach.getByTestId("targets").getByLabel("البروتين (غ)")).toHaveValue(String(mk.protein));
+  await expect(coach.getByTestId("targets").getByLabel("الكارب (غ)")).toHaveValue(String(mk.carbs));
+  expect((await db.query(`SELECT protein::float, carbs::float, fat::float FROM nutrition_targets WHERE order_id = $1`, [o.id])).rows[0])
+    .toEqual({ protein: mk.protein, carbs: mk.carbs, fat: mk.fat });
+  await expect(coach.getByTestId("macro-suggest").getByRole("button", { name: "تعبئة الماكروز" })).toHaveCount(0);
 
   // إضافة القالب المقترح بضغطة
   await list.getByTestId("near-plan").filter({ hasText: near }).getByRole("button", { name: "إضافة للمتدرب" }).click();

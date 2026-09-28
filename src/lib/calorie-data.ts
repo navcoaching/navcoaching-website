@@ -2,6 +2,7 @@ import "server-only";
 import type { Tx } from "./db";
 import { currentWeight, missingFor, profileFromIntake, suggestTargets, targetKcal, type CalorieProfile, type Suggestion, type Target } from "./calorie-suggest.ts";
 import { NUTRITION_SKUS } from "./intake.ts";
+import { macrosFor, type MacroSplit } from "./calories.ts";
 
 export type CalorieState = {
   profile: CalorieProfile; stored: boolean; missing: string[];
@@ -9,6 +10,8 @@ export type CalorieState = {
   target: Target | null; suggestion: Suggestion | null;
   /** السعرات محسوبة تلقائياً ولم تؤكدها المدربة بعد */
   pendingAuto: boolean;
+  /** الماكروز المقترحة لهدف السعرات الحالي (بروتين ودهون من الوزن، والكارب الباقي) */
+  macros: MacroSplit | null;
 };
 
 const num = (v: unknown) => (v == null ? null : Number(v));
@@ -31,6 +34,7 @@ export async function loadCalorieState(tx: Tx, orderId: string, userId: string):
   const pendingAuto = Boolean(t && t.kcal != null && t.kcal_source === "auto" && !t.kcal_confirmed_at);
   return {
     profile, stored: Boolean(row), missing: missingFor(profile), weight, target, pendingAuto,
+    macros: target?.kcal != null && weight ? macrosFor(target.kcal, weight.kg) : null,
     // وهي بانتظار التأكيد تتحدث الحسبة نفسها تلقائياً، فلا حاجة لاقتراح منفصل
     suggestion: pendingAuto ? null : suggestTargets(profile, weight, target),
   };

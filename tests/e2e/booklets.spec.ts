@@ -57,10 +57,12 @@ test("الكتيبات: المدربة ترفع، والمتدرب المشتر�
   await up.getByLabel("ملف PDF").setInputFiles({ name: "guide.pdf", mimeType: "application/pdf", buffer: PDF });
   await up.getByRole("button", { name: "رفع الكتيب" }).click();
   await expect(up.getByText("تم رفع الكتيب.")).toBeVisible();
-  // كتيب ثاني مخفي
+  // كتيب ثاني مخفي (ننتظر إعادة تعيين النموذج بعد النجاح، وإلا يرجع تحديد «يظهر للمتدربين»)
+  await expect(up.getByLabel("اسم الكتيب")).toHaveValue("");
   await up.getByLabel("اسم الكتيب").fill(hidden);
   await up.getByLabel("ملف PDF").setInputFiles({ name: "h.pdf", mimeType: "application/pdf", buffer: PDF });
   await up.getByLabel("يظهر للمتدربين").uncheck();
+  await expect(up.getByLabel("يظهر للمتدربين")).not.toBeChecked();
   await up.getByRole("button", { name: "رفع الكتيب" }).click();
   await expect(up.getByText("تم رفع الكتيب.")).toBeVisible();
   await coach.reload();
