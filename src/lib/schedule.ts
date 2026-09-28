@@ -77,6 +77,20 @@ export function fillTemplate(t: string, vars: Record<string, string>) {
 export const fmtYMD = (ymd: string) =>
   new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(toUTC(ymd)));
 
+/** موعد البداية الذي يختاره المتدرب: من بكرة إلى 31 يوماً (نفس الحد في app.set_my_start_pref) */
+export const START_PREF_MAX_DAYS = 31;
+export const startPrefRange = (today = riyadhDate()) => ({ min: addDays(today, 1), max: addDays(today, START_PREF_MAX_DAYS) });
+export const validStartPref = (d: string, today = riyadhDate()) =>
+  /^\d{4}-\d{2}-\d{2}$/.test(d) && d >= startPrefRange(today).min && d <= startPrefRange(today).max;
+
+/** نص تاق موعد البداية للمدربة: «⚡ بأقرب وقت» أو «📅 يبدأ 12 أكتوبر · بعد 14 يوم» */
+export function startPrefLabel(pref: string | null | undefined, today = riyadhDate()): { asap: boolean; text: string } {
+  if (!pref) return { asap: true, text: "⚡ بأقرب وقت" };
+  const n = daysBetween(today, pref);
+  const when = n > 1 ? `بعد ${n} يوم` : n === 1 ? "بكرة" : n === 0 ? "اليوم" : "فات الموعد";
+  return { asap: false, text: `📅 يبدأ ${fmtYMD(pref)} · ${when}` };
+}
+
 export type Reminders = {
   sub_expiry_days: number[]; sub_expiry_text: string; review_lead_days: number; review_window_days: number;
   review_text: string; missed_review_text: string; manual_cooldown_minutes: number;

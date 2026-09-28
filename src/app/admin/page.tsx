@@ -1,4 +1,5 @@
 import Link from "next/link";
+import StartTag from "@/components/admin/StartTag";
 import { withUser } from "@/lib/db";
 import { requireCoach } from "@/lib/session";
 import { mailConfigured } from "@/lib/mail";
@@ -40,9 +41,9 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
       const pendingReviews = (await tx.query("SELECT count(*)::int n FROM reviews WHERE status = 'pending'")).rows[0].n as number;
       const swaps = (await tx.query("SELECT count(DISTINCT user_id)::int n FROM exercise_swaps WHERE seen_at IS NULL")).rows[0].n as number;
       const incomplete = (await tx.query(
-        `SELECT order_no, product_name, status, category, amount_due_halalas, contact_name, created_at, renewal_kind FROM orders
+        `SELECT order_no, product_name, status, category, amount_due_halalas, contact_name, created_at, renewal_kind, preferred_start::text FROM orders
           WHERE NOT is_demo AND archived_at IS NULL AND status = ANY($1::text[])
-          ORDER BY array_position($1::text[], status), created_at LIMIT 40`, [INCOMPLETE])).rows;
+          ORDER BY array_position($1::text[], status), preferred_start NULLS FIRST, created_at LIMIT 40`, [INCOMPLETE])).rows;
       const demo = (await tx.query("SELECT (SELECT count(*) FROM products WHERE is_demo)::int + (SELECT count(*) FROM orders WHERE is_demo)::int AS n")).rows[0].n as number;
 
       // تنبيهات داخلية للمدربة (لا تُرسل لأحد): قرب انتهاء الاشتراك، مراجعات قريبة أو فائتة، قياسات ناقصة
@@ -183,6 +184,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
                     <Link href={`/admin/orders/${o.order_no}`}><b>{o.contact_name}</b></Link>
                     <span className={`status ${statusTone(o.status)}`}>{statusLabel(o.status, o.category)}</span>
                   </div>
+                  <StartTag status={o.status} pref={o.preferred_start} today={data.today} />
                   <span className="small muted">
                     {o.renewal_kind === "renewal" ? "🔁 تجديد · " : ""}{o.product_name} · {riyals(o.amount_due_halalas)} · {ago(o.created_at, data.today)}
                   </span>

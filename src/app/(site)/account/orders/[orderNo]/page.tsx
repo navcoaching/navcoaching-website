@@ -9,8 +9,9 @@ import AdherenceBar from "@/components/account/AdherenceBar";
 import { EndOfProgramCard, loadEndOfProgram } from "@/components/account/EndOfProgram";
 import { getMyFollowUp, getOrderDetail, getSettings } from "@/lib/data";
 import { SUB_LABEL, WEEKDAYS, fmtYMD, riyadhDate } from "@/lib/schedule";
+import StartPrefForm from "@/components/account/StartPrefForm";
 import { fmtDate, fmtDateTime, riyals, waLink } from "@/lib/format";
-import { ENTITLED, statusLabel, statusTone, stepIndex, timelineSteps } from "@/lib/status";
+import { ENTITLED, PRE_ACTIVE, statusLabel, statusTone, stepIndex, timelineSteps } from "@/lib/status";
 import { CopyButton } from "@/components/FormBits";
 import { IconFile, IconLink } from "@/components/Icons";
 import { CancelForm, CheckinForm, ClearDraft, MeasurementsForm, ReviewForm, UploadProofForm } from "../../ClientForms";
@@ -254,12 +255,19 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                 <dt>المطلوب</dt><dd className="num">{amount == null ? "بانتظار التأكيد" : riyals(amount)}</dd>
                 <dt>طريقة الدفع</dt><dd>تحويل بنكي</dd>
                 {o.paid_at && (<><dt>تأكيد الدفع</dt><dd>{fmtDate(o.paid_at)}</dd></>)}
+                {!o.sub_start_at && o.status !== "cancelled" && (<><dt>موعد البداية</dt><dd data-testid="start-pref-value">{o.preferred_start ? fmtYMD(o.preferred_start) : "بأقرب وقت"}</dd></>)}
                 {o.sub_start_at && (<><dt>بداية الاشتراك</dt><dd data-testid="sub-start">{fmtYMD(riyadhDate(o.sub_start_at))}</dd></>)}
                 {o.sub_end_at && (<><dt>نهاية الاشتراك</dt><dd data-testid="sub-end">{fmtYMD(riyadhDate(o.sub_end_at))}</dd></>)}
                 {follow && (<><dt>حالة الاشتراك</dt><dd>{SUB_LABEL[follow.state]}</dd></>)}
                 {o.review_weekday != null && o.sub_start_at && (<><dt>يوم المراجعة</dt><dd>{WEEKDAYS[o.review_weekday]}</dd></>)}
               </dl>
             </div>
+            {PRE_ACTIVE.includes(o.status) && (
+              <div className="card flat stack">
+                <h2 style={{ fontSize: 16, margin: 0 }}>موعد بداية برنامجك</h2>
+                <StartPrefForm orderNo={o.order_no} pref={o.preferred_start ?? null} />
+              </div>
+            )}
             {events.some((e) => e.note) && (
               <div className="card flat log">
                 <h2 style={{ fontSize: 16, marginBottom: 8 }}>التحديثات</h2>

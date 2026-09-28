@@ -783,3 +783,32 @@ describe("السعرات المقترحة والإيميل اليومي", () => 
     assert.equal((await as(A, "SELECT 1 FROM coach_digests")).rowCount, 0);
   });
 });
+
+describe("موعد بداية البرنامج", () => {
+  const riyadh = "(now() AT TIME ZONE 'Asia/Riyadh')::date";
+  test("المتدرب يحدد الموعد قبل التفعيل فقط وبحد شهر، والتفعيل يبدأ الاشتراك منه", async () => {
+    const no = await newOrder(A, "k-start-00000000000001", "int1");
+    const in14 = (await owner.query(`SELECT (${riyadh} + 14)::text AS d`)).rows[0].d;
+    await as(A, "SELECT app.set_my_start_pref($1, $2::date)", [no, in14]);
+    await assert.rejects(as(A, `SELECT app.set_my_start_pref($1, ${riyadh})`, [no]), /بكرة إلى شهر/);
+    await assert.rejects(as(A, `SELECT app.set_my_start_pref($1, ${riyadh} + 32)`, [no]), /بكرة إلى شهر/);
+    await assert.rejects(as(B, "SELECT app.set_my_start_pref($1, NULL)", [no]), /لا يمكن/);
+    await assert.rejects(as(A, "UPDATE orders SET preferred_start = NULL WHERE order_no = $1", [no]), /permission denied/);
+    await as(COACH, "SELECT app.coach_transition($1, 'active', NULL, true)", [no]);
+    const o = (await owner.query(
+      `SELECT (sub_start_at AT TIME ZONE 'Asia/Riyadh')::text AS start, (sub_end_at - sub_start_at) >= interval '28 days' AS has_months,
+              review_weekday = extract(dow FROM preferred_start)::int AS weekday_ok, preferred_start::text AS pref, months FROM orders WHERE order_no = $1`, [no])).rows[0];
+    assert.equal(o.start, `${in14} 00:00:00`);
+    assert.equal(o.pref, in14);
+    assert.ok(o.has_months && o.weekday_ok);
+    // بعد التفعيل ما ينقبل التغيير
+    await assert.rejects(as(A, "SELECT app.set_my_start_pref($1, NULL)", [no]), /لا يمكن/);
+  });
+  test("بدون موعد: يبدأ الاشتراك وقت التفعيل كما كان", async () => {
+    const no = await newOrder(A, "k-start-00000000000002", "int1");
+    await as(A, "SELECT app.set_my_start_pref($1, NULL)", [no]);
+    await as(COACH, "SELECT app.coach_transition($1, 'active', NULL, true)", [no]);
+    const o = (await owner.query("SELECT abs(extract(epoch FROM sub_start_at - now())) < 60 AS now_start FROM orders WHERE order_no = $1", [no])).rows[0];
+    assert.equal(o.now_start, true);
+  });
+});

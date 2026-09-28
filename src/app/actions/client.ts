@@ -11,6 +11,7 @@ import { cleanUpload, newKey, UploadError } from "@/lib/uploads";
 import { storage } from "@/lib/storage";
 import { notifySafe } from "@/lib/mail";
 import { riyals } from "@/lib/format";
+import { startPrefLabel, validStartPref } from "@/lib/schedule";
 
 export type ActionState = { ok?: boolean; message?: string; error?: string; fieldErrors?: Record<string, string> };
 
@@ -51,6 +52,7 @@ export async function createOrderAction(_: ActionState, fd: FormData): Promise<A
         [v.sku, v.idempotency_key, v.student === "نعم", v.name, normalizedPhone(v.cc, v.phone),
          JSON.stringify(answers), JSON.stringify(health), healthFlag, v.media, v.notes],
       );
+      if (v.start_mode === "date") await tx.query("SELECT app.set_my_start_pref($1, $2::date)", [rows[0].no, v.start_date]);
       return rows[0].no as string;
     });
   } catch (err) {
@@ -58,11 +60,11 @@ export async function createOrderAction(_: ActionState, fd: FormData): Promise<A
   }
 
   const summary = await withUser(user.id, async (tx) =>
-    (await tx.query("SELECT product_name, offer_label, amount_due_halalas FROM orders WHERE order_no = $1", [orderNo])).rows[0]);
+    (await tx.query("SELECT product_name, offer_label, amount_due_halalas, preferred_start::text FROM orders WHERE order_no = $1", [orderNo])).rows[0]);
   await notifySafe(
     process.env.COACH_NOTIFY_EMAIL,
     `طلب جديد ${orderNo}`,
-    `طلب جديد في Nav Coaching\nرقم الطلب: ${orderNo}\nالبرنامج: ${summary.product_name} — ${summary.offer_label}\nالمبلغ: ${summary.amount_due_halalas == null ? "بانتظار تأكيد خصم الطالب" : riyals(summary.amount_due_halalas)}\n\nالتفاصيل في لوحة الإدارة.`,
+    `طلب جديد في Nav Coaching\nرقم الطلب: ${orderNo}\nالبرنامج: ${summary.product_name} — ${summary.offer_label}\nالمبلغ: ${summary.amount_due_halalas == null ? "بانتظار تأكيد خصم الطالب" : riyals(summary.amount_due_halalas)}\nموعد البداية: ${startPrefLabel(summary.preferred_start).text}\n\nالتفاصيل في لوحة الإدارة.`,
   );
   redirect(`/account/orders/${orderNo}?new=1`);
 }
@@ -287,4 +289,21 @@ export async function submitExitSurveyAction(_: ActionState, fd: FormData): Prom
   revalidatePath("/account");
   revalidatePath(`/account/orders/${orderNo}`);
   return { ok: true, message: "شكراً لك، وصلني ردك 🤍" };
+}
+
+// ---------- موعد بداية البرنامج (قبل التفعيل) ----------
+export async function setStartPrefAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await getCurrentUser();
+  if (!user) return { error: "سجّل الدخول أولاً." };
+  const orderNo = String(fd.get("order_no") ?? "");
+  const mode = String(fd.get("start_mode") ?? "asap");
+  const date = String(fd.get("start_date") ?? "");
+  if (mode === "date" && !validStartPref(date)) return { error: "اختر تاريخاً من بكرة إلى شهر من اليوم.", fieldErrors: { start_date: "اختر تاريخاً من بكرة إلى شهر من اليوم." } };
+  try {
+    await withUser(user.id, (tx) => tx.query("SELECT app.set_my_start_pref($1, $2::date)", [orderNo, mode === "date" ? date : null]));
+  } catch (err) {
+    return { error: dbErrorMessage(err) ?? GENERIC };
+  }
+  revalidatePath(`/account/orders/${orderNo}`);
+  return { ok: true, message: mode === "date" ? "تم حفظ موعد البداية." : "تم: نبدأ بأقرب وقت." };
 }

@@ -5,6 +5,7 @@ import { fmtDate, riyals } from "@/lib/format";
 import { statusLabel, statusTone } from "@/lib/status";
 import ActionForm from "@/components/admin/ActionForm";
 import PackageTag from "@/components/admin/PackageTag";
+import StartTag from "@/components/admin/StartTag";
 import { archiveOrderAction } from "@/app/actions/admin";
 
 const STATUSES = ["", "awaiting_quote", "awaiting_payment", "payment_review", "preparing", "active", "delivered", "completed", "cancelled"];
@@ -24,7 +25,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
     // البحث يشمل رقم الطلب والاسم والجوال والبريد، وملاحظات المدربة الخاصة
     rows: (await tx.query(
       `SELECT o.order_no, o.product_id, o.product_name, p.name AS current_name, o.offer_label, o.status, o.category,
-              o.amount_due_halalas, o.contact_name, o.contact_phone, o.created_at, o.student_discount_requested, o.is_demo, o.source,
+              o.amount_due_halalas, o.contact_name, o.contact_phone, o.created_at, o.student_discount_requested, o.is_demo, o.source, o.preferred_start::text,
               u.email, i.health_flag, EXISTS (SELECT 1 FROM order_note_entries n WHERE n.order_id = o.id) AS has_note
          FROM orders o JOIN "user" u ON u.id = o.user_id
          LEFT JOIN intakes i ON i.order_id = o.id
@@ -88,6 +89,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
                   {o.has_note && <span className="note-dot" role="img" aria-label="توجد ملاحظة خاصة" title="توجد ملاحظة خاصة">✎</span>}
                   {o.is_demo && <span className="tag demo" style={{ marginInlineStart: 6 }}>تجريبي</span>}
                   {o.source === "manual" && <span className="tag soft" style={{ marginInlineStart: 6 }}>يدوي</span>}
+                  <StartTag status={o.status} pref={o.preferred_start} />
                 </td>
                 <td>{o.contact_name}<div className="small muted"><bdi dir="ltr">{o.contact_phone}</bdi></div></td>
                 <td>

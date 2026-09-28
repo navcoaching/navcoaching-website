@@ -75,3 +75,5 @@ export function coachNextSteps(status: string, category: string): { to: string; 
   if (!["completed", "cancelled"].includes(status)) out.push({ to: "cancelled", label: "تم إلغاء الطلب", needsNote: true });
   return out;
 }
+/** حالات قبل التفعيل: يقدر المتدرب يغيّر فيها موعد البداية، ويظهر للمدربة تاق الأولوية */
+export const PRE_ACTIVE: string[] = ["awaiting_quote", "awaiting_payment", "payment_review", "preparing"];

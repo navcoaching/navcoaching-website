@@ -5,6 +5,8 @@ import Link from "next/link";
 import { createOrderAction } from "@/app/actions/client";
 import { AGE_MAX, AGE_MIN, EXPECTATIONS_Q, NUTRITION_SKUS, OPT } from "@/lib/intake";
 import { Submit, useFormAction } from "@/components/FormBits";
+import StartPrefFields from "@/components/StartPrefFields";
+import { validStartPref } from "@/lib/schedule";
 
 type OfferOpt = { sku: string; label: string; group: string; price: string };
 type Props = { sku: string; offers: OfferOpt[]; defaultName: string; responseTime: string };
@@ -17,7 +19,7 @@ const STEP_OF: Record<string, number> = {
   goal: 2, level: 2, place: 2, equip: 2, days: 2, duration: 2,
   injury: 3, condition: 3, pregnancy: 3, health_notes: 3, health_ack: 3,
   weight: 4, height: 4, bodyfat: 4, steps: 4, sleep: 4, job: 4, calories: 4,
-  expectations: 5, challenge: 5, prev_coach: 5, prev_why: 5, source: 5, media: 5, notes: 5, consent_terms: 5, consent_wa: 5,
+  expectations: 5, challenge: 5, prev_coach: 5, prev_why: 5, source: 5, media: 5, notes: 5, start_mode: 5, start_date: 5, consent_terms: 5, consent_wa: 5,
 };
 const TITLES = ["الباقة والتواصل", "الهدف والتمرين", "الصحة والإصابات", "القياسات ونمط الحياة", "التوقعات والإرسال"];
 
@@ -207,6 +209,8 @@ export default function CheckoutForm({ sku, offers, defaultName, responseTime }:
             <textarea id="expectations" name="expectations" required minLength={3} maxLength={1000} defaultValue={d("expectations")} data-err="هذا السؤال مطلوب." {...inv("expectations")} />
             <ErrText n="expectations" errors={errors} />
           </div>
+          <StartPrefFields key={draft ? "draft" : "new"} idPrefix="co-start" error={errors.start_date}
+            initial={draft?.start_mode === "date" && validStartPref(String(draft.start_date ?? "")) ? String(draft.start_date) : null} />
           <div className="field"><label htmlFor="challenge">وش أكبر تحدي تواجهه الآن؟ (اختياري)</label><textarea id="challenge" name="challenge" maxLength={600} defaultValue={d("challenge")} /></div>
           <fieldset className="field"><legend>تدربت مع مدرب قبل؟</legend><Radios ctx={ctx} name="prev_coach" opts={OPT.yesno} /></fieldset>
           <div className="field" hidden={val("prev_coach") !== "نعم"}><label htmlFor="prev_why">ليه ما استمريت معه؟ (اختياري)</label><input id="prev_why" name="prev_why" type="text" maxLength={300} defaultValue={d("prev_why")} /></div>

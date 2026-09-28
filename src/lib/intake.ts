@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { validStartPref } from "./schedule.ts";
 
 // «الاستبيان»: نموذج التسجيل الأولي للمتدرب (كان اسمه «تقييم المتدرب» في الموقع السابق).
 // الأسماء الداخلية القديمة باقية كما هي حتى لا ينكسر ترابط البيانات: الجدول intakes والدالة create_order = الاستبيان.
@@ -77,11 +78,15 @@ export const intakeSchema = z
     source: optionalOneOf(OPT.source),
     media: oneOf(OPT.media, "اختر إجابة"),
     notes: text(800),
+    start_mode: z.enum(["asap", "date"], { message: "اختر متى تبي تبدأ." }).optional().default("asap"),
+    start_date: z.string().trim().max(10).optional().default(""),
     consent_terms: z.literal("on", { message: "نحتاج موافقتك للإرسال." }),
     consent_wa: z.literal("on", { message: "التواصل يتم على واتساب، فنحتاج موافقتك." }),
     website: z.string().max(0, "spam").optional().default(""), // honeypot
   })
   .superRefine((v, ctx) => {
+    if (v.start_mode === "date" && !validStartPref(v.start_date))
+      ctx.addIssue({ code: "custom", path: ["start_date"], message: "اختر تاريخاً من بكرة إلى شهر من اليوم." });
     if (v.age < 18 && v.guardian_ok !== "on")
       ctx.addIssue({ code: "custom", path: ["guardian_ok"], message: "للأعمار أقل من 18 نحتاج تأكيد موافقة ولي الأمر." });
     if (NUTRITION_SKUS.includes(v.sku) && !v.calories)

@@ -332,6 +332,8 @@ bdi, .ltr { unicode-bidi: isolate; direction: ltr; }
 }
 .tag.soft { background: var(--cyan-soft); color: var(--cyan-ink); }
 .tag.demo { background: #ffe8a3; color: #5a3d00; }
+.tag.asap { background: #ffe1d6; color: #7a2400; }
+.tag.later { background: var(--cyan-soft); color: var(--cyan-ink); }
 
 .price { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
 .price b { font: 700 clamp(30px, 4vw, 38px)/1 var(--f-display); color: var(--heading); }

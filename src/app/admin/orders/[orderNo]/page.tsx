@@ -12,6 +12,7 @@ import PackageTag from "@/components/admin/PackageTag";
 import Details from "@/components/admin/Details";
 import { AdminNotes, NotifLog, ReviewWeeks, SendReview, SubscriptionCard, loadSubscription } from "./FollowUp";
 import StatusBar from "./StatusBar";
+import StartTag from "@/components/admin/StartTag";
 import AdherenceBar from "@/components/account/AdherenceBar";
 import GrantedAlert from "@/components/admin/GrantedAlert";
 import { loadAdherence } from "@/lib/program-data";
@@ -65,7 +66,7 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
       <nav className="small"><Link href="/admin/orders">الطلبات</Link> / <bdi className="num">{o.order_no}</bdi></nav>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <div>
-          <div style={{ marginBottom: 6 }}><PackageTag name={o.product_name} productId={o.product_id ?? null} currentName={currentName} /></div>
+          <div style={{ marginBottom: 6 }}><PackageTag name={o.product_name} productId={o.product_id ?? null} currentName={currentName} /><StartTag status={o.status} pref={o.preferred_start} /></div>
           <h1 style={{ marginBottom: 4 }}>{o.product_name} — {o.offer_label}</h1>
           <p className="muted">{o.contact_name} · <bdi dir="ltr">{o.contact_phone}</bdi> · <bdi dir="ltr">{o.user_email}</bdi></p>
         </div>

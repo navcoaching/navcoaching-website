@@ -2,7 +2,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { intakeSchema, splitIntake, OPT, EXPECTATIONS_Q } from "../../src/lib/intake.ts";
-import { reviewWeeks, weekStatuses, subscriptionState, addDays, fillTemplate } from "../../src/lib/schedule.ts";
+import { reviewWeeks, weekStatuses, subscriptionState, addDays, fillTemplate, riyadhDate, startPrefLabel, validStartPref } from "../../src/lib/schedule.ts";
 
 const valid = {
   idempotency_key: "k".repeat(20), sku: "int1", name: "سارة", cc: "+966", phone: "512345678", gender: OPT.gender[0], age: "29",
@@ -68,5 +68,31 @@ describe("الاشتراك والمراجعات الأسبوعية", () => {
   });
   test("القوالب تُملأ بالمتغيرات", () => {
     assert.equal(fillTemplate("مرحباً {name} {x}", { name: "نورة" }), "مرحباً نورة {x}");
+  });
+});
+
+describe("موعد بداية البرنامج", () => {
+  test("الحدود: من بكرة إلى 31 يوماً", () => {
+    const t = "2026-09-28";
+    assert.equal(validStartPref("2026-09-28", t), false);
+    assert.equal(validStartPref("2026-09-29", t), true);
+    assert.equal(validStartPref("2026-10-29", t), true);
+    assert.equal(validStartPref("2026-10-30", t), false);
+    assert.equal(validStartPref("29/09/2026", t), false);
+  });
+  test("نص التاق", () => {
+    assert.deepEqual(startPrefLabel(null, "2026-09-28"), { asap: true, text: "⚡ بأقرب وقت" });
+    const l = startPrefLabel("2026-10-12", "2026-09-28");
+    assert.equal(l.asap, false);
+    assert.match(l.text, /^📅 يبدأ .*12.*أكتوبر.* · بعد 14 يوم$/);
+    assert.match(startPrefLabel("2026-09-29", "2026-09-28").text, /بكرة$/);
+  });
+  test("الاستبيان: «في تاريخ أحدده» يتطلب تاريخاً صالحاً، و«بأقرب وقت» افتراضي", () => {
+    assert.equal(intakeSchema.parse(valid).start_mode, "asap");
+    const bad = intakeSchema.safeParse({ ...valid, start_mode: "date", start_date: "" });
+    assert.equal(bad.success, false);
+    assert.equal(bad.error!.issues[0].path[0], "start_date");
+    const ok = intakeSchema.safeParse({ ...valid, start_mode: "date", start_date: addDays(riyadhDate(), 7) });
+    assert.equal(ok.success, true);
   });
 });

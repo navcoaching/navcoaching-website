@@ -108,6 +108,9 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await page.locator("#calories").selectOption("أعرف الأساسيات");
   await page.getByRole("button", { name: "التالي" }).click();
   await page.locator("#expectations").fill("متابعة أسبوعية واضحة وتعديل البرنامج حسب تقدمي");
+  // موعد البداية: «في تاريخ أحدده» ← بعد أسبوعين
+  await pickRadio(page, "start_mode", "date");
+  await page.getByTestId("start-pref").getByRole("button", { name: "بعد أسبوعين" }).click();
   await page.locator("#media").selectOption("لا، أفضّل الخصوصية");
   await page.locator('input[name="consent_terms"]').check();
   await page.locator('input[name="consent_wa"]').check();
@@ -118,6 +121,9 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   const orderNo = page.url().match(/NAV-\d{6}-[A-Z0-9]{5}/)![0];
   await expect(page.getByText("وصل استبيانك وتم إنشاء طلبك.")).toBeVisible();
   await expect(page.getByTestId("order-status")).toHaveText("بانتظار الدفع");
+  const pref = (await db.query(`SELECT preferred_start = (now() AT TIME ZONE 'Asia/Riyadh')::date + 14 AS ok FROM orders WHERE order_no = $1`, [orderNo])).rows[0];
+  expect(pref.ok).toBe(true);
+  await expect(page.getByTestId("start-pref-value")).not.toHaveText("بأقرب وقت");
   await expect(page.getByText("SA1280000139608016245411")).toBeVisible();
   await noHorizontalScroll(page);
 
