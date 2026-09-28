@@ -12,7 +12,7 @@ export function loadRecipes() {
 
 /** فطور واحد + غداء + عشاء + سناك، يُختاران بمفتاح ترتيب (الأصغر أولاً؛ التعادل بالسعرات ثم الاسم) */
 function pick(recipes, key) {
-  const by = (slot) => recipes.filter((r) => r.slot === slot).sort((a, b) => key(a) - key(b) || kcalOf(a) - kcalOf(b) || a.id.localeCompare(b.id));
+  const by = (slot) => recipes.filter((r) => r.slot === slot && !r.set).sort((a, b) => key(a) - key(b) || kcalOf(a) - kcalOf(b) || a.id.localeCompare(b.id));
   const [b] = by("b"), [l1, l2] = by("l"), [s] = by("s");
   return { b, l1, l2, s };
 }
@@ -31,21 +31,30 @@ const mealOf = (kind, r) => ({
   items: [{ food: r.name, portion: r.portion, protein: r.protein, carbs: r.carbs, fat: r.fat }],
 });
 
-export function buildPlans(recipes = loadRecipes()) {
-  return TEMPLATES.map((t) => {
-    const { b, l1, l2, s } = pick(recipes, t.key);
+// قالب مضادات الأكسدة: وصفات محددة بالاسم (مكوناتها توت، رمان، سبانخ، طماطم، فلفل أحمر، شوكولاتة داكنة...)
+export const ANTIOXIDANT = { name: "قالب مضادات الأكسدة", ids: ["ao-shakshuka", "ao-salmon-quinoa", "ao-lentil-salad", "ao-berries-dark"],
+  rule: "وصفات غنية بمصادر مضادات الأكسدة (توت، رمان، سبانخ، طماطم، فلفل أحمر، شوكولاتة داكنة، مكسرات، زيت زيتون)" };
+
+export function buildPlans(recipes = loadRecipes(), group = "main") {
+  const defs = group === "antioxidant" ? [ANTIOXIDANT] : TEMPLATES;
+  return defs.map((t) => {
+    let b, l1, l2, s;
+    if (t.ids) {
+      const get = (id) => recipes.find((r) => r.id === id);
+      [b, l1, l2, s] = t.ids.map(get);
+    } else ({ b, l1, l2, s } = pick(recipes, t.key));
     const meals = [mealOf("breakfast", b), mealOf("lunch", l1), mealOf("dinner", l2), mealOf("snack", s)];
     const all = [b, l1, l2, s];
     const tot = { protein: 0, carbs: 0, fat: 0 };
     for (const r of all) { tot.protein += r.protein; tot.carbs += r.carbs; tot.fat += r.fat; }
     const kcal = Math.round(4 * tot.protein + 4 * tot.carbs + 9 * tot.fat);
-    const notes = `${t.rule}. مكوّن من وصفات كتيب الوصفات: فطور، غداء، عشاء، سناك. الأرقام كما في الكتيب. المجموع تقريباً ${kcal} سعرة (بروتين ${Math.round(tot.protein)}غ، كارب ${Math.round(tot.carbs)}غ، دهون ${Math.round(tot.fat)}غ).`;
+    const notes = `${t.rule}. ${t.ids ? "الأرقام محسوبة من مكونات كل وصفة بقاعدة بيانات USDA." : "مكوّن من وصفات كتيب الوصفات: فطور، غداء، عشاء، سناك. الأرقام كما في الكتيب."} المجموع تقريباً ${kcal} سعرة (بروتين ${Math.round(tot.protein)}غ، كارب ${Math.round(tot.carbs)}غ، دهون ${Math.round(tot.fat)}غ).`;
     return { name: t.name, notes, meals, kcal, ...tot };
   });
 }
 
-export function recipeTemplatesSql() {
-  const plans = buildPlans();
+export function recipeTemplatesSql(group = "main") {
+  const plans = buildPlans(loadRecipes(), group);
   const json = JSON.stringify(plans.map(({ name, notes, meals }) => ({ name, notes, meals })));
   if (json.includes("$rt$")) throw new Error("recipes.json يحتوي $rt$");
   return `DO $do$
@@ -77,13 +86,19 @@ END $do$;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const out = `-- قوالب جداول غذائية يومية من كتيب الوصفات: منخفض/عالي السعرات، عالي البروتين، عالي الكارب، قليل الكارب. كل قالب: فطور وغداء وعشاء وسناك.
--- يُشغَّل مرة واحدة في Neon ← SQL Editor في محرر فاضي، بعد ملف auto-kcal-hidden. يضيف قوالب جديدة فقط، ولا يغيّر شيئاً موجوداً.
+  const group = process.argv[2] === "antioxidant" ? "antioxidant" : "main";
+  const head = group === "antioxidant"
+    ? `-- قالب مضادات الأكسدة: فطور وغداء وعشاء وسناك من وصفات غنية بمصادر مضادات الأكسدة (الأرقام محسوبة من قاعدة الأكل).
+-- يُشغَّل مرة واحدة في Neon ← SQL Editor في محرر فاضي، بعد ملف recipe-templates. يضيف قالباً جديداً فقط، ولا يغيّر شيئاً موجوداً.`
+    : `-- قوالب جداول غذائية يومية من كتيب الوصفات: منخفض/عالي السعرات، عالي البروتين، عالي الكارب، قليل الكارب. كل قالب: فطور وغداء وعشاء وسناك.
+-- يُشغَّل مرة واحدة في Neon ← SQL Editor في محرر فاضي، بعد ملف auto-kcal-hidden. يضيف قوالب جديدة فقط، ولا يغيّر شيئاً موجوداً.`;
+  const names = buildPlans(loadRecipes(), group).map((p) => p.name.replace(/'/g, "''"));
+  const out = `${head}
 BEGIN;
-${recipeTemplatesSql()}
+${recipeTemplatesSql(group)}
 SELECT p.name, round(sum(i.protein*4 + i.carbs*4 + i.fat*9)) AS kcal, count(DISTINCT m.id) AS meals
   FROM nutrition_plans p JOIN plan_meals m ON m.plan_id = p.id JOIN plan_items i ON i.meal_id = m.id
- WHERE p.order_id IS NULL AND p.position >= 100 GROUP BY p.name, p.position ORDER BY p.position;
+ WHERE p.order_id IS NULL AND p.name IN (${names.map((n) => `'${n}'`).join(", ")}) GROUP BY p.name, p.position ORDER BY p.position;
 COMMIT;
 `;
   process.stdout.write(out);

@@ -29,5 +29,5 @@ END $do$;
 
 SELECT p.name, round(sum(i.protein*4 + i.carbs*4 + i.fat*9)) AS kcal, count(DISTINCT m.id) AS meals
   FROM nutrition_plans p JOIN plan_meals m ON m.plan_id = p.id JOIN plan_items i ON i.meal_id = m.id
- WHERE p.order_id IS NULL AND p.position >= 100 GROUP BY p.name, p.position ORDER BY p.position;
+ WHERE p.order_id IS NULL AND p.name IN ('قالب منخفض السعرات', 'قالب عالي السعرات', 'قالب عالي البروتين', 'قالب عالي الكارب', 'قالب قليل الكارب') GROUP BY p.name, p.position ORDER BY p.position;
 COMMIT;
