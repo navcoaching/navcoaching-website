@@ -731,3 +731,27 @@ describe("ربط أسماء التمارين من التطبيقات الخار�
     await assert.rejects(as(A, "INSERT INTO exercise_aliases (user_id, external_name, exercise_id) VALUES ($1, 'y', $2)", [A, ex[1].id]), /permission denied/);
   });
 });
+
+describe("إشعارات الجوال (Web Push)", () => {
+  const ep = `https://push.example.test/${Date.now()}`;
+  test("الاشتراك لصاحبه فقط، والمدربة تقرأ للإرسال، والجهاز ينتقل لآخر مستخدم", async () => {
+    await as(A, "SELECT app.save_push_subscription($1, $2, $3, 'iPhone')", [ep, "B".repeat(40), "A".repeat(16)]);
+    assert.equal((await as(A, "SELECT 1 FROM push_subscriptions WHERE endpoint = $1", [ep])).rowCount, 1);
+    assert.equal((await as(B, "SELECT 1 FROM push_subscriptions WHERE endpoint = $1", [ep])).rowCount, 0);
+    assert.equal((await as(COACH, "SELECT 1 FROM push_subscriptions WHERE endpoint = $1", [ep])).rowCount, 1);
+    // الكتابة المباشرة ممنوعة؛ فقط عبر الدالة
+    await assert.rejects(as(B, "INSERT INTO push_subscriptions (user_id, endpoint, p256dh, auth) VALUES ($1, $2, $3, $4)", [B, ep + "x", "B".repeat(40), "A".repeat(16)]), /permission denied/);
+    assert.equal((await as(B, "DELETE FROM push_subscriptions WHERE endpoint = $1", [ep])).rowCount, 0);
+    // نفس الجهاز يسجّل دخول مستخدم آخر: الاشتراك ينتقل له
+    await as(B, "SELECT app.save_push_subscription($1, $2, $3, 'iPhone')", [ep, "C".repeat(40), "D".repeat(16)]);
+    assert.equal((await owner.query("SELECT user_id FROM push_subscriptions WHERE endpoint = $1", [ep])).rows[0].user_id, B);
+    await assert.rejects(as(A, "SELECT app.save_push_subscription('http://insecure', $1, $2, NULL)", ["B".repeat(40), "A".repeat(16)]), /check/i);
+    assert.equal((await as(B, "DELETE FROM push_subscriptions WHERE endpoint = $1", [ep])).rowCount, 1);
+  });
+  test("سجل الإشعارات يقبل قناة push، والتفضيل مفعّل افتراضياً", async () => {
+    const { rows: [c] } = await owner.query("SELECT pg_get_constraintdef(oid) AS d FROM pg_constraint WHERE conname = 'notification_log_channel_check'");
+    assert.match(c.d, /push/);
+    const { rows: [d] } = await owner.query("SELECT column_default FROM information_schema.columns WHERE table_name = 'user_prefs' AND column_name = 'push_enabled'");
+    assert.equal(d.column_default, "true");
+  });
+});

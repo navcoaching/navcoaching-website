@@ -5,6 +5,8 @@ import { youtubeId } from "@/lib/youtube";
 import ActionForm from "@/components/admin/ActionForm";
 import { loadReminders } from "@/lib/reminders";
 import { saveFaqAction, savePolicyAction, saveSettingAction } from "@/app/actions/admin";
+import VapidKeys from "@/components/admin/VapidKeys";
+import { pushConfigured, pushMock } from "@/lib/push";
 
 export default async function AdminContent() {
   const coach = await requireCoach();
@@ -25,8 +27,20 @@ export default async function AdminContent() {
     <div className="stack" style={{ ["--space" as string]: "22px" }}>
       <h1>المحتوى والإعدادات</h1>
       <nav className="pill-nav">
-        {[["video", "مقطع التعريف"], ["hero", "الواجهة"], ["contact", "التواصل ومدة الرد"], ["bank", "الحساب البنكي"], ["about", "عن المدربة"], ["checkins", "المراجعة الأسبوعية"], ["reminders", "التنبيهات والتذكيرات"], ["faq", "الأسئلة الشائعة"], ["policies", "السياسات"]].map(([id, l]) => <a key={id} href={`#${id}`}>{l}</a>)}
+        {[["video", "مقطع التعريف"], ["hero", "الواجهة"], ["contact", "التواصل ومدة الرد"], ["bank", "الحساب البنكي"], ["about", "عن المدربة"], ["checkins", "المراجعة الأسبوعية"], ["reminders", "التنبيهات والتذكيرات"], ["push", "إشعارات الجوال"], ["faq", "الأسئلة الشائعة"], ["policies", "السياسات"]].map(([id, l]) => <a key={id} href={`#${id}`}>{l}</a>)}
       </nav>
+
+      <section className="card stack" aria-labelledby="push" data-testid="push-settings">
+        <H id="push">إشعارات الجوال (التطبيق)</H>
+        {pushConfigured() && !pushMock() ? (
+          <p className="alert ok small" style={{ margin: 0 }}>مفعّلة. المتدرب يفعّلها من «حسابي» ← إشعارات الجوال، وتوصله نفس تنبيهات البريد وواتساب على جواله.</p>
+        ) : (
+          <>
+            <p className="small" style={{ margin: 0 }}>غير مفعّلة بعد. خطوة وحدة: ولّدي المفاتيح هنا، وانسخيها لمتغيرات Netlify، ثم أعيدي النشر. بعدها يظهر للمتدربين زر «فعّل الإشعارات».</p>
+            <VapidKeys email={coach.email} />
+          </>
+        )}
+      </section>
 
       <section className="card stack">
         <H id="video">مقطع التعريف (YouTube Shorts)</H>

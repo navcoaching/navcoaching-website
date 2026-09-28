@@ -2,16 +2,17 @@ import "server-only";
 import type { Tx } from "./db";
 import { sendMail, mailConfigured, devMailboxEnabled, mailBrand } from "./mail";
 import { renderEmail, statusCopy } from "./email-template";
+import { pushConfigured, sendPush } from "./push";
 
 /**
- * إشعارات المتدرب عبر البريد وواتساب، مع سجل لكل محاولة (notification_log).
+ * إشعارات المتدرب عبر البريد وواتساب وإشعارات الجوال (push)، مع سجل لكل محاولة (notification_log).
  * - النص مختصر دائماً، بدون بيانات صحية، ومعه رابط آمن لصفحة الطلب داخل الحساب.
  * - تُحترم تفضيلات المتدرب (user_prefs) وموافقته على التواصل بواتساب في الاستبيان.
  * - واتساب يعمل فقط بعد ضبط WhatsApp Cloud API (انظري docs/FOLLOWUP.md)؛ قبل ذلك يُسجَّل «تم التخطي» مع السبب.
  * - occasion يمنع تكرار نفس التذكير (مثلاً: قرب الانتهاء بـ 7 أيام) لنفس الطلب والقناة.
  */
 
-export type Channel = "email" | "whatsapp";
+export type Channel = "email" | "whatsapp" | "push";
 export type ChannelResult = { channel: Channel; status: "sent" | "simulated" | "failed" | "skipped" | "duplicate"; detail?: string };
 
 export function whatsappConfigured() {
@@ -62,7 +63,7 @@ export async function notifyTrainee(
   const { rows: [info] } = await tx.query(
     `SELECT u.email, coalesce(o.contact_phone, u.phone) AS phone, o.contact_name, o.status, o.category, o.product_name, o.offer_label,
             o.amount_due_halalas, o.payment_method, o.created_at,
-            coalesce(p.email_enabled, true) AS email_on, coalesce(p.whatsapp_enabled, true) AS wa_on,
+            coalesce(p.email_enabled, true) AS email_on, coalesce(p.whatsapp_enabled, true) AS wa_on, coalesce(p.push_enabled, true) AS push_on,
             (i.consent_whatsapp_at IS NOT NULL) AS wa_consent
        FROM orders o JOIN "user" u ON u.id = o.user_id
        LEFT JOIN user_prefs p ON p.user_id = u.id
@@ -84,7 +85,10 @@ export async function notifyTrainee(
   };
 
   const results: ChannelResult[] = [];
-  for (const channel of opts.channels ?? (["email", "whatsapp"] as Channel[])) {
+  // إشعار الجوال فقط لمن فعّله على جهاز (بدون سجل «تم التخطي» لكل من لم يثبّت التطبيق)
+  const hasDevice = pushConfigured() && Number((await tx.query("SELECT count(*) FROM push_subscriptions WHERE user_id = $1", [target.userId])).rows[0].count) > 0;
+  const channels = opts.channels ?? (["email", "whatsapp", ...(hasDevice ? ["push"] : [])] as Channel[]);
+  for (const channel of channels) {
     const body = channel === "email" ? `${opts.text}\n\nالتفاصيل في حسابك:\n${link}\n\nNav Coaching` : opts.text;
     const { rows: [claim] } = await tx.query("SELECT app.notify_claim($1,$2,$3,$4,$5,$6) AS id",
       [target.orderId, target.userId, opts.kind, channel, opts.occasion ?? null, body]);
@@ -98,6 +102,14 @@ export async function notifyTrainee(
         else {
           const mode = await sendMail(info.email, opts.subject, body, await html());
           r = mode === "sent" ? { channel, status: "sent" } : { channel, status: "simulated", detail: "بيئة تطوير: حُفظ في صندوق التطوير ولم يُرسل فعلياً" };
+        }
+      } else if (channel === "push") {
+        if (!info.push_on) r = { channel, status: "skipped", detail: "المتدرب أوقف إشعارات الجوال" };
+        else if (!pushConfigured()) r = { channel, status: "skipped", detail: "إشعارات الجوال غير مفعّلة (مفاتيح VAPID)" };
+        else {
+          const p = await sendPush(tx, target.userId, { title: opts.subject, body: opts.text, url: `/account/orders/${target.orderNo}`, tag: opts.kind });
+          r = p.sent > 0 ? { channel, status: "sent", detail: `${p.sent} جهاز` }
+            : { channel, status: p.failed ? "failed" : "skipped", detail: p.failed ? "تعذّر الإرسال للجهاز" : "لا يوجد جهاز مفعّل" };
         }
       } else {
         if (!info.wa_on) r = { channel, status: "skipped", detail: "المتدرب أوقف إشعارات واتساب" };
@@ -118,4 +130,4 @@ export async function notifyTrainee(
 export const RESULT_LABEL: Record<ChannelResult["status"], string> = {
   sent: "تم الإرسال", simulated: "محاكاة (بيئة تطوير)", failed: "فشل", skipped: "لم يُرسل", duplicate: "مكرر — لم يُرسل",
 };
-export const CHANNEL_LABEL: Record<Channel, string> = { email: "البريد", whatsapp: "واتساب" };
+export const CHANNEL_LABEL: Record<Channel, string> = { email: "البريد", whatsapp: "واتساب", push: "إشعار الجوال" };

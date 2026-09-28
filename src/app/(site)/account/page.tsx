@@ -5,6 +5,9 @@ import { getMyFreePlans, getMyOrders, getMyPrefs } from "@/lib/data";
 import { fmtDate, riyals } from "@/lib/format";
 import { statusLabel, statusTone } from "@/lib/status";
 import { PrefsForm, ProfileForm, SignOut } from "./ClientForms";
+import PushCard from "@/components/account/PushCard";
+import InstallPrompt from "@/components/account/InstallPrompt";
+import { pushPublicKey } from "@/lib/push";
 import MyProgram from "@/components/account/MyProgram";
 import EndOfProgramList from "@/components/account/EndOfProgram";
 
@@ -23,6 +26,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
             <span className="eyebrow">حسابي</span>
             <h1 style={{ fontSize: "clamp(26px,4vw,36px)", marginTop: 8 }}>أهلاً {user.name.includes("@") ? "" : user.name.split(" ")[0]}</h1>
           </div>
+          <InstallPrompt />
           {denied && <p className="alert warn">لوحة الإدارة للمدربة فقط.</p>}
           {needsAction.length > 0 && <p className="alert warn">عندك {needsAction.length === 1 ? "طلب يحتاج" : `${needsAction.length} طلبات تحتاج`} إجراء منك.</p>}
           <EndOfProgramList userId={user.id} name={user.name} orders={orders} />
@@ -78,8 +82,9 @@ export default async function Account({ searchParams }: { searchParams: Promise<
           </div>
           <div className="card stack" aria-labelledby="prefs-h">
             <h2 id="prefs-h" style={{ fontSize: 18 }}>تفضيلات التواصل</h2>
-            <PrefsForm email={prefs.email_enabled} whatsapp={prefs.whatsapp_enabled} />
+            <PrefsForm email={prefs.email_enabled} whatsapp={prefs.whatsapp_enabled} push={pushPublicKey() ? prefs.push_enabled : null} />
           </div>
+          {pushPublicKey() && <PushCard publicKey={pushPublicKey()} />}
           <Link href="/install" className="card flat install-cta" data-testid="install-link">
             <b>📱 أضف الموقع كتطبيق على جوالك</b>
             <span className="small muted">خطوات مصوّرة لـ iPhone وأندرويد</span>

@@ -183,10 +183,13 @@ export async function savePrefsAction(_: ActionState, fd: FormData): Promise<Act
   if (!user) return { error: "سجّل الدخول أولاً." };
   const email = fd.get("email_enabled") === "on";
   const whatsapp = fd.get("whatsapp_enabled") === "on";
+  // خيار إشعارات الجوال يظهر فقط عند تفعيلها في الموقع؛ بدونه تبقى القيمة كما هي
+  const push = fd.get("push_field") === "1" ? fd.get("push_enabled") === "on" : null;
   await withUser(user.id, (tx) => tx.query(
-    `INSERT INTO user_prefs (user_id, email_enabled, whatsapp_enabled) VALUES ($1,$2,$3)
-     ON CONFLICT (user_id) DO UPDATE SET email_enabled = EXCLUDED.email_enabled, whatsapp_enabled = EXCLUDED.whatsapp_enabled, updated_at = now()`,
-    [user.id, email, whatsapp]));
+    `INSERT INTO user_prefs (user_id, email_enabled, whatsapp_enabled, push_enabled) VALUES ($1,$2,$3,coalesce($4, true))
+     ON CONFLICT (user_id) DO UPDATE SET email_enabled = EXCLUDED.email_enabled, whatsapp_enabled = EXCLUDED.whatsapp_enabled,
+       push_enabled = coalesce($4, user_prefs.push_enabled), updated_at = now()`,
+    [user.id, email, whatsapp, push]));
   revalidatePath("/account");
   return { ok: true, message: "تم حفظ تفضيلات التواصل." };
 }

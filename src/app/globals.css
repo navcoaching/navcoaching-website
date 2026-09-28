@@ -921,3 +921,17 @@ h2 .count { display: inline-grid; place-items: center; min-inline-size: 26px; bl
 .set-no { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 13px; background: var(--surface-2); }
 .rir-field { max-width: 130px; }
 .one-rm { padding: 8px 12px; border-radius: 10px; background: var(--ok-bg); color: var(--ok); width: fit-content; }
+/* صفحة عدم الاتصال */
+.offline-page { min-height: 100dvh; display: grid; place-content: center; justify-items: center; gap: 12px; padding: 24px; text-align: center; background: var(--bg, #f3f6fa); }
+.offline-page img { border-radius: 18px; }
+.offline-page h1 { font-size: 24px; margin: 8px 0 0; }
+.offline-page p { color: var(--muted); margin: 0 0 8px; max-width: 320px; }
+/* شريط تثبيت التطبيق */
+.install-bar { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; color: #eaf2fb;
+  background: linear-gradient(135deg, #07142a, #16305f); border: 1px solid rgb(76 197 237 / 0.35); }
+.install-bar img { border-radius: 10px; flex: none; }
+.install-bar-text { display: grid; gap: 2px; flex: 1; min-width: 0; }
+.install-bar-text .small { color: #c9d6ea; }
+.install-bar-x { flex: none; width: 32px; height: 32px; border-radius: 50%; border: 0; background: rgb(255 255 255 / 0.12); color: #fff; font-size: 18px; cursor: pointer; }
+.vapid-row { display: grid; gap: 6px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; }
+.vapid-row code { overflow-wrap: anywhere; font-size: 13px; background: var(--surface-2); padding: 6px 8px; border-radius: 8px; }

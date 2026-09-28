@@ -5,6 +5,7 @@ import "@fontsource/ibm-plex-sans-arabic/500.css";
 import "@fontsource/ibm-plex-sans-arabic/600.css";
 import "@fontsource/ibm-plex-sans-arabic/700.css";
 import "./globals.css";
+import SwRegister from "@/components/SwRegister";
 
 const site = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
@@ -25,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* يفعّل حركة الظهور فقط عند توفر JavaScript؛ بدونه يظهر كل شيء مباشرة */}
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js');try{var t=localStorage.getItem('nav_theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}" }} />
       </head>
-      <body>{children}</body>
+      <body>{children}<SwRegister /></body>
     </html>
   );
 }

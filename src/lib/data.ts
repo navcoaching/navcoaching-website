@@ -155,8 +155,8 @@ export async function getMyFollowUp(userId: string, o: { id: string; order_no: s
 
 export async function getMyPrefs(userId: string) {
   const row = await withUser(userId, async (tx) =>
-    (await tx.query("SELECT email_enabled, whatsapp_enabled FROM user_prefs WHERE user_id = $1", [userId])).rows[0]);
-  return (row ?? { email_enabled: true, whatsapp_enabled: true }) as { email_enabled: boolean; whatsapp_enabled: boolean };
+    (await tx.query("SELECT email_enabled, whatsapp_enabled, push_enabled FROM user_prefs WHERE user_id = $1", [userId])).rows[0]);
+  return (row ?? { email_enabled: true, whatsapp_enabled: true, push_enabled: true }) as { email_enabled: boolean; whatsapp_enabled: boolean; push_enabled: boolean };
 }
 
 // ---------- الجداول المجانية ----------

@@ -13,6 +13,7 @@ export default defineConfig({
     locale: "ar-SA",
     timezoneId: "Asia/Riyadh",
     trace: "retain-on-failure",
+    serviceWorkers: "block", // الـ Service Worker يُختبر وحده في pwa.spec.ts
     screenshot: "only-on-failure",
   },
   projects: [

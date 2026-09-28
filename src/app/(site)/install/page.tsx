@@ -139,7 +139,7 @@ export default function InstallGuide() {
         <div>
           <span className="eyebrow">دليل سريع</span>
           <h1 style={{ fontSize: "clamp(26px,4vw,36px)", marginTop: 8 }}>أضف الموقع كتطبيق على جوالك</h1>
-          <p className="muted">أيقونة على شاشتك الرئيسية تفتح حسابك بضغطة، بدون تحميل من المتجر. الموقع نفسه يفتح بملء الشاشة ويحتاج اتصال إنترنت، والتنبيهات تصلك بالبريد (وواتساب عند تفعيله) وليس كإشعارات من التطبيق.</p>
+          <p className="muted">أيقونة على شاشتك الرئيسية تفتح حسابك بضغطة، بدون تحميل من المتجر. يفتح بملء الشاشة ويحتاج اتصال إنترنت.</p>
         </div>
         {[["ios", "iPhone و iPad (متصفح Safari)", IOS], ["android", "أندرويد (متصفح Chrome)", ANDROID]].map(([id, title, steps]) => (
           <div key={id as string} className="card stack" aria-labelledby={`${id}-h`}>
@@ -155,6 +155,14 @@ export default function InstallGuide() {
             </ol>
           </div>
         ))}
+        <section className="card stack" aria-labelledby="after-h" data-testid="install-after">
+          <h2 id="after-h" style={{ fontSize: 20 }}>بعد التثبيت</h2>
+          <ul className="stack" style={{ ["--space" as string]: "8px", margin: 0, paddingInlineStart: 20 }}>
+            <li><b>🔔 إشعارات الجوال:</b> افتح التطبيق ← «حسابي» ← «إشعارات الجوال» ← «فعّل الإشعارات على هذا الجهاز». يوصلك تنبيه عند رد المدربة، وتحديث برنامجك، وموعد المراجعة. على الآيفون تحتاج iOS 16.4 أو أحدث، وتشتغل فقط من التطبيق المضاف للشاشة الرئيسية.</li>
+            <li><b>⚡ اختصارات:</b> اضغط مطوّلاً على أيقونة التطبيق لتفتح مباشرة: جدول التمرين، سجّل أكلك، المراجعة الأسبوعية، أو التقدم.</li>
+            <li><b>📶 بدون نت:</b> تظهر صفحة تنبيه بدل صفحة خطأ، وترجع لحسابك أول ما يرجع الاتصال.</li>
+          </ul>
+        </section>
         <p className="small muted">في iPhone تعمل الإضافة من Safari فقط. الرسومات توضيحية، وقد يختلف شكل القوائم حسب إصدار النظام.</p>
         <Link href="/account" className="btn" style={{ width: "fit-content" }}>رجوع لحسابي</Link>
       </div>

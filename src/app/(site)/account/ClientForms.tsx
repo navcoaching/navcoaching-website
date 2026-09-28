@@ -126,12 +126,16 @@ export function ReviewForm({ orderNo, name }: { orderNo: string; name: string })
   );
 }
 
-export function PrefsForm({ email, whatsapp }: { email: boolean; whatsapp: boolean }) {
+export function PrefsForm({ email, whatsapp, push }: { email: boolean; whatsapp: boolean; push?: boolean | null }) {
   const { state, onSubmit, pending } = useFormAction(savePrefsAction);
   return (
     <form onSubmit={onSubmit} className="form" data-testid="prefs-form">
       <label className="check"><input type="checkbox" name="email_enabled" defaultChecked={email} /><span>إشعارات البريد الإلكتروني</span></label>
       <label className="check"><input type="checkbox" name="whatsapp_enabled" defaultChecked={whatsapp} /><span>إشعارات واتساب</span></label>
+      {push != null && <>
+        <input type="hidden" name="push_field" value="1" />
+        <label className="check"><input type="checkbox" name="push_enabled" defaultChecked={push} /><span>إشعارات الجوال (التطبيق)</span></label>
+      </>}
       <span className="hint">تشمل: إضافة ملف أو رابط لبرنامجك، رد المدربة على مراجعتك، تغيّر حالة الطلب، وتذكيرات المراجعة والاشتراك. الرسائل مختصرة ومعها رابط حسابك فقط، بدون أي بيانات صحية. رمز الدخول يصلك بالبريد دائماً.</span>
       <FormMessage state={state} />
       <Submit pending={pending} className="btn btn-ghost btn-sm">حفظ التفضيلات</Submit>

@@ -136,7 +136,7 @@ export function SendReview({ o, d }: { o: O; d: SubData }) {
   return (
     <div className="card stack">
       <h2 style={{ fontSize: 17 }}>إرسال تنبيه المراجعة الآن</h2>
-      <p className="small" style={{ margin: 0 }}>النص الذي سيُرسل (بريد + واتساب إن كانا مفعّلين):</p>
+      <p className="small" style={{ margin: 0 }}>النص الذي سيُرسل (بريد + واتساب + إشعار الجوال، حسب المفعّل):</p>
       <blockquote className="alert info small" style={{ margin: 0 }} data-testid="review-preview">{preview}</blockquote>
       <ActionForm action={sendReviewNowAction} submit="إرسال تنبيه المراجعة الآن" submitClass="btn btn-sm" confirm={`سيُرسل هذا النص للمتدرب:\n\n${preview}\n\nمتأكدة؟`}>
         <input type="hidden" name="order_no" value={o.order_no} />
@@ -146,7 +146,7 @@ export function SendReview({ o, d }: { o: O; d: SubData }) {
   );
 }
 
-type Log = { kind: string; channel: "email" | "whatsapp"; status: string; detail: string | null; body: string; created_at: string };
+type Log = { kind: string; channel: "email" | "whatsapp" | "push"; status: string; detail: string | null; body: string; created_at: string };
 
 export function NotifLog({ log }: { log: Log[] }) {
   if (!log.length) return null;
