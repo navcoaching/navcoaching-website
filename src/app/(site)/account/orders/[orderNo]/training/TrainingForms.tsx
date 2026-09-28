@@ -1,5 +1,5 @@
 "use client";
-import { startTransition, useActionState, useState } from "react";
+import { useState } from "react";
 import { FormMessage, Submit, useFormAction } from "@/components/FormBits";
 import {
   logItemAction, logMeasurementsAction, logStepsAction, logWeightAction, rateDayAction, readWorkoutImageAction, saveImportedLogsAction, swapExerciseAction,
@@ -191,15 +191,43 @@ export function ImportFromImage({ orderNo, day, week }: { orderNo: string; day: 
   );
 }
 
+/** تصغير الصورة في الجهاز قبل الرفع (أسرع، وتحت حد حجم الطلب في الخادم). عند أي فشل نرفع الأصل. */
+async function shrinkImage(file: File): Promise<File> {
+  try {
+    const bmp = await createImageBitmap(file);
+    const scale = Math.min(1, 2000 / Math.max(bmp.width, bmp.height));
+    if (scale === 1 && file.size <= 1_500_000) return file;
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bmp.width * scale);
+    canvas.height = Math.round(bmp.height * scale);
+    canvas.getContext("2d")!.drawImage(bmp, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise<Blob | null>((r) => canvas.toBlob(r, "image/jpeg", 0.85));
+    return blob ? new File([blob], "workout.jpg", { type: "image/jpeg" }) : file;
+  } catch {
+    return file;
+  }
+}
+
 function ImportFlow({ orderNo, day, week, again }: { orderNo: string; day: string; week: number; again: () => void }) {
-  const [preview, read, reading] = useActionState<ImportPreview, FormData>(readWorkoutImageAction, {});
+  const [preview, setPreview] = useState<ImportPreview>({});
+  const [reading, setReading] = useState(false);
   const save = useFormAction(saveImportedLogsAction);
   const rows = preview.rows ?? [];
-  const onRead = (e: React.FormEvent<HTMLFormElement>) => {
+  const onRead = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (reading) return;
     const fd = new FormData(e.currentTarget);
-    startTransition(() => read(fd));
+    const file = fd.get("image");
+    if (file instanceof File && file.size > 0) fd.set("image", await shrinkImage(file));
+    setReading(true);
+    try {
+      // استدعاء مباشر مع التقاط الخطأ: انقطاع الاتصال أو طول القراءة يظهر كرسالة، لا صفحة خطأ
+      setPreview(await readWorkoutImageAction({}, fd));
+    } catch {
+      setPreview({ error: "طالت قراءة الصورة أو انقطع الاتصال. جرّب مرة ثانية بلقطة شاشة واضحة، أو سجّل يدوياً." });
+    } finally {
+      setReading(false);
+    }
   };
   const done = save.state.ok;
   return (

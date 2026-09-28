@@ -59,7 +59,12 @@ test("تعبئة التسجيل من صورة: قراءة، ربط يدوي، ح
   await page.goto(`/account/orders/${orderNo}/training?week=1`);
   const box = page.getByTestId("import-image");
   await box.locator("summary").click();
-  await box.locator('input[type="file"]').setInputFiles({ name: "strong.png", mimeType: "image/png", buffer: image });
+  // صورة كبيرة (أكبر من حد 5MB): تتصغّر في الجهاز قبل الرفع بدل ما يفشل الطلب
+  const W = 1300, H = 2800, noise = Buffer.alloc(W * H * 3);
+  for (let i = 0; i < noise.length; i++) noise[i] = (i * 2654435761) >>> 24;
+  const big = await sharp(noise, { raw: { width: W, height: H, channels: 3 } }).png({ compressionLevel: 0 }).toBuffer();
+  expect(big.length).toBeGreaterThan(5 * 1024 * 1024);
+  await box.locator('input[type="file"]').setInputFiles({ name: "strong.png", mimeType: "image/png", buffer: big });
   await box.getByRole("button", { name: "اقرأ الصورة" }).click();
   const review = box.getByTestId("import-review");
   await expect(review.locator("fieldset")).toHaveCount(3);

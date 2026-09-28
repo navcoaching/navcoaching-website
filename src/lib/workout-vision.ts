@@ -49,7 +49,9 @@ export async function readWorkoutImage(data: Buffer, mime: string): Promise<Extr
   if (!process.env.ANTHROPIC_API_KEY) throw new VisionError("قراءة الصور غير مفعّلة حالياً.");
   if (!["image/jpeg", "image/png", "image/webp", "image/gif"].includes(mime)) throw new VisionError("ارفع صورة JPG أو PNG.");
 
-  const client = new Anthropic({ timeout: 60_000, maxRetries: 1 });
+  // مهلة أقصر من حد وظائف الخادم، بدون إعادة محاولة: رسالة واضحة بدل انقطاع الطلب
+  const client = new Anthropic({ timeout: 25_000, maxRetries: 0 });
+  const started = Date.now();
   let response;
   try {
     response = await client.beta.messages.parse({
@@ -69,9 +71,11 @@ export async function readWorkoutImage(data: Buffer, mime: string): Promise<Extr
   } catch (err) {
     if (err instanceof Anthropic.RateLimitError) throw new VisionError("الخدمة مشغولة الآن. حاول بعد دقيقة.");
     if (err instanceof Anthropic.BadRequestError) throw new VisionError("تعذّرت قراءة الصورة. جرّب لقطة أوضح.");
-    if (err instanceof Anthropic.APIError) { console.error("[vision]", err.status, err.message); throw new VisionError("تعذّرت قراءة الصورة الآن. حاول لاحقاً أو سجّل يدوياً."); }
+    if (err instanceof Anthropic.APIConnectionTimeoutError) { console.error("[vision] timeout", Date.now() - started, "ms"); throw new VisionError("طالت قراءة الصورة. جرّب مرة ثانية أو سجّل يدوياً."); }
+    if (err instanceof Anthropic.APIError) { console.error("[vision]", err.status, err.message, Date.now() - started, "ms"); throw new VisionError("تعذّرت قراءة الصورة الآن. حاول لاحقاً أو سجّل يدوياً."); }
     throw err;
   }
+  console.log("[vision] ok", Date.now() - started, "ms", data.length, "bytes");
   if (response.stop_reason === "refusal" || response.stop_reason === "max_tokens" || !response.parsed_output) {
     throw new VisionError("تعذّرت قراءة الصورة. جرّب لقطة أوضح أو سجّل يدوياً.");
   }
