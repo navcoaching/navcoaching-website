@@ -13,9 +13,14 @@ import EndOfProgramList from "@/components/account/EndOfProgram";
 
 export const metadata: Metadata = { title: "حسابي", robots: { index: false } };
 
+const PAST = ["completed", "cancelled"];
+
 export default async function Account({ searchParams }: { searchParams: Promise<{ denied?: string; plan?: string }> }) {
   const user = await requireUser("/account");
   const [orders, prefs, freePlans, { denied, plan: planMsg }] = await Promise.all([getMyOrders(user.id), getMyPrefs(user.id), getMyFreePlans(user.id), searchParams]);
+  // الطلبات المكتملة والملغاة تنطوي تحت «طلبات سابقة»
+  const past = orders.filter((o) => PAST.includes(o.status));
+  const current = orders.filter((o) => !PAST.includes(o.status));
   const needsAction = orders.filter((o) => ["awaiting_payment", "awaiting_quote"].includes(o.status));
 
   return (
@@ -38,20 +43,18 @@ export default async function Account({ searchParams }: { searchParams: Promise<
               <Link href="/programs" className="btn" style={{ width: "fit-content" }}>تصفح البرامج</Link>
             </div>
           ) : (
-            orders.map((o) => (
-              <Link key={o.id} href={`/account/orders/${o.order_no}`} className="card order-card">
-                <div className="top">
-                  <b style={{ fontFamily: "var(--f-display)", fontSize: 18 }}>{o.product_name}</b>
-                  <span className={`status ${statusTone(o.status)}`}>{statusLabel(o.status, o.category)}</span>
-                </div>
-                <dl className="kv small">
-                  <dt>رقم الطلب</dt><dd><bdi className="num">{o.order_no}</bdi></dd>
-                  <dt>المدة</dt><dd>{o.offer_label}</dd>
-                  <dt>التاريخ</dt><dd>{fmtDate(o.created_at)}</dd>
-                  <dt>المبلغ</dt><dd className="num">{o.amount_due_halalas == null ? "بانتظار التأكيد" : riyals(o.amount_due_halalas)}</dd>
-                </dl>
-              </Link>
-            ))
+            <>
+              {current.map((o) => <OrderCard key={o.id} o={o} />)}
+              {current.length === 0 && <p className="small muted" style={{ margin: 0 }}>ما عندك طلبات حالية.</p>}
+              {past.length > 0 && (
+                <details className="card flat past-orders" data-testid="past-orders">
+                  <summary>طلبات سابقة ({past.length}) <span className="small muted">مكتملة أو ملغاة</span></summary>
+                  <div className="stack" style={{ ["--space" as string]: "12px", marginTop: 12 }}>
+                    {past.map((o) => <OrderCard key={o.id} o={o} />)}
+                  </div>
+                </details>
+              )}
+            </>
           )}
           {(freePlans.length > 0 || planMsg) && <section id="free-plans" className="stack" aria-labelledby="fp-h" style={{ ["--space" as string]: "12px", scrollMarginTop: 90 }}>
             <h2 id="fp-h" style={{ fontSize: 22 }}>جداولي المجانية</h2>
@@ -96,5 +99,23 @@ export default async function Account({ searchParams }: { searchParams: Promise<
         </aside>
       </div>
     </section>
+  );
+}
+
+/** بطاقة طلب في «طلباتي» */
+function OrderCard({ o }: { o: Awaited<ReturnType<typeof getMyOrders>>[number] }) {
+  return (
+    <Link href={`/account/orders/${o.order_no}`} className="card order-card">
+      <div className="top">
+        <b style={{ fontFamily: "var(--f-display)", fontSize: 18 }}>{o.product_name}</b>
+        <span className={`status ${statusTone(o.status)}`}>{statusLabel(o.status, o.category)}</span>
+      </div>
+      <dl className="kv small">
+        <dt>رقم الطلب</dt><dd><bdi className="num">{o.order_no}</bdi></dd>
+        <dt>المدة</dt><dd>{o.offer_label}</dd>
+        <dt>التاريخ</dt><dd>{fmtDate(o.created_at)}</dd>
+        <dt>المبلغ</dt><dd className="num">{o.amount_due_halalas == null ? "بانتظار التأكيد" : riyals(o.amount_due_halalas)}</dd>
+      </dl>
+    </Link>
   );
 }

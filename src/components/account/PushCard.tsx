@@ -10,6 +10,7 @@ function urlBase64ToUint8Array(base64: string) {
   const raw = atob((base64 + padding).replace(/-/g, "+").replace(/_/g, "/"));
   return Uint8Array.from(raw, (c) => c.charCodeAt(0));
 }
+const sameKey = (a: Uint8Array, b: Uint8Array) => a.length === b.length && a.every((x, i) => x === b[i]);
 const isIos = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.userAgent.includes("Macintosh") && navigator.maxTouchPoints > 1);
 const isStandalone = () => window.matchMedia("(display-mode: standalone)").matches || (navigator as { standalone?: boolean }).standalone === true;
 const deviceName = () => {
@@ -19,7 +20,7 @@ const deviceName = () => {
 const MOCK_KEY = "nav_push_mock_endpoint";
 
 /** بطاقة «إشعارات الجوال»: تفعيل/إيقاف الإشعارات على هذا الجهاز + إشعار تجربة */
-export default function PushCard({ publicKey }: { publicKey: string }) {
+export default function PushCard({ publicKey, intro }: { publicKey: string; intro?: string }) {
   const mock = publicKey === "mock"; // بيئة الاختبار فقط (PUSH_MOCK)
   const [state, setState] = useState<State>("loading");
   const [endpoint, setEndpoint] = useState<string | null>(null);
@@ -38,7 +39,17 @@ export default function PushCard({ publicKey }: { publicKey: string }) {
       if (isIos() && !isStandalone()) { setState("ios-install"); return; }
       if (Notification.permission === "denied") { setState("denied"); return; }
       const reg = await navigator.serviceWorker.getRegistration("/");
-      const sub = await reg?.pushManager.getSubscription();
+      let sub = await reg?.pushManager.getSubscription();
+      // اشتراك قديم بمفاتيح سابقة: خوادم Apple/Google ترفضه، فنلغيه ويفعّل من جديد
+      const key = sub?.options.applicationServerKey;
+      if (sub && key && !sameKey(new Uint8Array(key), urlBase64ToUint8Array(publicKey))) {
+        await sub.unsubscribe().catch(() => {});
+        await deletePushSubscriptionAction(sub.endpoint).catch(() => {});
+        sub = null;
+        setMsg({ ok: false, text: "تغيّرت مفاتيح الإشعارات. فعّلها من جديد على هذا الجهاز." });
+      }
+      // مزامنة الاشتراك مع الموقع (لو انحذف من عندنا يرجع تلقائياً)
+      if (sub) await savePushSubscriptionAction(JSON.parse(JSON.stringify(sub)), deviceName()).catch(() => {});
       setEndpoint(sub?.endpoint ?? null);
       setState(sub ? "on" : "off");
     })().catch(() => setState("unsupported"));
@@ -93,7 +104,7 @@ export default function PushCard({ publicKey }: { publicKey: string }) {
   return (
     <div className="card stack" aria-labelledby="push-h" data-testid="push-card" data-state={state}>
       <h3 id="push-h" style={{ fontSize: 16 }}>🔔 إشعارات الجوال</h3>
-      <p className="small muted" style={{ margin: 0 }}>تنبيه على جوالك عند رد المدربة، أو تحديث برنامجك، أو موعد المراجعة. بدون أي بيانات صحية.</p>
+      <p className="small muted" style={{ margin: 0 }}>{intro ?? "تنبيه على جوالك عند رد المدربة، أو تحديث برنامجك، أو موعد المراجعة. بدون أي بيانات صحية."}</p>
       {state === "loading" && <p className="small muted" style={{ margin: 0 }}>…</p>}
       {state === "unsupported" && <p className="small" style={{ margin: 0 }}>هذا المتصفح ما يدعم الإشعارات. جرّب Chrome على أندرويد، أو Safari على الآيفون بعد إضافة التطبيق للشاشة الرئيسية.</p>}
       {state === "ios-install" && (

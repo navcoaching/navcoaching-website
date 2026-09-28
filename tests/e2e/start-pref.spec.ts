@@ -95,4 +95,15 @@ test("موعد البداية: تغيير المتدرب، تاق الأولوي
   await trainee.goto(`/account/orders/${later}`);
   await expect(trainee.getByTestId("start-pref-form")).toHaveCount(0);
   await expect(trainee.getByTestId("sub-start")).toBeVisible();
+
+  // «طلباتي»: الطلبات المكتملة/الملغاة مطوية تحت «طلبات سابقة»
+  await db.query(`UPDATE orders SET status = 'cancelled' WHERE order_no = $1`, [asap]);
+  await trainee.goto("/account");
+  const past = trainee.getByTestId("past-orders");
+  await expect(past).toContainText("طلبات سابقة (1)");
+  await expect(past.getByRole("link", { name: new RegExp(asap) })).toBeHidden();
+  await past.locator("summary").click();
+  await expect(past.getByRole("link", { name: new RegExp(asap) })).toBeVisible();
+  await expect(trainee.locator(`a.order-card[href$="${later}"]`)).toBeVisible();
+  await noHorizontalScroll(trainee);
 });

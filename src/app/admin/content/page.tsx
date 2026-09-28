@@ -6,7 +6,8 @@ import ActionForm from "@/components/admin/ActionForm";
 import { loadReminders } from "@/lib/reminders";
 import { saveFaqAction, savePolicyAction, saveSettingAction } from "@/app/actions/admin";
 import VapidKeys from "@/components/admin/VapidKeys";
-import { pushConfigured, pushMock } from "@/lib/push";
+import { pushConfigured, pushMock, pushPublicKey } from "@/lib/push";
+import PushCard from "@/components/account/PushCard";
 
 export default async function AdminContent() {
   const coach = await requireCoach();
@@ -33,7 +34,10 @@ export default async function AdminContent() {
       <section className="card stack" aria-labelledby="push" data-testid="push-settings">
         <H id="push">إشعارات الجوال (التطبيق)</H>
         {pushConfigured() && !pushMock() ? (
-          <p className="alert ok small" style={{ margin: 0 }}>مفعّلة. المتدرب يفعّلها من «حسابي» ← إشعارات الجوال، وتوصله نفس تنبيهات البريد وواتساب على جواله.</p>
+          <>
+            <p className="alert ok small" style={{ margin: 0 }}>مفعّلة. المتدرب يفعّلها من «حسابي» ← إشعارات الجوال، وتوصله نفس تنبيهات البريد وواتساب على جواله.</p>
+            <PushCard publicKey={pushPublicKey()} intro="تنبيهاتك أنتِ على جوالك: طلب جديد، إيصال، مراجعة أسبوعية، تبديل تمرين… (العنوان فقط، والتفاصيل في لوحة الإدارة). فعّليها من الجوال بعد تثبيت الموقع." />
+          </>
         ) : (
           <>
             <p className="small" style={{ margin: 0 }}>غير مفعّلة بعد. خطوة وحدة: ولّدي المفاتيح هنا، وانسخيها لمتغيرات Netlify، ثم أعيدي النشر. بعدها يظهر للمتدربين زر «فعّل الإشعارات».</p>

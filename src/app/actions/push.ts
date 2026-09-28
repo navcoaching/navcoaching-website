@@ -41,7 +41,10 @@ export async function sendTestPushAction(): Promise<{ ok: boolean; error?: strin
   const r = await withUser(user.id, (tx) => sendPush(tx, user.id, {
     title: "Nav Coaching", body: "تمام! إشعارات الجوال شغّالة على هذا الجهاز ✅", url: "/account", tag: "test",
   }));
-  return r.sent ? { ok: true, sent: r.sent } : { ok: false, error: "ما وصل الإشعار. جرّب تفعيله من جديد." };
+  if (r.sent) return { ok: true, sent: r.sent };
+  if (!r.failed && !r.removed) return { ok: false, error: "ما لقينا اشتراك لهذا الجهاز. اضغط «إيقاف» ثم «فعّل الإشعارات» من جديد." };
+  if (r.removed && !r.failed) return { ok: false, error: "اشتراك هذا الجهاز انتهى. اضغط «إيقاف» ثم «فعّل الإشعارات» من جديد." };
+  return { ok: false, error: `رفض خادم الإشعارات الإرسال (${r.errors[0] ?? "بدون تفاصيل"}). أرسل هذي الرسالة للدعم.` };
 }
 
 /** للمدربة: مفتاحا VAPID جديدان تضعهما في Netlify. لا يُحفظان في الموقع ولا يُسجَّلان */

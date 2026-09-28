@@ -2,6 +2,7 @@ import "server-only";
 import { Resend } from "resend";
 import { pool } from "./db";
 import { renderEmail } from "./email-template";
+import { pushToCoaches } from "./push";
 
 /**
  * الإرسال عبر Resend فقط عند توفر RESEND_API_KEY و MAIL_FROM.
@@ -46,6 +47,8 @@ export async function notifySafe(to: string | undefined | null, subject: string,
   } catch (err) {
     console.error("[notify] skipped:", (err as Error).message);
   }
+  // نفس التنبيه على جوال المدربة (العنوان فقط)
+  if (to === process.env.COACH_NOTIFY_EMAIL) await pushToCoaches(subject);
 }
 
 /** في التطوير فقط: حفظ نسخة HTML للمعاينة (MAIL_PREVIEW_DIR) */

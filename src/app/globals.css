@@ -941,3 +941,5 @@ h2 .count { display: inline-grid; place-items: center; min-inline-size: 26px; bl
 .install-bar-x { flex: none; width: 32px; height: 32px; border-radius: 50%; border: 0; background: rgb(255 255 255 / 0.12); color: #fff; font-size: 18px; cursor: pointer; }
 .vapid-row { display: grid; gap: 6px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; }
 .vapid-row code { overflow-wrap: anywhere; font-size: 13px; background: var(--surface-2); padding: 6px 8px; border-radius: 8px; }
+
+.past-orders > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: 700; }
