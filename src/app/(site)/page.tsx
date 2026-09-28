@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
+import GamersBanner from "@/components/GamersBanner";
 import Shots from "@/components/Shots";
 import YouTubeShort from "@/components/YouTubeShort";
 import RichText from "@/components/RichText";
@@ -101,6 +102,9 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* ---------- باقة القيمرز (تظهر فقط إذا نُشرت باقة gamers) ---------- */}
+      <GamersBanner product={products.find((p) => p.slug === "gamers")} whatsapp={s.contact.whatsapp} />
 
       {/* ---------- مقطع التعريف (يظهر فقط عند إضافة الرابط من لوحة الإدارة) ---------- */}
       {videoId && (
