@@ -432,17 +432,18 @@ test("حاسبة السعرات: توازن الطاقة (معادلة Henselman
   await expect(page.getByTestId("intake-bmr")).toHaveText("1,839");
   await expect(page.getByTestId("intake-training-day")).toHaveText("2,226");
   await expect(page.getByTestId("intake-rest-day")).toHaveText("1,765");
-  // الماكروز: بروتين 2 غ/كغ ودهون 0.8 غ/كغ من 80 كغ = 160 و 64، والكارب الباقي من السعرات
+  // الماكروز: بروتين معتدل 1.6 غ/كغ ودهون 0.8 غ/كغ من 80 كغ = 128 و 64، والكارب الباقي من السعرات
   const row = (id: string) => page.getByTestId(id).locator("b.num");
-  await expect(row("macros-avg")).toHaveText(["160", "203", "64"]);       // (2029 − 640 − 576) ÷ 4
-  await expect(row("macros-training")).toHaveText(["160", "253", "64"]);  // (2226 − 1216) ÷ 4
-  await expect(row("macros-rest")).toHaveText(["160", "137", "64"]);      // (1765 − 1216) ÷ 4
-  await page.fill("#i-mp", "1.6");
   await expect(row("macros-avg")).toHaveText(["128", "235", "64"]);       // (2029 − 512 − 576) ÷ 4
-  await page.fill("#i-mp", "9");
-  await expect(page.getByText("البروتين بين 0.8 و 3.5 غ/كغ.")).toBeVisible();
+  await expect(row("macros-training")).toHaveText(["128", "285", "64"]);  // (2226 − 1088) ÷ 4 = 284.5
+  await expect(row("macros-rest")).toHaveText(["128", "169", "64"]);      // (1765 − 1088) ÷ 4
+  await page.selectOption("#i-mp", "high");                               // عالي 2.2 غ/كغ = 176
+  await expect(row("macros-avg")).toHaveText(["176", "187", "64"]);       // (2029 − 704 − 576) ÷ 4
+  await page.fill("#i-mf", "9");
+  await expect(page.getByText("الدهون بين 0.3 و 2 غ/كغ.")).toBeVisible();
   await expect(page.getByTestId("macros-avg")).toHaveCount(0);
-  await page.fill("#i-mp", "2");
+  await page.fill("#i-mf", "0.8");
+  await page.selectOption("#i-mp", "moderate");
   // Ten Haaf: يطلب الطول والعمر والجنس
   await page.locator(".method", { hasText: "ما أعرف نسبة الدهون" }).click();
   await page.fill("#i-weight", "85");

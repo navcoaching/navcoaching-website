@@ -4,6 +4,7 @@ import { dbErrorMessage, withUser, type Tx } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { loadCalorieState } from "@/lib/calorie-data";
 import { profileFromIntake } from "@/lib/calorie-suggest";
+import { PROTEIN_LEVELS } from "@/lib/calories";
 import type { ActionState } from "./client";
 
 const GENERIC = "تعذّر الحفظ. حاول مرة أخرى.";
@@ -162,22 +163,23 @@ export async function confirmAutoKcalAction(_: ActionState, fd: FormData): Promi
   return { ok: true, message: "تم تأكيد الحسبة، وصارت تظهر للمتدرب." };
 }
 
-/** المدربة: تعبئة الماكروز المقترحة (تُعاد الحساب في الخادم، وتنطبق فقط إذا البروتين والكارب والدهون كلها فاضية) */
+/** المدربة: تعبئة الماكروز المقترحة بمستوى البروتين المختار (تُعاد الحساب في الخادم، وتنطبق فقط إذا البروتين والكارب والدهون كلها فاضية) */
 export async function fillMacrosAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const orderNo = s(fd, "order_no");
-  if (!ORDER_NO.test(orderNo)) return { error: GENERIC };
+  const level = PROTEIN_LEVELS.find((l) => l.v === s(fd, "level"));
+  if (!ORDER_NO.test(orderNo) || !level) return { error: GENERIC };
   try {
     await asCoach(async (tx, uid) => {
       const o = await orderOf(tx, orderNo);
       const st = await loadCalorieState(tx, o.id, o.user_id);
       if (!st.macros || st.target?.kcal == null) throw bad("حددي هدف السعرات ووزن المتدرب أولاً.");
-      const m = st.macros;
+      const m = st.macros[level.v];
       const r = await tx.query(
         `UPDATE nutrition_targets SET protein = $2, carbs = $3, fat = $4, updated_by = $5, updated_at = now()
           WHERE order_id = $1 AND protein IS NULL AND carbs IS NULL AND fat IS NULL`, [o.id, m.protein, m.carbs, m.fat, uid]);
       if (!r.rowCount) throw bad("الماكروز معبّاة من قبل. عدّليها من «الأرقام الغذائية اليومية».");
       await tx.query("INSERT INTO admin_log (actor_id, action, target, details) VALUES ($1,'calories.macros',$2,$3)",
-        [uid, orderNo, JSON.stringify({ kcal: st.target.kcal, protein: m.protein, carbs: m.carbs, fat: m.fat })]);
+        [uid, orderNo, JSON.stringify({ kcal: st.target.kcal, level: level.v, protein: m.protein, carbs: m.carbs, fat: m.fat })]);
     });
   } catch (err) { return fail(err); }
   revalidatePath(`/admin/orders/${orderNo}/nutrition`);

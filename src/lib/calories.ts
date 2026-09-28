@@ -176,26 +176,29 @@ export function validateIntake(i: Partial<Record<keyof IntakeInput, unknown>>): 
 }
 
 // ---------------------------------------------------------------------
-// الماكروز اليومية من السعرات: البروتين والدهون بالغرام لكل كغ من الوزن، والكارب هو الباقي من السعرات.
-// القيم الافتراضية مبدئية وقابلة للتعديل (المدربة تحدد المعتمد)، وتُعرض للزائر كتقدير قابل للتعديل.
+// الماكروز اليومية من السعرات: البروتين حسب المستوى (معتدل 1.6 غ/كغ، عالي 2.2 غ/كغ من وزن الجسم)
+// والدهون غ/كغ (قيمة مبدئية قابلة للتعديل)، والكارب هو الباقي من السعرات.
 // ---------------------------------------------------------------------
-export const MACRO_DEFAULTS = { proteinPerKg: 2.0, fatPerKg: 0.8 } as const;
-export const MACRO_LIMITS = { proteinPerKg: [0.8, 3.5], fatPerKg: [0.3, 2] } as const;
+export const PROTEIN_LEVELS = [
+  { v: "moderate", l: "معتدل (1.6 غ/كغ)", perKg: 1.6 },
+  { v: "high", l: "عالي (2.2 غ/كغ)", perKg: 2.2 },
+] as const;
+export type ProteinLevel = (typeof PROTEIN_LEVELS)[number]["v"];
+export const proteinPerKg = (level: ProteinLevel | string) => PROTEIN_LEVELS.find((p) => p.v === level)?.perKg ?? PROTEIN_LEVELS[0].perKg;
+export const MACRO_DEFAULTS = { proteinLevel: "moderate" as ProteinLevel, fatPerKg: 0.8 } as const;
+export const MACRO_LIMITS = { fatPerKg: [0.3, 2] } as const;
 export type MacroSettings = { proteinPerKg: number; fatPerKg: number };
 export type MacroSplit = { protein: number; fat: number; carbs: number; carbsRaw: number; lowCarb: boolean };
 
-export function validateMacroSettings(m: Partial<Record<keyof MacroSettings, unknown>>): Partial<Record<keyof MacroSettings, string>> {
-  const e: Partial<Record<keyof MacroSettings, string>> = {};
-  for (const [k, label, unit] of [["proteinPerKg", "البروتين", "غ/كغ"], ["fatPerKg", "الدهون", "غ/كغ"]] as const) {
-    const v = m[k]; const [min, max] = MACRO_LIMITS[k];
-    if (typeof v !== "number" || !Number.isFinite(v)) e[k] = `اكتب ${label} (${unit}).`;
-    else if (v < min || v > max) e[k] = `${label} بين ${min} و ${max} ${unit}.`;
-  }
-  return e;
+export function validateMacroSettings(m: { fatPerKg?: unknown }): { fatPerKg?: string } {
+  const v = m.fatPerKg; const [min, max] = MACRO_LIMITS.fatPerKg;
+  if (typeof v !== "number" || !Number.isFinite(v)) return { fatPerKg: "اكتب الدهون (غ/كغ)." };
+  if (v < min || v > max) return { fatPerKg: `الدهون بين ${min} و ${max} غ/كغ.` };
+  return {};
 }
 
 /** بروتين ودهون بالغرام من الوزن، والكارب = (السعرات − بروتين×4 − دهون×9) ÷ 4 (لا ينزل عن صفر). كلها مقرّبة لأقرب غرام */
-export function macrosFor(kcal: number, weightKg: number, m: MacroSettings = MACRO_DEFAULTS): MacroSplit {
+export function macrosFor(kcal: number, weightKg: number, m: MacroSettings = { proteinPerKg: proteinPerKg(MACRO_DEFAULTS.proteinLevel), fatPerKg: MACRO_DEFAULTS.fatPerKg }): MacroSplit {
   const protein = Math.round(m.proteinPerKg * weightKg), fat = Math.round(m.fatPerKg * weightKg);
   const carbsRaw = (kcal - 4 * protein - 9 * fat) / 4;
   return { protein, fat, carbs: Math.max(0, Math.round(carbsRaw)), carbsRaw, lowCarb: carbsRaw < 50 };

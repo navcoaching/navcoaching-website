@@ -1,7 +1,7 @@
 // اختبارات حاسبة توازن الطاقة مقابل مثال ملف Henselmans Energy Balance Calculator نفسه.
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { calculateEnergyBalance, validate, daysBetween, macrosFor, validateMacroSettings, MACRO_DEFAULTS, type EnergyInput } from "../../src/lib/calories.ts";
+import { calculateEnergyBalance, validate, daysBetween, macrosFor, proteinPerKg, validateMacroSettings, MACRO_DEFAULTS, type EnergyInput } from "../../src/lib/calories.ts";
 
 // المثال الموجود في ملف الإكسل
 const sheet: EnergyInput = { leanChange: 5, fatChange: -3, startDate: "2019-12-10", endDate: "2020-01-10", trainingKcal: 2069, trainingDays: 6, restKcal: 1548 };
@@ -69,20 +69,20 @@ describe("حاسبة السعرات اليومية (Henselmans Energy Intake Cal
 });
 
 describe("الماكروز من السعرات", () => {
-  test("بروتين ودهون من الوزن، والكارب الباقي من السعرات", () => {
+  test("البروتين: معتدل 1.6 غ/كغ، عالي 2.2 غ/كغ (الافتراضي معتدل)", () => {
+    assert.equal(proteinPerKg("moderate"), 1.6); assert.equal(proteinPerKg("high"), 2.2);
     const m = macrosFor(2029, 80);
-    assert.deepEqual([m.protein, m.fat, m.carbs], [160, 64, 203]); // (2029 − 640 − 576) ÷ 4 = 203.25
-    assert.equal(m.lowCarb, false);
-    assert.equal(4 * m.protein + 9 * m.fat + 4 * m.carbs, 640 + 576 + 812); // ضمن 4 سعرات من الهدف
+    assert.deepEqual([m.protein, m.fat, m.carbs], [128, 64, 235]); // (2029 − 512 − 576) ÷ 4 = 235.25
+    const h = macrosFor(2029, 80, { proteinPerKg: 2.2, fatPerKg: 0.8 });
+    assert.deepEqual([h.protein, h.fat, h.carbs], [176, 64, 187]); // (2029 − 704 − 576) ÷ 4 = 187.25
   });
-  test("قيم مخصصة، والكارب لا ينزل عن صفر مع تنبيه", () => {
-    assert.deepEqual([macrosFor(2029, 80, { proteinPerKg: 1.6, fatPerKg: 0.8 }).protein, macrosFor(2029, 80, { proteinPerKg: 1.6, fatPerKg: 0.8 }).carbs], [128, 235]);
-    const low = macrosFor(1200, 90);
+  test("الكارب لا ينزل عن صفر مع تنبيه", () => {
+    const low = macrosFor(1200, 90, { proteinPerKg: 2.2, fatPerKg: 0.8 });
     assert.equal(low.carbs, 0); assert.equal(low.lowCarb, true); assert.ok(low.carbsRaw < 0);
   });
-  test("التحقق من الحدود", () => {
-    assert.deepEqual(validateMacroSettings(MACRO_DEFAULTS), {});
-    assert.ok(validateMacroSettings({ proteinPerKg: 9, fatPerKg: 0.8 }).proteinPerKg);
-    assert.ok(validateMacroSettings({ proteinPerKg: 2, fatPerKg: NaN }).fatPerKg);
+  test("التحقق من حدود الدهون", () => {
+    assert.deepEqual(validateMacroSettings({ fatPerKg: MACRO_DEFAULTS.fatPerKg }), {});
+    assert.ok(validateMacroSettings({ fatPerKg: 5 }).fatPerKg);
+    assert.ok(validateMacroSettings({ fatPerKg: NaN }).fatPerKg);
   });
 });

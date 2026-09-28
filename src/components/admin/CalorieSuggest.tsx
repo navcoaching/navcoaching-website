@@ -1,6 +1,6 @@
 import ActionForm from "@/components/admin/ActionForm";
 import { applyCalorieSuggestionAction, confirmAutoKcalAction, dismissCalorieSuggestionAction, fillMacrosAction, saveCalorieProfileAction } from "@/app/actions/calories";
-import { EB_GOALS, MACRO_DEFAULTS, PAF_LEVELS } from "@/lib/calories";
+import { EB_GOALS, MACRO_DEFAULTS, PAF_LEVELS, PROTEIN_LEVELS } from "@/lib/calories";
 import { basis, explain, targetKcal } from "@/lib/calorie-suggest";
 import type { CalorieState } from "@/lib/calorie-data";
 
@@ -51,12 +51,21 @@ export default function CalorieSuggest({ orderNo, st }: { orderNo: string; st: C
         return (
           <div className="card flat stack" style={{ ["--space" as string]: "8px" }} data-testid="macro-suggest">
             <b>الماكروز المقترحة لـ <span className="num">{n0(t.kcal!)}</span> سعرة</b>
-            <span className="small" data-testid="macro-values">بروتين <b className="num">{st.macros.protein}</b>غ · دهون <b className="num">{st.macros.fat}</b>غ · كارب <b className="num">{st.macros.carbs}</b>غ</span>
-            <span className="small muted">البروتين {MACRO_DEFAULTS.proteinPerKg} غ/كغ والدهون {MACRO_DEFAULTS.fatPerKg} غ/كغ من وزن {st.weight!.kg} كغ، والكارب الباقي من السعرات.</span>
-            {st.macros.lowCarb && <span className="small err-text">تنبيه: الكارب قليل جداً مع هذي السعرات.</span>}
+            {PROTEIN_LEVELS.map((l) => {
+              const m = st.macros![l.v];
+              return (
+                <span key={l.v} className="small" data-testid={`macro-${l.v}`}>
+                  <b>بروتين {l.v === "moderate" ? "معتدل" : "عالي"}</b> ({l.perKg} غ/كغ): بروتين <b className="num">{m.protein}</b>غ · دهون <b className="num">{m.fat}</b>غ · كارب <b className="num">{m.carbs}</b>غ
+                  {m.lowCarb && <span className="err-text"> — الكارب قليل جداً</span>}
+                </span>
+              );
+            })}
+            <span className="small muted">الدهون {MACRO_DEFAULTS.fatPerKg} غ/كغ من وزن {st.weight!.kg} كغ، والكارب الباقي من السعرات.</span>
             {empty ? (
               <ActionForm action={fillMacrosAction} submit="تعبئة الماكروز" submitClass="btn btn-ghost btn-sm">
                 <input type="hidden" name="order_no" value={orderNo} />
+                <div className="field"><label htmlFor="mk-level">مستوى البروتين</label>
+                  <select id="mk-level" name="level" defaultValue="moderate">{PROTEIN_LEVELS.map((l) => <option key={l.v} value={l.v}>{l.l}</option>)}</select></div>
               </ActionForm>
             ) : <span className="small muted">للتعديل: «الأرقام الغذائية اليومية» فوق.</span>}
           </div>

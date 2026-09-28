@@ -42,17 +42,19 @@ test("القوالب تختلف بحسب هدفها (أعلى/أقل سعرات�
   assert.equal(by["قالب قليل الكارب"].carbs, Math.min(...all.map((p) => p.carbs)));
 });
 
-test("SQL يرفض إعادة التشغيل ولا يحتوي فاصل dollar-quote داخلياً", () => {
+test("SQL يحدّث القالب الموجود بدل التكرار، ولا يحتوي فاصل dollar-quote داخلياً", () => {
   const sql = recipeTemplatesSql() as string;
-  assert.match(sql, /مطبّق من قبل/);
+  assert.match(sql, /DELETE FROM plan_meals WHERE plan_id = v_plan/);
   assert.equal(sql.split("$rt$").length - 1, 2);
 });
 
 test("كل وصفة لها مكونات محسوبة (مضادات الأكسدة، الإضافية، والوصفات المصحّحة): الأرقام = مجموع المكونات من قاعدة الأكل (USDA) والسعرات = بروتين×4 + كارب×4 + دهون×9", () => {
   const foods = JSON.parse(readFileSync(new URL("../../db/seed/foods.json", import.meta.url), "utf8")) as Record<string, number | string>[];
   const byName = new Map(foods.map((f) => [f.name_ar as string, f]));
+  // سكوب الواي من ملف تغذية المدربة: 25غ بروتين، 3 كارب، 2 دهون لكل سكوب (30غ)
+  byName.set("سكوب واي بروتين (ملف المدربة)", { protein_100: 2500 / 30, carbs_100: 300 / 30, fat_100: 200 / 30 });
   const ao = (loadRecipes() as R[]).filter((r) => r.basis);
-  assert.equal(ao.length, 9 + 17 + 5);
+  assert.equal(ao.length, 9 + 17 + 10);
   for (const r of ao) {
     assert.ok(r.basis && r.basis.length > 0, r.id);
     const t = { p: 0, c: 0, f: 0 };

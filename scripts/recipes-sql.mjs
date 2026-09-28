@@ -1,6 +1,7 @@
 // يولّد قوالب الجداول الغذائية اليومية (فطور، غداء، عشاء، سناك) من وصفات كتيب الوصفات (db/seed/recipes.json).
 // الأرقام (بروتين/كارب/دهون) كما في الكتيب حرفياً؛ السعرات تحسبها الصفحة = بروتين×4 + كارب×4 + دهون×9.
-// الاختيار آلي بقاعدة واضحة لكل قالب (نفس الوصفة ما تتكرر في اليوم)، وآمن للتكرار: لا يضيف قالباً موجوداً بنفس الاسم.
+// الاختيار آلي بقاعدة واضحة لكل قالب (نفس الوصفة ما تتكرر في اليوم).
+// آمن للتكرار: القالب الموجود بنفس الاسم تُستبدل وجباته بالنسخة الحالية (نسخ المتدربين المُسندة ما تتأثر).
 import { readFileSync } from "node:fs";
 
 const KIND = { b: "breakfast", l: "lunch", s: "snack" };
@@ -63,12 +64,16 @@ DECLARE
   p jsonb; m jsonb; it jsonb;
   v_plan uuid; v_meal uuid; i int; j int; k int;
 BEGIN
-  IF EXISTS (SELECT 1 FROM nutrition_plans WHERE order_id IS NULL AND lower(trim(name)) IN (SELECT lower(trim(x->>'name')) FROM jsonb_array_elements(d) x)) THEN
-    RAISE EXCEPTION 'هذا الملف مطبّق من قبل (القوالب موجودة). لا حاجة لتشغيله مرة ثانية. اضغطي ROLLBACK.';
-  END IF;
   i := 100 + (SELECT count(*) FROM nutrition_plans WHERE order_id IS NULL);
   FOR p IN SELECT * FROM jsonb_array_elements(d) LOOP
-    INSERT INTO nutrition_plans (name, notes, position) VALUES (p->>'name', p->>'notes', i) RETURNING id INTO v_plan;
+    SELECT id INTO v_plan FROM nutrition_plans WHERE order_id IS NULL AND lower(trim(name)) = lower(trim(p->>'name'));
+    IF v_plan IS NULL THEN
+      INSERT INTO nutrition_plans (name, notes, position) VALUES (p->>'name', p->>'notes', i) RETURNING id INTO v_plan;
+    ELSE
+      -- تحديث: الوجبات تُستبدل بالنسخة الحالية (الحذف يشمل عناصرها)
+      DELETE FROM plan_meals WHERE plan_id = v_plan;
+      UPDATE nutrition_plans SET notes = p->>'notes', updated_at = now() WHERE id = v_plan;
+    END IF;
     i := i + 1; j := 0;
     FOR m IN SELECT * FROM jsonb_array_elements(p->'meals') LOOP
       INSERT INTO plan_meals (plan_id, kind, title, method, position) VALUES (v_plan, m->>'kind', m->>'title', nullif(m->>'method', ''), j) RETURNING id INTO v_meal;
@@ -89,9 +94,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const group = process.argv[2] === "antioxidant" ? "antioxidant" : "main";
   const head = group === "antioxidant"
     ? `-- قالب مضادات الأكسدة: فطور وغداء وعشاء وسناك من وصفات غنية بمصادر مضادات الأكسدة (الأرقام محسوبة من قاعدة الأكل).
--- يُشغَّل مرة واحدة في Neon ← SQL Editor في محرر فاضي، بعد ملف recipe-templates. يضيف قالباً جديداً فقط، ولا يغيّر شيئاً موجوداً.`
+-- يُشغَّل مرة واحدة في Neon ← SQL Editor في محرر فاضي، بعد ملف recipe-templates. يضيف القالب، أو يحدّث وجباته إذا كان موجوداً (نسخ المتدربين ما تتأثر). آمن لو انشغّل مرتين.`
     : `-- قوالب جداول غذائية يومية من كتيب الوصفات: منخفض/عالي السعرات، عالي البروتين، عالي الكارب، قليل الكارب. كل قالب: فطور وغداء وعشاء وسناك.
--- يُشغَّل مرة واحدة في Neon ← SQL Editor في محرر فاضي، بعد ملف auto-kcal-hidden. يضيف قوالب جديدة فقط، ولا يغيّر شيئاً موجوداً.`;
+-- يُشغَّل مرة واحدة في Neon ← SQL Editor في محرر فاضي، بعد ملف auto-kcal-hidden. يضيف القوالب، أو يحدّث وجباتها إذا كانت موجودة (نسخ المتدربين ما تتأثر). آمن لو انشغّل مرتين.`;
   const names = buildPlans(loadRecipes(), group).map((p) => p.name.replace(/'/g, "''"));
   const out = `${head}
 BEGIN;

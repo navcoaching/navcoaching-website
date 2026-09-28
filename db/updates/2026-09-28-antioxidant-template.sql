@@ -1,5 +1,5 @@
 -- قالب مضادات الأكسدة: فطور وغداء وعشاء وسناك من وصفات غنية بمصادر مضادات الأكسدة (الأرقام محسوبة من قاعدة الأكل).
--- يُشغَّل مرة واحدة في Neon ← SQL Editor في محرر فاضي، بعد ملف recipe-templates. يضيف قالباً جديداً فقط، ولا يغيّر شيئاً موجوداً.
+-- يُشغَّل مرة واحدة في Neon ← SQL Editor في محرر فاضي، بعد ملف recipe-templates. يضيف القالب، أو يحدّث وجباته إذا كان موجوداً (نسخ المتدربين ما تتأثر). آمن لو انشغّل مرتين.
 BEGIN;
 DO $do$
 DECLARE
@@ -7,12 +7,16 @@ DECLARE
   p jsonb; m jsonb; it jsonb;
   v_plan uuid; v_meal uuid; i int; j int; k int;
 BEGIN
-  IF EXISTS (SELECT 1 FROM nutrition_plans WHERE order_id IS NULL AND lower(trim(name)) IN (SELECT lower(trim(x->>'name')) FROM jsonb_array_elements(d) x)) THEN
-    RAISE EXCEPTION 'هذا الملف مطبّق من قبل (القوالب موجودة). لا حاجة لتشغيله مرة ثانية. اضغطي ROLLBACK.';
-  END IF;
   i := 100 + (SELECT count(*) FROM nutrition_plans WHERE order_id IS NULL);
   FOR p IN SELECT * FROM jsonb_array_elements(d) LOOP
-    INSERT INTO nutrition_plans (name, notes, position) VALUES (p->>'name', p->>'notes', i) RETURNING id INTO v_plan;
+    SELECT id INTO v_plan FROM nutrition_plans WHERE order_id IS NULL AND lower(trim(name)) = lower(trim(p->>'name'));
+    IF v_plan IS NULL THEN
+      INSERT INTO nutrition_plans (name, notes, position) VALUES (p->>'name', p->>'notes', i) RETURNING id INTO v_plan;
+    ELSE
+      -- تحديث: الوجبات تُستبدل بالنسخة الحالية (الحذف يشمل عناصرها)
+      DELETE FROM plan_meals WHERE plan_id = v_plan;
+      UPDATE nutrition_plans SET notes = p->>'notes', updated_at = now() WHERE id = v_plan;
+    END IF;
     i := i + 1; j := 0;
     FOR m IN SELECT * FROM jsonb_array_elements(p->'meals') LOOP
       INSERT INTO plan_meals (plan_id, kind, title, method, position) VALUES (v_plan, m->>'kind', m->>'title', nullif(m->>'method', ''), j) RETURNING id INTO v_meal;

@@ -198,11 +198,13 @@ test("السعرات التلقائية: تنحسب لمتدرب جديد بشا
   const { rows: [t] } = await db.query(`SELECT kcal, kcal_source, kcal_confirmed_at IS NOT NULL AS ok FROM nutrition_targets WHERE order_id = $1`, [o.id]);
   expect(t).toEqual({ kcal: expected, kcal_source: "coach", ok: true });
 
-  // الماكروز المقترحة (بروتين ودهون من الوزن، والكارب الباقي) وتعبئتها بضغطة
-  const mk = macrosFor(expected, 74);
+  // الماكروز المقترحة بمستويين (معتدل 1.6 وعالي 2.2 غ/كغ) وتعبئتها بضغطة بالمستوى العالي
+  const mm = macrosFor(expected, 74, { proteinPerKg: 1.6, fatPerKg: 0.8 }), mk = macrosFor(expected, 74, { proteinPerKg: 2.2, fatPerKg: 0.8 });
   const ms = coach.getByTestId("macro-suggest");
-  await expect(ms.getByTestId("macro-values")).toContainText(`بروتين ${mk.protein}غ`);
-  await expect(ms.getByTestId("macro-values")).toContainText(`كارب ${mk.carbs}غ`);
+  await expect(ms.getByTestId("macro-moderate")).toContainText(`بروتين ${mm.protein}غ`);
+  await expect(ms.getByTestId("macro-high")).toContainText(`بروتين ${mk.protein}غ`);
+  await expect(ms.getByTestId("macro-high")).toContainText(`كارب ${mk.carbs}غ`);
+  await ms.getByLabel("مستوى البروتين").selectOption("high");
   await ms.getByRole("button", { name: "تعبئة الماكروز" }).click();
   await coach.reload();
   await expect(coach.getByTestId("targets").getByLabel("البروتين (غ)")).toHaveValue(String(mk.protein));

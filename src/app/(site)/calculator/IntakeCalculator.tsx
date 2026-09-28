@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { EB_GOALS as GOALS, MACRO_DEFAULTS, MACRO_LIMITS, PAF_LEVELS as PAF, calculateIntake, macrosFor, validateIntake, validateMacroSettings, type BmrMethod, type IntakeErrors, type IntakeInput, type IntakeResult } from "@/lib/calories";
+import { EB_GOALS as GOALS, MACRO_DEFAULTS, MACRO_LIMITS, PAF_LEVELS as PAF, PROTEIN_LEVELS, calculateIntake, macrosFor, proteinPerKg, validateIntake, validateMacroSettings, type BmrMethod, type IntakeErrors, type IntakeInput, type IntakeResult } from "@/lib/calories";
 
 // مستويات النشاط خارج التمرين (عامل النشاط البدني). القيم إرشادية وقابلة للتعديل هنا.
 const METHODS: { v: BmrMethod; t: string; d: string }[] = [
@@ -19,7 +19,7 @@ export default function IntakeCalculator({ idPrefix = "i" }: { idPrefix?: string
   const [raw, setRaw] = useState<Raw>(EMPTY);
   const [errors, setErrors] = useState<IntakeErrors>({});
   const [result, setResult] = useState<IntakeResult | null>(null);
-  const [mp, setMp] = useState({ p: String(MACRO_DEFAULTS.proteinPerKg), f: String(MACRO_DEFAULTS.fatPerKg) });
+  const [mp, setMp] = useState({ p: String(MACRO_DEFAULTS.proteinLevel), f: String(MACRO_DEFAULTS.fatPerKg) });
   const set = <K extends keyof Raw>(k: K, v: Raw[K]) => { setRaw((r) => ({ ...r, [k]: v })); setErrors((e) => ({ ...e, [k]: undefined })); };
   const id = (k: string) => `${idPrefix}-${k}`;
 
@@ -58,7 +58,7 @@ export default function IntakeCalculator({ idPrefix = "i" }: { idPrefix?: string
   );
   const td = Number(raw.trainingDays);
   const weight = n(raw.weight);
-  const ms = { proteinPerKg: n(mp.p), fatPerKg: n(mp.f) };
+  const ms = { proteinPerKg: proteinPerKg(mp.p), fatPerKg: n(mp.f) };
   const msErr = validateMacroSettings(ms);
   const macroRow = (label: string, kcal: number, testId: string) => {
     const m = macrosFor(kcal, weight, ms);
@@ -133,9 +133,10 @@ export default function IntakeCalculator({ idPrefix = "i" }: { idPrefix?: string
           <div className="card flat stack" style={{ ["--space" as string]: "10px" }} data-testid="intake-macros">
             <h3 style={{ fontSize: 17, margin: 0 }}>الماكروز اليومية (تقدير مبدئي)</h3>
             <div className="grid g2">
-              <div className="field"><label htmlFor={id("mp")}>البروتين (غ لكل كغ)</label>
-                <input id={id("mp")} type="number" inputMode="decimal" step="0.1" min={MACRO_LIMITS.proteinPerKg[0]} max={MACRO_LIMITS.proteinPerKg[1]} value={mp.p} onChange={(e) => setMp((m) => ({ ...m, p: e.target.value }))} aria-invalid={msErr.proteinPerKg ? true : undefined} />
-                {msErr.proteinPerKg && <span className="err-msg">{msErr.proteinPerKg}</span>}</div>
+              <div className="field"><label htmlFor={id("mp")}>مستوى البروتين</label>
+                <select id={id("mp")} value={mp.p} onChange={(e) => setMp((m) => ({ ...m, p: e.target.value }))}>
+                  {PROTEIN_LEVELS.map((o) => <option key={o.v} value={o.v}>{o.l}</option>)}
+                </select></div>
               <div className="field"><label htmlFor={id("mf")}>الدهون (غ لكل كغ)</label>
                 <input id={id("mf")} type="number" inputMode="decimal" step="0.1" min={MACRO_LIMITS.fatPerKg[0]} max={MACRO_LIMITS.fatPerKg[1]} value={mp.f} onChange={(e) => setMp((m) => ({ ...m, f: e.target.value }))} aria-invalid={msErr.fatPerKg ? true : undefined} />
                 {msErr.fatPerKg && <span className="err-msg">{msErr.fatPerKg}</span>}</div>
@@ -158,7 +159,7 @@ export default function IntakeCalculator({ idPrefix = "i" }: { idPrefix?: string
               <li>يوم الراحة = الأيض × عامل النشاط × 1.2 (التأثير الحراري للطعام) = {fmt(result.restDayEE)}</li>
               {td > 0 && <li>يوم التمرين = (الأيض × عامل النشاط + مصروف التمرين) × 1.2 = {fmt(result.trainingDayEE)}</li>}
               <li>المحافظة = متوسط الأسبوع؛ والهدف = المحافظة × {raw.ebFactor}</li>
-              <li>الماكروز: بروتين = غ/كغ × الوزن، ودهون = غ/كغ × الوزن، والكارب = (السعرات − بروتين×4 − دهون×9) ÷ 4.</li>
+              <li>الماكروز: بروتين = (1.6 للمعتدل أو 2.2 للعالي) غ/كغ × الوزن، ودهون = غ/كغ × الوزن، والكارب = (السعرات − بروتين×4 − دهون×9) ÷ 4.</li>
               <li>معادلات السعرات من حاسبة Menno Henselmans (Energy Intake Calculator).</li>
             </ul>
           </details>
