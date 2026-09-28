@@ -521,6 +521,11 @@ const orderPath = (fd: FormData) => {
   const no = String(fd.get("order_no") ?? "");
   return ORDER_NO.test(no) ? `/account/orders/${no}/training` : null;
 };
+/** الوزن والقياسات والخطوات تظهر في صفحة التقدم */
+const progressPath = (fd: FormData) => {
+  const no = String(fd.get("order_no") ?? "");
+  return ORDER_NO.test(no) ? `/account/orders/${no}/progress` : null;
+};
 const toNum = (v: FormDataEntryValue | null) => {
   const s = String(v ?? "").trim().replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d))).replace(",", ".");
   return s === "" ? null : Number(s);
@@ -615,6 +620,7 @@ export async function logStepsAction(_: ActionState, fd: FormData): Promise<Acti
     await asTrainee((tx) => tx.query("SELECT app.log_steps($1,$2,$3)", [block, week, total]));
   } catch (err) { return tFail(err); }
   const p = orderPath(fd); if (p) revalidatePath(p);
+  const pp = progressPath(fd); if (pp) revalidatePath(pp);
   return { ok: true, message: total == null ? "تم الحذف." : "تم حفظ الخطوات." };
 }
 
@@ -628,6 +634,7 @@ export async function logWeightAction(_: ActionState, fd: FormData): Promise<Act
     await asTrainee((tx) => tx.query("SELECT app.log_weight($1,$2)", [date, kg]));
   } catch (err) { return tFail(err); }
   const p = orderPath(fd); if (p) revalidatePath(p);
+  const pp = progressPath(fd); if (pp) revalidatePath(pp);
   return { ok: true, message: kg == null ? "تم حذف الوزن لهذا اليوم." : "تم حفظ الوزن." };
 }
 
@@ -641,6 +648,7 @@ export async function logMeasurementsAction(_: ActionState, fd: FormData): Promi
     await asTrainee((tx) => tx.query("SELECT app.log_measurements($1,$2,$3,$4,$5)", [date, ...vals]));
   } catch (err) { return tFail(err); }
   const p = orderPath(fd); if (p) revalidatePath(p);
+  const pp = progressPath(fd); if (pp) revalidatePath(pp);
   return { ok: true, message: "تم حفظ القياسات." };
 }
 

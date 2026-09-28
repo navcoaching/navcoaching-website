@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { requireUser } from "@/lib/session";
 import { withUser } from "@/lib/db";
 import { fmtDate, fmtDateTime } from "@/lib/format";
 import { DEFAULT_REMINDERS, riyadhDate } from "@/lib/schedule";
 import { currentWeek, effective, formatSets, planLabel } from "@/lib/training";
 import { muscleAr } from "@/lib/exercises";
-import { loadAdherence, loadAllLifts, loadBlockData, loadBodyData, type BlockRow } from "@/lib/program-data";
+import { loadAdherence, loadBlockData, type BlockRow } from "@/lib/program-data";
 import AdherenceBar from "@/components/account/AdherenceBar";
-import ProgressView from "@/components/training/ProgressView";
 import VideoButton from "@/components/VideoButton";
-import { ExerciseDetails, ImportFromImage, ItemLogForm, MeasureForm, RateDayForm, StepsForm, SwapForm, WeightForm } from "./TrainingForms";
+import { ExerciseDetails, ImportFromImage, ItemLogForm, RateDayForm, SwapForm } from "./TrainingForms";
 import { visionEnabled } from "@/lib/workout-vision";
 
 export const metadata: Metadata = { title: "برنامج التمرين", robots: { index: false } };
@@ -22,9 +21,10 @@ type SwapOpt = { id: string; name: string; video_url: string | null; is_coach_ch
 export default async function TrainingPage({ params, searchParams }: { params: Promise<{ orderNo: string }>; searchParams: Promise<SP> }) {
   const { orderNo } = await params;
   const sp = await searchParams;
+  // الوزن والقياسات والخطوات صارت في صفحة «التقدم» (الروابط القديمة تتحوّل لها)
+  if (sp.tab === "progress") redirect(`/account/orders/${encodeURIComponent(orderNo)}/progress`);
   const user = await requireUser(`/account/orders/${orderNo}/training`);
   const today = riyadhDate();
-  const tab = sp.tab === "progress" ? "progress" : "program";
 
   const res = await withUser(user.id, async (tx) => {
     const { rows: [o] } = await tx.query(
@@ -42,15 +42,13 @@ export default async function TrainingPage({ params, searchParams }: { params: P
     const firstOpen = data.days.find((d) => d.items.some((i) => !data.logs.some((l) => l.block_item_id === i.id && l.week_no === week)));
     const day = data.days.find((d) => d.id === sp.day) ?? firstOpen ?? data.days[0] ?? null;
     const swaps = new Map<string, SwapOpt[]>();
-    if (tab === "program" && day && block.status === "active") {
+    if (day && block.status === "active") {
       for (const it of day.items) swaps.set(it.id, (await tx.query(`SELECT * FROM app.swap_options($1)`, [it.id])).rows);
     }
-    const body = tab === "progress" ? await loadBodyData(tx, user.id) : null;
-    const lifts = tab === "progress" ? await loadAllLifts(tx, user.id) : [];
     const { rows: [{ r }] } = await tx.query("SELECT app.review_schedule() AS r");
     const adherence = o.status === "active" && o.category === "follow"
       ? await loadAdherence(tx, o, Number(r?.review_window_days ?? DEFAULT_REMINDERS.review_window_days), today) : null;
-    return { o, blocks, block, data, wk, week, day, swaps, body, lifts, adherence };
+    return { o, blocks, block, data, wk, week, day, swaps, adherence };
   });
   if (!res) notFound();
   const { o, blocks, block } = res;
@@ -65,10 +63,10 @@ export default async function TrainingPage({ params, searchParams }: { params: P
       </div></section>
     );
   }
-  const { data, wk, week, day, swaps, body, lifts, adherence } = res as Required<typeof res> & { data: NonNullable<Awaited<ReturnType<typeof loadBlockData>>> };
+  const { data, wk, week, day, swaps, adherence } = res as Required<typeof res> & { data: NonNullable<Awaited<ReturnType<typeof loadBlockData>>> };
   const readOnly = block.status !== "active";
   const link = (over: Partial<SP>) => {
-    const q = new URLSearchParams(Object.entries({ tab, week: String(week), day: day?.id, block: sp.block, ...over }).filter(([, v]) => v) as [string, string][]);
+    const q = new URLSearchParams(Object.entries({ week: String(week), day: day?.id, block: sp.block, ...over }).filter(([, v]) => v) as [string, string][]);
     return `${base}?${q}`;
   };
   const notes = data.notes.filter((n) => n.week_no == null || n.week_no === week);
@@ -109,13 +107,9 @@ export default async function TrainingPage({ params, searchParams }: { params: P
             <p style={{ whiteSpace: "pre-wrap", margin: "8px 0 0" }}>{block.instructions}</p></details>
         )}
 
-        <nav className="tabs" aria-label="أقسام البرنامج">
-          <Link href={link({ tab: "program" })} aria-current={tab === "program" ? "true" : undefined}>التمارين</Link>
-          <Link href={link({ tab: "progress" })} aria-current={tab === "progress" ? "true" : undefined}>التقدم والقياسات</Link>
-        </nav>
+        <p className="small" style={{ margin: 0 }}><Link href={`/account/orders/${o.order_no}/progress`}>سجّل وزنك وقياساتك وخطواتك من صفحة «التقدم» ←</Link></p>
 
-        {tab === "program" ? (
-          <>
+        <>
             <nav className="pill-nav" aria-label="الأسبوع">
               {Array.from({ length: block.weeks }, (_, i) => i + 1).map((w) => (
                 <Link key={w} href={link({ week: String(w), day: undefined })} aria-current={w === week ? "true" : undefined}>
@@ -169,21 +163,7 @@ export default async function TrainingPage({ params, searchParams }: { params: P
                 {!readOnly && day.items.length > 0 && <div className="card"><RateDayForm orderNo={o.order_no} day={day.id} week={week} rating={rating} /></div>}
               </div>
             )}
-          </>
-        ) : (
-          <>
-            {!readOnly && (
-              <div className="grid g3 progress-forms">
-                <section className="card stack"><h2 style={{ fontSize: 17 }}>سجّل وزنك</h2><WeightForm orderNo={o.order_no} today={today} /></section>
-                <section className="card stack"><h2 style={{ fontSize: 17 }}>القياسات</h2><MeasureForm orderNo={o.order_no} today={today} /></section>
-                <section className="card stack"><h2 style={{ fontSize: 17 }}>الخطوات</h2>
-                  <p className="small muted" style={{ margin: 0 }}>هدفك الأسبوعي: {block.steps_goal_week.toLocaleString("en-US")} خطوة</p>
-                  <StepsForm orderNo={o.order_no} block={block.id} weeks={block.weeks} week={wk} values={Object.fromEntries(data.steps.map((s) => [s.week_no, s.total]))} /></section>
-              </div>
-            )}
-            <ProgressView data={data} body={body!} lifts={lifts} />
-          </>
-        )}
+        </>
       </div>
     </section>
   );

@@ -141,7 +141,7 @@ test("صور الدليل المصوّر", async ({ browser }) => {
   ]);
   await capture(page, "rate", page.getByTestId("rate-day"), page.getByTestId("rate-day"), [page.getByTestId("rate-day")]);
 
-  await page.goto(`${base}/training?tab=progress`);
+  await page.goto(`${base}/progress`);
   const forms = page.locator(".progress-forms > section");
   await capture(page, "body", page.locator(".progress-forms"), page.locator(".progress-forms"), [forms.nth(0), forms.nth(1), forms.nth(2)]);
 

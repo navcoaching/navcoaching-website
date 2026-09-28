@@ -8,6 +8,9 @@ import { loadAllLifts, loadBlockData, loadBodyData, type BlockRow } from "@/lib/
 import ProgressView from "@/components/training/ProgressView";
 import { loadCalorieState } from "@/lib/calorie-data";
 import BodyInfoForm from "./BodyInfoForm";
+import { MeasureForm, StepsForm, WeightForm } from "../training/TrainingForms";
+import { currentWeek } from "@/lib/training";
+import { riyadhDate } from "@/lib/schedule";
 
 export const metadata: Metadata = { title: "التقدم", robots: { index: false } };
 
@@ -32,6 +35,9 @@ export default async function ProgressPage({ params }: { params: Promise<{ order
   });
   if (!res) notFound();
   const { o, data, body, lifts, cal } = res;
+  const today = riyadhDate();
+  const active = data?.block.status === "active";
+  const wk = data ? currentWeek(data.block.start_date, today, data.block.weeks) : 0;
 
   const w = body.weights;
   const waist = body.measurements.filter((m) => m.waist != null);
@@ -50,13 +56,21 @@ export default async function ProgressPage({ params }: { params: Promise<{ order
         <nav className="small"><Link href="/account">طلباتي</Link> / <Link href={`/account/orders/${o.order_no}`}><bdi className="num">{o.order_no}</bdi></Link> / التقدم</nav>
         <div className="row" style={{ justifyContent: "space-between", alignItems: "end" }}>
           <h1 style={{ fontSize: "clamp(24px,4vw,32px)", margin: 0 }}>التقدم</h1>
-          {data?.block.status === "active" && <Link className="btn btn-ghost btn-sm" href={`/account/orders/${o.order_no}/training?tab=progress`}>سجّل وزنك وقياساتك ←</Link>}
         </div>
         <div className="today-macros progress-stats" data-testid="progress-stats">
           {stats.map(([label, value, sub]) => (
             <div key={label}><span className="small muted">{label}</span><b className="num">{value}</b>{sub && <span className="small muted">{sub[0] && <bdi dir="ltr">{sub[0]}</bdi>}{sub[0] && sub[1] ? " " : ""}{sub[1]}</span>}</div>
           ))}
         </div>
+        {active && data && (
+          <div className="grid g3 progress-forms" data-testid="progress-forms">
+            <section className="card stack"><h2 style={{ fontSize: 17 }}>سجّل وزنك</h2><WeightForm orderNo={o.order_no} today={today} /></section>
+            <section className="card stack"><h2 style={{ fontSize: 17 }}>القياسات</h2><MeasureForm orderNo={o.order_no} today={today} /></section>
+            <section className="card stack"><h2 style={{ fontSize: 17 }}>الخطوات</h2>
+              <p className="small muted" style={{ margin: 0 }}>هدفك الأسبوعي: {data.block.steps_goal_week.toLocaleString("en-US")} خطوة</p>
+              <StepsForm orderNo={o.order_no} block={data.block.id} weeks={data.block.weeks} week={wk} values={Object.fromEntries(data.steps.map((s) => [s.week_no, s.total]))} /></section>
+          </div>
+        )}
         <ProgressView data={data} body={body} lifts={lifts} />
         {cal && (
           <section className="card stack" aria-labelledby="bi-h">

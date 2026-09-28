@@ -236,8 +236,11 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await coach.reload();
   await expect(coach.getByTestId("member-swaps")).toHaveCount(0);
 
-  // ---------- المتدرب: التقدم ----------
-  await trainee.getByRole("link", { name: "التقدم والقياسات" }).click();
+  // ---------- المتدرب: التقدم (الوزن والقياسات والخطوات في صفحة «التقدم» فقط، والرابط القديم يتحوّل لها) ----------
+  await expect(trainee.getByRole("link", { name: "التقدم والقياسات" })).toHaveCount(0);
+  await trainee.goto(`/account/orders/${orderNo}/training?tab=progress`);
+  await expect(trainee).toHaveURL(new RegExp(`/account/orders/${orderNo}/progress$`));
+  await expect(trainee.getByTestId("progress-forms")).toHaveCount(1);
   await trainee.getByTestId("weight-form").getByLabel("الوزن (كغ)").fill("72.4");
   await trainee.getByRole("button", { name: "حفظ الوزن" }).click();
   await expect(trainee.getByText("تم حفظ الوزن")).toBeVisible();
