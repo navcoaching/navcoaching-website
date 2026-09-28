@@ -19,8 +19,8 @@ test("التطبيع: الأقواس والجمع والرموز", () => {
 test("تحويل المجموعات: تجاهل الإحماء، أثقل وزن، الباوند، وRPE", () => {
   assert.deepEqual(toLog({ name: "x", unit: "kg", sets: [
     { weight: 40, reps: 10, warmup: true }, { weight: 80, reps: 10 }, { weight: 85, reps: 8, rpe: 8.5 }] }),
-    { weight: 85, reps: [10, 8], rir: 2 });
-  assert.deepEqual(toLog({ name: "x", unit: "lb", sets: [{ weight: 100, reps: 12 }] }), { weight: 45.5, reps: [12], rir: null });
+    { weight: 85, weights: [80, 85], reps: [10, 8], rir: 2 });
+  assert.deepEqual(toLog({ name: "x", unit: "lb", sets: [{ weight: 100, reps: 12 }] }), { weight: 45.5, weights: [45.5], reps: [12], rir: null });
   assert.equal(toLog({ name: "x", unit: "kg", sets: [{ weight: 20, reps: 10, warmup: true }] }), null);
 });
 

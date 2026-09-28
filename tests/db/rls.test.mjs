@@ -461,6 +461,16 @@ describe("منصة التدريب", () => {
     assert.equal(l.length, 1); assert.equal(l[0].weight, 62.5); assert.deepEqual(l[0].reps, []); assert.equal(l[0].exercise_id, squat);
     await assert.rejects(as(A, "SELECT app.log_item($1, 6, 60, '{}', NULL)", [item]), /الأسبوع/);
     await assert.rejects(as(B, "SELECT app.log_item($1, 1, 60, '{}', NULL)", [item]), /غير موجود/);
+    // وزن لكل جولة: weight = الأثقل، والتسجيل القديم يمسح أوزان الجولات
+    await as(A, "SELECT app.log_item_sets($1, 1, '{60,62.5,65}', '{10,9,8}', 1)", [item]);
+    let s = (await as(A, "SELECT weight::float, weights::float[], reps FROM item_logs WHERE block_item_id = $1 AND week_no = 1", [item])).rows[0];
+    assert.equal(s.weight, 65); assert.deepEqual(s.weights, [60, 62.5, 65]); assert.deepEqual(s.reps, [10, 9, 8]);
+    await assert.rejects(as(A, "SELECT app.log_item_sets($1, 1, '{60,62.5}', '{10}', NULL)", [item]), /لكل جولة/);
+    await assert.rejects(as(A, "SELECT app.log_item_sets($1, 1, '{60,2000}', '{10,10}', NULL)", [item]), /الوزن/);
+    await assert.rejects(as(B, "SELECT app.log_item_sets($1, 1, '{60}', '{10}', NULL)", [item]), /غير موجود/);
+    await as(A, "SELECT app.log_item($1, 1, 62.5, '{}', NULL)", [item]);
+    s = (await as(A, "SELECT weight::float, weights FROM item_logs WHERE block_item_id = $1 AND week_no = 1", [item])).rows[0];
+    assert.equal(s.weight, 62.5); assert.equal(s.weights, null);
     await assert.rejects(as(A, "INSERT INTO item_logs (block_item_id, week_no, exercise_id, weight) VALUES ($1, 2, $2, 1)", [item, squat]), /permission denied/);
     await as(A, "SELECT app.rate_day($1, 1, 4)", [day]);
     await assert.rejects(as(A, "SELECT app.rate_day($1, 1, 9)", [day]), /1 إلى 5/);

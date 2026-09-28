@@ -9,7 +9,7 @@ import { dbErrorMessage, withUser, type Tx } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { notifySafe } from "@/lib/mail";
 import { notifyTrainee, RESULT_LABEL, CHANNEL_LABEL, type ChannelResult } from "@/lib/notify";
-import { parseReps, parseRir, type PlanWeek } from "@/lib/training";
+import { MAX_SETS, parseReps, parseRir, type PlanWeek } from "@/lib/training";
 import { ANATOMICAL_ACTIONS, EQUIPMENT, EX_STATUS, KINDS, LEVELS, MOVEMENT_SUBCATEGORIES, MUSCLES, PATTERNS, REHAB_CATEGORIES, REHAB_LOADS, REHAB_PHASES, REHAB_REVIEW, SECONDARY_MUSCLES, SUB_PATTERNS, placeFor, type RehabReview } from "@/lib/exercises";
 import type { ActionState } from "./client";
 import { allow } from "@/lib/rate";
@@ -525,20 +525,46 @@ const toNum = (v: FormDataEntryValue | null) => {
   return s === "" ? null : Number(s);
 };
 
+const NEED_REPS = "اكتب تكرارات الجولة الأولى.";
+/**
+ * تسجيل تمرين بوزن لكل جولة. الجولة الفارغة الوزن تأخذ وزن اللي قبلها،
+ * والفارغة التكرارات تأخذ المستهدف لتلك الجولة. الجولات الزائدة الفارغة تُتجاهل.
+ */
 export async function logItemAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const item = idOf(fd, "item");
   const week = Number(fd.get("week"));
   const clear = fd.get("clear") === "1";
-  const weight = clear ? null : toNum(fd.get("weight"));
   if (!item || !Number.isInteger(week)) return { error: T_GENERIC };
-  if (!clear && (weight == null || !Number.isFinite(weight) || weight < 0 || weight > 1000)) return { error: "اكتب الوزن بالكيلو (0 لتمارين وزن الجسم)." };
-  const reps = fd.getAll("reps").map((v) => toNum(v)).filter((v): v is number => v != null);
-  if (reps.some((r) => !Number.isInteger(r) || r < 0 || r > 200)) return { error: "التكرارات أرقام صحيحة." };
+  const rawW = fd.getAll("set_weight").map((v) => toNum(v));
+  const rawR = fd.getAll("reps").map((v) => toNum(v));
   const rir = toNum(fd.get("rir"));
-  if (rir != null && (!Number.isFinite(rir) || rir < 0 || rir > 10)) return { error: "RIR رقم من 0 إلى 10." };
+  if (!clear) {
+    if (rawW[0] == null) return { error: "اكتب وزن الجولة الأولى بالكيلو (0 لتمارين وزن الجسم)." };
+    if ([...rawW, ...rawR].some((v) => v != null && !Number.isFinite(v))) return { error: "الأوزان والتكرارات أرقام." };
+    if (rawW.some((w) => w != null && (w < 0 || w > 1000))) return { error: "الوزن بين 0 و 1000 كغ." };
+    if (rawR.some((r) => r != null && (!Number.isInteger(r) || r < 0 || r > 200))) return { error: "التكرارات أرقام صحيحة." };
+    if (rir != null && (!Number.isFinite(rir) || rir < 0 || rir > 10)) return { error: "RIR رقم من 0 إلى 10." };
+  }
   try {
-    await asTrainee((tx) => tx.query("SELECT app.log_item($1,$2,$3,$4,$5)", [item, week, weight, reps, rir]));
-  } catch (err) { return tFail(err); }
+    await asTrainee(async (tx) => {
+      if (clear) return tx.query("SELECT app.log_item_sets($1,$2,NULL,NULL,NULL)", [item, week]);
+      const { rows: [it] } = await tx.query("SELECT plan FROM block_items WHERE id = $1", [item]);
+      const target: number[] = Array.isArray(it?.plan?.[week - 1]?.reps) ? it.plan[week - 1].reps.map(Number) : [];
+      const weights: number[] = [], reps: number[] = [];
+      let last = rawW[0]!;
+      for (let i = 0; i < Math.min(MAX_SETS, Math.max(rawW.length, rawR.length)); i++) {
+        const r = rawR[i] ?? target[i];
+        if (r == null) continue; // جولة زائدة بدون تكرارات ولا مستهدف
+        if (rawW[i] != null) last = rawW[i]!;
+        weights.push(last); reps.push(r);
+      }
+      if (!weights.length) throw new Error(NEED_REPS);
+      return tx.query("SELECT app.log_item_sets($1,$2,$3,$4,$5)", [item, week, weights, reps, rir]);
+    });
+  } catch (err) {
+    if ((err as Error).message === NEED_REPS) return { error: NEED_REPS };
+    return tFail(err);
+  }
   const p = orderPath(fd); if (p) revalidatePath(p);
   return { ok: true, message: clear ? "تم حذف التسجيل." : "تم الحفظ ✅" };
 }
@@ -619,7 +645,7 @@ export async function logMeasurementsAction(_: ActionState, fd: FormData): Promi
 
 // ---------- تعبئة التسجيل من صورة تطبيق خارجي (Strong وغيره) ----------
 export type ImportPreview = ActionState & {
-  rows?: { external: string; key: string; itemId: string | null; how: string | null; weight: number | null; reps: number[]; rir: number | null }[];
+  rows?: { external: string; key: string; itemId: string | null; how: string | null; weights: number[]; reps: number[]; rir: number | null }[];
   items?: { id: string; name: string }[];
 };
 
@@ -658,35 +684,37 @@ export async function readWorkoutImageAction(_: ImportPreview, fd: FormData): Pr
   }
   const rows = matchExercises(extracted, ctx.items, ctx.aliases).map((r) => ({
     external: r.external, key: r.key, itemId: r.itemId, how: r.how,
-    weight: r.log?.weight ?? null, reps: r.log?.reps ?? [], rir: r.log?.rir ?? null,
+    weights: r.log?.weights ?? [], reps: r.log?.reps ?? [], rir: r.log?.rir ?? null,
   }));
   return { ok: true, rows, items: ctx.items.map((i) => ({ id: i.id, name: i.name })) };
 }
 
-/** يحفظ ما راجعه المتدرب: تسجيل كل تمرين (app.log_item) وربط الأسماء الجديدة للمرات الجاية */
+/** يحفظ ما راجعه المتدرب: تسجيل كل تمرين بوزن لكل جولة (app.log_item_sets) وربط الأسماء الجديدة للمرات الجاية */
 export async function saveImportedLogsAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const week = Number(fd.get("week"));
   const count = Math.min(30, Number(fd.get("count")) || 0);
   if (!Number.isInteger(week) || week < 1) return { error: T_GENERIC };
-  const entries: { item: string; weight: number; reps: number[]; rir: number | null; key: string; how: string }[] = [];
+  const entries: { item: string; weights: number[]; reps: number[]; rir: number | null; key: string; how: string }[] = [];
   for (let k = 0; k < count; k++) {
     const item = String(fd.get(`item_${k}`) ?? "");
     if (!item) continue; // «تجاهل»
     if (!UUID.test(item)) return { error: T_GENERIC };
-    const weight = toNum(fd.get(`weight_${k}`));
-    if (weight == null || !Number.isFinite(weight) || weight < 0 || weight > 1000) return { error: `اكتب الوزن بالكيلو للتمرين ${k + 1}.` };
     const reps = String(fd.get(`reps_${k}`) ?? "").split(/[^0-9٠-٩]+/).filter(Boolean).map((v) => toNum(v)!);
     if (!reps.length || reps.length > 10 || reps.some((r) => !Number.isInteger(r) || r < 0 || r > 200)) return { error: `التكرارات للتمرين ${k + 1} أرقام مفصولة بفواصل.` };
+    // الأوزان لكل جولة؛ وزن واحد = لكل الجولات، والناقص يأخذ آخر وزن
+    const ws = String(fd.get(`weights_${k}`) ?? "").split(/[\s,،;]+/).filter(Boolean).map((v) => toNum(v.replace("٫", ".")));
+    if (!ws.length || ws.length > reps.length || ws.some((w) => w == null || !Number.isFinite(w) || w < 0 || w > 1000)) return { error: `اكتب الوزن بالكيلو لكل جولة في التمرين ${k + 1} مفصولة بفواصل.` };
+    const weights = reps.map((_, i) => (ws[i] ?? ws[ws.length - 1]) as number);
     const rir = toNum(fd.get(`rir_${k}`));
     if (rir != null && (!Number.isFinite(rir) || rir < 0 || rir > 10)) return { error: "RIR رقم من 0 إلى 10." };
     if (entries.some((e) => e.item === item)) return { error: "ربطت تمرينين من الصورة بنفس تمرين البرنامج. اختر «تجاهل» لأحدهما." };
-    entries.push({ item, weight, reps, rir, key: String(fd.get(`key_${k}`) ?? "").slice(0, 120), how: String(fd.get(`how_${k}`) ?? "") });
+    entries.push({ item, weights, reps, rir, key: String(fd.get(`key_${k}`) ?? "").slice(0, 120), how: String(fd.get(`how_${k}`) ?? "") });
   }
   if (!entries.length) return { error: "ما فيه تمارين للحفظ. اربط تمريناً واحداً على الأقل." };
   try {
     await asTrainee(async (tx) => {
       for (const e of entries) {
-        await tx.query("SELECT app.log_item($1,$2,$3,$4,$5)", [e.item, week, e.weight, e.reps, e.rir]);
+        await tx.query("SELECT app.log_item_sets($1,$2,$3,$4,$5)", [e.item, week, e.weights, e.reps, e.rir]);
         if (e.key && e.how !== "alias" && e.how !== "name") {
           const ex = (await tx.query("SELECT exercise_id FROM block_items WHERE id = $1", [e.item])).rows[0]?.exercise_id;
           if (ex) await tx.query("SELECT app.save_exercise_alias($1,$2)", [e.key, ex]);

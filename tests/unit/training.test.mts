@@ -1,7 +1,7 @@
 // اختبارات منطق منصة التدريب مقابل معادلات ملف التدريب في Google Sheets.
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { currentWeek, effective, formatReps, normalizePlan, parseReps, parseRir, personalRecords, vlu, weeklyAverages, weeklySummary } from "../../src/lib/training.ts";
+import { bestOneRm, currentWeek, effective, formatReps, formatSets, normalizePlan, oneRm, parseReps, parseRir, personalRecords, vlu, weeklyAverages, weeklySummary } from "../../src/lib/training.ts";
 
 describe("منصة التدريب", () => {
   test("VLU = مجموع التكرارات × الوزن × (1 − RIR × 0.05)", () => {
@@ -55,5 +55,39 @@ describe("منصة التدريب", () => {
     assert.deepEqual(pr.map((p) => [p.name, p.best, p.previous, p.status]), [["Bench", 30, null, "first"], ["Squat", 70, 60, "new"]]);
     const avg = weeklyAverages([{ date: "2026-09-01", value: 80 }, { date: "2026-09-03", value: 79 }, { date: "2026-09-09", value: 78 }], "2026-09-01");
     assert.deepEqual(avg, [{ week: 1, avg: 79.5, n: 2 }, { week: 2, avg: 78, n: 1 }]);
+  });
+});
+
+describe("وزن لكل جولة و1RM", () => {
+  test("VLU بأوزان مختلفة لكل جولة = مجموع (تكرارات × وزن) × (1 − RIR × 0.05)", () => {
+    assert.equal(vlu([10, 8], [20, 25], 2), (200 + 200) * 0.9);
+    // مثال الدليل: 20 كغ، 10-10-9، RIR 2 → 522 (نفس نتيجة الوزن الواحد)
+    assert.equal(Math.round(vlu([10, 10, 9], [20, 20, 20], 2)), 522);
+    assert.equal(vlu([10, 10, 9], 20, 2), vlu([10, 10, 9], [20, 20, 20], 2));
+  });
+  test("Epley: الوزن × (1 + التكرارات ÷ 30)، والتكرار الواحد = الوزن", () => {
+    assert.equal(oneRm(100, 1), 100);
+    assert.equal(oneRm(100, 10), 100 * (1 + 10 / 30));
+    assert.equal(oneRm(0, 10), 0);
+    assert.equal(oneRm(60, 0), 0);
+    // أفضل جولة، مقرّب لأقرب 0.5
+    assert.equal(bestOneRm([60, 70], [10, 5]), 81.5); // 60×1.333=80، 70×1.1667=81.67 → 81.5
+  });
+  test("effective: السجل القديم (وزن واحد) يطبّق نفس الوزن على كل الجولات", () => {
+    const plan = { sets: 3, reps: [10, 10, 10], rir: 2 };
+    const old = effective({ block_item_id: "i", week_no: 1, weight: 60, reps: [], rir: null }, plan);
+    assert.deepEqual(old.weights, [60, 60, 60]);
+    const perSet = effective({ block_item_id: "i", week_no: 1, weight: 65, weights: [60, 62.5, 65], reps: [10, 9, 8], rir: 1 }, plan);
+    assert.equal(perSet.vlu, (600 + 562.5 + 520) * 0.95);
+    assert.equal(perSet.oneRm, 82.5); // 65 × (1 + 8/30) = 82.33 (الأعلى) → أقرب 0.5
+    assert.equal(formatSets(perSet.weights, perSet.reps), "60×10, 62.5×9, 65×8");
+  });
+  test("الأرقام القياسية تحسب أعلى 1RM عبر كل التسجيلات", () => {
+    const pr = personalRecords([
+      { exercise_id: "a", name: "Squat", weight: 80, weights: [80, 80], reps: [5, 5], logged_at: "2026-01-01" },
+      { exercise_id: "a", name: "Squat", weight: 70, reps: [12], logged_at: "2026-01-08" },
+    ]);
+    assert.equal(pr[0].best, 80);
+    assert.equal(pr[0].oneRm, 98); // 70 × 1.4 = 98 أعلى من 80 × 1.1667 = 93.3
   });
 });

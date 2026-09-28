@@ -5,7 +5,7 @@ import { requireUser } from "@/lib/session";
 import { withUser } from "@/lib/db";
 import { fmtDate, fmtDateTime } from "@/lib/format";
 import { DEFAULT_REMINDERS, riyadhDate } from "@/lib/schedule";
-import { currentWeek, effective, planLabel } from "@/lib/training";
+import { currentWeek, effective, formatSets, planLabel } from "@/lib/training";
 import { muscleAr } from "@/lib/exercises";
 import { loadAdherence, loadAllLifts, loadBlockData, loadBodyData, type BlockRow } from "@/lib/program-data";
 import AdherenceBar from "@/components/account/AdherenceBar";
@@ -149,11 +149,11 @@ export default async function TrainingPage({ params, searchParams }: { params: P
                       <p className="target"><span className="muted small">المستهدف</span> <b dir="ltr">{planLabel(plan)}</b></p>
                       {it.note && <p className="small alert info" style={{ margin: 0 }}>{it.note}</p>}
                       {ex?.instructions && <details className="small"><summary style={{ cursor: "pointer", minHeight: 36 }}>طريقة الأداء</summary><p style={{ whiteSpace: "pre-wrap", margin: "6px 0 0" }}>{ex.instructions}</p></details>}
-                      {eff && <p className="small muted" style={{ margin: 0 }}>VLU {Math.round(eff.vlu).toLocaleString("en-US")}</p>}
-                      {readOnly ? (log ? <p className="small">سجّلت: {log.weight} كغ</p> : null) : (
+                      {eff && <p className="small muted" style={{ margin: 0 }}>{eff.oneRm > 0 && <>أعلى وزن تقديري (1RM): <b className="num">{eff.oneRm}</b> كغ · </>}<bdi dir="ltr">VLU {Math.round(eff.vlu).toLocaleString("en-US")}</bdi></p>}
+                      {readOnly ? (log && eff ? <p className="small">سجّلت: <bdi dir="ltr">{formatSets(eff.weights, eff.reps)}</bdi></p> : null) : (
                         <>
                           <ItemLogForm orderNo={o.order_no} item={it.id} week={week} target={plan?.reps ?? []} targetRir={plan?.rir ?? null}
-                            log={log ? { weight: log.weight, reps: log.reps, rir: log.rir } : null} />
+                            log={log ? { weight: log.weight, weights: log.weights, reps: log.reps, rir: log.rir } : null} />
                           <SwapForm orderNo={o.order_no} item={it.id} current={it.exercise_id} options={opts.map((x) => ({ id: x.id, name: x.name, is_coach_choice: x.is_coach_choice }))} />
                         </>
                       )}

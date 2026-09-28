@@ -909,3 +909,12 @@ h2 .count { display: inline-grid; place-items: center; min-inline-size: 26px; bl
   background: rgb(155 92 255 / 0.20); border: 1px solid rgb(155 92 255 / 0.45); }
 .gamers-note { color: #9fb0c9; font-size: 13px; padding-inline: 4px; }
 @media (max-width: 860px) { .gamers-banner { grid-template-columns: minmax(0, 1fr); } }
+/* تسجيل التمرين: وزن × تكرارات لكل جولة */
+.set-rows { display: grid; gap: 6px; max-width: 380px; }
+.set-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) 14px minmax(0, 1fr); gap: 8px; align-items: center; }
+.set-row input { text-align: center; padding-inline: 6px; min-width: 0; }
+.set-head { font-size: 12.5px; }
+.set-head span { text-align: center; }
+.set-no { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 13px; background: var(--surface-2); }
+.rir-field { max-width: 130px; }
+.one-rm { padding: 8px 12px; border-radius: 10px; background: var(--ok-bg); color: var(--ok); width: fit-content; }

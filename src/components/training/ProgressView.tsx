@@ -1,6 +1,6 @@
 import LineChart from "@/components/LineChart";
 import { fmtDate } from "@/lib/format";
-import { personalRecords, weeklyAverages, weeklySummary } from "@/lib/training";
+import { personalRecords, weeklyAverages, weeklySummary, type LiftLog } from "@/lib/training";
 import type { BlockData, BodyData } from "@/lib/program-data";
 
 const pct = (v: number) => `${Math.round(v * 100)}٪`;
@@ -9,7 +9,7 @@ const short = (d: string) => d.slice(5).replace("-", "/");
 
 /** الملخص الأسبوعي + الرسوم + الأرقام القياسية — نفس العرض للمتدرب والمدربة */
 export default function ProgressView({ data, body, lifts }: {
-  data: BlockData | null; body: BodyData; lifts: { exercise_id: string; name: string; weight: number; logged_at: string }[];
+  data: BlockData | null; body: BodyData; lifts: LiftLog[];
 }) {
   const items = data ? data.days.flatMap((d) => d.items) : [];
   const summary = data ? weeklySummary(items, data.logs, data.block.weeks) : [];
@@ -67,12 +67,13 @@ export default function ProgressView({ data, body, lifts }: {
         {prs.length === 0 ? <p className="small muted">تظهر هنا أعلى أوزانك لكل تمرين بعد ما تسجّل تمارينك.</p> : (
           <div className="table-wrap">
             <table className="t" data-testid="prs">
-              <thead><tr><th>التمرين</th><th className="num">أعلى وزن</th><th className="num">السابق</th><th>الحالة</th><th>التاريخ</th></tr></thead>
+              <thead><tr><th>التمرين</th><th className="num">أعلى وزن</th><th className="num">1RM تقديري</th><th className="num">السابق</th><th>الحالة</th><th>التاريخ</th></tr></thead>
               <tbody>
                 {prs.map((p) => (
                   <tr key={p.exercise_id}>
                     <td><bdi dir="ltr">{p.name}</bdi></td>
                     <td className="num"><b>{p.best}</b> كغ</td>
+                    <td className="num">{p.oneRm > 0 ? `${p.oneRm} كغ` : "—"}</td>
                     <td className="num">{p.previous ?? "—"}</td>
                     <td>{p.status === "new" ? <span className="status ok">رقم قياسي جديد</span> : p.status === "first" ? <span className="status muted">أول تسجيل</span> : <span className="status muted">ثابت</span>}</td>
                     <td className="small">{fmtDate(p.best_at)}</td>
@@ -82,6 +83,7 @@ export default function ProgressView({ data, body, lifts }: {
             </table>
           </div>
         )}
+        {prs.length > 0 && <p className="small muted" style={{ margin: 0 }}>1RM تقديري = أعلى وزن تقدر تشيله لتكرار واحد، محسوب من أفضل جولة بمعادلة Epley: الوزن × (1 + التكرارات ÷ 30). أدق مع 10 تكرارات أو أقل، ولا يعني أنك تختبره فعلياً.</p>}
       </section>
     </div>
   );

@@ -4,7 +4,7 @@
 export type ExtractedSet = { weight: number | null; reps: number | null; rpe?: number | null; warmup?: boolean };
 export type ExtractedExercise = { name: string; unit: "kg" | "lb" | null; sets: ExtractedSet[] };
 export type DayItem = { id: string; exercise_id: string; name: string };
-export type ImportLog = { weight: number; reps: number[]; rir: number | null };
+export type ImportLog = { weight: number; weights: number[]; reps: number[]; rir: number | null };
 export type ImportRow = { external: string; key: string; itemId: string | null; how: "alias" | "name" | "partial" | null; log: ImportLog | null };
 
 const LB = 0.45359237;
@@ -32,15 +32,15 @@ function overlap(a: string, b: string): number {
   return n / (A.size + B.size - n);
 }
 
-/** مجموعات العمل (بدون إحماء) → وزن واحد (الأثقل) + تكرارات كل مجموعة، وRPE → RIR تقريبي */
+/** مجموعات العمل (بدون إحماء) → وزن وتكرارات لكل جولة بالكيلو (أقرب 0.5)، والأثقل، وRPE → RIR تقريبي */
 export function toLog(ex: ExtractedExercise): ImportLog | null {
-  const work = ex.sets.filter((s) => !s.warmup && s.reps != null && s.reps > 0);
+  const work = ex.sets.filter((s) => !s.warmup && s.reps != null && s.reps > 0).slice(0, 10);
   if (!work.length) return null;
   const factor = ex.unit === "lb" ? LB : 1;
-  const kg = Math.max(0, ...work.map((s) => (s.weight ?? 0) * factor));
+  const weights = work.map((s) => Math.round(Math.max(0, (s.weight ?? 0) * factor) * 2) / 2);
   const rpes = work.map((s) => s.rpe).filter((r): r is number => r != null && r >= 5 && r <= 10);
   const rir = rpes.length ? Math.max(0, Math.min(5, Math.round(10 - rpes[rpes.length - 1]))) : null;
-  return { weight: Math.round(kg * 2) / 2, reps: work.map((s) => Math.round(s.reps!)).slice(0, 10), rir };
+  return { weight: Math.max(...weights), weights, reps: work.map((s) => Math.round(s.reps!)), rir };
 }
 
 /**

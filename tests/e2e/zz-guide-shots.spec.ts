@@ -136,7 +136,7 @@ test("صور الدليل المصوّر", async ({ browser }) => {
     page.getByRole("navigation", { name: "الأسبوع" }), page.getByRole("navigation", { name: "اليوم" }), card.locator(".target"), card.getByRole("link", { name: "▶ فيديو" }),
   ]);
   await capture(page, "log", card, card, [
-    card.locator(".log-fields > .field").nth(0), card.locator(".log-fields > .field").nth(1), card.locator(".log-fields > .field").nth(2),
+    card.locator(".set-rows"), card.locator(".rir-field"), card.getByTestId("one-rm"),
     card.getByRole("button", { name: "تحديث" }), card.locator(".swap-form"),
   ]);
   await capture(page, "rate", page.getByTestId("rate-day"), page.getByTestId("rate-day"), [page.getByTestId("rate-day")]);

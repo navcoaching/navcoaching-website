@@ -135,14 +135,24 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   const card = trainee.getByTestId("exercise-card").first();
   await expect(card).toContainText("Back Squat");
   await expect(card).toContainText("3×10 · RIR 2");
-  await card.getByLabel("الوزن (كغ)").fill("60");
+  // وزن لكل جولة: الجولة الثانية فارغة = نفس وزن الأولى، والتكرارات الفارغة = المستهدف
+  await card.getByLabel("وزن الجولة 1").fill("60");
+  await card.getByLabel("وزن الجولة 3").fill("65");
+  await card.getByLabel("تكرارات الجولة 3").fill("8");
+  await expect(card.getByTestId("one-rm")).toContainText("82.5"); // 65 × (1 + 8/30) = 82.3
+  await card.getByRole("button", { name: "+ جولة" }).click();
+  await card.getByLabel("وزن الجولة 4").fill("50");
+  await card.getByLabel("تكرارات الجولة 4").fill("12");
   await card.getByRole("button", { name: "حفظ", exact: true }).click();
   await expect(card.getByText("تم الحفظ ✅")).toBeVisible();
   await expect(card.getByLabel("مسجّل")).toBeVisible();
   const log = (await db.query(
-    `SELECT l.weight::float, l.week_no FROM item_logs l JOIN block_items i ON i.id = l.block_item_id JOIN block_days d ON d.id = i.day_id
+    `SELECT l.weight::float, l.weights::float[], l.reps, l.week_no FROM item_logs l JOIN block_items i ON i.id = l.block_item_id JOIN block_days d ON d.id = i.day_id
        JOIN blocks b ON b.id = d.block_id JOIN orders o ON o.id = b.order_id WHERE o.order_no = $1`, [orderNo])).rows;
-  expect(log).toEqual([{ weight: 60, week_no: 1 }]);
+  expect(log).toEqual([{ weight: 65, weights: [60, 60, 65, 50], reps: [10, 10, 8, 12], week_no: 1 }]);
+  await trainee.reload();
+  await expect(trainee.getByTestId("exercise-card").first().getByLabel("وزن الجولة 3")).toHaveValue("65");
+  await expect(trainee.getByTestId("exercise-card").first()).toContainText("أعلى وزن تقديري (1RM): 82.5 كغ");
   await trainee.getByTestId("rate-day").getByRole("radio", { name: "4", exact: true }).check();
   await trainee.getByRole("button", { name: "حفظ التقييم" }).click();
   await expect(trainee.getByText("تم حفظ تقييم اليوم")).toBeVisible();

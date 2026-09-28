@@ -3,6 +3,7 @@
 //   الالتزام الأسبوعي = عدد التمارين المسجّل لها وزن ÷ عدد تمارين البرنامج
 //   التغيّر عن الأسبوع السابق = VLU الأسبوع ÷ VLU السابق − 1
 //   الرقم القياسي = أعلى وزن مسجّل للتمرين عبر كل البرامج
+//   1RM التقديري (Epley) = الوزن × (1 + التكرارات ÷ 30)، وللتكرار الواحد = الوزن نفسه
 
 export type PlanWeek = { sets: number; reps: number[]; rir: number | null };
 export const MAX_SETS = 10;
@@ -56,20 +57,38 @@ export function planLabel(p: PlanWeek | undefined): string {
   return `${formatReps(p.reps)}${p.rir != null ? ` · RIR ${p.rir}` : ""}`;
 }
 
-/** الحجم التدريبي (نفس معادلة الشيت) */
-export function vlu(reps: number[], weight: number, rir: number | null | undefined): number {
-  const total = reps.reduce((a, b) => a + b, 0);
-  return total * weight * (1 - (rir ?? 0) * 0.05);
+/** الحجم التدريبي (معادلة الشيت): مجموع (تكرارات × وزن) لكل جولة × (1 − RIR × 0.05). وزن واحد = نفس الوزن لكل الجولات */
+export function vlu(reps: number[], weight: number | number[], rir: number | null | undefined): number {
+  const total = reps.reduce((a, r, i) => a + r * Number(Array.isArray(weight) ? weight[i] ?? weight[weight.length - 1] ?? 0 : weight), 0);
+  return total * (1 - (rir ?? 0) * 0.05);
 }
 
-export type LogLite = { block_item_id: string; week_no: number; weight: number; reps: number[]; rir: number | null };
+/** أعلى وزن تقديري لتكرار واحد (Epley). أدق مع 10 تكرارات أو أقل */
+export function oneRm(weight: number, reps: number): number {
+  if (!(weight > 0) || !(reps > 0)) return 0;
+  return reps === 1 ? weight : weight * (1 + reps / 30);
+}
+/** أعلى 1RM بين الجولات، مقرّب لأقرب 0.5 كغ */
+export function bestOneRm(weights: number[], reps: number[]): number {
+  const best = Math.max(0, ...reps.map((r, i) => oneRm(Number(weights[i] ?? weights[weights.length - 1] ?? 0), r)));
+  return Math.round(best * 2) / 2;
+}
+
+/** «20×10, 22.5×8» — وزن × تكرارات لكل جولة */
+export const formatSets = (weights: number[], reps: number[]) => reps.map((r, i) => `${weights[i] ?? weights[weights.length - 1]}×${r}`).join(", ");
+
+export type LogLite = { block_item_id: string; week_no: number; weight: number; weights?: number[] | null; reps: number[]; rir: number | null };
+/** أوزان الجولات: المسجّلة لكل جولة، أو نفس الوزن لكل الجولات (التسجيل القديم) */
+export const setWeights = (log: { weight: number; weights?: (number | string)[] | null }, sets: number) =>
+  log.weights?.length ? log.weights.map(Number) : Array.from({ length: Math.max(1, sets) }, () => Number(log.weight));
 export type ItemLite = { id: string; plan: PlanWeek[] };
 
 /** التكرارات والـ RIR الفعلية؛ إن لم يكتبها المتدرب نأخذ المستهدف (كما في الشيت) */
 export function effective(log: LogLite, plan: PlanWeek | undefined) {
   const reps = log.reps.length ? log.reps : plan?.reps ?? [];
   const rir = log.rir ?? plan?.rir ?? null;
-  return { reps, rir, vlu: vlu(reps, Number(log.weight), rir) };
+  const weights = setWeights(log, reps.length);
+  return { reps, rir, weights, vlu: vlu(reps, weights, rir), oneRm: bestOneRm(weights, reps) };
 }
 
 export type WeekSummary = { week: number; logged: number; total: number; adherence: number; vlu: number; change: number | null };
@@ -98,9 +117,10 @@ export function currentWeek(startDate: string, today: string, weeks: number): nu
   return Math.min(weeks, Math.floor(d / 7) + 1);
 }
 
-export type PrRow = { exercise_id: string; name: string; best: number; best_at: string; previous: number | null; status: "first" | "new" | "same" };
-/** أعلى وزن لكل تمرين، والرقم السابق قبله، وحالته (أول تسجيل / رقم جديد) */
-export function personalRecords(logs: { exercise_id: string; name: string; weight: number; logged_at: string }[]): PrRow[] {
+export type PrRow = { exercise_id: string; name: string; best: number; best_at: string; previous: number | null; status: "first" | "new" | "same"; oneRm: number };
+export type LiftLog = { exercise_id: string; name: string; weight: number; logged_at: string; reps?: number[]; weights?: number[] | null };
+/** أعلى وزن لكل تمرين، والرقم السابق قبله، وحالته (أول تسجيل / رقم جديد)، وأعلى 1RM تقديري */
+export function personalRecords(logs: LiftLog[]): PrRow[] {
   const byEx = new Map<string, typeof logs>();
   for (const l of logs) byEx.set(l.exercise_id, [...(byEx.get(l.exercise_id) ?? []), l]);
   const out: PrRow[] = [];
@@ -111,6 +131,7 @@ export function personalRecords(logs: { exercise_id: string; name: string; weigh
     out.push({
       exercise_id: id, name: best.name, best: Number(best.weight), best_at: best.logged_at, previous,
       status: sorted.length === 1 ? "first" : previous != null ? "new" : "same",
+      oneRm: Math.max(0, ...list.map((l) => (l.reps?.length ? bestOneRm(setWeights(l, l.reps.length), l.reps) : 0))),
     });
   }
   return out.sort((a, b) => a.name.localeCompare(b.name));

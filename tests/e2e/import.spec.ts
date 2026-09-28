@@ -66,9 +66,9 @@ test("تعبئة التسجيل من صورة: قراءة، ربط يدوي، ح
   await expect(review.locator("fieldset").nth(0)).toContainText("مطابقة تقريبية");
   await expect(review.locator("fieldset").nth(1)).toContainText("مطابقة بالاسم");
   await expect(review.locator("fieldset").nth(2)).toContainText("اختر التمرين");
-  await expect(review.locator('input[name="weight_0"]')).toHaveValue("110"); // الإحماء لا يُحسب، والأثقل
+  await expect(review.locator('input[name="weights_0"]')).toHaveValue("100, 110"); // الإحماء لا يُحسب، ووزن لكل جولة
   await expect(review.locator('input[name="reps_0"]')).toHaveValue("12, 10");
-  await expect(review.locator('input[name="weight_2"]')).toHaveValue("45.5"); // 100 lb
+  await expect(review.locator('input[name="weights_2"]')).toHaveValue("45.5"); // 100 lb
   await noHorizontalScroll(page);
   const rowOpt = await review.locator('select[name="item_2"] option', { hasText: "Seated Cable Row" }).getAttribute("value");
   await review.locator('select[name="item_2"]').selectOption(rowOpt!);
@@ -78,10 +78,11 @@ test("تعبئة التسجيل من صورة: قراءة، ربط يدوي، ح
   await page.reload();
   await expect(page.getByTestId("exercise-card").filter({ has: page.getByLabel("مسجّل") })).toHaveCount(3);
   const logs = (await db.query(
-    `SELECT e.name, l.weight::float AS w, l.reps FROM item_logs l JOIN block_items i ON i.id = l.block_item_id JOIN exercises e ON e.id = i.exercise_id
+    `SELECT e.name, l.weight::float AS w, l.weights::float[] AS ws, l.reps FROM item_logs l JOIN block_items i ON i.id = l.block_item_id JOIN exercises e ON e.id = i.exercise_id
       WHERE i.day_id = $1 AND l.week_no = 1 ORDER BY i.position`, [d.id])).rows;
   expect(logs).toEqual([
-    { name: "Mid Leg Press", w: 110, reps: [12, 10] }, { name: "Hip Thrusts", w: 70, reps: [10, 10] }, { name: "Seated Cable Row", w: 45.5, reps: [12] }]);
+    { name: "Mid Leg Press", w: 110, ws: [100, 110], reps: [12, 10] }, { name: "Hip Thrusts", w: 70, ws: [70, 70], reps: [10, 10] },
+    { name: "Seated Cable Row", w: 45.5, ws: [45.5], reps: [12] }]);
 
   // المرة الثانية: الربط محفوظ
   const box2 = page.getByTestId("import-image");

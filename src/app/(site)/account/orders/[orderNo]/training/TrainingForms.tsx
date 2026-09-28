@@ -5,41 +5,55 @@ import {
   logItemAction, logMeasurementsAction, logStepsAction, logWeightAction, rateDayAction, readWorkoutImageAction, saveImportedLogsAction, swapExerciseAction,
   type ImportPreview,
 } from "@/app/actions/training";
+import { MAX_SETS, bestOneRm } from "@/lib/training";
 
-type Log = { weight: number; reps: number[]; rir: number | null } | null;
+type Log = { weight: number; weights: number[] | null; reps: number[]; rir: number | null } | null;
 
-/** تسجيل تمرين لأسبوع: الوزن (أساسي) والتكرارات الفعلية و RIR (اختياري: الفارغ = المستهدف) */
+/** تسجيل تمرين لأسبوع: وزن وتكرارات لكل جولة، و RIR. الوزن الفارغ = وزن الجولة السابقة، والتكرارات الفارغة = المستهدف */
 export function ItemLogForm({ orderNo, item, week, target, targetRir, log }: {
   orderNo: string; item: string; week: number; target: number[]; targetRir: number | null; log: Log;
 }) {
   const { state, onSubmit, pending } = useFormAction(logItemAction);
-  const sets = Math.max(target.length, log?.reps.length ?? 0, 1);
+  const initialSets = Math.max(target.length, log?.reps.length ?? 0, log?.weights?.length ?? 0, 1);
+  const [sets, setSets] = useState(initialSets);
+  const [w, setW] = useState<string[]>(() => Array.from({ length: MAX_SETS }, (_, i) =>
+    log ? String(log.weights?.[i] ?? (i === 0 || !log.weights ? log.weight : "")) : ""));
+  const [r, setR] = useState<string[]>(() => Array.from({ length: MAX_SETS }, (_, i) => (log?.reps[i] != null ? String(log.reps[i]) : "")));
   const p = `${item}-${week}`;
+  // 1RM مباشر من المدخلات (الفارغ يأخذ السابق/المستهدف)
+  const num = (v: string) => { const n = Number(v.replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d))).replace(",", ".")); return v.trim() && Number.isFinite(n) ? n : null; };
+  let lastW = 0;
+  const ws: number[] = [], rs: number[] = [];
+  for (let i = 0; i < sets; i++) { lastW = num(w[i]) ?? lastW; const rr = num(r[i]) ?? target[i]; if (rr != null) { ws.push(lastW); rs.push(rr); } }
+  const est = num(w[0]) != null ? bestOneRm(ws, rs) : 0;
   return (
     <form className="form log-form" onSubmit={onSubmit} data-testid={`log-${item}`}>
       <input type="hidden" name="order_no" value={orderNo} />
       <input type="hidden" name="item" value={item} />
       <input type="hidden" name="week" value={week} />
-      <div className="log-fields">
-        <div className="field">
-          <label htmlFor={`w-${p}`}>الوزن (كغ)</label>
-          <input id={`w-${p}`} name="weight" type="number" inputMode="decimal" step="0.25" min={0} max={1000} dir="ltr" defaultValue={log?.weight ?? ""} required />
-        </div>
-        <fieldset className="field reps-field">
-          <legend>التكرارات لكل مجموعة</legend>
-          <div className="reps-inputs">
-            {Array.from({ length: sets }, (_, i) => (
-              <input key={i} name="reps" type="number" inputMode="numeric" min={0} max={200} dir="ltr" aria-label={`مجموعة ${i + 1}`}
-                placeholder={target[i] != null ? String(target[i]) : ""} defaultValue={log?.reps[i] ?? ""} />
-            ))}
+      <div className="set-rows" role="group" aria-label="الجولات">
+        <div className="set-row set-head small muted" aria-hidden="true"><span>الجولة</span><span>الوزن (كغ)</span><span /><span>التكرارات</span></div>
+        {Array.from({ length: sets }, (_, i) => (
+          <div className="set-row" key={i}>
+            <span className="set-no">{i + 1}</span>
+            <input name="set_weight" type="text" inputMode="decimal" dir="ltr" aria-label={`وزن الجولة ${i + 1}`} value={w[i]} required={i === 0}
+              placeholder={i > 0 ? (num(w[i - 1]) != null ? w[i - 1] : "نفس السابق") : "كغ"} onChange={(e) => setW((a) => a.map((v, j) => (j === i ? e.target.value : v)))} />
+            <span className="muted" aria-hidden="true">×</span>
+            <input name="reps" type="text" inputMode="numeric" dir="ltr" aria-label={`تكرارات الجولة ${i + 1}`} value={r[i]}
+              placeholder={target[i] != null ? String(target[i]) : ""} onChange={(e) => setR((a) => a.map((v, j) => (j === i ? e.target.value : v)))} />
           </div>
-        </fieldset>
-        <div className="field">
-          <label htmlFor={`r-${p}`}>RIR</label>
-          <input id={`r-${p}`} name="rir" type="number" inputMode="decimal" step="0.5" min={0} max={10} dir="ltr" placeholder={targetRir != null ? String(targetRir) : ""} defaultValue={log?.rir ?? ""} />
+        ))}
+        <div className="row" style={{ gap: 8 }}>
+          {sets < MAX_SETS && <button type="button" className="btn btn-ghost btn-sm" onClick={() => setSets(sets + 1)}>+ جولة</button>}
+          {sets > Math.max(1, target.length) && <button type="button" className="btn btn-ghost btn-sm" onClick={() => setSets(sets - 1)}>− جولة</button>}
         </div>
       </div>
-      <p className="hint" style={{ margin: 0 }}>اترك التكرارات أو RIR فارغة إذا كانت مثل المستهدف.</p>
+      <div className="field rir-field">
+        <label htmlFor={`r-${p}`}>RIR</label>
+        <input id={`r-${p}`} name="rir" type="number" inputMode="decimal" step="0.5" min={0} max={10} dir="ltr" placeholder={targetRir != null ? String(targetRir) : ""} defaultValue={log?.rir ?? ""} />
+      </div>
+      <p className="hint" style={{ margin: 0 }}>الوزن الفارغ = نفس وزن الجولة السابقة، والتكرارات الفارغة = المستهدف.</p>
+      {est > 0 && <p className="small one-rm" data-testid="one-rm" style={{ margin: 0 }}>🏆 أعلى وزن تقديري لتكرار واحد (1RM): <b className="num">{est}</b> كغ</p>}
       <FormMessage state={state} />
       <div className="row" style={{ gap: 8 }}>
         <Submit pending={pending} className="btn btn-sm">{log ? "تحديث" : "حفظ"}</Submit>
@@ -201,7 +215,7 @@ function ImportFlow({ orderNo, day, week, again }: { orderNo: string; day: strin
                 <input type="hidden" name="order_no" value={orderNo} />
                 <input type="hidden" name="week" value={week} />
                 <input type="hidden" name="count" value={rows.length} />
-                <p className="small muted" style={{ margin: 0 }}>راجع الأرقام قبل الحفظ. الوزن = أثقل مجموعة عمل بالكيلو، والإحماء لا يُحسب.</p>
+                <p className="small muted" style={{ margin: 0 }}>راجع الأرقام قبل الحفظ. الأوزان والتكرارات لكل جولة بالترتيب (بالكيلو)، والإحماء لا يُحسب.</p>
                 {rows.map((r, k) => (
                   <fieldset key={k} className="import-row">
                     <legend><bdi dir="ltr">{r.external}</bdi>{" "}
@@ -216,8 +230,8 @@ function ImportFlow({ orderNo, day, week, again }: { orderNo: string; day: strin
                       </select>
                     </div>
                     <div className="import-nums">
-                      <div className="field"><label htmlFor={`w-${k}`}>الوزن (كغ)</label>
-                        <input id={`w-${k}`} name={`weight_${k}`} type="text" inputMode="decimal" dir="ltr" defaultValue={r.weight ?? ""} /></div>
+                      <div className="field"><label htmlFor={`w-${k}`}>الأوزان (كغ)</label>
+                        <input id={`w-${k}`} name={`weights_${k}`} type="text" inputMode="decimal" dir="ltr" defaultValue={r.weights.join(", ")} /></div>
                       <div className="field"><label htmlFor={`r-${k}`}>التكرارات</label>
                         <input id={`r-${k}`} name={`reps_${k}`} type="text" inputMode="numeric" dir="ltr" defaultValue={r.reps.join(", ")} /></div>
                       <div className="field"><label htmlFor={`rir-${k}`}>RIR</label>
