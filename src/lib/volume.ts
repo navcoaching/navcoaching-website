@@ -5,6 +5,9 @@ import type { PlanWeek } from "./training.ts";
 export type VolumeItem = { primary_muscle?: string | null; secondary_muscles?: string[] | null; plan: PlanWeek[] };
 export type Limits = Record<string, { min?: number | null; max?: number | null }>;
 
+/** الحد الافتراضي لكل عضلة (من المدربة): 6 إلى 20 جولة أسبوعياً، ويتعدّل لكل عضلة من «تعديل الحدود» */
+export const DEFAULT_VOLUME_LIMIT = { min: 6, max: 20 };
+
 /** تصنيفات في المكتبة ليست عضلات، فلا تُحسب في الحجم */
 export const NOT_MUSCLES = ["Functional", "Stretching", "Plyometrics", "CrossFit"];
 const isMuscle = (m: string | null | undefined): m is string => Boolean(m) && !NOT_MUSCLES.some((x) => m!.startsWith(x));

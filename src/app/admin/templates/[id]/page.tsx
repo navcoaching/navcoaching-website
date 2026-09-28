@@ -18,7 +18,7 @@ export default async function TemplatePage({ params, searchParams }: { params: P
   const isNew = id === "new";
   if (!isNew && !/^[0-9a-f-]{36}$/.test(id)) notFound();
   const data = await withUser(coach.id, async (tx) => {
-    if (isNew) return { tpl: null, days: [] as EditorDay[], exercises: [] as ExOption[], volume: { limits: {}, muscles: [] as string[] } };
+    if (isNew) return { tpl: null, days: [] as EditorDay[], exercises: [] as ExOption[], volume: { limits: {}, saved: {}, muscles: [] as string[] } };
     const tpl = (await tx.query(`SELECT id, name, weeks, instructions, archived FROM program_templates WHERE id = $1`, [id])).rows[0] as Tpl | undefined;
     if (!tpl) return null;
     const days = (await loadProgramDays(tx, "template", id)).map((d) => ({ ...d, items: d.items.map((i) => ({ ...i, plan: normalizePlan(i.plan, tpl.weeks) })) }));
@@ -51,7 +51,7 @@ export default async function TemplatePage({ params, searchParams }: { params: P
       {!isNew && (
         <>
           <ProgramEditor kind="template" ownerId={tpl!.id} weeks={tpl!.weeks} days={days} exercises={exercises} />
-          <VolumeTable items={days.flatMap((d) => d.items)} weeks={tpl!.weeks} limits={volume.limits} muscles={volume.muscles} />
+          <VolumeTable items={days.flatMap((d) => d.items)} weeks={tpl!.weeks} limits={volume.limits} saved={volume.saved} muscles={volume.muscles} />
           <ActionForm action={duplicateTemplateAction} className="form" submit="نسخ القالب كقالب جديد" submitClass="btn btn-ghost btn-sm">
             <input type="hidden" name="id" value={tpl!.id} />
           </ActionForm>

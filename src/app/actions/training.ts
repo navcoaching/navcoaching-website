@@ -13,6 +13,7 @@ import { MAX_SETS, parseReps, parseRir, type PlanWeek } from "@/lib/training";
 import { ANATOMICAL_ACTIONS, EQUIPMENT, EX_STATUS, KINDS, LEVELS, MOVEMENT_SUBCATEGORIES, MUSCLES, PATTERNS, REHAB_CATEGORIES, REHAB_LOADS, REHAB_PHASES, REHAB_REVIEW, SECONDARY_MUSCLES, SUB_PATTERNS, placeFor, type RehabReview } from "@/lib/exercises";
 import type { ActionState } from "./client";
 import { allow } from "@/lib/rate";
+import { DEFAULT_VOLUME_LIMIT } from "@/lib/volume";
 import { cleanUpload, UploadError } from "@/lib/uploads";
 import { matchExercises, type DayItem, type ExtractedExercise } from "@/lib/workout-import";
 import { MAX_IMAGES, readWorkoutImages, visionEnabled, VisionError } from "@/lib/workout-vision";
@@ -743,6 +744,7 @@ export async function saveVolumeLimitsAction(_: ActionState, fd: FormData): Prom
     if ((min != null && (!Number.isFinite(min) || min < 0 || min > 60)) || (max != null && (!Number.isFinite(max) || max < 0 || max > 60)))
       return { error: `الحدود بين 0 و 60 جولة (${m.split("/")[0].trim()}).` };
     if (min != null && max != null && min > max) return { error: `الحد الأدنى أكبر من الأعلى (${m.split("/")[0].trim()}).` };
+    if (min === DEFAULT_VOLUME_LIMIT.min && max === DEFAULT_VOLUME_LIMIT.max) continue; // نفس الافتراضي، ما يحتاج حفظ
     limits[m] = { min, max };
   }
   try {

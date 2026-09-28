@@ -3,6 +3,7 @@ import type { EditorDay, ExOption } from "@/components/admin/ProgramEditor";
 import { normalizePlan, type LiftLog, type PlanWeek } from "@/lib/training";
 import { computeAdherence, type Adherence, type TrainingWeek } from "@/lib/adherence";
 import { addDays, reviewWeeks, riyadhDate, weekStatuses } from "@/lib/schedule";
+import { DEFAULT_VOLUME_LIMIT } from "@/lib/volume";
 
 /** أيام وتمارين قالب أو بلوك (للمدربة) */
 export async function loadProgramDays(tx: Tx, kind: "template" | "block", ownerId: string): Promise<(EditorDay & { items: (EditorDay["items"][number] & { plan: PlanWeek[]; primary_muscle: string | null; secondary_muscles: string[] | null })[] })[]> {
@@ -127,9 +128,11 @@ export async function loadAdherence(tx: Tx, o: AdherenceOrder, reviewWindowDays:
 }
 
 /** حدود الجولات الأسبوعية لكل عضلة (تضعها المدربة، site_settings.volume_limits) والعضلات المتاحة في المكتبة */
-export async function loadVolumeSetup(tx: Tx): Promise<{ limits: import("@/lib/volume").Limits; muscles: string[] }> {
-  const limits = (await tx.query(`SELECT value FROM site_settings WHERE key = 'volume_limits'`)).rows[0]?.value ?? {};
+export async function loadVolumeSetup(tx: Tx): Promise<{ limits: import("@/lib/volume").Limits; saved: import("@/lib/volume").Limits; muscles: string[] }> {
+  const saved = (await tx.query(`SELECT value FROM site_settings WHERE key = 'volume_limits'`)).rows[0]?.value ?? {};
   const muscles = (await tx.query(
     `SELECT DISTINCT m FROM (SELECT primary_muscle m FROM exercises UNION SELECT unnest(secondary_muscles) FROM exercises) x WHERE m IS NOT NULL ORDER BY m`)).rows.map((r) => r.m as string);
-  return { limits, muscles };
+  // العضلة بدون حد محفوظ تأخذ الحد الافتراضي الذي حددته المدربة (6–20)
+  const limits = Object.fromEntries(muscles.map((m) => [m, saved[m] ?? DEFAULT_VOLUME_LIMIT]));
+  return { limits: { ...limits, ...saved }, saved, muscles };
 }

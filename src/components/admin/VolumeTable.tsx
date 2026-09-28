@@ -5,9 +5,10 @@ import { NOT_MUSCLES, muscleLabel, muscleOrder, volumeStatus, weeklyVolume, type
 const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 
 /** جدول الجولات الأسبوعية لكل عضلة (للمدربة فقط): الأساسية جولة، والثانوية نصف جولة، مع حدود تضعها المدربة */
-export default function VolumeTable({ items, weeks, limits, muscles }: { items: VolumeItem[]; weeks: number; limits: Limits; muscles: string[] }) {
+export default function VolumeTable({ items, weeks, limits, saved = {}, muscles }: { items: VolumeItem[]; weeks: number; limits: Limits; saved?: Limits; muscles: string[] }) {
   const vol = weeklyVolume(items, weeks);
-  const order = muscleOrder(vol, limits);
+  // الصفوف: العضلات المستهدفة، والعضلات اللي حطت لها المدربة حد أدنى بنفسها (مو الافتراضي)
+  const order = muscleOrder(vol, saved);
   const all = muscles.filter((m) => !NOT_MUSCLES.some((x) => m.startsWith(x)));
   return (
     <details className="card stack volume" data-testid="volume" open>
@@ -34,7 +35,7 @@ export default function VolumeTable({ items, weeks, limits, muscles }: { items: 
           </table>
         </div>
       )}
-      <p className="small muted" style={{ margin: 0 }}>العضلة الأساسية للتمرين = جولة، وكل عضلة ثانوية = نصف جولة. الإطالات والوظيفية والانفجارية وكروس فت ما تنحسب. <span className="vol-low">أحمر</span> أقل من الحد، <span className="vol-high">برتقالي</span> أعلى منه.</p>
+      <p className="small muted" style={{ margin: 0 }}>الحد الافتراضي لكل عضلة 6–20 جولة أسبوعياً. العضلة الأساسية للتمرين = جولة، وكل عضلة ثانوية = نصف جولة. الإطالات والوظيفية والانفجارية وكروس فت ما تنحسب. <span className="vol-low">أحمر</span> أقل من الحد، <span className="vol-high">برتقالي</span> أعلى منه.</p>
       <details>
         <summary className="small" style={{ cursor: "pointer", minHeight: 40 }}>تعديل الحدود لكل عضلة (تنطبق على كل البرامج)</summary>
         <ActionForm action={saveVolumeLimitsAction} submit="حفظ الحدود" submitClass="btn btn-ghost btn-sm">

@@ -109,7 +109,11 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   const vol = coach.getByTestId("volume");
   const quads = vol.locator("tr", { has: coach.locator("th", { hasText: /^Quadriceps$/ }) });
   await expect(quads.locator("td").first()).toHaveText("6");
-  await expect(vol.locator("tr", { has: coach.locator("th", { hasText: /^Glutes$/ }) }).locator("td").first()).toHaveText("1.5");
+  const glutes = vol.locator("tr", { has: coach.locator("th", { hasText: /^Glutes$/ }) });
+  await expect(glutes.locator("td").first()).toHaveText("1.5");
+  // الحد الافتراضي 6–20 لكل عضلة: 1.5 أقل من الحد
+  await expect(glutes.locator("td").first()).toHaveClass(/vol-low/);
+  await expect(glutes.locator("td").last()).toHaveText("6–20");
   // حد أدنى 10 للأمامية ← يتلوّن الرقم
   await vol.getByText("تعديل الحدود لكل عضلة").click();
   await vol.getByLabel("الحد الأدنى — Quadriceps").fill("10");
