@@ -2,6 +2,7 @@ import Link from "next/link";
 import { withUser } from "@/lib/db";
 import { requireCoach } from "@/lib/session";
 import { EQUIPMENT, EX_STATUS, LEVELS, TAXONOMY_LEVELS, arPart, cascade, muscleAr, type ExStatus, type TaxonomyKey } from "@/lib/exercises";
+import VideoCheck from "@/components/admin/VideoCheck";
 import AutoSubmitForm from "@/components/admin/AutoSubmitForm";
 
 type SP = Partial<Record<TaxonomyKey | "q" | "equipment" | "level" | "status" | "place", string>>;
@@ -62,6 +63,7 @@ export default async function Exercises({ searchParams }: { searchParams: Promis
         <div className="card stat"><span className="muted">يحتاج مراجعة</span><b>{stats.review}</b></div>
         <div className="card stat"><span className="muted">فيها فيديو</span><b>{stats.video}</b></div>
       </div>
+      <VideoCheck />
       <AutoSubmitForm className="filters ex-filters">
         <div className="field"><label htmlFor="ex-q">بحث بالاسم</label><input id="ex-q" name="q" type="search" dir="auto" defaultValue={q} /></div>
         {TAXONOMY_LEVELS.map(({ key, label }, i) => (

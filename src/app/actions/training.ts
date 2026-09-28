@@ -756,3 +756,29 @@ export async function saveVolumeLimitsAction(_: ActionState, fd: FormData): Prom
   revalidatePath("/admin/orders", "layout");
   return { ok: true, message: "تم حفظ الحدود." };
 }
+
+// ---------- فحص روابط فيديو التمارين (يوتيوب oEmbed: 200 يشتغل ويتضمّن في الموقع) ----------
+export type VideoCheck = { ok?: number; total?: number; bad?: { id: string; name: string; url: string; reason: string }[]; error?: string };
+export async function checkVideosAction(): Promise<VideoCheck> {
+  let list: { id: string; name: string; video_url: string }[];
+  try {
+    list = await asCoach(async (tx) => (await tx.query(`SELECT id, name, video_url FROM exercises WHERE video_url IS NOT NULL AND video_url <> '' ORDER BY name`)).rows);
+  } catch (err) { return { error: dbErrorMessage(err) ?? "للمدربة فقط." }; }
+  const { youtubeId } = await import("@/lib/youtube");
+  const bad: NonNullable<VideoCheck["bad"]> = [];
+  const REASON: Record<number, string> = { 401: "ممنوع تشغيله داخل المواقع", 403: "خاص أو ممنوع تشغيله داخل المواقع", 404: "محذوف أو خاص", 400: "رابط غير صالح" };
+  for (let i = 0; i < list.length; i += 12) {
+    await Promise.all(list.slice(i, i + 12).map(async (e) => {
+      const id = youtubeId(e.video_url);
+      if (!id) { bad.push({ id: e.id, name: e.name, url: e.video_url, reason: "ليس رابط يوتيوب (يفتح خارج الموقع)" }); return; }
+      try {
+        const r = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${id}`)}&format=json`, { signal: AbortSignal.timeout(6000), cache: "no-store" });
+        if (!r.ok) bad.push({ id: e.id, name: e.name, url: e.video_url, reason: REASON[r.status] ?? `رد يوتيوب ${r.status}` });
+      } catch {
+        bad.push({ id: e.id, name: e.name, url: e.video_url, reason: "ما قدرنا نتحقق الآن (جرّبي لاحقاً)" });
+      }
+    }));
+  }
+  bad.sort((a, b) => a.name.localeCompare(b.name));
+  return { ok: list.length - bad.length, total: list.length, bad };
+}

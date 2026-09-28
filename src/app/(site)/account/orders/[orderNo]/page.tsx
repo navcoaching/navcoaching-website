@@ -10,6 +10,7 @@ import { EndOfProgramCard, loadEndOfProgram } from "@/components/account/EndOfPr
 import { getMyFollowUp, getOrderDetail, getSettings } from "@/lib/data";
 import { SUB_LABEL, WEEKDAYS, fmtYMD, riyadhDate } from "@/lib/schedule";
 import StartPrefForm from "@/components/account/StartPrefForm";
+import VideoButton from "@/components/VideoButton";
 import { fmtDate, fmtDateTime, riyals, waLink } from "@/lib/format";
 import { ENTITLED, PRE_ACTIVE, statusLabel, statusTone, stepIndex, timelineSteps } from "@/lib/status";
 import { CopyButton } from "@/components/FormBits";
@@ -235,8 +236,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                     </dl>
                     {c.coach_reply && <p className="alert info" style={{ marginTop: 10 }}><b>رد المدربة:</b> {c.coach_reply}</p>}
                     {c.coach_video_url && (
-                      <a className="btn btn-sm" style={{ marginTop: 10, width: "fit-content" }} href={c.coach_video_url} target="_blank" rel="noopener noreferrer" data-testid="checkin-video">
-                        🎥 شاهد فيديو شرح المراجعة</a>
+                      <div style={{ marginTop: 10 }}><VideoButton url={c.coach_video_url} title="شرح المراجعة" className="btn btn-sm" label="🎥 شاهد فيديو شرح المراجعة" testId="checkin-video" /></div>
                     )}
                   </details>
                 ))}

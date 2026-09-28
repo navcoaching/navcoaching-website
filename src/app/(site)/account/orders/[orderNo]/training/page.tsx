@@ -10,6 +10,7 @@ import { muscleAr } from "@/lib/exercises";
 import { loadAdherence, loadAllLifts, loadBlockData, loadBodyData, type BlockRow } from "@/lib/program-data";
 import AdherenceBar from "@/components/account/AdherenceBar";
 import ProgressView from "@/components/training/ProgressView";
+import VideoButton from "@/components/VideoButton";
 import { ExerciseDetails, ImportFromImage, ItemLogForm, MeasureForm, RateDayForm, StepsForm, SwapForm, WeightForm } from "./TrainingForms";
 import { visionEnabled } from "@/lib/workout-vision";
 
@@ -147,7 +148,7 @@ export default async function TrainingPage({ params, searchParams }: { params: P
                             <h3 style={{ fontSize: 18, margin: 0 }}><span className="muted">{idx + 1}. </span><bdi dir="ltr">{ex?.name ?? "—"}</bdi> {log && <span aria-label="مسجّل">✅</span>}</h3>
                             <p className="small muted" style={{ margin: "2px 0 0" }}>{ex ? muscleAr(ex.primary_muscle) : ""}{" · "}<span className="target"><span className="muted small">المستهدف</span> <b dir="ltr">{planLabel(plan)}</b></span></p>
                           </div>
-                          {ex?.video_url && <a className="btn btn-ghost btn-sm" href={ex.video_url} target="_blank" rel="noopener noreferrer">▶ فيديو</a>}
+                          {ex?.video_url && <VideoButton url={ex.video_url} title={ex.name} testId="exercise-video" />}
                         </div>
                       }>
                       <div className="stack" style={{ ["--space" as string]: "10px", marginTop: 10 }}>

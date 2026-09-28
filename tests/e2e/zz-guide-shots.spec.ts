@@ -133,7 +133,7 @@ test("صور الدليل المصوّر", async ({ browser }) => {
   await page.goto(`${base}/training?week=2&day=${days[0].id}`);
   const card = page.getByTestId("exercise-card").first();
   await capture(page, "training", page.getByRole("navigation", { name: "الأسبوع" }), card.locator(".target"), [
-    page.getByRole("navigation", { name: "الأسبوع" }), page.getByRole("navigation", { name: "اليوم" }), card.locator(".target"), card.getByRole("link", { name: "▶ فيديو" }),
+    page.getByRole("navigation", { name: "الأسبوع" }), page.getByRole("navigation", { name: "اليوم" }), card.locator(".target"), card.getByRole("button", { name: "▶ فيديو" }),
   ]);
   await capture(page, "log", card, card, [
     card.locator(".set-rows"), card.locator(".rir-field"), card.getByTestId("one-rm"),

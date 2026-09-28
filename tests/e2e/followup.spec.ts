@@ -250,7 +250,7 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   await reply.getByLabel("🎥 رابط فيديو شرح المراجعة (اختياري)").fill("http://youtu.be/bad");
   await reply.getByRole("button", { name: "إرسال الرد" }).click();
   await expect(reply.getByText("رابط الفيديو لازم يبدأ بـ https://")).toBeVisible();
-  await reply.getByLabel("🎥 رابط فيديو شرح المراجعة (اختياري)").fill("https://youtu.be/review-week-1");
+  await reply.getByLabel("🎥 رابط فيديو شرح المراجعة (اختياري)").fill("https://youtu.be/rvWeek1abcd");
   await reply.getByRole("button", { name: "إرسال الرد" }).click();
   await expect(coach.getByText(/الإشعار:/).first()).toBeVisible();
   logs = await logRows(orderNo);
@@ -261,7 +261,11 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   await expect(trainee.getByTestId("review-history").locator("li.wk").nth(2)).toContainText("✅"); // مراجعة من الموقع تُحتسب
   // المتدرب يشوف رابط فيديو شرح المراجعة مع الرد
   await trainee.getByText(/وصل الرد 🎥/).first().click();
-  await expect(trainee.getByTestId("checkin-video").first()).toHaveAttribute("href", "https://youtu.be/review-week-1");
+  // الفيديو يشتغل داخل الموقع في نافذة منبثقة
+  await trainee.getByTestId("checkin-video").first().click();
+  await expect(trainee.getByTestId("video-iframe")).toHaveAttribute("src", /youtube-nocookie\.com\/embed\/rvWeek1abcd/);
+  await trainee.getByRole("button", { name: "إغلاق الفيديو" }).click();
+  await expect(trainee.getByTestId("video-iframe")).toHaveCount(0);
 
   // رسالة من المدربة للمتدرب: تظهر في صفحة طلبه، والتنبيه بدون نص الرسالة
   await coach.goto(`/admin/orders/${orderNo}`);

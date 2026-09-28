@@ -60,6 +60,12 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await db.query(`UPDATE "user" SET role = 'coach' WHERE email = $1`, [coachEmail]);
   await coach.goto("/admin/exercises?q=squat");
   await expect(coach.getByTestId("admin-exercises")).toContainText("Back Squat");
+  // فحص روابط الفيديو من يوتيوب (مرة واحدة على الكمبيوتر فقط حتى ما نكرر الطلبات)
+  if (project === "desktop") {
+    const vc = coach.getByTestId("video-check");
+    await vc.getByRole("button", { name: "افحص الآن" }).click();
+    await expect(vc).toContainText(/كل المقاطع \(\d+\) تشتغل|من \d+ تشتغل/, { timeout: 120_000 });
+  }
   // الفلاتر المتسلسلة في المكتبة (تُرسل تلقائياً عند التغيير)
   await coach.goto("/admin/exercises");
   await coach.getByLabel("العضلة").selectOption("Quadriceps / الأمامية");
@@ -154,6 +160,13 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await trainee.getByTestId("training-link").click();
   await trainee.waitForURL(/\/training/);
   const card = trainee.getByTestId("exercise-card").first();
+  // فيديو التمرين يشتغل في نافذة منبثقة داخل الموقع، والبطاقة ما تنطوي
+  await card.getByTestId("exercise-video").click();
+  await expect(trainee.getByTestId("video-iframe")).toHaveAttribute("src", /youtube-nocookie\.com\/embed\/[A-Za-z0-9_-]{11}\?autoplay=1/);
+  await noHorizontalScroll(trainee);
+  await trainee.keyboard.press("Escape");
+  await expect(trainee.getByTestId("video-iframe")).toHaveCount(0);
+  await expect(card).toHaveAttribute("open", "");
   await expect(card).toContainText("Back Squat");
   await expect(card).toContainText("3×10 · RIR 2");
   // وزن لكل جولة: الجولة الثانية فارغة = نفس وزن الأولى، والتكرارات الفارغة = المستهدف
