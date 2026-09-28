@@ -56,6 +56,7 @@ export default async function EditProduct({ params, searchParams }: { params: Pr
             </div>
           </div>
           <label className="check"><input type="checkbox" name="recommended" defaultChecked={p?.recommended} /><span>شارة «الأكثر طلباً»</span></label>
+          <label className="check"><input type="checkbox" name="video_review" defaultChecked={p?.video_review} /><span>🎥 مراجعة أسبوعية بالفيديو (تظهر لكِ خانة رابط فيديو عند الرد على مراجعات مشتركي الباقة)</span></label>
         </div>
         <div className="card stack">
           <h2 style={{ fontSize: 18 }}>المدد والأسعار</h2>

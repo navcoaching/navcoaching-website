@@ -99,7 +99,7 @@ export type OrderRow = {
   status: string; contact_name: string; contact_phone: string; created_at: string; updated_at: string; paid_at: string | null;
   product_slug?: string | null; user_email?: string; is_demo: boolean; archived_at?: string | null;
   product_id?: string | null; source?: string; sub_start_at?: string | null; sub_end_at?: string | null; review_weekday?: number | null;
-  offer_id?: string | null; renewal_of?: string | null; renewal_kind?: string | null; preferred_start?: string | null;
+  offer_id?: string | null; renewal_of?: string | null; renewal_kind?: string | null; preferred_start?: string | null; video_review?: boolean;
 };
 
 export async function getMyOrders(userId: string): Promise<OrderRow[]> {
@@ -113,7 +113,7 @@ export async function getMyOrders(userId: string): Promise<OrderRow[]> {
 export async function getOrderDetail(userId: string, orderNo: string) {
   return withUser(userId, async (tx) => {
     const { rows: [order] } = await tx.query(
-      `SELECT o.*, o.preferred_start::text AS preferred_start, p.slug AS product_slug, u.email AS user_email
+      `SELECT o.*, o.preferred_start::text AS preferred_start, p.slug AS product_slug, coalesce(p.video_review, false) AS video_review, u.email AS user_email
          FROM orders o LEFT JOIN products p ON p.id = o.product_id JOIN "user" u ON u.id = o.user_id
         WHERE o.order_no = $1`, [orderNo]);
     if (!order) return null;
@@ -122,7 +122,7 @@ export async function getOrderDetail(userId: string, orderNo: string) {
     const events = await q("SELECT * FROM order_events WHERE order_id = $1 ORDER BY id");
     const proofs = await q("SELECT id, mime, size_bytes, review_status, review_note, created_at, reviewed_at FROM payment_proofs WHERE order_id = $1 ORDER BY created_at DESC");
     const deliverables = await q("SELECT id, title, kind, url, mime, size_bytes, created_at FROM deliverables WHERE order_id = $1 ORDER BY created_at");
-    const checkins = await q("SELECT id, answers, coach_reply, replied_at, created_at FROM check_ins WHERE order_id = $1 ORDER BY created_at DESC");
+    const checkins = await q("SELECT id, answers, coach_reply, coach_video_url, replied_at, created_at FROM check_ins WHERE order_id = $1 ORDER BY created_at DESC");
     const review = await q("SELECT id, rating, body, display_mode, display_name, consent_publish, status, coach_reply, moderation_reason, created_at FROM reviews WHERE order_id = $1");
     const intake = await q("SELECT answers, health, health_flag, media_consent, consent_terms_at, created_at FROM intakes WHERE order_id = $1");
     return {
@@ -130,7 +130,7 @@ export async function getOrderDetail(userId: string, orderNo: string) {
       events: events.rows as { id: number; actor_id: string | null; from_status: string | null; to_status: string; actor_role: string; note: string | null; created_at: string; client_visible: boolean }[],
       proofs: proofs.rows as { id: string; mime: string; size_bytes: number; review_status: string; review_note: string | null; created_at: string; reviewed_at: string | null }[],
       deliverables: deliverables.rows as { id: string; title: string; kind: string; url: string | null; mime: string | null; size_bytes: number | null; created_at: string }[],
-      checkins: checkins.rows as { id: string; answers: { topic: string; q: string; a: string }[]; coach_reply: string | null; replied_at: string | null; created_at: string }[],
+      checkins: checkins.rows as { id: string; answers: { topic: string; q: string; a: string }[]; coach_reply: string | null; coach_video_url: string | null; replied_at: string | null; created_at: string }[],
       review: (review.rows[0] ?? null) as null | { id: string; rating: number | null; body: string; display_mode: string; display_name: string; consent_publish: boolean; status: string; coach_reply: string | null; moderation_reason: string | null; created_at: string },
       intake: (intake.rows[0] ?? null) as null | { answers: Record<string, unknown>; health: Record<string, unknown>; health_flag: boolean; media_consent: string; consent_terms_at: string; created_at: string },
     };

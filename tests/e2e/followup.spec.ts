@@ -241,10 +241,16 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   await trainee.locator('textarea[name="a"]').first().fill("التزمت بالتمارين هذا الأسبوع");
   await trainee.getByRole("button", { name: "أرسل المراجعة" }).click();
   await expect(trainee.getByText("وصلت مراجعتك")).toBeVisible();
+  // الباقة مفعّل فيها «مراجعة بالفيديو» ← تظهر خانة رابط الفيديو مع الرد
+  await db.query(`UPDATE products SET video_review = true WHERE slug = 'intensive'`);
   await coach.reload();
   await coach.getByText(/بانتظار الرد|مراجعة/).first().click().catch(() => {});
   const reply = coach.locator("form", { has: coach.getByRole("button", { name: "إرسال الرد" }) }).first();
   await reply.locator('textarea[name="reply"]').fill("ممتاز! نزيد الأوزان الأسبوع الجاي.");
+  await reply.getByLabel("🎥 رابط فيديو شرح المراجعة (اختياري)").fill("http://youtu.be/bad");
+  await reply.getByRole("button", { name: "إرسال الرد" }).click();
+  await expect(reply.getByText("رابط الفيديو لازم يبدأ بـ https://")).toBeVisible();
+  await reply.getByLabel("🎥 رابط فيديو شرح المراجعة (اختياري)").fill("https://youtu.be/review-week-1");
   await reply.getByRole("button", { name: "إرسال الرد" }).click();
   await expect(coach.getByText(/الإشعار:/).first()).toBeVisible();
   logs = await logRows(orderNo);
@@ -253,6 +259,9 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
 
   await trainee.goto(`/account/orders/${orderNo}`);
   await expect(trainee.getByTestId("review-history").locator("li.wk").nth(2)).toContainText("✅"); // مراجعة من الموقع تُحتسب
+  // المتدرب يشوف رابط فيديو شرح المراجعة مع الرد
+  await trainee.getByText(/وصل الرد 🎥/).first().click();
+  await expect(trainee.getByTestId("checkin-video").first()).toHaveAttribute("href", "https://youtu.be/review-week-1");
 
   await coach.context().close();
   await trainee.context().close();

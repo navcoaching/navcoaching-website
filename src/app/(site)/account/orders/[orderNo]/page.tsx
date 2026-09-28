@@ -202,12 +202,16 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                 {checkins.map((c) => (
                   <details key={c.id} className="card flat">
                     <summary style={{ cursor: "pointer", minHeight: 44 }}>
-                      مراجعة {fmtDate(c.created_at)} — {c.coach_reply ? <span className="status ok">وصل الرد</span> : <span className="status wait">بانتظار الرد</span>}
+                      مراجعة {fmtDate(c.created_at)} — {c.replied_at ? <span className="status ok">وصل الرد{c.coach_video_url ? " 🎥" : ""}</span> : <span className="status wait">بانتظار الرد</span>}
                     </summary>
                     <dl className="kv small" style={{ marginTop: 10 }}>
                       {c.answers.map((a, i) => (<Fragment key={i}><dt>{a.topic || a.q}</dt><dd>{a.a || "—"}</dd></Fragment>))}
                     </dl>
                     {c.coach_reply && <p className="alert info" style={{ marginTop: 10 }}><b>رد المدربة:</b> {c.coach_reply}</p>}
+                    {c.coach_video_url && (
+                      <a className="btn btn-sm" style={{ marginTop: 10, width: "fit-content" }} href={c.coach_video_url} target="_blank" rel="noopener noreferrer" data-testid="checkin-video">
+                        🎥 شاهد فيديو شرح المراجعة</a>
+                    )}
                   </details>
                 ))}
               </div>

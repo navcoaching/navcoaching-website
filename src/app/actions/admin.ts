@@ -150,15 +150,17 @@ export async function replyCheckinAction(_: ActionState, fd: FormData): Promise<
   const id = String(fd.get("id") ?? "");
   const orderNo = String(fd.get("order_no") ?? "");
   const reply = String(fd.get("reply") ?? "").trim().slice(0, 2000);
-  if (!reply) return { error: "اكتبي الرد." };
+  const video = String(fd.get("video_url") ?? "").trim();
+  if (!reply && !video) return { error: "اكتبي الرد أو أضيفي رابط الفيديو." };
+  if (video && (!/^https:\/\/\S+$/.test(video) || video.length > 500)) return { error: "رابط الفيديو لازم يبدأ بـ https://" };
   let results: ChannelResult[] = [];
   try {
     results = await asCoach(async (tx) => {
-      await tx.query("SELECT app.reply_checkin($1,$2)", [id, reply]);
+      await tx.query("SELECT app.reply_checkin($1,$2,$3)", [id, reply, video]);
       const o = await orderTarget(tx, orderNo);
       if (!o) return [];
       return notifyTrainee(tx, { orderId: o.id, orderNo, userId: o.user_id }, {
-        kind: "checkin_reply", subject: `رد المدربة على مراجعتك — ${orderNo}`, text: "وصلك رد من المدربة على مراجعتك الأسبوعية." });
+        kind: "checkin_reply", subject: `رد المدربة على مراجعتك — ${orderNo}`, text: video ? "وصلك رد من المدربة على مراجعتك الأسبوعية، ومعه فيديو شرح." : "وصلك رد من المدربة على مراجعتك الأسبوعية." });
     });
   } catch (err) { return fail(err); }
   revalidatePath(`/admin/orders/${orderNo}`);
@@ -318,6 +320,7 @@ const productSchema = z.object({
   requirements: z.string().trim().max(600),
   policy_note: z.string().trim().max(600),
   recommended: z.boolean(),
+  video_review: z.boolean(),
   status: z.enum(["draft", "published", "archived"]),
   sort: z.coerce.number().int().min(0).max(999),
   image_id: z.string().optional().default(""),
@@ -328,7 +331,7 @@ export async function saveProductAction(_: ActionState, fd: FormData): Promise<A
   const parsed = productSchema.safeParse({
     id: get("id"), slug: get("slug"), category: get("category"), name: get("name"), audience: get("audience"),
     items: get("items"), note: get("note"), delivery: get("delivery"), requirements: get("requirements"),
-    policy_note: get("policy_note"), recommended: fd.get("recommended") === "on", status: get("status"), sort: get("sort"),
+    policy_note: get("policy_note"), recommended: fd.get("recommended") === "on", video_review: fd.get("video_review") === "on", status: get("status"), sort: get("sort"),
     image_id: get("image_id"),
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
@@ -355,15 +358,15 @@ export async function saveProductAction(_: ActionState, fd: FormData): Promise<A
   try {
     await asCoach(async (tx, uid) => {
       const vals = [p.slug, p.category, p.name, p.audience, JSON.stringify(items), p.note || null, p.delivery || null,
-        p.requirements || null, p.policy_note || null, p.recommended, p.status, p.sort, p.image_id || null];
+        p.requirements || null, p.policy_note || null, p.recommended, p.status, p.sort, p.image_id || null, p.video_review];
       if (id) {
         await tx.query(
           `UPDATE products SET slug=$1, category=$2, name=$3, audience=$4, items=$5, note=$6, delivery=$7, requirements=$8,
-             policy_note=$9, recommended=$10, status=$11, sort=$12, image_id=$13, updated_at=now() WHERE id=$14`, [...vals, id]);
+             policy_note=$9, recommended=$10, status=$11, sort=$12, image_id=$13, video_review=$14, updated_at=now() WHERE id=$15`, [...vals, id]);
       } else {
         id = (await tx.query(
-          `INSERT INTO products (slug, category, name, audience, items, note, delivery, requirements, policy_note, recommended, status, sort, image_id)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING id`, vals)).rows[0].id;
+          `INSERT INTO products (slug, category, name, audience, items, note, delivery, requirements, policy_note, recommended, status, sort, image_id, video_review)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING id`, vals)).rows[0].id;
       }
       for (const [i, o] of offers.entries()) {
         await tx.query(

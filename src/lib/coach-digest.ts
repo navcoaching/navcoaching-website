@@ -25,7 +25,7 @@ export async function buildDigest(tx: Tx, r: Reminders, today: string): Promise<
   }
   const { rows: waiting } = await tx.query(
     `SELECT o.order_no, o.contact_name, count(*)::int n FROM check_ins c JOIN orders o ON o.id = c.order_id
-      WHERE c.coach_reply IS NULL AND NOT o.is_demo AND o.status IN ('active', 'delivered')
+      WHERE c.replied_at IS NULL AND NOT o.is_demo AND o.status IN ('active', 'delivered')
       GROUP BY o.order_no, o.contact_name ORDER BY min(c.created_at)`);
   for (const x of waiting) d.awaitingReply.push({ name: x.contact_name, order_no: x.order_no, note: x.n > 1 ? `${x.n} مراجعات` : "مراجعة واحدة" });
   for (const s of await loadPendingSuggestions(tx)) {

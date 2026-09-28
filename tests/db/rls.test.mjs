@@ -812,3 +812,22 @@ describe("موعد بداية البرنامج", () => {
     assert.equal(o.now_start, true);
   });
 });
+
+describe("فيديو شرح المراجعة الأسبوعية", () => {
+  test("المدربة ترد بنص و/أو رابط https فقط، والمتدرب لا يرد على نفسه", async () => {
+    const no = await newOrder(A, "k-video-00000000000001", "int1");
+    const { rows: [o] } = await owner.query("UPDATE orders SET status = 'active' WHERE order_no = $1 RETURNING id", [no]);
+    const { rows: [c] } = await owner.query("INSERT INTO check_ins (order_id, user_id, answers) VALUES ($1, $2, '[]') RETURNING id", [o.id, A]);
+    await as(COACH, "SELECT app.reply_checkin($1, '', 'https://youtu.be/abc')", [c.id]);
+    let r = (await owner.query("SELECT coach_reply, coach_video_url, replied_at IS NOT NULL AS replied FROM check_ins WHERE id = $1", [c.id])).rows[0];
+    assert.deepEqual(r, { coach_reply: null, coach_video_url: "https://youtu.be/abc", replied: true });
+    await as(COACH, "SELECT app.reply_checkin($1, 'ممتاز', NULL)", [c.id]);
+    r = (await owner.query("SELECT coach_reply, coach_video_url FROM check_ins WHERE id = $1", [c.id])).rows[0];
+    assert.deepEqual(r, { coach_reply: "ممتاز", coach_video_url: null });
+    await assert.rejects(as(COACH, "SELECT app.reply_checkin($1, 'x', 'http://youtu.be/abc')", [c.id]), /https/);
+    await assert.rejects(as(COACH, "SELECT app.reply_checkin($1, ' ', NULL)", [c.id]), /اكتبي الرد/);
+    await assert.rejects(as(A, "SELECT app.reply_checkin($1, 'x', NULL)", [c.id]), /للمدربة فقط/);
+    // الرد القديم (بدون فيديو) ما زال يعمل
+    await as(COACH, "SELECT app.reply_checkin($1, 'رد قديم')", [c.id]);
+  });
+});

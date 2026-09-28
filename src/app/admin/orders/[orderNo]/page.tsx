@@ -233,14 +233,19 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
             <div className="card stack">
               <h2 style={{ fontSize: 19 }}>المراجعات الأسبوعية</h2>
               {checkins.map((c) => (
-                <Details key={c.id} className="card flat" defaultOpen={!c.coach_reply}>
-                  <summary style={{ cursor: "pointer", minHeight: 44 }}>{fmtDateTime(c.created_at)} {c.coach_reply ? <span className="status ok">تم الرد</span> : <span className="status action">بانتظار ردك</span>}</summary>
+                <Details key={c.id} className="card flat" defaultOpen={!c.replied_at}>
+                  <summary style={{ cursor: "pointer", minHeight: 44 }}>{fmtDateTime(c.created_at)} {c.replied_at ? <span className="status ok">تم الرد</span> : <span className="status action">بانتظار ردك</span>}</summary>
                   <dl className="kv small" style={{ marginTop: 10 }}>
                     {c.answers.map((a, i) => <Fragment key={i}><dt>{a.topic || a.q}</dt><dd>{a.a || "—"}</dd></Fragment>)}
                   </dl>
-                  <ActionForm action={replyCheckinAction} submit={c.coach_reply ? "تحديث الرد" : "إرسال الرد"}>
+                  <ActionForm action={replyCheckinAction} submit={c.replied_at ? "تحديث الرد" : "إرسال الرد"}>
                     <input type="hidden" name="id" value={c.id} /><input type="hidden" name="order_no" value={o.order_no} />
                     <div className="field"><label>ردك</label><textarea name="reply" defaultValue={c.coach_reply ?? ""} maxLength={2000} /></div>
+                    {(o.video_review || c.coach_video_url) && (
+                      <div className="field"><label htmlFor={`cv-${c.id}`}>🎥 رابط فيديو شرح المراجعة (اختياري)</label>
+                        <input id={`cv-${c.id}`} name="video_url" type="url" dir="ltr" placeholder="https://youtu.be/… أو رابط Google Drive" defaultValue={c.coach_video_url ?? ""} maxLength={500} />
+                        <span className="hint">تأكدي أن الرابط مفتوح لمن معه الرابط (غير مدرج/Unlisted).</span></div>
+                    )}
                   </ActionForm>
                 </Details>
               ))}

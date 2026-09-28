@@ -63,7 +63,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
       // (ب) ما يحتاج تعديلاً منكِ
       for (const x of (await tx.query(
         `SELECT o.order_no, o.contact_name, count(*)::int n FROM check_ins c JOIN orders o ON o.id = c.order_id
-          WHERE c.coach_reply IS NULL AND NOT o.is_demo GROUP BY 1, 2 ORDER BY min(c.created_at)`)).rows) {
+          WHERE c.replied_at IS NULL AND NOT o.is_demo GROUP BY 1, 2 ORDER BY min(c.created_at)`)).rows) {
         todos.push({ order_no: x.order_no, name: x.contact_name, tone: "warn", href: `/admin/orders/${x.order_no}`,
           text: x.n === 1 ? "مراجعة أسبوعية بدون رد" : `${x.n} مراجعات أسبوعية بدون رد` });
       }
