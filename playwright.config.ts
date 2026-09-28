@@ -15,6 +15,8 @@ export default defineConfig({
     trace: "retain-on-failure",
     serviceWorkers: "block", // الـ Service Worker يُختبر وحده في pwa.spec.ts
     screenshot: "only-on-failure",
+    // أسماء الملفات العربية في التحميل تحتاج لغة UTF-8 (مثل أي جوال أو كمبيوتر)؛ بيئة الاختبار بدونها تسمّي الملف «download»
+    launchOptions: { env: { ...process.env, LANG: "C.UTF-8", LC_ALL: "C.UTF-8" } },
   },
   projects: [
     { name: "iphone", use: { ...devices["iPhone 13"], browserName: "chromium", defaultBrowserType: "chromium" } },

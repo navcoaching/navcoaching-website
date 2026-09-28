@@ -177,3 +177,10 @@ export type MyFreePlan = { request_id: string; requested_at: string; slug: strin
 export async function getMyFreePlans(userId: string): Promise<MyFreePlan[]> {
   return withUser(userId, async (tx) => (await tx.query("SELECT * FROM app.my_free_plans()")).rows as MyFreePlan[]);
 }
+
+export type MyBooklet = { id: string; title: string; description: string | null; file_size: number };
+/** الكتيبات المتاحة للمتدرب (RLS: المنشورة لمن عنده اشتراك) */
+export async function getMyBooklets(userId: string): Promise<MyBooklet[]> {
+  return withUser(userId, async (tx) => (await tx.query(
+    `SELECT id, title, description, file_size FROM booklets WHERE published ORDER BY sort, created_at`)).rows as MyBooklet[]);
+}

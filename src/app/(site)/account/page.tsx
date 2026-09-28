@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireUser } from "@/lib/session";
-import { getMyFreePlans, getMyOrders, getMyPrefs } from "@/lib/data";
+import { getMyBooklets, getMyFreePlans, getMyOrders, getMyPrefs } from "@/lib/data";
 import { fmtDate, riyals } from "@/lib/format";
 import { statusLabel, statusTone } from "@/lib/status";
 import { PrefsForm, ProfileForm, SignOut } from "./ClientForms";
@@ -16,9 +16,10 @@ export const metadata: Metadata = { title: "حسابي", robots: { index: false 
 const PAST = ["completed", "cancelled"];
 const IN_PROGRAM = ["active", "delivered"];
 
-export default async function Account({ searchParams }: { searchParams: Promise<{ denied?: string; plan?: string }> }) {
+export default async function Account({ searchParams }: { searchParams: Promise<{ denied?: string; plan?: string; booklet?: string }> }) {
   const user = await requireUser("/account");
-  const [orders, prefs, freePlans, { denied, plan: planMsg }] = await Promise.all([getMyOrders(user.id), getMyPrefs(user.id), getMyFreePlans(user.id), searchParams]);
+  const [orders, prefs, freePlans, booklets, { denied, plan: planMsg, booklet: bookletMsg }] = await Promise.all([
+    getMyOrders(user.id), getMyPrefs(user.id), getMyFreePlans(user.id), getMyBooklets(user.id), searchParams]);
   // الطلبات المكتملة والملغاة تنطوي تحت «طلبات سابقة»
   const past = orders.filter((o) => PAST.includes(o.status));
   // الطلبات الفعّالة تظهر في «برنامجي» فوق، فما نكررها هنا (توفير مساحة على الجوال)
@@ -39,6 +40,22 @@ export default async function Account({ searchParams }: { searchParams: Promise<
           {needsAction.length > 0 && <p className="alert warn">عندك {needsAction.length === 1 ? "طلب يحتاج" : `${needsAction.length} طلبات تحتاج`} إجراء منك.</p>}
           <EndOfProgramList userId={user.id} name={user.name} orders={orders} />
           <MyProgram userId={user.id} orders={orders} />
+          {(booklets.length > 0 || bookletMsg) && <section id="booklets" className="card stack" aria-labelledby="bk-h" style={{ ["--space" as string]: "12px", scrollMarginTop: 90 }} data-testid="booklets">
+            <h2 id="bk-h" style={{ fontSize: 20 }}>📘 تحميل الكتيبات</h2>
+            {bookletMsg === "unavailable" && <p className="alert warn" role="alert">الملف غير متاح مؤقتاً. جرّب لاحقاً، وإذا استمرت المشكلة راسلنا على واتساب.</p>}
+            {bookletMsg === "notfound" && <p className="alert err" role="alert">تعذّر التحميل: الكتيب غير موجود أو غير متاح لحسابك.</p>}
+            <ul className="stack" style={{ ["--space" as string]: "10px", listStyle: "none", margin: 0, padding: 0 }}>
+              {booklets.map((b) => (
+                <li key={b.id} className="row" style={{ justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+                  <span className="stack" style={{ ["--space" as string]: "2px" }}>
+                    <b>{b.title}</b>
+                    {b.description && <span className="small muted">{b.description}</span>}
+                  </span>
+                  <a className="btn btn-sm" href={`/api/booklets/${b.id}`}>تحميل PDF <span className="small">({(b.file_size / 1024 / 1024).toFixed(1)} م.ب)</span></a>
+                </li>
+              ))}
+            </ul>
+          </section>}
           <h2 style={{ fontSize: 22 }}>طلباتي</h2>
           {orders.length === 0 ? (
             <div className="card stack">
