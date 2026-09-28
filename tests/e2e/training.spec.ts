@@ -200,6 +200,9 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await trainee.getByRole("button", { name: "حفظ التقييم" }).click();
   await expect(trainee.getByText("تم حفظ تقييم اليوم")).toBeVisible();
   await noHorizontalScroll(trainee);
+  // بعد حفظ التقييم يرجع تلقائياً لصفحة حسابه الرئيسية
+  await trainee.waitForURL(/\/account$/);
+  await trainee.goto(`/account/orders/${orderNo}/training`);
 
   // ---------- المتدرب: تبديل التمرين من القائمة ----------
   // التمرين المسجّل ينطوي بعد إعادة التحميل ← نفتحه بضغطة

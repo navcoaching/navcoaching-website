@@ -11,7 +11,7 @@ import MacroSummary from "@/components/nutrition/MacroSummary";
 import { DeleteFoodLog, FoodLogForm } from "./NutritionForms";
 
 export const metadata: Metadata = { title: "التغذية والمكملات", robots: { index: false } };
-type SP = { tab?: string; date?: string };
+type SP = { tab?: string; date?: string; plan?: string };
 type Log = { id: number; kind: MealKind; name: string; protein: number; carbs: number; fat: number; meal_id: string | null };
 
 export default async function NutritionPage({ params, searchParams }: { params: Promise<{ orderNo: string }>; searchParams: Promise<SP> }) {
@@ -36,6 +36,8 @@ export default async function NutritionPage({ params, searchParams }: { params: 
   });
   if (!data) notFound();
   const { o, target, plans, routine, logs } = data;
+  // الجدول المعروض: المختار من القائمة، وإلا الأول
+  const shownPlan = plans.find((p) => p.id === sp.plan) ?? plans[0];
   const base = `/account/orders/${o.order_no}/nutrition`;
   const nothing = !target && plans.length === 0 && !routine;
   const t: Target = target ?? { kcal: null, protein: null, carbs: null, fat: null };
@@ -93,8 +95,22 @@ export default async function NutritionPage({ params, searchParams }: { params: 
               </>
             )}
 
+            {tab === "plans" && plans.length > 1 && (
+              <nav className="plan-picker" aria-label="اختر جدولك الغذائي" data-testid="plan-picker">
+                <p className="small muted" style={{ margin: 0 }}>عندك {plans.length} جداول، اختر اللي يناسبك:</p>
+                <div className="plan-options">
+                  {plans.map((p) => (
+                    <Link key={p.id} href={`${base}?tab=plans&plan=${p.id}`} className={`card plan-option${p.id === shownPlan?.id ? " on" : ""}`}
+                      aria-current={p.id === shownPlan?.id ? "true" : undefined}>
+                      <b>{p.name}</b>
+                      <span className="small muted num">{Math.round(p.total.kcal).toLocaleString("en-US")} سعرة · ب {f1(p.total.protein)} · ك {f1(p.total.carbs)} · د {f1(p.total.fat)}</span>
+                    </Link>
+                  ))}
+                </div>
+              </nav>
+            )}
             {tab === "plans" && (
-              plans.length === 0 ? <p className="card muted">لا توجد جداول غذائية بعد.</p> : plans.map((p) => (
+              plans.length === 0 ? <p className="card muted">لا توجد جداول غذائية بعد.</p> : (shownPlan ? [shownPlan] : []).map((p) => (
                 <section key={p.id} className="stack" style={{ ["--space" as string]: "10px" }} data-testid="my-plan">
                   <h2 style={{ fontSize: 20 }}>{p.name} <span className="small muted">— {Math.round(p.total.kcal)} سعرة · ب {f1(p.total.protein)} · ك {f1(p.total.carbs)} · د {f1(p.total.fat)}</span></h2>
                   {p.notes && <p className="alert info" style={{ whiteSpace: "pre-wrap" }}>{p.notes}</p>}

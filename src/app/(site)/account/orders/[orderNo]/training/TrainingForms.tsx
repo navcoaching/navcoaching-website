@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { FormMessage, Submit, useFormAction } from "@/components/FormBits";
 import {
   logItemAction, logMeasurementsAction, logStepsAction, logWeightAction, rateDayAction, readWorkoutImageAction, saveImportedLogsAction, swapExerciseAction,
@@ -115,6 +116,13 @@ export function SwapForm({ orderNo, item, options, current }: {
 
 export function RateDayForm({ orderNo, day, week, rating }: { orderNo: string; day: string; week: number; rating: number | null }) {
   const { state, onSubmit, pending } = useFormAction(rateDayAction);
+  const router = useRouter();
+  // بعد حفظ التقييم (نهاية تمرين اليوم) يرجع المتدرب لصفحة حسابه الرئيسية
+  useEffect(() => {
+    if (!state.ok) return;
+    const t = setTimeout(() => router.push("/account"), 900);
+    return () => clearTimeout(t);
+  }, [state, router]);
   return (
     <form className="form" onSubmit={onSubmit} data-testid="rate-day">
       <input type="hidden" name="order_no" value={orderNo} />

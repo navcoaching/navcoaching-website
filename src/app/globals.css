@@ -975,3 +975,9 @@ dialog.video-modal::backdrop { background: rgba(5, 12, 30, .75); }
 .video-modal-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 10px; overflow: hidden; }
 dialog.video-modal.vertical .video-modal-frame { aspect-ratio: 9 / 16; max-height: 78dvh; }
 .video-modal-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+/* اختيار الجدول الغذائي (للمتدرب) */
+.plan-picker { display: grid; gap: 8px; }
+.plan-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 8px; }
+.plan-option { display: grid; gap: 2px; text-decoration: none; color: inherit; border: 1.5px solid var(--line); padding: 12px 14px; }
+.plan-option.on { border-color: var(--navy); background: var(--choice-bg); color: var(--choice-fg); }

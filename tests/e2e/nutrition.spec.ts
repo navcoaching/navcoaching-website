@@ -81,6 +81,10 @@ test("التغذية والمكملات: الأهداف، الجداول، ال�
   await coach.getByLabel("إضافة جدول من القوالب").selectOption({ label: "الجدول الغذائي 2" });
   await coach.getByRole("button", { name: "إضافة للمتدرب" }).click();
   await expect(coach.getByText("تمت إضافة الجدول للمتدرب")).toBeVisible();
+  // جدول ثاني حتى يختار المتدرب بينهم
+  await coach.getByLabel("إضافة جدول من القوالب").selectOption({ label: "الجدول الغذائي 1" });
+  await coach.getByRole("button", { name: "إضافة للمتدرب" }).click();
+  await expect(coach.getByText("تمت إضافة الجدول للمتدرب").last()).toBeVisible();
   await coach.getByLabel("إسناد روتين من القوالب").selectOption({ label: "روتين المكملات والأداء الذهني" });
   await coach.getByRole("button", { name: "إسناد", exact: true }).click();
   await expect(coach.getByText("تم إسناد روتين المكملات")).toBeVisible();
@@ -141,6 +145,15 @@ test("التغذية والمكملات: الأهداف، الجداول، ال�
   await noHorizontalScroll(trainee);
 
   await trainee.getByRole("link", { name: "جداولي الغذائية" }).click();
+  // اختيار الجدول: كل الجداول ظاهرة كخيارات، ويُعرض المختار فقط
+  const picker = trainee.getByTestId("plan-picker");
+  await expect(picker.getByRole("link")).toHaveCount(2);
+  await expect(trainee.getByTestId("my-plan")).toHaveCount(1);
+  await expect(trainee.getByTestId("my-plan")).toContainText("مكرونة بيني");
+  await picker.getByRole("link", { name: /الجدول الغذائي 1/ }).click();
+  await expect(trainee.getByTestId("my-plan").locator("h2")).toContainText("الجدول الغذائي 1");
+  await expect(picker.getByRole("link", { name: /الجدول الغذائي 1/ })).toHaveAttribute("aria-current", "true");
+  await picker.getByRole("link", { name: /الجدول الغذائي 2/ }).click();
   await expect(trainee.getByTestId("my-plan")).toContainText("مكرونة بيني");
   await noHorizontalScroll(trainee);
   await trainee.getByRole("link", { name: "المكملات", exact: true }).click();
