@@ -117,7 +117,8 @@ export default async function OrderProgram({ params, searchParams }: { params: P
                 <div className="field"><label htmlFor="bk-name">الاسم</label><input id="bk-name" name="name" type="text" required maxLength={120} defaultValue={active.name} /></div>
                 <div className="field"><label htmlFor="bk-start">تاريخ البداية</label><input id="bk-start" name="start_date" type="date" required defaultValue={active.start_date} /></div>
                 <div className="field"><label htmlFor="bk-weeks">عدد الأسابيع</label><input id="bk-weeks" name="weeks" type="number" min={1} max={12} defaultValue={active.weeks} /></div>
-                <div className="field"><label htmlFor="bk-steps">هدف الخطوات الأسبوعي</label><input id="bk-steps" name="steps_goal_week" type="number" min={0} max={300000} step={1000} defaultValue={active.steps_goal_week} /></div>
+                <div className="field"><label htmlFor="bk-steps">هدف الخطوات اليومي</label><input id="bk-steps" name="steps_goal_day" type="number" inputMode="numeric" min={0} max={40000} step={100} defaultValue={Math.round(active.steps_goal_week / 7)} />
+                  <span className="hint">يظهر للمتدرب في «تعليمات التمرين»، والهدف الأسبوعي في التقدم = اليومي × 7.</span></div>
               </div>
               <div className="field"><label htmlFor="bk-instr">تعليمات البرنامج (تظهر للمتدرب)</label>
                 <textarea id="bk-instr" name="instructions" maxLength={4000} rows={3} defaultValue={active.instructions ?? ""} /></div>

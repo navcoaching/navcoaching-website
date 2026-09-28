@@ -91,3 +91,14 @@ describe("وزن لكل جولة و1RM", () => {
     assert.equal(pr[0].oneRm, 98); // 70 × 1.4 = 98 أعلى من 80 × 1.1667 = 93.3
   });
 });
+
+describe("تعليمات التمرين: الخطوات اليومية لكل متدرب", () => {
+  test("من هدف البرنامج الأسبوعي ÷ 7، والافتراضي بدون هدف", async () => {
+    const { trainingRules, TRAINING_RULES } = await import("../../src/lib/instructions.ts");
+    const steps = (r: [string, string][]) => r.find(([t]) => t === "الخطوات اليومية")![1];
+    assert.equal(steps(trainingRules(56000)), "8,000 خطوة/يوم (56,000 أسبوعياً) | كل 10 دقائق مشي ≈ 1,000 خطوة");
+    assert.equal(steps(trainingRules(0)), steps(TRAINING_RULES));
+    assert.equal(steps(trainingRules(null)), steps(TRAINING_RULES));
+    assert.equal(trainingRules(56000).length, TRAINING_RULES.length);
+  });
+});

@@ -1,6 +1,6 @@
 import { WEEKDAYS, fmtYMD, riyadhDate } from "@/lib/schedule";
 import { DEFAULT_RULES } from "@/lib/nutrition";
-import { CONTACT_RULES, RIR_VIDEO, TRAINING_RULES, type Rule } from "@/lib/instructions";
+import { CONTACT_RULES, RIR_VIDEO, trainingRules, type Rule } from "@/lib/instructions";
 import type { ProgramToday } from "./ProgramToday";
 
 type O = { contact_name?: string | null; product_name: string; offer_label: string; review_weekday?: number | null; sub_start_at?: string | null; sub_end_at?: string | null };
@@ -59,7 +59,7 @@ export default function ProgramInstructions({ o, p }: { o: O; p: ProgramToday | 
       <div className="rules-grid">
         <Rules id="rules-nutrition" title="🥗 قواعد التغذية" rules={nutritionRules} />
         <Rules id="rules-contact" title="💬 قواعد التواصل والمراجعة" rules={CONTACT_RULES} />
-        <Rules id="rules-training" title="🏋️ تعليمات التمرين" rules={TRAINING_RULES} />
+        <Rules id="rules-training" title="🏋️ تعليمات التمرين" rules={trainingRules(p?.block?.steps_goal_week)} />
       </div>
     </section>
   );

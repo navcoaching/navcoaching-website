@@ -23,4 +23,12 @@ export const TRAINING_RULES: Rule[] = [
   ["شرح الحركة والبدائل", "يظهر زر «▶ فيديو» بجانب اسم التمرين عند وجود شرح، و«طريقة الأداء» تحت التمرين. لا تغيّر التمرين أو البديل إلا بعد موافقة المدربة."],
 ];
 
+/** تعليمات التمرين للمتدرب: سطر «الخطوات اليومية» من هدف المدربة له (هدف البرنامج الأسبوعي ÷ 7) */
+export function trainingRules(stepsGoalWeek?: number | null): Rule[] {
+  if (!stepsGoalWeek || stepsGoalWeek <= 0) return TRAINING_RULES;
+  const n = (v: number) => Math.round(v).toLocaleString("en-US");
+  return TRAINING_RULES.map(([t, b]) => t === "الخطوات اليومية"
+    ? [t, `${n(stepsGoalWeek / 7)} خطوة/يوم (${n(stepsGoalWeek)} أسبوعياً) | كل 10 دقائق مشي ≈ 1,000 خطوة`] : [t, b]);
+}
+
 export const RIR_VIDEO = "https://www.youtube.com/watch?v=EHsW37g2uGU&t=75s";

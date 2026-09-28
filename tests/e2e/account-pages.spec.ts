@@ -47,7 +47,7 @@ test("حساب المتدرب: التقدم، سجل الماكروز، التع
                          contact_name, contact_phone, idempotency_key, paid_at, sub_start_at, sub_end_at, review_weekday)
      VALUES ($1,$2,$3,$4,'follow',$5,$6,3,$7,$7,'active','سارة صفحات','+966500000000',$1, now(), now() - interval '3 days', now() + interval '80 days', 1) RETURNING id`,
     [orderNo, u.id, p.id, p.offer_id, p.name, p.label, p.price_halalas]);
-  const { rows: [b] } = await db.query(`INSERT INTO blocks (order_id, user_id, name, start_date, weeks) VALUES ($1,$2,'بلوك الصفحات',(now() AT TIME ZONE 'Asia/Riyadh')::date - 3,4) RETURNING id`, [o.id, u.id]);
+  const { rows: [b] } = await db.query(`INSERT INTO blocks (order_id, user_id, name, start_date, weeks, steps_goal_week) VALUES ($1,$2,'بلوك الصفحات',(now() AT TIME ZONE 'Asia/Riyadh')::date - 3,4,70000) RETURNING id`, [o.id, u.id]);
   const { rows: [d] } = await db.query(`INSERT INTO block_days (block_id, day_no, title) VALUES ($1,1,'DAY 1') RETURNING id`, [b.id]);
   const { rows: [it] } = await db.query(
     `INSERT INTO block_items (day_id, position, exercise_id, coach_exercise_id, plan) SELECT $1, 1, id, id, $2 FROM exercises WHERE name = 'Mid Leg Press' RETURNING id`,
@@ -69,6 +69,8 @@ test("حساب المتدرب: التقدم، سجل الماكروز، التع
   await expect(page.getByTestId("rules-nutrition")).toContainText("لا تتجاوز 12 ساعة صيام");
   await expect(page.getByTestId("rules-contact")).toContainText("خلال 48 ساعة كحد أقصى");
   await expect(page.getByTestId("rules-training")).toContainText("قاعدة زيادة الوزن");
+  // الخطوات اليومية من هدف المدربة لهذا المتدرب (70,000 أسبوعياً ÷ 7)
+  await expect(page.getByTestId("rules-training")).toContainText("10,000 خطوة/يوم (70,000 أسبوعياً)");
   await noHorizontalScroll(page);
   const side = page.locator(".account-side");
   if (project === "desktop") {

@@ -5,7 +5,7 @@ import { sumMacros } from "@/lib/nutrition";
 import { loadRoutine, type Routine } from "@/lib/nutrition-data";
 
 export type ProgramToday = {
-  block: { name: string; week: number; weeks: number; days: { id: string; day_no: number; title: string; items: number; logged: number }[] } | null;
+  block: { name: string; week: number; weeks: number; steps_goal_week: number; days: { id: string; day_no: number; title: string; items: number; logged: number }[] } | null;
   target: { kcal: number | null; protein: number | null; carbs: number | null; fat: number | null; rules: string | null } | null;
   eaten: { kcal: number; protein: number; carbs: number; fat: number };
   plans: { id: string; name: string }[];
@@ -15,7 +15,7 @@ export type ProgramToday = {
 /** ما يحتاجه المتدرب اليوم من اشتراكه: أيام تمرين الأسبوع، أهداف التغذية وما سجّله اليوم، والمكملات */
 export async function loadProgramToday(tx: Tx, orderId: string, userId: string, today: string): Promise<ProgramToday> {
   const { rows: [b] } = await tx.query(
-    `SELECT id, name, start_date::text AS start_date, weeks FROM blocks WHERE order_id = $1 AND status = 'active'`, [orderId]);
+    `SELECT id, name, start_date::text AS start_date, weeks, steps_goal_week FROM blocks WHERE order_id = $1 AND status = 'active'`, [orderId]);
   let block: ProgramToday["block"] = null;
   if (b) {
     const week = Math.max(1, currentWeek(b.start_date, today, b.weeks));
@@ -24,7 +24,7 @@ export async function loadProgramToday(tx: Tx, orderId: string, userId: string, 
          FROM block_days d LEFT JOIN block_items i ON i.day_id = d.id
          LEFT JOIN item_logs l ON l.block_item_id = i.id AND l.week_no = $2
         WHERE d.block_id = $1 GROUP BY d.id ORDER BY d.day_no`, [b.id, week])).rows;
-    block = { name: b.name, week, weeks: b.weeks, days };
+    block = { name: b.name, week, weeks: b.weeks, steps_goal_week: Number(b.steps_goal_week ?? 0), days };
   }
   const target = (await tx.query(
     `SELECT kcal, protein::float, carbs::float, fat::float, rules FROM nutrition_targets WHERE order_id = $1`, [orderId])).rows[0] ?? null;

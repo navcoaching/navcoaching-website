@@ -418,7 +418,7 @@ const blockSchema = z.object({
 
 export async function saveBlockAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const g = (k: string) => String(fd.get(k) ?? "");
-  const p = blockSchema.safeParse({ id: g("id"), name: g("name"), start_date: g("start_date"), weeks: g("weeks"), steps_goal_week: g("steps_goal_week") || "0", instructions: g("instructions") });
+  const p = blockSchema.safeParse({ id: g("id"), name: g("name"), start_date: g("start_date"), weeks: g("weeks"), steps_goal_week: g("steps_goal_day") ? String(Math.round(Number(g("steps_goal_day")) * 7)) : g("steps_goal_week") || "0", instructions: g("instructions") });
   if (!p.success) return { error: p.error.issues[0].message };
   const v = p.data;
   try {
