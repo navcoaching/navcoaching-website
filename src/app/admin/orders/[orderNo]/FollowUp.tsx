@@ -78,13 +78,14 @@ export function SubscriptionCard({ o, d }: { o: O; d: SubData }) {
           <dt>تاريخ الانتهاء</dt><dd>{fmtYMD(riyadhDate(o.sub_end_at))}</dd>
           <dt>يوم المراجعة</dt><dd>{o.review_weekday != null ? WEEKDAYS[o.review_weekday] : "—"}</dd>
         </dl>
-      ) : <p className="small muted">يبدأ الاشتراك تلقائياً عند «تفعيل البرنامج»، وتُحسب النهاية = البدء + {o.months} {o.months === 1 ? "شهر" : "أشهر"}.</p>}
+      ) : <p className="small muted">يبدأ الاشتراك تلقائياً عند «تفعيل البرنامج»، وتُحسب النهاية = البدء + {o.months * 4} أسابيع، والمراجعة كل 7 أيام من أول يوم.</p>}
       <details>
         <summary className="small" style={{ cursor: "pointer", minHeight: 44 }}>تعديل التواريخ ويوم المراجعة</summary>
         <ActionForm action={setSubscriptionAction} submit="حفظ">
           <input type="hidden" name="order_no" value={o.order_no} />
           <div className="field"><label>تاريخ البدء</label><input type="date" name="start" required defaultValue={o.sub_start_at ? riyadhDate(o.sub_start_at) : today} /></div>
-          <div className="field"><label>تاريخ الانتهاء</label><input type="date" name="end" required defaultValue={o.sub_end_at ? riyadhDate(o.sub_end_at) : ""} /></div>
+          <label className="check"><input type="checkbox" name="auto" defaultChecked={!o.sub_start_at} /><span>احسبي تلقائياً من تاريخ البدء: الانتهاء بعد {o.months * 4} أسابيع، ويوم المراجعة نفس يوم البدء</span></label>
+          <div className="field"><label>تاريخ الانتهاء (إذا ما اخترتي التلقائي)</label><input type="date" name="end" defaultValue={o.sub_end_at ? riyadhDate(o.sub_end_at) : ""} /></div>
           <div className="field"><label>يوم المراجعة الأسبوعية</label>
             <select name="weekday" defaultValue={o.review_weekday ?? ""}><option value="">بدون</option>{WEEKDAYS.map((d, i) => <option key={d} value={i}>{d}</option>)}</select>
           </div>

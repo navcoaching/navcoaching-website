@@ -11,6 +11,7 @@ import { CHANNEL_LABEL, RESULT_LABEL, notifyTrainee, type ChannelResult } from "
 import { loadReminders, loadWeekState, reviewMessage } from "@/lib/reminders";
 import { loadAdherence } from "@/lib/program-data";
 import { statusLabel } from "@/lib/status";
+import { addDays } from "@/lib/schedule";
 import { youtubeId } from "@/lib/youtube";
 import type { ActionState } from "./client";
 
@@ -213,13 +214,24 @@ export async function deleteNoteAction(_: ActionState, fd: FormData): Promise<Ac
 
 export async function setSubscriptionAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const orderNo = String(fd.get("order_no") ?? "");
-  const start = String(fd.get("start") ?? ""), end = String(fd.get("end") ?? "");
-  const wd = String(fd.get("weekday") ?? "");
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(start) || !/^\d{4}-\d{2}-\d{2}$/.test(end)) return { error: "اختاري تاريخ البدء والانتهاء." };
+  const start = String(fd.get("start") ?? "");
+  let end = String(fd.get("end") ?? "");
+  let wd = String(fd.get("weekday") ?? "");
+  const auto = fd.get("auto") === "on";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(start) || (!auto && !/^\d{4}-\d{2}-\d{2}$/.test(end))) return { error: "اختاري تاريخ البدء والانتهاء." };
   try {
-    // التاريخ يُفسَّر بتوقيت الرياض (+03:00)
-    await asCoach((tx) => tx.query("SELECT app.coach_set_subscription($1,$2,$3,$4)",
-      [orderNo, `${start}T00:00:00+03:00`, `${end}T23:59:00+03:00`, wd === "" ? null : Number(wd)]));
+    await asCoach(async (tx) => {
+      if (auto) {
+        // بالأسابيع من أول يوم: الشهر = 4 أسابيع، ويوم المراجعة = يوم البداية
+        const { rows: [o] } = await tx.query("SELECT months FROM orders WHERE order_no = $1", [orderNo]);
+        const months = Math.max(1, Number(o?.months ?? 1));
+        end = addDays(start, 28 * months);
+        wd = String(new Date(`${start}T00:00:00Z`).getUTCDay());
+      }
+      // التاريخ يُفسَّر بتوقيت الرياض (+03:00)
+      await tx.query("SELECT app.coach_set_subscription($1,$2,$3,$4)",
+        [orderNo, `${start}T00:00:00+03:00`, `${end}T23:59:00+03:00`, wd === "" ? null : Number(wd)]);
+    });
   } catch (err) { return fail(err); }
   revalidatePath(`/admin/orders/${orderNo}`);
   return { ok: true, message: "حُفظت تواريخ الاشتراك." };

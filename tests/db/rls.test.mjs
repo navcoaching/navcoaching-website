@@ -262,7 +262,7 @@ describe("المتابعة: الملاحظات والاشتراك والإشعا
     await as(COACH, "SELECT app.coach_transition($1,'preparing','',true)", [no]);
     assert.equal((await as(A, "SELECT sub_start_at FROM orders WHERE order_no = $1", [no])).rows[0].sub_start_at, null);
     await as(COACH, "SELECT app.coach_transition($1,'active','',false)", [no]);
-    const { rows: [o] } = await as(A, "SELECT sub_start_at, sub_end_at, review_weekday, (sub_end_at - sub_start_at) > interval '88 days' AS three_months FROM orders WHERE order_no = $1", [no]);
+    const { rows: [o] } = await as(A, "SELECT sub_start_at, sub_end_at, review_weekday, (sub_end_at - sub_start_at) = interval '84 days' AS three_months FROM orders WHERE order_no = $1", [no]);
     assert.ok(o.sub_start_at && o.sub_end_at && o.review_weekday !== null && o.three_months);
     await assert.rejects(as(A, "SELECT app.coach_set_subscription($1, now(), now() + interval '1 day', 2)", [no]), /للمدربة فقط/);
     await as(COACH, "SELECT app.coach_set_subscription($1, now() - interval '80 days', now() + interval '5 days', 2)", [no]);
@@ -640,7 +640,7 @@ describe("التجديد بخصم ومكافأة الالتزام", () => {
     const r = (await as(A, "SELECT order_no FROM orders WHERE renewal_kind = 'renewal'")).rows[0].order_no;
     await owner.query("UPDATE orders SET status = 'active' WHERE order_no = $1", [r]);
     const d = (await owner.query(
-      "SELECT n.sub_start_at = o.sub_end_at AS same, n.sub_end_at = o.sub_end_at + interval '3 months' AS plus3, n.review_weekday = o.review_weekday AS wd FROM orders n JOIN orders o ON o.id = n.renewal_of WHERE n.order_no = $1", [r])).rows[0];
+      "SELECT n.sub_start_at = o.sub_end_at AS same, n.sub_end_at = o.sub_end_at + interval '84 days' AS plus3, n.review_weekday = o.review_weekday AS wd FROM orders n JOIN orders o ON o.id = n.renewal_of WHERE n.order_no = $1", [r])).rows[0];
     assert.deepEqual(d, { same: true, plus3: true, wd: true });
   });
   test("المكافأة: للمدربة فقط، 90% فأكثر، مرة واحدة، وتبدأ بعد آخر اشتراك", async () => {
@@ -843,5 +843,17 @@ describe("رسالة المدربة للمتدرب", () => {
     assert.deepEqual(mine, [{ from_status: before, to_status: before, note: "لا تنسين شرب الماء" }]);
     assert.equal((await as(B, `SELECT 1 FROM order_events e JOIN orders o ON o.id = e.order_id WHERE o.order_no = $1`, [no])).rowCount, 0);
     assert.equal((await owner.query("SELECT status FROM orders WHERE order_no = $1", [no])).rows[0].status, before);
+  });
+});
+
+describe("مدة الاشتراك بالأسابيع", () => {
+  test("الشهر = 4 أسابيع من أول يوم، ويوم المراجعة = يوم البداية", async () => {
+    const no = await newOrder(A, "k-weeks-0000000000001", "int1");
+    await as(COACH, "SELECT app.coach_transition($1, 'active', NULL, true)", [no]);
+    const o = (await owner.query(
+      `SELECT months, (sub_end_at - sub_start_at) AS span, review_weekday = extract(dow FROM (sub_start_at AT TIME ZONE 'Asia/Riyadh'))::int AS same_day
+         FROM orders WHERE order_no = $1`, [no])).rows[0];
+    assert.equal(o.same_day, true);
+    assert.equal(o.span.days, 28 * o.months);
   });
 });

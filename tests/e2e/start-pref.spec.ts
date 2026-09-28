@@ -92,6 +92,16 @@ test("موعد البداية: تغيير المتدرب، تاق الأولوي
   await db.query(`UPDATE orders SET status = 'active', paid_at = now() WHERE order_no = $1`, [later]);
   const o = (await db.query(`SELECT (sub_start_at AT TIME ZONE 'Asia/Riyadh')::date = ${riyadhToday} + 10 AS ok FROM orders WHERE order_no = $1`, [later])).rows[0];
   expect(o.ok).toBe(true);
+  // المدربة تعدّل تاريخ البدء مع «احسبي تلقائياً»: الانتهاء بعد 12 أسبوع (3 أشهر × 4)، ويوم المراجعة = يوم البدء
+  await coach.goto(`/admin/orders/${later}`);
+  await coach.getByText("تعديل التواريخ ويوم المراجعة").click();
+  const dates = coach.locator("form", { has: coach.locator('input[name="auto"]') });
+  await dates.locator('input[name="start"]').fill("2026-09-29");
+  await dates.locator('input[name="auto"]').check();
+  await dates.getByRole("button", { name: "حفظ" }).click();
+  await expect(coach.getByText("حُفظت تواريخ الاشتراك")).toBeVisible();
+  const d = (await db.query(`SELECT (sub_end_at AT TIME ZONE 'Asia/Riyadh')::date::text AS end, review_weekday FROM orders WHERE order_no = $1`, [later])).rows[0];
+  expect(d).toEqual({ end: "2026-12-22", review_weekday: 2 }); // 29 سبتمبر (ثلاثاء) + 84 يوم
   await trainee.goto(`/account/orders/${later}`);
   await expect(trainee.getByTestId("start-pref-form")).toHaveCount(0);
   await expect(trainee.getByTestId("sub-start")).toBeVisible();
