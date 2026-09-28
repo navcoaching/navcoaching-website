@@ -679,8 +679,8 @@ export async function readWorkoutImageAction(_: ImportPreview, fd: FormData): Pr
     extracted = await readWorkoutImage(img.data, img.mime);
   } catch (err) {
     if (err instanceof UploadError || err instanceof VisionError) return { error: err.message };
-    console.error("[vision]", (err as Error).message);
-    return { error: "تعذّرت قراءة الصورة الآن. سجّل يدوياً أو حاول لاحقاً." };
+    console.error("[vision] action", (err as Error).name, (err as Error).message);
+    return { error: `تعذّرت قراءة الصورة الآن. سجّل يدوياً أو حاول لاحقاً. (رمز: V-A-${(err as Error).name || "ERR"})` };
   }
   const rows = matchExercises(extracted, ctx.items, ctx.aliases).map((r) => ({
     external: r.external, key: r.key, itemId: r.itemId, how: r.how,

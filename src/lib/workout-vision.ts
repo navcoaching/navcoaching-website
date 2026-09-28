@@ -69,16 +69,23 @@ export async function readWorkoutImage(data: Buffer, mime: string): Promise<Extr
       }],
     });
   } catch (err) {
-    if (err instanceof Anthropic.RateLimitError) throw new VisionError("الخدمة مشغولة الآن. حاول بعد دقيقة.");
-    if (err instanceof Anthropic.BadRequestError) throw new VisionError("تعذّرت قراءة الصورة. جرّب لقطة أوضح.");
-    if (err instanceof Anthropic.APIConnectionTimeoutError) { console.error("[vision] timeout", Date.now() - started, "ms"); throw new VisionError("طالت قراءة الصورة. جرّب مرة ثانية أو سجّل يدوياً."); }
-    if (err instanceof Anthropic.APIError) { console.error("[vision]", err.status, err.message, Date.now() - started, "ms"); throw new VisionError("تعذّرت قراءة الصورة الآن. حاول لاحقاً أو سجّل يدوياً."); }
-    throw err;
+    // كل رسالة معها رمز قصير (V-…) يوصل للمدربة من لقطة شاشة، والتفاصيل في سجلات الخادم
+    const ms = Date.now() - started;
+    if (err instanceof Anthropic.APIConnectionTimeoutError) { console.error("[vision] timeout", ms, "ms"); throw new VisionError("طالت قراءة الصورة. جرّب مرة ثانية أو سجّل يدوياً. (رمز: V-TIME)"); }
+    if (err instanceof Anthropic.APIError) {
+      console.error("[vision]", err.status, err.message, ms, "ms");
+      if (err instanceof Anthropic.AuthenticationError || err instanceof Anthropic.PermissionDeniedError) throw new VisionError(`خدمة قراءة الصور غير مفعّلة حالياً. سجّل يدوياً. (رمز: V-${err.status})`);
+      if (err instanceof Anthropic.RateLimitError) throw new VisionError("الخدمة مشغولة الآن. حاول بعد دقيقة. (رمز: V-429)");
+      if (err instanceof Anthropic.BadRequestError) throw new VisionError("تعذّرت قراءة الصورة. جرّب لقطة أوضح أو سجّل يدوياً. (رمز: V-400)");
+      throw new VisionError(`تعذّرت قراءة الصورة الآن. حاول لاحقاً أو سجّل يدوياً. (رمز: V-${err.status ?? "NET"})`);
+    }
+    console.error("[vision] unexpected", (err as Error).name, (err as Error).message, ms, "ms");
+    throw new VisionError(`تعذّرت قراءة الصورة. سجّل يدوياً أو حاول لاحقاً. (رمز: V-${(err as Error).name || "ERR"})`);
   }
-  console.log("[vision] ok", Date.now() - started, "ms", data.length, "bytes");
-  if (response.stop_reason === "refusal" || response.stop_reason === "max_tokens" || !response.parsed_output) {
-    throw new VisionError("تعذّرت قراءة الصورة. جرّب لقطة أوضح أو سجّل يدوياً.");
-  }
+  console.log("[vision] ok", Date.now() - started, "ms", data.length, "bytes", response.stop_reason);
+  if (response.stop_reason === "refusal") throw new VisionError("تعذّرت قراءة الصورة. جرّب لقطة شاشة من سجل التمرين فقط. (رمز: V-REFUSAL)");
+  if (response.stop_reason === "max_tokens") throw new VisionError("الصورة فيها تمارين كثيرة. جرّب لقطة لجزء منها. (رمز: V-MAX)");
+  if (!response.parsed_output) throw new VisionError("تعذّرت قراءة الصورة. جرّب لقطة أوضح أو سجّل يدوياً. (رمز: V-PARSE)");
   const out = response.parsed_output;
   if (!out.is_workout || !out.exercises.length) throw new VisionError("ما لقينا تمارين في الصورة. ارفع لقطة شاشة من سجل التمرين.");
   return out.exercises.slice(0, 30).map((e) => ({ name: e.name.slice(0, 120), unit: e.unit, sets: e.sets.slice(0, 15) }));
