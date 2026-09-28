@@ -41,5 +41,5 @@ export function volumeStatus(sets: number, l?: { min?: number | null; max?: numb
   return "ok";
 }
 
-/** «Chest / الصدر» ← «الصدر» */
-export const muscleLabel = (m: string) => m.split("/").pop()!.trim() || m;
+/** «Chest / الصدر» ← «Chest» (أسماء العضلات بالإنجليزي في جدول المدربة) */
+export const muscleLabel = (m: string) => m.split("/")[0].trim() || m;

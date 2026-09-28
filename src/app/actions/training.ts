@@ -741,8 +741,8 @@ export async function saveVolumeLimitsAction(_: ActionState, fd: FormData): Prom
     const min = num(mins[i] ?? ""), max = num(maxs[i] ?? "");
     if (min == null && max == null) continue;
     if ((min != null && (!Number.isFinite(min) || min < 0 || min > 60)) || (max != null && (!Number.isFinite(max) || max < 0 || max > 60)))
-      return { error: `الحدود بين 0 و 60 جولة (${m.split("/").pop()!.trim()}).` };
-    if (min != null && max != null && min > max) return { error: `الحد الأدنى أكبر من الأعلى (${m.split("/").pop()!.trim()}).` };
+      return { error: `الحدود بين 0 و 60 جولة (${m.split("/")[0].trim()}).` };
+    if (min != null && max != null && min > max) return { error: `الحد الأدنى أكبر من الأعلى (${m.split("/")[0].trim()}).` };
     limits[m] = { min, max };
   }
   try {

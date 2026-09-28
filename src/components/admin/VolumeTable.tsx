@@ -21,7 +21,7 @@ export default function VolumeTable({ items, weeks, limits, muscles }: { items: 
                 const l = limits[m];
                 return (
                   <tr key={m}>
-                    <th scope="row">{muscleLabel(m)}</th>
+                    <th scope="row"><bdi dir="ltr">{muscleLabel(m)}</bdi></th>
                     {vol.map((v, w) => {
                       const n = v.get(m) ?? 0, st = volumeStatus(n, l);
                       return <td key={w} className={`num vol-${st}`} title={st === "low" ? "أقل من الحد" : st === "high" ? "أعلى من الحد" : undefined}>{fmt(n)}</td>;
@@ -42,7 +42,7 @@ export default function VolumeTable({ items, weeks, limits, muscles }: { items: 
             {all.map((m) => (
               <div key={m} className="vol-limit">
                 <input type="hidden" name="muscle" value={m} />
-                <span className="small">{muscleLabel(m)}</span>
+                <span className="small"><bdi dir="ltr">{muscleLabel(m)}</bdi></span>
                 <input name="min" type="number" inputMode="numeric" min={0} max={60} step={0.5} aria-label={`الحد الأدنى — ${muscleLabel(m)}`} placeholder="أدنى" defaultValue={limits[m]?.min ?? ""}/>
                 <input name="max" type="number" inputMode="numeric" min={0} max={60} step={0.5} aria-label={`الحد الأعلى — ${muscleLabel(m)}`} placeholder="أعلى" defaultValue={limits[m]?.max ?? ""} />
               </div>

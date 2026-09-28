@@ -22,6 +22,6 @@ describe("الجولات الأسبوعية لكل عضلة", () => {
     assert.equal(volumeStatus(22, { min: 10, max: 20 }), "high");
     assert.equal(volumeStatus(10, { min: 10, max: 20 }), "ok");
     assert.equal(volumeStatus(10, undefined), "none");
-    assert.equal(muscleLabel("Chest / الصدر"), "الصدر");
+    assert.equal(muscleLabel("Chest / الصدر"), "Chest");
   });
 });

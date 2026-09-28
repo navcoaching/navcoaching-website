@@ -107,17 +107,17 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   // الجولات الأسبوعية لكل عضلة: Back Squat 3 (أمامية) + ½ للمؤخرة والأفخاذ الداخلية، Leg Extension 3 (أمامية)
   await coach.reload();
   const vol = coach.getByTestId("volume");
-  const quads = vol.locator("tr", { has: coach.locator("th", { hasText: /^الأمامية$/ }) });
+  const quads = vol.locator("tr", { has: coach.locator("th", { hasText: /^Quadriceps$/ }) });
   await expect(quads.locator("td").first()).toHaveText("6");
-  await expect(vol.locator("tr", { has: coach.locator("th", { hasText: /^المؤخرة$/ }) }).locator("td").first()).toHaveText("1.5");
+  await expect(vol.locator("tr", { has: coach.locator("th", { hasText: /^Glutes$/ }) }).locator("td").first()).toHaveText("1.5");
   // حد أدنى 10 للأمامية ← يتلوّن الرقم
   await vol.getByText("تعديل الحدود لكل عضلة").click();
-  await vol.getByLabel("الحد الأدنى — الأمامية").fill("10");
-  await vol.getByLabel("الحد الأعلى — الأمامية").fill("20");
+  await vol.getByLabel("الحد الأدنى — Quadriceps").fill("10");
+  await vol.getByLabel("الحد الأعلى — Quadriceps").fill("20");
   await vol.getByRole("button", { name: "حفظ الحدود" }).click();
   await expect(vol.getByText("تم حفظ الحدود")).toBeVisible();
   await coach.reload();
-  await expect(coach.getByTestId("volume").locator("tr", { has: coach.locator("th", { hasText: /^الأمامية$/ }) }).locator("td").first()).toHaveClass(/vol-low/);
+  await expect(coach.getByTestId("volume").locator("tr", { has: coach.locator("th", { hasText: /^Quadriceps$/ }) }).locator("td").first()).toHaveClass(/vol-low/);
   await noHorizontalScroll(coach);
 
   // ---------- الإسناد لطلب نشط ----------
