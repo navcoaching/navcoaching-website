@@ -5,16 +5,16 @@ import { computeAdherence, type Adherence, type TrainingWeek } from "@/lib/adher
 import { addDays, reviewWeeks, riyadhDate, weekStatuses } from "@/lib/schedule";
 
 /** أيام وتمارين قالب أو بلوك (للمدربة) */
-export async function loadProgramDays(tx: Tx, kind: "template" | "block", ownerId: string): Promise<(EditorDay & { items: (EditorDay["items"][number] & { plan: PlanWeek[] })[] })[]> {
+export async function loadProgramDays(tx: Tx, kind: "template" | "block", ownerId: string): Promise<(EditorDay & { items: (EditorDay["items"][number] & { plan: PlanWeek[]; primary_muscle: string | null; secondary_muscles: string[] | null })[] })[]> {
   const days = kind === "template"
     ? (await tx.query(`SELECT id, day_no, title FROM template_days WHERE template_id = $1 ORDER BY day_no`, [ownerId])).rows
     : (await tx.query(`SELECT id, day_no, title FROM block_days WHERE block_id = $1 ORDER BY day_no`, [ownerId])).rows;
   const items = kind === "template"
     ? (await tx.query(
-        `SELECT i.id, i.day_id, e.name, i.plan, i.note FROM template_items i JOIN exercises e ON e.id = i.exercise_id
+        `SELECT i.id, i.day_id, e.name, i.plan, i.note, e.primary_muscle, e.secondary_muscles FROM template_items i JOIN exercises e ON e.id = i.exercise_id
           JOIN template_days d ON d.id = i.day_id WHERE d.template_id = $1 ORDER BY i.position, i.id`, [ownerId])).rows
     : (await tx.query(
-        `SELECT i.id, i.day_id, e.name, i.plan, i.note, CASE WHEN i.coach_exercise_id <> i.exercise_id THEN c.name END AS coach_name,
+        `SELECT i.id, i.day_id, e.name, i.plan, i.note, e.primary_muscle, e.secondary_muscles, CASE WHEN i.coach_exercise_id <> i.exercise_id THEN c.name END AS coach_name,
                 (SELECT count(*)::int FROM item_logs l WHERE l.block_item_id = i.id) AS logs
            FROM block_items i JOIN exercises e ON e.id = i.exercise_id JOIN exercises c ON c.id = i.coach_exercise_id
            JOIN block_days d ON d.id = i.day_id WHERE d.block_id = $1 ORDER BY i.position, i.id`, [ownerId])).rows;
@@ -124,4 +124,12 @@ export async function loadAdherence(tx: Tx, o: AdherenceOrder, reviewWindowDays:
     }),
     rewarded,
   };
+}
+
+/** حدود الجولات الأسبوعية لكل عضلة (تضعها المدربة، site_settings.volume_limits) والعضلات المتاحة في المكتبة */
+export async function loadVolumeSetup(tx: Tx): Promise<{ limits: import("@/lib/volume").Limits; muscles: string[] }> {
+  const limits = (await tx.query(`SELECT value FROM site_settings WHERE key = 'volume_limits'`)).rows[0]?.value ?? {};
+  const muscles = (await tx.query(
+    `SELECT DISTINCT m FROM (SELECT primary_muscle m FROM exercises UNION SELECT unnest(secondary_muscles) FROM exercises) x WHERE m IS NOT NULL ORDER BY m`)).rows.map((r) => r.m as string);
+  return { limits, muscles };
 }

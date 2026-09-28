@@ -104,6 +104,22 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await expect(day1.locator(".program-items")).toContainText("3×10 · RIR 2");
   await noHorizontalScroll(coach);
 
+  // الجولات الأسبوعية لكل عضلة: Back Squat 3 (أمامية) + ½ للمؤخرة والأفخاذ الداخلية، Leg Extension 3 (أمامية)
+  await coach.reload();
+  const vol = coach.getByTestId("volume");
+  const quads = vol.locator("tr", { has: coach.locator("th", { hasText: /^الأمامية$/ }) });
+  await expect(quads.locator("td").first()).toHaveText("6");
+  await expect(vol.locator("tr", { has: coach.locator("th", { hasText: /^المؤخرة$/ }) }).locator("td").first()).toHaveText("1.5");
+  // حد أدنى 10 للأمامية ← يتلوّن الرقم
+  await vol.getByText("تعديل الحدود لكل عضلة").click();
+  await vol.getByLabel("الحد الأدنى — الأمامية").fill("10");
+  await vol.getByLabel("الحد الأعلى — الأمامية").fill("20");
+  await vol.getByRole("button", { name: "حفظ الحدود" }).click();
+  await expect(vol.getByText("تم حفظ الحدود")).toBeVisible();
+  await coach.reload();
+  await expect(coach.getByTestId("volume").locator("tr", { has: coach.locator("th", { hasText: /^الأمامية$/ }) }).locator("td").first()).toHaveClass(/vol-low/);
+  await noHorizontalScroll(coach);
+
   // ---------- الإسناد لطلب نشط ----------
   const trainee = await newPage(browser, project + "-t");
   await login(trainee, traineeEmail);
@@ -123,6 +139,7 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await expect(todayTraining).toContainText("برنامجك الحالي");
   await expect(todayTraining.locator("li")).not.toHaveCount(0);
   await expect(trainee.getByRole("heading", { name: "جداولي المجانية" })).toHaveCount(0); // لم يطلب جداول مجانية
+  await expect(trainee.getByTestId("volume")).toHaveCount(0); // جدول الجولات للمدربة فقط
   // القائمة الجانبية: طلباتي (الحالية) وجدول التمرين يفتح برنامجه
   const nav = trainee.getByTestId("account-nav");
   await expect(nav.getByRole("link", { name: "طلباتي" })).toHaveAttribute("aria-current", "page");

@@ -950,3 +950,12 @@ h2 .count { display: inline-grid; place-items: center; min-inline-size: 26px; bl
   .quiz .choice { width: 100%; }
   .quiz .choice span { width: 100%; justify-content: flex-start; text-align: start; }
 }
+
+/* جدول الجولات الأسبوعية لكل عضلة */
+.volume td.vol-low, .volume .vol-low { color: var(--err, #b42318); font-weight: 700; }
+.volume td.vol-high, .volume .vol-high { color: #b54708; font-weight: 700; }
+.volume td.vol-ok { color: var(--ok, #067647); font-weight: 600; }
+.vol-limits { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: 8px; }
+.vol-limit { display: grid; grid-template-columns: 1fr 64px 64px; gap: 6px; align-items: center; }
+.vol-limit input { min-height: 40px; padding: 6px; text-align: center; }
+.volume table th, .volume table td { padding: 6px 10px; white-space: nowrap; }

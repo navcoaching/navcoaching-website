@@ -7,7 +7,8 @@ import { riyadhDate } from "@/lib/schedule";
 import { currentWeek, normalizePlan } from "@/lib/training";
 import ActionForm from "@/components/admin/ActionForm";
 import ProgramEditor from "@/components/admin/ProgramEditor";
-import { loadExerciseOptions, loadProgramDays } from "@/lib/program-data";
+import { loadExerciseOptions, loadProgramDays, loadVolumeSetup } from "@/lib/program-data";
+import VolumeTable from "@/components/admin/VolumeTable";
 import {
   addBlockNoteAction, archiveBlockAction, assignTemplateAction, deleteBlockNoteAction, markSwapsSeenAction, notifyProgramAction, saveBlockAction,
 } from "@/app/actions/training";
@@ -41,10 +42,10 @@ export default async function OrderProgram({ params, searchParams }: { params: P
          FROM exercise_swaps s JOIN exercises f ON f.id = s.from_exercise_id JOIN exercises t ON t.id = s.to_exercise_id
          JOIN block_items i ON i.id = s.block_item_id JOIN block_days d ON d.id = i.day_id
          JOIN blocks b ON b.id = s.block_id WHERE b.order_id = $1 ORDER BY s.created_at DESC LIMIT 50`, [o.id])).rows as Swap[];
-    return { o, blocks, active, templates, days, notes, swaps, exercises: active ? await loadExerciseOptions(tx) : [] };
+    return { o, blocks, active, templates, days, notes, swaps, exercises: active ? await loadExerciseOptions(tx) : [], volume: await loadVolumeSetup(tx) };
   });
   if (!data) notFound();
-  const { o, blocks, active, templates, days, notes, swaps, exercises } = data;
+  const { o, blocks, active, templates, days, notes, swaps, exercises, volume } = data;
   const today = riyadhDate();
   const week = active ? currentWeek(active.start_date, today, active.weeks) : 0;
   const unseen = swaps.filter((s) => !s.seen_at).length;
@@ -139,6 +140,7 @@ export default async function OrderProgram({ params, searchParams }: { params: P
             <p className="small muted">التعديل هنا لهذا المتدرب فقط. تغيير التمرين يجعله اختيارك الجديد، وتظهر للمتدرب بدائله.</p>
             <ProgramEditor kind="block" ownerId={active.id} weeks={active.weeks}
               days={days.map((d) => ({ ...d, items: d.items.map((i) => ({ ...i, plan: normalizePlan(i.plan, active.weeks) })) }))} exercises={exercises} />
+            <VolumeTable items={days.flatMap((d) => d.items.map((i) => ({ ...i, plan: normalizePlan(i.plan, active.weeks) })))} weeks={active.weeks} limits={volume.limits} muscles={volume.muscles} />
           </section>
 
           <section className="card stack">

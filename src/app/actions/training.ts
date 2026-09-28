@@ -725,3 +725,28 @@ export async function saveImportedLogsAction(_: ActionState, fd: FormData): Prom
   const p = orderPath(fd); if (p) revalidatePath(p);
   return { ok: true, message: `تم حفظ ${entries.length} ${entries.length === 1 ? "تمرين" : "تمارين"} ✅` };
 }
+
+// ---------- حدود الجولات الأسبوعية لكل عضلة (للمدربة) ----------
+export async function saveVolumeLimitsAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const muscles = fd.getAll("muscle").map(String);
+  const mins = fd.getAll("min").map(String), maxs = fd.getAll("max").map(String);
+  const limits: Record<string, { min: number | null; max: number | null }> = {};
+  const num = (v: string) => (v.trim() === "" ? null : Number(v));
+  for (const [i, m] of muscles.entries()) {
+    if (!m || m.length > 80) continue;
+    const min = num(mins[i] ?? ""), max = num(maxs[i] ?? "");
+    if (min == null && max == null) continue;
+    if ((min != null && (!Number.isFinite(min) || min < 0 || min > 60)) || (max != null && (!Number.isFinite(max) || max < 0 || max > 60)))
+      return { error: `الحدود بين 0 و 60 جولة (${m.split("/").pop()!.trim()}).` };
+    if (min != null && max != null && min > max) return { error: `الحد الأدنى أكبر من الأعلى (${m.split("/").pop()!.trim()}).` };
+    limits[m] = { min, max };
+  }
+  try {
+    await asCoach((tx, uid) => tx.query(
+      `INSERT INTO site_settings (key, value, is_public, updated_by) VALUES ('volume_limits', $1, false, $2)
+       ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_by = EXCLUDED.updated_by, updated_at = now()`, [JSON.stringify(limits), uid]));
+  } catch (err) { return { error: dbErrorMessage(err) ?? "تعذّر الحفظ." }; }
+  revalidatePath("/admin/templates", "layout");
+  revalidatePath("/admin/orders", "layout");
+  return { ok: true, message: "تم حفظ الحدود." };
+}
