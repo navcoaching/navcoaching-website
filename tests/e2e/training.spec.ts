@@ -181,6 +181,9 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await noHorizontalScroll(trainee);
 
   // ---------- المتدرب: تبديل التمرين من القائمة ----------
+  // التمرين المسجّل ينطوي بعد إعادة التحميل ← نفتحه بضغطة
+  await expect(card).not.toHaveAttribute("open", "");
+  await card.locator("summary h3").click();
   const swap = card.locator("[data-testid^='swap-']");
   await swap.getByRole("combobox").selectOption({ label: "Box Squat" });
   trainee.once("dialog", (d) => d.accept());

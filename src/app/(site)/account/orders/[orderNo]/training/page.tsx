@@ -10,7 +10,7 @@ import { muscleAr } from "@/lib/exercises";
 import { loadAdherence, loadAllLifts, loadBlockData, loadBodyData, type BlockRow } from "@/lib/program-data";
 import AdherenceBar from "@/components/account/AdherenceBar";
 import ProgressView from "@/components/training/ProgressView";
-import { ImportFromImage, ItemLogForm, MeasureForm, RateDayForm, StepsForm, SwapForm, WeightForm } from "./TrainingForms";
+import { ExerciseDetails, ImportFromImage, ItemLogForm, MeasureForm, RateDayForm, StepsForm, SwapForm, WeightForm } from "./TrainingForms";
 import { visionEnabled } from "@/lib/workout-vision";
 
 export const metadata: Metadata = { title: "برنامج التمرين", robots: { index: false } };
@@ -73,6 +73,7 @@ export default async function TrainingPage({ params, searchParams }: { params: P
   const notes = data.notes.filter((n) => n.week_no == null || n.week_no === week);
   const logOf = (item: string) => data.logs.find((l) => l.block_item_id === item && l.week_no === week);
   const dayDone = (d: typeof data.days[number]) => d.items.length > 0 && d.items.every((i) => data.logs.some((l) => l.block_item_id === i.id && l.week_no === week));
+  const firstOpen = day?.items.find((i) => !logOf(i.id))?.id ?? null;
   const rating = day ? data.ratings.find((r) => r.block_day_id === day.id && r.week_no === week)?.rating ?? null : null;
 
   return (
@@ -129,24 +130,27 @@ export default async function TrainingPage({ params, searchParams }: { params: P
 
             {day && (
               <div className="stack" style={{ ["--space" as string]: "12px" }}>
+                {/* كل تمرين مطوي؛ أول تمرين ما تسجّل هذا الأسبوع يكون مفتوحاً */}
                 <h2 style={{ fontSize: 20 }}>{day.title} <span className="small muted">— الأسبوع {week}</span></h2>
                 {!readOnly && day.items.length > 0 && visionEnabled() && <ImportFromImage orderNo={o.order_no} day={day.id} week={week} />}
                 {day.items.map((it, idx) => {
                   const ex = data.exercises.get(it.exercise_id);
+                  const isOpen = !readOnly && it.id === firstOpen;
                   const plan = it.plan[week - 1];
                   const log = logOf(it.id);
                   const eff = log ? effective(log, plan) : null;
                   const opts = swaps.get(it.id) ?? [];
                   return (
-                    <article key={it.id} className="card stack exercise-card" style={{ ["--space" as string]: "10px" }} data-testid="exercise-card">
-                      <div className="row" style={{ justifyContent: "space-between", alignItems: "start" }}>
-                        <div>
-                          <h3 style={{ fontSize: 18, margin: 0 }}><span className="muted">{idx + 1}. </span><bdi dir="ltr">{ex?.name ?? "—"}</bdi> {log && <span aria-label="مسجّل">✅</span>}</h3>
-                          <p className="small muted" style={{ margin: "2px 0 0" }}>{ex ? muscleAr(ex.primary_muscle) : ""}</p>
+                    <ExerciseDetails key={it.id} defaultOpen={isOpen} summary={
+                        <div className="row" style={{ justifyContent: "space-between", alignItems: "start" }}>
+                          <div>
+                            <h3 style={{ fontSize: 18, margin: 0 }}><span className="muted">{idx + 1}. </span><bdi dir="ltr">{ex?.name ?? "—"}</bdi> {log && <span aria-label="مسجّل">✅</span>}</h3>
+                            <p className="small muted" style={{ margin: "2px 0 0" }}>{ex ? muscleAr(ex.primary_muscle) : ""}{" · "}<span className="target"><span className="muted small">المستهدف</span> <b dir="ltr">{planLabel(plan)}</b></span></p>
+                          </div>
+                          {ex?.video_url && <a className="btn btn-ghost btn-sm" href={ex.video_url} target="_blank" rel="noopener noreferrer">▶ فيديو</a>}
                         </div>
-                        {ex?.video_url && <a className="btn btn-ghost btn-sm" href={ex.video_url} target="_blank" rel="noopener noreferrer">▶ فيديو</a>}
-                      </div>
-                      <p className="target"><span className="muted small">المستهدف</span> <b dir="ltr">{planLabel(plan)}</b></p>
+                      }>
+                      <div className="stack" style={{ ["--space" as string]: "10px", marginTop: 10 }}>
                       {it.note && <p className="small alert info" style={{ margin: 0 }}>{it.note}</p>}
                       {ex?.instructions && <details className="small"><summary style={{ cursor: "pointer", minHeight: 36 }}>طريقة الأداء</summary><p style={{ whiteSpace: "pre-wrap", margin: "6px 0 0" }}>{ex.instructions}</p></details>}
                       {eff && <p className="small muted" style={{ margin: 0 }}>{eff.oneRm > 0 && <>أعلى وزن تقديري (1RM): <b className="num">{eff.oneRm}</b> كغ · </>}<bdi dir="ltr">VLU {Math.round(eff.vlu).toLocaleString("en-US")}</bdi></p>}
@@ -157,7 +161,8 @@ export default async function TrainingPage({ params, searchParams }: { params: P
                           <SwapForm orderNo={o.order_no} item={it.id} current={it.exercise_id} options={opts.map((x) => ({ id: x.id, name: x.name, is_coach_choice: x.is_coach_choice }))} />
                         </>
                       )}
-                    </article>
+                      </div>
+                    </ExerciseDetails>
                   );
                 })}
                 {!readOnly && day.items.length > 0 && <div className="card"><RateDayForm orderNo={o.order_no} day={day.id} week={week} rating={rating} /></div>}

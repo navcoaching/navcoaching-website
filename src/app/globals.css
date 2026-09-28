@@ -959,3 +959,9 @@ h2 .count { display: inline-grid; place-items: center; min-inline-size: 26px; bl
 .vol-limit { display: grid; grid-template-columns: 1fr 64px 64px; gap: 6px; align-items: center; }
 .vol-limit input { min-height: 40px; padding: 6px; text-align: center; }
 .volume table th, .volume table td { padding: 6px 10px; white-space: nowrap; }
+
+/* بطاقة التمرين القابلة للطي (جدول التمرين عند المتدرب) */
+details.exercise-card > summary.exercise-summary { cursor: pointer; list-style: none; }
+details.exercise-card > summary.exercise-summary::-webkit-details-marker { display: none; }
+details.exercise-card > summary.exercise-summary h3::after { content: "▾"; font-size: 14px; color: var(--muted); margin-inline-start: 6px; display: inline-block; transition: transform .15s; }
+details.exercise-card:not([open]) > summary.exercise-summary h3::after { transform: rotate(90deg); }
