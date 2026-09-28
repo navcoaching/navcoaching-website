@@ -34,7 +34,8 @@ const PROMPT = `This is a screenshot from a workout tracking app (for example St
 Extract every exercise and each of its sets exactly as shown: weight, reps, RPE if shown, and whether the set is a warm-up (marked "W" or labelled warm-up).
 Only report values that are visible. Use null for anything missing or unreadable; do not estimate.
 Report the weight unit shown in the screenshot (kg or lb), or null if none is shown.
-If the image is not a resistance-training log, set is_workout to false and return an empty list.`;
+If the image is not a resistance-training log, set is_workout to false and return an empty list.
+When several screenshots are given, they are consecutive parts of the same workout, in order: report each exercise once, keep its sets in order, and if the same set appears in two overlapping screenshots, include it only once.`;
 
 const MOCK: ExtractedExercise[] = [
   { name: "Leg Press (Machine)", unit: "kg", sets: [{ weight: 60, reps: 12, warmup: true }, { weight: 100, reps: 12 }, { weight: 110, reps: 10 }] },
@@ -44,10 +45,15 @@ const MOCK: ExtractedExercise[] = [
 
 export class VisionError extends Error {}
 
-export async function readWorkoutImage(data: Buffer, mime: string): Promise<ExtractedExercise[]> {
+export const MAX_IMAGES = 4;
+
+/** يقرأ حتى 4 لقطات لنفس التمرين في طلب واحد (بالترتيب)، ويرجع قائمة واحدة */
+export async function readWorkoutImages(images: { data: Buffer; mime: string }[]): Promise<ExtractedExercise[]> {
   if (visionMock()) return MOCK;
   if (!process.env.ANTHROPIC_API_KEY) throw new VisionError("قراءة الصور غير مفعّلة حالياً.");
-  if (!["image/jpeg", "image/png", "image/webp", "image/gif"].includes(mime)) throw new VisionError("ارفع صورة JPG أو PNG.");
+  if (!images.length || images.length > MAX_IMAGES) throw new VisionError(`ارفع من صورة إلى ${MAX_IMAGES} صور.`);
+  if (images.some((i) => !["image/jpeg", "image/png", "image/webp", "image/gif"].includes(i.mime))) throw new VisionError("ارفع صور JPG أو PNG.");
+  const data = { length: images.reduce((n, i) => n + i.data.length, 0) }; // للسجل فقط
 
   // مهلة أقصر من حد وظائف الخادم، بدون إعادة محاولة: رسالة واضحة بدل انقطاع الطلب
   const client = new Anthropic({ timeout: 25_000, maxRetries: 0 });
@@ -63,7 +69,7 @@ export async function readWorkoutImage(data: Buffer, mime: string): Promise<Extr
       messages: [{
         role: "user",
         content: [
-          { type: "image", source: { type: "base64", media_type: mime as "image/png", data: data.toString("base64") } },
+          ...images.map((i) => ({ type: "image" as const, source: { type: "base64" as const, media_type: i.mime as "image/png", data: i.data.toString("base64") } })),
           { type: "text", text: PROMPT },
         ],
       }],
@@ -82,7 +88,7 @@ export async function readWorkoutImage(data: Buffer, mime: string): Promise<Extr
     console.error("[vision] unexpected", (err as Error).name, (err as Error).message, ms, "ms");
     throw new VisionError(`تعذّرت قراءة الصورة. سجّل يدوياً أو حاول لاحقاً. (رمز: V-${(err as Error).name || "ERR"})`);
   }
-  console.log("[vision] ok", Date.now() - started, "ms", data.length, "bytes", response.stop_reason);
+  console.log("[vision] ok", Date.now() - started, "ms", images.length, "images", data.length, "bytes", response.stop_reason);
   if (response.stop_reason === "refusal") throw new VisionError("تعذّرت قراءة الصورة. جرّب لقطة شاشة من سجل التمرين فقط. (رمز: V-REFUSAL)");
   if (response.stop_reason === "max_tokens") throw new VisionError("الصورة فيها تمارين كثيرة. جرّب لقطة لجزء منها. (رمز: V-MAX)");
   if (!response.parsed_output) throw new VisionError("تعذّرت قراءة الصورة. جرّب لقطة أوضح أو سجّل يدوياً. (رمز: V-PARSE)");

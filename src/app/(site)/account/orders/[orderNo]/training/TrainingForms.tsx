@@ -192,11 +192,11 @@ export function ImportFromImage({ orderNo, day, week }: { orderNo: string; day: 
 }
 
 /** تصغير الصورة في الجهاز قبل الرفع (أسرع، وتحت حد حجم الطلب في الخادم). عند أي فشل نرفع الأصل. */
-async function shrinkImage(file: File): Promise<File> {
+async function shrinkImage(file: File, maxSide = 2000, keepUnder = 1_500_000): Promise<File> {
   try {
     const bmp = await createImageBitmap(file);
-    const scale = Math.min(1, 2000 / Math.max(bmp.width, bmp.height));
-    if (scale === 1 && file.size <= 1_500_000) return file;
+    const scale = Math.min(1, maxSide / Math.max(bmp.width, bmp.height));
+    if (scale === 1 && file.size <= keepUnder) return file;
     const canvas = document.createElement("canvas");
     canvas.width = Math.round(bmp.width * scale);
     canvas.height = Math.round(bmp.height * scale);
@@ -217,8 +217,11 @@ function ImportFlow({ orderNo, day, week, again }: { orderNo: string; day: strin
     e.preventDefault();
     if (reading) return;
     const fd = new FormData(e.currentTarget);
-    const file = fd.get("image");
-    if (file instanceof File && file.size > 0) fd.set("image", await shrinkImage(file));
+    const files = fd.getAll("image").filter((f): f is File => f instanceof File && f.size > 0);
+    if (files.length > 4) { setPreview({ error: "اختر حتى 4 صور." }); return; }
+    fd.delete("image");
+    // تصغير كل صورة (أكثر من صورة ← تصغير أقوى حتى يبقى المجموع تحت حد الخادم)
+    for (const f of files) fd.append("image", await shrinkImage(f, files.length > 1 ? 1600 : 2000, files.length > 1 ? 600_000 : 1_500_000));
     setReading(true);
     try {
       // استدعاء مباشر مع التقاط الخطأ: انقطاع الاتصال أو طول القراءة يظهر كرسالة، لا صفحة خطأ
@@ -243,12 +246,12 @@ function ImportFlow({ orderNo, day, week, again }: { orderNo: string; day: strin
               <input type="hidden" name="order_no" value={orderNo} />
               <input type="hidden" name="day" value={day} />
               <div className="field">
-                <label htmlFor={`img-${day}`}>لقطة شاشة لتمرين اليوم من تطبيقك</label>
-                <input id={`img-${day}`} name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
-                <span className="hint">نقرأ التمارين والأوزان والتكرارات، وتراجعها قبل الحفظ. الصورة لا تُحفظ في الموقع، وتُرسل لخدمة قراءة الصور (Anthropic) للقراءة فقط.</span>
+                <label htmlFor={`img-${day}`}>لقطات شاشة لتمرين اليوم من تطبيقك (حتى 4 صور)</label>
+                <input id={`img-${day}`} name="image" type="file" accept="image/png,image/jpeg,image/webp" multiple required />
+                <span className="hint">إذا التمرين طويل اختر اللقطات بالترتيب. نقرأ التمارين والأوزان والتكرارات، وتراجعها قبل الحفظ. الصور لا تُحفظ في الموقع، وتُرسل لخدمة قراءة الصور (Anthropic) للقراءة فقط.</span>
               </div>
               {preview.error && <p className="alert err" role="alert">{preview.error}</p>}
-              <div><Submit className="btn btn-sm" pending={reading} pendingText="جارٍ قراءة الصورة… (حتى 30 ثانية)">اقرأ الصورة</Submit></div>
+              <div><Submit className="btn btn-sm" pending={reading} pendingText="جارٍ قراءة الصور… (حتى 30 ثانية)">اقرأ الصورة</Submit></div>
             </form>
 
             {rows.length > 0 && (

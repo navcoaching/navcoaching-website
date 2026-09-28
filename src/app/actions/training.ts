@@ -15,7 +15,7 @@ import type { ActionState } from "./client";
 import { allow } from "@/lib/rate";
 import { cleanUpload, UploadError } from "@/lib/uploads";
 import { matchExercises, type DayItem, type ExtractedExercise } from "@/lib/workout-import";
-import { readWorkoutImage, visionEnabled, VisionError } from "@/lib/workout-vision";
+import { MAX_IMAGES, readWorkoutImages, visionEnabled, VisionError } from "@/lib/workout-vision";
 
 const GENERIC = "تعذّر الحفظ. حاولي مرة أخرى.";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -675,8 +675,12 @@ export async function readWorkoutImageAction(_: ImportPreview, fd: FormData): Pr
 
   let extracted: ExtractedExercise[];
   try {
-    const img = await cleanUpload(fd.get("image") as File | null, "image");
-    extracted = await readWorkoutImage(img.data, img.mime);
+    const files = fd.getAll("image").filter((f): f is File => f instanceof File && f.size > 0);
+    if (!files.length) throw new UploadError("اختر صورة.");
+    if (files.length > MAX_IMAGES) throw new UploadError(`حتى ${MAX_IMAGES} صور في المرة.`);
+    const imgs = [];
+    for (const f of files) imgs.push(await cleanUpload(f, "image"));
+    extracted = await readWorkoutImages(imgs.map((i) => ({ data: i.data, mime: i.mime })));
   } catch (err) {
     if (err instanceof UploadError || err instanceof VisionError) return { error: err.message };
     console.error("[vision] action", (err as Error).name, (err as Error).message);

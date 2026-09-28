@@ -64,7 +64,15 @@ test("تعبئة التسجيل من صورة: قراءة، ربط يدوي، ح
   for (let i = 0; i < noise.length; i++) noise[i] = (i * 2654435761) >>> 24;
   const big = await sharp(noise, { raw: { width: W, height: H, channels: 3 } }).png({ compressionLevel: 0 }).toBuffer();
   expect(big.length).toBeGreaterThan(5 * 1024 * 1024);
-  await box.locator('input[type="file"]').setInputFiles({ name: "strong.png", mimeType: "image/png", buffer: big });
+  // أكثر من 4 صور ← رسالة، وحتى 4 صور (منها صورة كبيرة) تنقرأ بطلب واحد
+  const five = Array.from({ length: 5 }, (_, i) => ({ name: `s${i}.png`, mimeType: "image/png", buffer: image }));
+  await box.locator('input[type="file"]').setInputFiles(five);
+  await box.getByRole("button", { name: "اقرأ الصورة" }).click();
+  await expect(box.getByText("اختر حتى 4 صور.")).toBeVisible();
+  await box.locator('input[type="file"]').setInputFiles([
+    { name: "strong-1.png", mimeType: "image/png", buffer: big },
+    { name: "strong-2.png", mimeType: "image/png", buffer: image },
+  ]);
   await box.getByRole("button", { name: "اقرأ الصورة" }).click();
   const review = box.getByTestId("import-review");
   await expect(review.locator("fieldset")).toHaveCount(3);
