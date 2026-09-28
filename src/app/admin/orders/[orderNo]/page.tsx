@@ -19,7 +19,7 @@ import { loadAdherence } from "@/lib/program-data";
 import { loadReminders } from "@/lib/reminders";
 import { pct } from "@/lib/adherence";
 import {
-  addDeliverableAction, grantRewardAction, markSurveySeenAction, archiveOrderAction, deleteOrderAction, removeDeliverableAction, replyCheckinAction, requestMeasurementsAction, setAmountAction, transitionAction,
+  addDeliverableAction, grantRewardAction, markSurveySeenAction, archiveOrderAction, deleteOrderAction, removeDeliverableAction, replyCheckinAction, coachMessageAction, requestMeasurementsAction, setAmountAction, transitionAction,
 } from "@/app/actions/admin";
 
 const show = (v: unknown) => (Array.isArray(v) ? v.join("، ") : v == null || v === "" ? "—" : String(v));
@@ -120,6 +120,19 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
             {o.status !== "awaiting_quote" && o.status !== "payment_review" && <p className="small muted" style={{ margin: 0 }}>غيّري حالة الطلب من الشريط أعلى الصفحة.</p>}
             <a className="btn btn-ghost btn-sm" style={{ width: "fit-content" }} href={waLink(phoneDigits, `مرحباً ${o.contact_name}، بخصوص طلبك رقم ${o.order_no}`)} target="_blank" rel="noopener">مراسلة العميل على واتساب</a>
           </div>
+
+          {/* ---------- رسالة للمتدرب ---------- */}
+          {o.status !== "cancelled" && (
+            <div className="card stack" data-testid="coach-message">
+              <h2 style={{ fontSize: 19 }}>✉️ رسالة للمتدرب</h2>
+              <ActionForm action={coachMessageAction} submit="إرسال للمتدرب" resetOnSuccess>
+                <input type="hidden" name="order_no" value={o.order_no} />
+                <div className="field"><label htmlFor="cm-text">الرسالة</label>
+                  <textarea id="cm-text" name="text" required minLength={2} maxLength={2000} rows={3} placeholder="ملاحظة أو توجيه تبينه يوصل المتدرب…" /></div>
+                <span className="hint">تظهر للمتدرب في صفحة طلبه تحت «رسائل المدربة»، ويوصله تنبيه «وصلتك رسالة» بدون نص الرسالة.</span>
+              </ActionForm>
+            </div>
+          )}
 
           <ReviewWeeks o={o} d={sub} />
 

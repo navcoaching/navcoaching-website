@@ -45,7 +45,6 @@ export default function Footer({ s }: { s: Settings }) {
           </div>
         </div>
       </footer>
-      <a className="wa-float" href={waLink(s.contact.whatsapp)} target="_blank" rel="noopener" aria-label="تواصل على واتساب"><IconWhatsApp /></a>
     </>
   );
 }

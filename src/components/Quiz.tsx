@@ -19,7 +19,7 @@ export default function Quiz({ offers }: { offers: Record<string, OfferInfo> }) 
   const P = r ? offers[QUIZ_SKU[r.k]] : null;
   const A = r?.alt && r.alt !== r.k ? offers[QUIZ_SKU[r.alt]] : null;
   return (
-    <div className="grid g2" style={{ alignItems: "start" }}>
+    <div className="grid g2 quiz" style={{ alignItems: "start" }}>
       <form className="form card flat" onSubmit={(e) => e.preventDefault()}>
         {Q.map((q, i) => (asking && i >= 2 ? null : (
           <fieldset className="field" key={q.name}>

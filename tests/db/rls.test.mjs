@@ -831,3 +831,17 @@ describe("فيديو شرح المراجعة الأسبوعية", () => {
     await as(COACH, "SELECT app.reply_checkin($1, 'رد قديم')", [c.id]);
   });
 });
+
+describe("رسالة المدربة للمتدرب", () => {
+  test("للمدربة فقط، تظهر لصاحب الطلب ولا تغيّر الحالة", async () => {
+    const no = await newOrder(A, "k-msg-000000000000001", "int1");
+    const before = (await owner.query("SELECT status FROM orders WHERE order_no = $1", [no])).rows[0].status;
+    await as(COACH, "SELECT app.coach_message($1, 'لا تنسين شرب الماء')", [no]);
+    await assert.rejects(as(A, "SELECT app.coach_message($1, 'رسالة')", [no]), /للمدربة فقط/);
+    await assert.rejects(as(COACH, "SELECT app.coach_message($1, ' ')", [no]), /اكتبي الرسالة/);
+    const mine = (await as(A, `SELECT e.from_status, e.to_status, e.note FROM order_events e JOIN orders o ON o.id = e.order_id WHERE o.order_no = $1 AND e.note = 'لا تنسين شرب الماء'`, [no])).rows;
+    assert.deepEqual(mine, [{ from_status: before, to_status: before, note: "لا تنسين شرب الماء" }]);
+    assert.equal((await as(B, `SELECT 1 FROM order_events e JOIN orders o ON o.id = e.order_id WHERE o.order_no = $1`, [no])).rowCount, 0);
+    assert.equal((await owner.query("SELECT status FROM orders WHERE order_no = $1", [no])).rows[0].status, before);
+  });
+});

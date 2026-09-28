@@ -263,6 +263,20 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   await trainee.getByText(/وصل الرد 🎥/).first().click();
   await expect(trainee.getByTestId("checkin-video").first()).toHaveAttribute("href", "https://youtu.be/review-week-1");
 
+  // رسالة من المدربة للمتدرب: تظهر في صفحة طلبه، والتنبيه بدون نص الرسالة
+  await coach.goto(`/admin/orders/${orderNo}`);
+  const msg = coach.getByTestId("coach-message");
+  await msg.getByLabel("الرسالة").fill("خففي الكارديو هذا الأسبوع وركزي على النوم.");
+  await msg.getByRole("button", { name: "إرسال للمتدرب" }).click();
+  await expect(msg.getByText(/أُرسلت الرسالة/)).toBeVisible();
+  logs = await logRows(orderNo);
+  const m = logs.find((l) => l.kind === "coach_message" && l.channel === "email");
+  expect(m).toBeTruthy();
+  expect(m!.body).not.toContain("الكارديو");
+  await trainee.goto(`/account/orders/${orderNo}`);
+  await expect(trainee.getByTestId("coach-messages")).toContainText("خففي الكارديو هذا الأسبوع");
+  await noHorizontalScroll(trainee);
+
   await coach.context().close();
   await trainee.context().close();
 });
@@ -374,7 +388,8 @@ test("الأعضاء المسجلون وإضافة برنامج يدوياً ب�
   // ---------- المتدرب يدخل ببريده ويجد برنامجه وملفه ----------
   const trainee = await newPage(browser, project + "-m");
   await login(trainee, manualEmail);
-  await expect(trainee.getByRole("link", { name: /الباقة المكثفة/ })).toBeVisible();
+  // الطلب الفعّال يظهر في «برنامجي» (وما يتكرر في «طلباتي»)
+  await expect(trainee.getByTestId("my-program")).toContainText("الباقة المكثفة");
   await trainee.goto(`/account/orders/${orderNo}`);
   await expect(trainee.getByTestId("order-status")).toHaveText("البرنامج نشط");
   await expect(trainee.getByRole("link", { name: "جدول ريم — الشهر الأول" })).toBeVisible();

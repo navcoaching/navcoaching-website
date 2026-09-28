@@ -16,6 +16,10 @@ import { CopyButton } from "@/components/FormBits";
 import { IconFile, IconLink } from "@/components/Icons";
 import { CancelForm, CheckinForm, ClearDraft, MeasurementsForm, ReviewForm, UploadProofForm } from "../../ClientForms";
 
+type Ev = { from_status: string | null; to_status: string; actor_role: string; note: string | null };
+/** رسالة من المدربة: حدث بدون تغيير حالة (from = to) */
+const isMessage = (e: Ev) => e.actor_role === "coach" && e.from_status === e.to_status && Boolean(e.note);
+
 export const metadata: Metadata = { title: "تفاصيل الطلب", robots: { index: false } };
 
 export default async function OrderPage({ params, searchParams }: { params: Promise<{ orderNo: string }>; searchParams: Promise<{ new?: string; renewed?: string }> }) {
@@ -27,6 +31,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
   const { order: o, events, proofs, deliverables, checkins, review, intake } = detail;
   const follow = await getMyFollowUp(user.id, o);
   const today = riyadhDate();
+  const messages = events.filter(isMessage).reverse(); // الأحدث أولاً
   const currentWeek = follow?.weeks.find((w) => w.status !== "done" && w.windowEnd >= today);
   const lastMissed = follow?.weeks.filter((w) => w.status === "missed").pop();
   const h = intake?.health ?? {};
@@ -51,6 +56,21 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
       {sp.new && <ClearDraft />}
       <div className="wrap stack" style={{ ["--space" as string]: "18px" }}>
         <nav className="small"><Link href="/account">طلباتي</Link> / <bdi className="num">{o.order_no}</bdi></nav>
+
+        {messages.length > 0 && (
+          <section className="card stack" aria-labelledby="cm-h" data-testid="coach-messages" style={{ ["--space" as string]: "8px" }}>
+            <h2 id="cm-h" style={{ fontSize: 17, margin: 0 }}>📩 رسائل المدربة</h2>
+            {messages.slice(0, 3).map((m) => <CoachMsg key={m.id} at={m.created_at} note={m.note!} />)}
+            {messages.length > 3 && (
+              <details>
+                <summary className="small" style={{ cursor: "pointer", minHeight: 40 }}>رسائل أقدم ({messages.length - 3})</summary>
+                <div className="stack" style={{ ["--space" as string]: "8px", marginTop: 8 }}>
+                  {messages.slice(3).map((m) => <CoachMsg key={m.id} at={m.created_at} note={m.note!} />)}
+                </div>
+              </details>
+            )}
+          </section>
+        )}
 
         {sp.new && (
           <div className="alert ok" role="status">
@@ -272,11 +292,11 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                 <StartPrefForm orderNo={o.order_no} pref={o.preferred_start ?? null} />
               </div>
             )}
-            {events.some((e) => e.note) && (
+            {events.some((e) => e.note && !isMessage(e)) && (
               <div className="card flat log">
                 <h2 style={{ fontSize: 16, marginBottom: 8 }}>التحديثات</h2>
                 <ul style={{ margin: 0, paddingInlineStart: 18 }}>
-                  {events.filter((e) => e.note).map((e) => <li key={e.id}><span className="muted">{fmtDateTime(e.created_at)}:</span> {e.note}</li>)}
+                  {events.filter((e) => e.note && !isMessage(e)).map((e) => <li key={e.id}><span className="muted">{fmtDateTime(e.created_at)}:</span> {e.note}</li>)}
                 </ul>
               </div>
             )}
@@ -288,5 +308,14 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
         </div>
       </div>
     </section>
+  );
+}
+
+function CoachMsg({ at, note }: { at: string; note: string }) {
+  return (
+    <div className="alert info" style={{ display: "block" }}>
+      <span className="small muted">{fmtDateTime(at)}</span>
+      <p style={{ margin: "4px 0 0", whiteSpace: "pre-line" }}>{note}</p>
+    </div>
   );
 }

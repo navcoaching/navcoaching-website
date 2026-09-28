@@ -167,6 +167,25 @@ export async function replyCheckinAction(_: ActionState, fd: FormData): Promise<
   return { ok: true, message: "تم إرسال الرد." + summarize(results) };
 }
 
+/** رسالة من المدربة للمتدرب: تظهر في صفحة طلبه، والتنبيه بدون نص الرسالة (قد تكون فيها معلومات صحية) */
+export async function coachMessageAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const orderNo = String(fd.get("order_no") ?? "");
+  const text = String(fd.get("text") ?? "").trim().slice(0, 2000);
+  if (text.length < 2) return { error: "اكتبي الرسالة." };
+  let results: ChannelResult[] = [];
+  try {
+    results = await asCoach(async (tx) => {
+      await tx.query("SELECT app.coach_message($1,$2)", [orderNo, text]);
+      const o = await orderTarget(tx, orderNo);
+      if (!o) return [];
+      return notifyTrainee(tx, { orderId: o.id, orderNo, userId: o.user_id }, {
+        kind: "coach_message", subject: `رسالة من المدربة — ${orderNo}`, text: "وصلتك رسالة من المدربة. افتح صفحة طلبك لقراءتها." });
+    });
+  } catch (err) { return fail(err); }
+  revalidatePath(`/admin/orders/${orderNo}`);
+  return { ok: true, message: "أُرسلت الرسالة." + summarize(results) };
+}
+
 // ---------- المتابعة ----------
 export async function addNoteAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const orderNo = String(fd.get("order_no") ?? "");

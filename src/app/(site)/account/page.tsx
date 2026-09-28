@@ -14,13 +14,16 @@ import EndOfProgramList from "@/components/account/EndOfProgram";
 export const metadata: Metadata = { title: "حسابي", robots: { index: false } };
 
 const PAST = ["completed", "cancelled"];
+const IN_PROGRAM = ["active", "delivered"];
 
 export default async function Account({ searchParams }: { searchParams: Promise<{ denied?: string; plan?: string }> }) {
   const user = await requireUser("/account");
   const [orders, prefs, freePlans, { denied, plan: planMsg }] = await Promise.all([getMyOrders(user.id), getMyPrefs(user.id), getMyFreePlans(user.id), searchParams]);
   // الطلبات المكتملة والملغاة تنطوي تحت «طلبات سابقة»
   const past = orders.filter((o) => PAST.includes(o.status));
-  const current = orders.filter((o) => !PAST.includes(o.status));
+  // الطلبات الفعّالة تظهر في «برنامجي» فوق، فما نكررها هنا (توفير مساحة على الجوال)
+  const inProgram = orders.filter((o) => IN_PROGRAM.includes(o.status));
+  const current = orders.filter((o) => !PAST.includes(o.status) && !IN_PROGRAM.includes(o.status));
   const needsAction = orders.filter((o) => ["awaiting_payment", "awaiting_quote"].includes(o.status));
 
   return (
@@ -45,7 +48,11 @@ export default async function Account({ searchParams }: { searchParams: Promise<
           ) : (
             <>
               {current.map((o) => <OrderCard key={o.id} o={o} />)}
-              {current.length === 0 && <p className="small muted" style={{ margin: 0 }}>ما عندك طلبات حالية.</p>}
+              {current.length === 0 && (
+                <p className="small muted" style={{ margin: 0 }} data-testid="orders-in-program">
+                  {inProgram.length ? "طلبك الحالي في «برنامجي» فوق، وتفاصيله من «تفاصيل الطلب والمراجعات»." : "ما عندك طلبات حالية."}
+                </p>
+              )}
               {past.length > 0 && (
                 <details className="card flat past-orders" data-testid="past-orders">
                   <summary>طلبات سابقة ({past.length}) <span className="small muted">مكتملة أو ملغاة</span></summary>

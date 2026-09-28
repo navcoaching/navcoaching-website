@@ -9,7 +9,7 @@ const n0 = (v: number) => Math.round(v).toLocaleString("en-US");
 
 function Rules({ title, rules, id }: { title: string; rules: Rule[]; id: string }) {
   return (
-    <details className="rules-box" open data-testid={id}>
+    <details className="rules-box" data-testid={id}>
       <summary>{title}</summary>
       <dl className="rules-list">
         {rules.map(([t, b], i) => (

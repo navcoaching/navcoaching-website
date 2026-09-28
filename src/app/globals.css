@@ -943,3 +943,10 @@ h2 .count { display: inline-grid; place-items: center; min-inline-size: 26px; bl
 .vapid-row code { overflow-wrap: anywhere; font-size: 13px; background: var(--surface-2); padding: 6px 8px; border-radius: 8px; }
 
 .past-orders > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-weight: 700; }
+
+/* «أي باقة تناسبني»: الخيارات بعرض كامل وتحت بعض على الجوال بدل التفاف غير منتظم */
+@media (max-width: 700px) {
+  .quiz .choices { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .quiz .choice { width: 100%; }
+  .quiz .choice span { width: 100%; justify-content: flex-start; text-align: start; }
+}

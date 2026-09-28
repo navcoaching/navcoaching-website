@@ -104,6 +104,9 @@ test("موعد البداية: تغيير المتدرب، تاق الأولوي
   await expect(past.getByRole("link", { name: new RegExp(asap) })).toBeHidden();
   await past.locator("summary").click();
   await expect(past.getByRole("link", { name: new RegExp(asap) })).toBeVisible();
-  await expect(trainee.locator(`a.order-card[href$="${later}"]`)).toBeVisible();
+  // الطلب الفعّال يظهر في «برنامجي» فقط، ولا يتكرر في «طلباتي»
+  await expect(trainee.getByTestId("my-program").locator(`a[href="/account/orders/${later}"]`)).toBeVisible();
+  await expect(trainee.locator(`a.order-card[href$="${later}"]`)).toHaveCount(0);
+  await expect(trainee.getByTestId("orders-in-program")).toBeVisible();
   await noHorizontalScroll(trainee);
 });
