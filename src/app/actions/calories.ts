@@ -104,9 +104,9 @@ export async function applyCalorieSuggestionAction(_: ActionState, fd: FormData)
       if (!sg) throw bad("ما فيه اقتراح حالياً.");
       kcal = sg.kcal;
       await tx.query(
-        `INSERT INTO nutrition_targets (order_id, kcal, protein, carbs, fat, updated_by) VALUES ($1,$2,$3,$4,$5,$6)
+        `INSERT INTO nutrition_targets (order_id, kcal, protein, carbs, fat, updated_by, kcal_source, kcal_confirmed_at) VALUES ($1,$2,$3,$4,$5,$6,'coach',now())
          ON CONFLICT (order_id) DO UPDATE SET kcal=EXCLUDED.kcal, carbs=coalesce(EXCLUDED.carbs, nutrition_targets.carbs),
-           updated_by=EXCLUDED.updated_by, updated_at=now()`,
+           updated_by=EXCLUDED.updated_by, updated_at=now(), kcal_source='coach', kcal_confirmed_at=now()`,
         [o.id, sg.kcal, sg.protein, sg.carbs, sg.fat, uid]);
       await tx.query("INSERT INTO admin_log (actor_id, action, target, details) VALUES ($1,'calories.apply',$2,$3)",
         [uid, orderNo, JSON.stringify({ from: st.target?.kcal ?? null, to: sg.kcal, carbs: sg.carbs, weight: sg.weight })]);
@@ -138,4 +138,26 @@ export async function dismissCalorieSuggestionAction(_: ActionState, fd: FormDat
   revalidatePath(`/admin/orders/${orderNo}/nutrition`);
   revalidatePath("/admin");
   return { ok: true, message: "تم التجاهل. يظهر اقتراح جديد إذا تغيّرت بيانات المتدرب." };
+}
+
+/** المدربة: تأكيد السعرات المحسوبة تلقائياً (يُعاد الحساب في الخادم ويجب أن يطابق الرقم المعروض) */
+export async function confirmAutoKcalAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const orderNo = s(fd, "order_no");
+  const shown = Number(s(fd, "kcal"));
+  if (!ORDER_NO.test(orderNo)) return { error: GENERIC };
+  try {
+    await asCoach(async (tx, uid) => {
+      const o = await orderOf(tx, orderNo);
+      const r = await tx.query(
+        `UPDATE nutrition_targets SET kcal_source = 'coach', kcal_confirmed_at = now(), updated_by = $3, updated_at = now()
+          WHERE order_id = $1 AND kcal = $2 AND kcal_source = 'auto' AND kcal_confirmed_at IS NULL`, [o.id, shown, uid]);
+      if (!r.rowCount) throw bad("تغيّرت الحسبة أو تأكدت من قبل. حدّثي الصفحة.");
+      await tx.query("INSERT INTO admin_log (actor_id, action, target, details) VALUES ($1,'calories.confirm',$2,$3)",
+        [uid, orderNo, JSON.stringify({ kcal: shown })]);
+    });
+  } catch (err) { return fail(err); }
+  revalidatePath(`/admin/orders/${orderNo}/nutrition`);
+  revalidatePath(`/account/orders/${orderNo}/nutrition`);
+  revalidatePath("/admin");
+  return { ok: true, message: "تم تأكيد الحسبة." };
 }

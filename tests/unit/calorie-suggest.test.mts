@@ -1,7 +1,7 @@
 // اختبارات السعرات المقترحة (calorie-suggest): التحويل من الاستبيان، الوزن الحالي، وقواعد الاقتراح.
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { currentWeight, explain, missingFor, profileFromIntake, suggestTargets, targetKcal, type CalorieProfile } from "../../src/lib/calorie-suggest.ts";
+import { basis, currentWeight, explain, missingFor, profileFromIntake, suggestTargets, targetKcal, type CalorieProfile } from "../../src/lib/calorie-suggest.ts";
 
 const base: CalorieProfile = { method: "tenhaaf", sex: "female", age: 30, height_cm: 165, body_fat: null, paf: 1.1, training_days: 4, minutes: 60, eb_factor: 0.8 };
 
@@ -51,5 +51,13 @@ describe("السعرات المقترحة", () => {
   test("تنبيه الكارب المنخفض", () => {
     const s = suggestTargets(base, { kg: 70, source: "logs" }, { kcal: 2500, protein: 250, carbs: 200, fat: 110 })!; // 1910 − 1000 − 990 < 0
     assert.equal(s.carbs, 0); assert.equal(s.lowCarb, true);
+  });
+});
+
+describe("basis — أساس الحسبة للتأكد", () => {
+  test("يعرض المعادلة والوزن والطول والعمر والنشاط والتمرين والهدف", () => {
+    const p = profileFromIntake({ gender: "أنثى", age: 30, days: "4 أيام", duration: "ساعة", steps: "3,000 – 6,000", goal: "نزول دهون" }, { weight: 74, height: 165 });
+    const b = basis(p, { kg: 74, source: "intake" }).join(" | ");
+    for (const t of ["Ten Haaf", "74 كغ (من الاستبيان)", "165 سم", "العمر: 30", "أنثى", "4 أيام × 60 دقيقة"]) assert.ok(b.includes(t), t);
   });
 });

@@ -3,13 +3,13 @@ import { sumMacros, type MealKind } from "@/lib/nutrition";
 
 export type PlanItem = { id: string; food: string; portion: string | null; protein: number; carbs: number; fat: number };
 export type PlanMeal = { id: string; kind: MealKind; title: string; method: string | null; items: PlanItem[]; total: ReturnType<typeof sumMacros> };
-export type Plan = { id: string; order_id: string | null; name: string; notes: string | null; archived: boolean; meals: PlanMeal[]; total: ReturnType<typeof sumMacros> };
+export type Plan = { id: string; order_id: string | null; source_id: string | null; name: string; notes: string | null; archived: boolean; meals: PlanMeal[]; total: ReturnType<typeof sumMacros> };
 
 /** الجداول الغذائية بمكوناتها ومجاميعها. بالمعرّفات، أو كل جداول طلب (orderId)، أو القوالب (orderId = null) */
 export async function loadPlans(tx: Tx, where: { ids: string[] } | { orderId: string | null }): Promise<Plan[]> {
   const plans = "ids" in where
-    ? (await tx.query(`SELECT id, order_id, name, notes, archived FROM nutrition_plans WHERE id = ANY($1::uuid[]) ORDER BY position, created_at`, [where.ids])).rows
-    : (await tx.query(`SELECT id, order_id, name, notes, archived FROM nutrition_plans WHERE order_id IS NOT DISTINCT FROM $1 ORDER BY archived, position, created_at`, [where.orderId])).rows;
+    ? (await tx.query(`SELECT id, order_id, source_id, name, notes, archived FROM nutrition_plans WHERE id = ANY($1::uuid[]) ORDER BY position, created_at`, [where.ids])).rows
+    : (await tx.query(`SELECT id, order_id, source_id, name, notes, archived FROM nutrition_plans WHERE order_id IS NOT DISTINCT FROM $1 ORDER BY archived, position, created_at`, [where.orderId])).rows;
   if (!plans.length) return [];
   const ids = plans.map((p) => p.id);
   const meals = (await tx.query(`SELECT id, plan_id, kind, title, method FROM plan_meals WHERE plan_id = ANY($1::uuid[]) ORDER BY position, id`, [ids])).rows;

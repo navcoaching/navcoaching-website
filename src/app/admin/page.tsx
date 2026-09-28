@@ -16,7 +16,7 @@ import { pct } from "@/lib/adherence";
 import ActionForm from "@/components/admin/ActionForm";
 import { grantRewardAction } from "@/app/actions/admin";
 import GrantedAlert from "@/components/admin/GrantedAlert";
-import { loadPendingSuggestions } from "@/lib/calorie-data";
+import { autoFillTargets, loadPendingAuto, loadPendingSuggestions } from "@/lib/calorie-data";
 
 type Alert = { order_no: string; name: string; text: string; tone: "warn" | "info" | "bad" };
 type Todo = { order_no: string; name: string; text: string; href: string; tone: "warn" | "info" | "bad"; grant?: boolean };
@@ -127,6 +127,12 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           WHERE NOT o.is_demo AND o.archived_at IS NULL AND o.status NOT IN ('cancelled','completed')
             AND (coalesce(i.health->>'weight','') = '' OR coalesce(i.health->>'height','') = '')
           ORDER BY o.created_at DESC LIMIT 20`);
+      // سعرات محسوبة تلقائياً تنتظر تأكيد الحسبة
+      await autoFillTargets(tx);
+      for (const a of await loadPendingAuto(tx)) {
+        todos.push({ order_no: a.order_no, name: a.name, tone: "warn", href: `/admin/orders/${a.order_no}/nutrition`,
+          text: `⏳ سعرات محسوبة تلقائياً بانتظار تأكيدك: ${Number(a.kcal).toLocaleString("en-US")}` });
+      }
       // سعرات مقترحة جديدة من بيانات المتدرب (وزن/نشاط) تنتظر اعتمادك
       for (const sg of await loadPendingSuggestions(tx)) {
         todos.push({ order_no: sg.order_no, name: sg.name, tone: "info", href: `/admin/orders/${sg.order_no}/nutrition`,

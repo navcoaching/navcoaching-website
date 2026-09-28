@@ -1,7 +1,7 @@
 import ActionForm from "@/components/admin/ActionForm";
-import { applyCalorieSuggestionAction, dismissCalorieSuggestionAction, saveCalorieProfileAction } from "@/app/actions/calories";
+import { applyCalorieSuggestionAction, confirmAutoKcalAction, dismissCalorieSuggestionAction, saveCalorieProfileAction } from "@/app/actions/calories";
 import { EB_GOALS, PAF_LEVELS } from "@/lib/calories";
-import { explain, targetKcal } from "@/lib/calorie-suggest";
+import { basis, explain, targetKcal } from "@/lib/calorie-suggest";
 import type { CalorieState } from "@/lib/calorie-data";
 
 const n0 = (v: number) => Math.round(v).toLocaleString("en-US");
@@ -14,7 +14,17 @@ export default function CalorieSuggest({ orderNo, st }: { orderNo: string; st: C
   return (
     <section className="card stack" data-testid="calorie-suggest" aria-labelledby="cs-h">
       <h2 id="cs-h" style={{ fontSize: 19 }}>السعرات المقترحة</h2>
-      {s ? (
+      {st.pendingAuto && st.target?.kcal != null && st.weight ? (
+        <div className="alert warn stack" style={{ ["--space" as string]: "8px", flexDirection: "column", alignItems: "stretch" }} data-testid="auto-kcal">
+          <b><span className="status action" data-testid="auto-badge">⏳ بانتظار تأكيدك</span> حُسبت السعرات تلقائياً: <span className="num">{n0(st.target.kcal)}</span> سعرة</b>
+          <ul className="small" style={{ margin: 0, paddingInlineStart: 18 }}>{basis(p, st.weight).map((b) => <li key={b}>{b}</li>)}</ul>
+          <span className="small muted">تأكدي أن البيانات صحيحة ثم اضغطي «أكدت الحسبة». لو فيها خطأ عدّليها من «بيانات الحساب» وتتحدث الحسبة، أو اكتبي الرقم بنفسك في «الأرقام الغذائية اليومية». البروتين والكارب والدهون ما تنحط تلقائياً.</span>
+          <ActionForm action={confirmAutoKcalAction} submit="أكدت الحسبة" submitClass="btn btn-sm">
+            <input type="hidden" name="order_no" value={orderNo} />
+            <input type="hidden" name="kcal" value={st.target.kcal} />
+          </ActionForm>
+        </div>
+      ) : s ? (
         <div className="alert info stack" style={{ ["--space" as string]: "8px", flexDirection: "column", alignItems: "stretch" }} data-testid="suggestion">
           <b>مقترح: <span className="num">{n0(s.kcal)}</span> سعرة{s.diff != null && <> بدل <span className="num">{n0(s.kcal - s.diff)}</span> ({s.diff > 0 ? "+" : ""}{n0(s.diff)})</>}</b>
           {s.carbs != null && <span className="small">بروتين {s.protein}غ · دهون {s.fat}غ (كما هي) · كارب <b className="num">{s.carbs}</b>غ</span>}

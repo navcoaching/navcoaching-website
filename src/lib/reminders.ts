@@ -1,4 +1,5 @@
 import "server-only";
+import { autoFillTargets } from "./calorie-data";
 import { sendCoachDigest } from "./coach-digest";
 import { withUser, type Tx } from "./db";
 import { notifyTrainee, type ChannelResult } from "./notify";
@@ -48,6 +49,8 @@ export async function runReminders(now = new Date(), opts: { ignoreQuietHours?: 
   return withUser(SYSTEM_USER, async (tx) => {
     const r = await loadReminders(tx);
     // إيميل يومي للمدربة بأسماء مراجعات اليوم (مرة واحدة في اليوم)
+    // السعرات التلقائية للمتدربين الجدد في باقات التغذية (تنتظر تأكيد المدربة)
+    await autoFillTargets(tx);
     const digest = await sendCoachDigest(tx, r, today);
     const { rows: orders } = await tx.query<ActiveOrder>(
       `SELECT id, order_no, user_id, contact_name, product_name, sub_start_at, sub_end_at, review_weekday

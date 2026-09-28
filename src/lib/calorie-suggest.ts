@@ -96,3 +96,16 @@ export function explain(p: CalorieProfile, s: Suggestion): string {
     `الهدف: ${label(EB_GOALS, p.eb_factor)}`,
   ].join(" · ");
 }
+
+const METHOD_LABEL: Record<string, string> = { tenhaaf: "Ten Haaf", cunningham: "Cunningham", tinsley: "Tinsley" };
+/** أساس الحسبة كاملاً (للتأكد من صحتها): المعادلة والوزن والطول والعمر والنشاط والتمرين والهدف */
+export function basis(p: CalorieProfile, w: { kg: number; source: "logs" | "intake" }): string[] {
+  return [
+    `المعادلة: ${METHOD_LABEL[p.method] ?? p.method}`,
+    `الوزن: ${w.kg} كغ (${w.source === "logs" ? "متوسط آخر 7 أيام" : "من الاستبيان"})`,
+    p.method === "cunningham" ? `نسبة الدهون: ${p.body_fat}%` : `الطول: ${p.height_cm ?? "—"} سم · العمر: ${p.age ?? "—"} · ${p.sex === "male" ? "ذكر" : p.sex === "female" ? "أنثى" : "—"}`,
+    `النشاط خارج التمرين: ${label(PAF_LEVELS, p.paf)}`,
+    `التمرين: ${p.training_days} أيام × ${p.minutes} دقيقة`,
+    `الهدف: ${label(EB_GOALS, p.eb_factor)}`,
+  ];
+}

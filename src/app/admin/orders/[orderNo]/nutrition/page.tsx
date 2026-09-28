@@ -6,9 +6,9 @@ import { fmtDate } from "@/lib/format";
 import { addDays, riyadhDate } from "@/lib/schedule";
 import ActionForm from "@/components/admin/ActionForm";
 import { assignNutritionAction, assignSupplementsAction, saveTargetsAction } from "@/app/actions/nutrition";
-import { DEFAULT_RULES, sumMacros, targetCheck, type Target } from "@/lib/nutrition";
+import { DEFAULT_RULES, plansNear, sumMacros, targetCheck, type Target } from "@/lib/nutrition";
 import { loadPlans, loadRoutine } from "@/lib/nutrition-data";
-import { loadCalorieState } from "@/lib/calorie-data";
+import { autoFillTargets, loadCalorieState } from "@/lib/calorie-data";
 import CalorieSuggest from "@/components/admin/CalorieSuggest";
 
 type Log = { log_date: string; protein: number; carbs: number; fat: number };
@@ -21,11 +21,12 @@ export default async function OrderNutrition({ params }: { params: Promise<{ ord
   const data = await withUser(coach.id, async (tx) => {
     const { rows: [o] } = await tx.query(`SELECT id, order_no, user_id, contact_name, product_name, status FROM orders WHERE order_no = $1`, [orderNo]);
     if (!o) return null;
+    await autoFillTargets(tx, o.id);
     const target = (await tx.query(`SELECT kcal, protein::float, carbs::float, fat::float, rules, updated_at FROM nutrition_targets WHERE order_id = $1`, [o.id])).rows[0] as (Target & { rules: string | null; updated_at: string }) | undefined;
     return {
       o, target, cal: await loadCalorieState(tx, o.id, o.user_id),
       plans: await loadPlans(tx, { orderId: o.id }),
-      templates: (await tx.query(`SELECT id, name FROM nutrition_plans WHERE order_id IS NULL AND NOT archived ORDER BY position, created_at`)).rows as { id: string; name: string }[],
+      templates: (await loadPlans(tx, { orderId: null })).filter((t) => !t.archived),
       routine: await loadRoutine(tx, { orderId: o.id }),
       routineTemplates: (await tx.query(`SELECT id, name FROM supplement_routines WHERE order_id IS NULL AND NOT archived ORDER BY created_at`)).rows as { id: string; name: string }[],
       logs: (await tx.query(
@@ -38,6 +39,8 @@ export default async function OrderNutrition({ params }: { params: Promise<{ ord
   const check = target ? targetCheck(target) : null;
   const days = [...new Set(logs.map((l) => l.log_date))];
   const entitled = ["active", "delivered", "completed"].includes(o.status);
+  const near = plansNear(templates, target?.kcal);
+  const added = new Set(plans.filter((p) => !p.archived).map((p) => p.source_id));
 
   return (
     <div className="stack" style={{ ["--space" as string]: "18px", maxWidth: 1000 }}>
@@ -82,6 +85,32 @@ export default async function OrderNutrition({ params }: { params: Promise<{ ord
             </table>
           </div>
         )}
+        <div className="stack" style={{ ["--space" as string]: "8px" }} data-testid="near-plans">
+          <h3 style={{ fontSize: 16, margin: 0 }}>جداول مقترحة حسب سعراته{target?.kcal ? <> (<span className="num">{target.kcal.toLocaleString("en-US")}</span> ± 200)</> : ""}</h3>
+          {!target?.kcal ? <p className="small muted" style={{ margin: 0 }}>تظهر الاقتراحات بعد تحديد هدف السعرات.</p>
+            : near.length === 0 ? <p className="small muted" style={{ margin: 0 }}>ما فيه قالب بفرق 200 سعرة أو أقل. أضيفي من القائمة بالأسفل أو جهّزي قالباً جديداً.</p> : (
+            <ul className="stack" style={{ ["--space" as string]: "6px", listStyle: "none", margin: 0, padding: 0 }}>
+              {near.map((t) => (
+                <li key={t.id} className="row" style={{ justifyContent: "space-between", gap: 8, flexWrap: "wrap" }} data-testid="near-plan">
+                  <span>
+                    <b>{t.name}</b>{" "}
+                    <span className="small muted num" style={{ display: "inline-flex", flexWrap: "wrap", columnGap: 8 }}>
+                      <span style={{ whiteSpace: "nowrap" }}>{Math.round(t.total.kcal).toLocaleString("en-US")} سعرة (<bdi dir="ltr">{t.diff > 0 ? "+" : ""}{t.diff}</bdi>)</span>
+                      <span style={{ whiteSpace: "nowrap" }}>ب {t.total.protein}</span><span style={{ whiteSpace: "nowrap" }}>ك {t.total.carbs}</span><span style={{ whiteSpace: "nowrap" }}>د {t.total.fat}</span>
+                    </span>
+                    {t.close && <> <span className="status ok">قريب جداً</span></>}
+                  </span>
+                  {added.has(t.id) ? <span className="status ok">✓ مضاف له</span> : (
+                    <ActionForm action={assignNutritionAction} submit="إضافة للمتدرب" submitClass="btn btn-ghost btn-sm">
+                      <input type="hidden" name="order_no" value={o.order_no} />
+                      <input type="hidden" name="template" value={t.id} />
+                    </ActionForm>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         <ActionForm action={assignNutritionAction} className="form inline-form" submit="إضافة للمتدرب">
           <input type="hidden" name="order_no" value={o.order_no} />
           <div className="field"><label htmlFor="as-plan">إضافة جدول من القوالب</label>

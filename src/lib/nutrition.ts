@@ -48,3 +48,13 @@ export function scaleFood(f: Per100, grams: number) {
   const p = Math.round(Number(f.protein_100) * k * 10) / 10, c = Math.round(Number(f.carbs_100) * k * 10) / 10, fat = Math.round(Number(f.fat_100) * k * 10) / 10;
   return { protein: p, carbs: c, fat, kcal: Math.round(kcalOf({ protein: p, carbs: c, fat })) };
 }
+
+/** قوالب الجداول القريبة من هدف السعرات: فرق 200 سعرة أو أقل، الأقرب أولاً. «قريب جداً» = 100 أو أقل */
+export function plansNear<T extends { total: { kcal: number } }>(plans: T[], kcal: number | null | undefined, max = 200): (T & { diff: number; close: boolean })[] {
+  if (!kcal) return [];
+  return plans
+    .map((p) => ({ ...p, diff: Math.round(p.total.kcal - kcal) }))
+    .filter((p) => p.total.kcal > 0 && Math.abs(p.diff) <= max)
+    .sort((a, b) => Math.abs(a.diff) - Math.abs(b.diff))
+    .map((p) => ({ ...p, close: Math.abs(p.diff) <= 100 }));
+}

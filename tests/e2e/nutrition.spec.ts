@@ -79,11 +79,11 @@ test("التغذية والمكملات: الأهداف، الجداول، ال�
   await coach.reload();
   await expect(coach.getByTestId("target-check")).toContainText("مطابق: 1858");
   await coach.getByLabel("إضافة جدول من القوالب").selectOption({ label: "الجدول الغذائي 2" });
-  await coach.getByRole("button", { name: "إضافة للمتدرب" }).click();
+  await coach.locator("form", { has: coach.getByLabel("إضافة جدول من القوالب") }).getByRole("button", { name: "إضافة للمتدرب" }).click();
   await expect(coach.getByText("تمت إضافة الجدول للمتدرب")).toBeVisible();
   // جدول ثاني حتى يختار المتدرب بينهم
   await coach.getByLabel("إضافة جدول من القوالب").selectOption({ label: "الجدول الغذائي 1" });
-  await coach.getByRole("button", { name: "إضافة للمتدرب" }).click();
+  await coach.locator("form", { has: coach.getByLabel("إضافة جدول من القوالب") }).getByRole("button", { name: "إضافة للمتدرب" }).click();
   await expect(coach.getByText("تمت إضافة الجدول للمتدرب").last()).toBeVisible();
   await coach.getByLabel("إسناد روتين من القوالب").selectOption({ label: "روتين المكملات والأداء الذهني" });
   await coach.getByRole("button", { name: "إسناد", exact: true }).click();

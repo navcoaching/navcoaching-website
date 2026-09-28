@@ -97,9 +97,9 @@ export async function saveTargetsAction(_: ActionState, fd: FormData): Promise<A
       const { rows: [o] } = await tx.query(`SELECT id FROM orders WHERE order_no = $1`, [orderNo]);
       if (!o) throw new Error("gone");
       await tx.query(
-        `INSERT INTO nutrition_targets (order_id, kcal, protein, carbs, fat, rules, updated_by) VALUES ($1,$2,$3,$4,$5,$6,$7)
+        `INSERT INTO nutrition_targets (order_id, kcal, protein, carbs, fat, rules, updated_by, kcal_source, kcal_confirmed_at) VALUES ($1,$2,$3,$4,$5,$6,$7,'coach',now())
          ON CONFLICT (order_id) DO UPDATE SET kcal=EXCLUDED.kcal, protein=EXCLUDED.protein, carbs=EXCLUDED.carbs, fat=EXCLUDED.fat,
-           rules=EXCLUDED.rules, updated_by=EXCLUDED.updated_by, updated_at=now()`,
+           rules=EXCLUDED.rules, updated_by=EXCLUDED.updated_by, updated_at=now(), kcal_source='coach', kcal_confirmed_at=now()`,
         [o.id, ...vals, rules, uid]);
     });
   } catch (err) { return fail(err); }
