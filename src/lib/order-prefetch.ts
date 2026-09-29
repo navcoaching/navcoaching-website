@@ -1,9 +1,9 @@
 import "server-only";
-import { batch, litList, type Tx } from "./db";
+import { batch, litList, txScope, type Tx } from "./db";
 
 // تحميل مجمّع لبيانات الالتزام والمراجعات لعدة طلبات في رحلة واحدة (6 استعلامات مهما كان عدد المتدربين).
 // لوحة الإدارة كانت تسأل قاعدة البيانات 6 مرات عن كل متدرب نشط، وكل سؤال رحلة شبكة إلى Neon.
-// النتيجة تُحفظ مع المعاملة نفسها (WeakMap)، فتستفيد منها loadAdherence وloadWeekState بدون تغيير استدعائها.
+// النتيجة تُحفظ مع المعاملة نفسها (txScope، تُمسح عند انتهائها)، فتستفيد منها loadAdherence وloadWeekState بدون تغيير استدعائها.
 
 export type BlockData = {
   id: string; start_date: string; weeks: number;
@@ -12,13 +12,16 @@ export type BlockData = {
 };
 export type OrderProgressData = { blocks: BlockData[]; manual: Set<number>; checkins: string[]; rewarded: boolean };
 
-const cache = new WeakMap<Tx, Map<string, OrderProgressData>>();
+const KEY = "order-progress";
+const store = (tx: Tx) => {
+  const scope = txScope(tx);
+  return (scope.get(KEY) as Map<string, OrderProgressData> | undefined) ?? (scope.set(KEY, new Map()), scope.get(KEY) as Map<string, OrderProgressData>);
+};
 
 /** يحمّل بيانات الطلبات دفعة واحدة، ثم تقرأها loadOrderProgress من الذاكرة بدل استعلام لكل طلب */
 export async function prefetchOrders(tx: Tx, orderIds: string[]): Promise<void> {
   if (!orderIds.length) return;
-  const map = cache.get(tx) ?? new Map<string, OrderProgressData>();
-  cache.set(tx, map);
+  const map = store(tx);
   const ids = orderIds.filter((id) => !map.has(id));
   if (!ids.length) return;
   const idList = litList(tx, ids, "uuid");
@@ -49,7 +52,7 @@ export async function prefetchOrders(tx: Tx, orderIds: string[]): Promise<void> 
 
 /** بيانات طلب واحد: من التحميل المجمّع إن وُجد، وإلا بالاستعلامات المنفردة (سلوك الصفحات الفردية كما هو) */
 export async function loadOrderProgress(tx: Tx, orderId: string, want: { training?: boolean; reviews?: boolean; reward?: boolean } = { training: true, reviews: true, reward: true }): Promise<OrderProgressData> {
-  const hit = cache.get(tx)?.get(orderId);
+  const hit = store(tx).get(orderId);
   if (hit) return hit;
   const out: OrderProgressData = { blocks: [], manual: new Set(), checkins: [], rewarded: false };
   if (want.training) {

@@ -20,6 +20,17 @@ if (process.env.NODE_ENV !== "production") globalForPool.__navPool = pool;
 
 export type Tx = PoolClient;
 
+/**
+ * ذاكرة قصيرة العمر مرتبطة بمعاملة واحدة (تُمسح عند انتهائها). الاتصال نفسه يُعاد استخدامه بين الطلبات،
+ * فلا تُخزَّن بيانات على كائن الاتصال بدون هذا النطاق وإلا رأى طلب لاحق بيانات قديمة.
+ */
+const txScopes = new WeakMap<Tx, Map<string, unknown>>();
+export function txScope(tx: Tx): Map<string, unknown> {
+  let m = txScopes.get(tx);
+  if (!m) txScopes.set(tx, (m = new Map()));
+  return m;
+}
+
 /** ينفّذ fn داخل معاملة مرتبطة بهوية المستخدم (أو زائر عند userId=null). */
 export async function withUser<T>(userId: string | null, fn: (tx: Tx) => Promise<T>): Promise<T> {
   if (userId === null) return withAnon(fn);
@@ -36,6 +47,7 @@ export async function withUser<T>(userId: string | null, fn: (tx: Tx) => Promise
     await client.query("ROLLBACK").catch(() => { broken = true; });
     throw err;
   } finally {
+    txScopes.delete(client);
     client.release(broken);
   }
 }
@@ -50,6 +62,7 @@ export async function withAnon<T>(fn: (tx: Tx) => Promise<T>): Promise<T> {
   try {
     return await fn(client);
   } finally {
+    txScopes.delete(client);
     client.release();
   }
 }
