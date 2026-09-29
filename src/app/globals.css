@@ -981,3 +981,9 @@ dialog.video-modal.vertical .video-modal-frame { aspect-ratio: 9 / 16; max-heigh
 .plan-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 8px; }
 .plan-option { display: grid; gap: 2px; text-decoration: none; color: inherit; border: 1.5px solid var(--line); padding: 12px 14px; }
 .plan-option.on { border-color: var(--navy); background: var(--choice-bg); color: var(--choice-fg); }
+
+/* دليل مصادر الأكل: صف لكل عنصر (الاسم، الكمية، النسبة) */
+.food-card .status { font-size: 12px; padding: 2px 10px; }
+.food-rows { list-style: none; margin: 0; padding: 0; font-size: 14px; }
+.food-rows li { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line, #e3e9f2); }
+.food-rows li:last-child { border-bottom: 0; }

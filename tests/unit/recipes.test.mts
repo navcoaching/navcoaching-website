@@ -9,7 +9,7 @@ type R = { id: string; slot: string; set?: string; original?: { kcal: number }; 
 
 test("26 وصفة من الكتيب (9 فطور، 9 غداء وعشاء، 8 سناك) + 9 مضادات أكسدة + 17 وصفة إضافية، بأرقام ضمن حدود الجدول", () => {
   const rs = loadRecipes() as R[];
-  assert.equal(rs.length, 52);
+  assert.equal(rs.length, 60);
   const book = rs.filter((r) => !r.set), ao = rs.filter((r) => r.set === "antioxidant"), ex = rs.filter((r) => r.set === "extra");
   assert.deepEqual(["b", "l", "s"].map((s) => ex.filter((r) => r.slot === s).length), [4, 9, 4]);
   assert.deepEqual(["b", "l", "s"].map((s) => book.filter((r) => r.slot === s).length), [9, 9, 8]);
@@ -18,7 +18,7 @@ test("26 وصفة من الكتيب (9 فطور، 9 غداء وعشاء، 8 سن
     assert.ok(r.protein >= 0 && r.protein <= 500 && r.carbs >= 0 && r.carbs <= 500 && r.fat >= 0 && r.fat <= 300, r.id);
     assert.ok(r.ingredients.length > 0 && r.steps.length > 0, r.id);
   }
-  assert.equal(new Set(rs.map((r) => r.id)).size, 52);
+  assert.equal(new Set(rs.map((r) => r.id)).size, 60);
 });
 
 test("كل قالب: فطور وغداء وعشاء وسناك بوصفات مختلفة، والمجاميع صحيحة", () => {
@@ -54,7 +54,7 @@ test("كل وصفة لها مكونات محسوبة (مضادات الأكسد�
   // سكوب الواي من ملف تغذية المدربة: 25غ بروتين، 3 كارب، 2 دهون لكل سكوب (30غ)
   byName.set("سكوب واي بروتين (ملف المدربة)", { protein_100: 2500 / 30, carbs_100: 300 / 30, fat_100: 200 / 30 });
   const ao = (loadRecipes() as R[]).filter((r) => r.basis);
-  assert.equal(ao.length, 9 + 17 + 10);
+  assert.equal(ao.length, 9 + 17 + 10 + 8);
   for (const r of ao) {
     assert.ok(r.basis && r.basis.length > 0, r.id);
     const t = { p: 0, c: 0, f: 0 };
@@ -81,4 +81,21 @@ test("الوصفات العشر المصحّحة: سعرات الكتيب = من
   const fixed = (loadRecipes() as R[]).filter((r) => r.original);
   assert.equal(fixed.length, 10);
   for (const r of fixed) assert.equal(r.kcal_book, Math.round(4 * r.protein + 4 * r.carbs + 9 * r.fat), r.id);
+});
+
+test("وصفات الألياف: كل وجبة رئيسية 8غ ألياف أو أكثر والسناك 5.6غ (20% من 28غ)، والألياف = مجموع المكونات", () => {
+  const foods = JSON.parse(readFileSync(new URL("../../db/seed/foods.json", import.meta.url), "utf8")) as { name_ar: string; fiber_100: number }[];
+  const fib = new Map(foods.map((f) => [f.name_ar, f.fiber_100]));
+  const fr = (loadRecipes() as (R & { fiber: number })[]).filter((r) => r.set === "fiber");
+  assert.equal(fr.length, 8);
+  for (const r of fr) {
+    assert.ok(r.fiber >= (r.slot === "s" ? 5.6 : 8), r.id);
+    const sum = r.basis!.reduce((a, b) => a + ((fib.get(b.food) ?? 0) * b.g) / 100, 0);
+    assert.ok(Math.abs(sum - r.fiber) <= 0.06, r.id);
+  }
+  const [p] = buildPlans(loadRecipes(), "fiber");
+  assert.equal(p.name, "قالب عالي الألياف");
+  assert.deepEqual(p.meals.map((m: { kind: string }) => m.kind), ["breakfast", "lunch", "dinner", "snack"]);
+  assert.ok(p.fiber >= 28, String(p.fiber));
+  assert.match(p.notes, /ألياف \d+غ/);
 });

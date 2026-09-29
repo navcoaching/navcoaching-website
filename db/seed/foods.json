@@ -9,7 +9,24 @@
   "fat_100": 0.3,
   "serving_g": 150,
   "serving_label": "كوب إلا ربع",
-  "source_ref": "168878"
+  "source_ref": "168878",
+  "source_type": "حبوب ونشويات",
+  "fiber_100": 0.4,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.04,
+   "vit_k": 0.0,
+   "folate": 97.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.093,
+   "iron": 1.2,
+   "calcium": 10.0,
+   "potassium": 35.0,
+   "magnesium": 12.0,
+   "zinc": 0.49
+  }
  },
  {
   "name_ar": "رز بني مطبوخ",
@@ -21,7 +38,24 @@
   "fat_100": 1,
   "serving_g": 150,
   "serving_label": null,
-  "source_ref": "169704"
+  "source_ref": "169704",
+  "source_type": "حبوب ونشويات",
+  "fiber_100": 1.6,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.17,
+   "vit_k": 0.2,
+   "folate": 9.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.123,
+   "iron": 0.56,
+   "calcium": 3.0,
+   "potassium": 86.0,
+   "magnesium": 39.0,
+   "zinc": 0.71
+  }
  },
  {
   "name_ar": "رز أبيض (غير مطبوخ)",
@@ -33,7 +67,24 @@
   "fat_100": 0.7,
   "serving_g": 75,
   "serving_label": null,
-  "source_ref": "168877"
+  "source_ref": "168877",
+  "source_type": "حبوب ونشويات",
+  "fiber_100": 1.3,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.11,
+   "vit_k": 0.1,
+   "folate": 387.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.164,
+   "iron": 4.31,
+   "calcium": 28.0,
+   "potassium": 115.0,
+   "magnesium": 25.0,
+   "zinc": 1.09
+  }
  },
  {
   "name_ar": "مكرونة مطبوخة",
@@ -45,7 +96,24 @@
   "fat_100": 0.9,
   "serving_g": 140,
   "serving_label": "كوب",
-  "source_ref": "169737"
+  "source_ref": "169737",
+  "source_type": "حبوب ونشويات",
+  "fiber_100": 1.8,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.06,
+   "vit_k": 0.0,
+   "folate": 119.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.049,
+   "iron": 1.28,
+   "calcium": 7.0,
+   "potassium": 44.0,
+   "magnesium": 18.0,
+   "zinc": 0.51
+  }
  },
  {
   "name_ar": "مكرونة (غير مطبوخة)",
@@ -57,7 +125,24 @@
   "fat_100": 1.5,
   "serving_g": 75,
   "serving_label": null,
-  "source_ref": "169736"
+  "source_ref": "169736",
+  "source_type": "حبوب ونشويات",
+  "fiber_100": 3.2,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.11,
+   "vit_k": 0.1,
+   "folate": 391.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.142,
+   "iron": 3.3,
+   "calcium": 21.0,
+   "potassium": 223.0,
+   "magnesium": 53.0,
+   "zinc": 1.41
+  }
  },
  {
   "name_ar": "شوفان",
@@ -69,7 +154,24 @@
   "fat_100": 6.5,
   "serving_g": 40,
   "serving_label": "نص كوب",
-  "source_ref": "173904"
+  "source_ref": "173904",
+  "source_type": "حبوب ونشويات",
+  "fiber_100": 10.1,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.42,
+   "vit_k": 2.0,
+   "folate": 32.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.1,
+   "iron": 4.25,
+   "calcium": 52.0,
+   "potassium": 362.0,
+   "magnesium": 138.0,
+   "zinc": 3.64
+  }
  },
  {
   "name_ar": "خبز أبيض (توست)",
@@ -81,7 +183,24 @@
   "fat_100": 3.3,
   "serving_g": 28,
   "serving_label": "شريحة",
-  "source_ref": "174924"
+  "source_ref": "174924",
+  "source_type": "حبوب ونشويات",
+  "fiber_100": 2.7,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.22,
+   "vit_k": 0.2,
+   "folate": 171.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.087,
+   "iron": 3.61,
+   "calcium": 144.0,
+   "potassium": 126.0,
+   "magnesium": 23.0,
+   "zinc": 0.74
+  }
  },
  {
   "name_ar": "خبز بر (توست أسمر)",
@@ -93,7 +212,24 @@
   "fat_100": 3.5,
   "serving_g": 32,
   "serving_label": "شريحة",
-  "source_ref": "172688"
+  "source_ref": "172688",
+  "source_type": "حبوب ونشويات",
+  "fiber_100": 6.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 2.66,
+   "vit_k": 7.8,
+   "folate": 42.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.215,
+   "iron": 2.47,
+   "calcium": 161.0,
+   "potassium": 254.0,
+   "magnesium": 75.0,
+   "zinc": 1.77
+  }
  },
  {
   "name_ar": "خبز عربي أبيض",
@@ -105,7 +241,24 @@
   "fat_100": 1.2,
   "serving_g": 60,
   "serving_label": "رغيف صغير",
-  "source_ref": "174915"
+  "source_ref": "174915",
+  "source_type": "حبوب ونشويات",
+  "fiber_100": 2.2,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.3,
+   "vit_k": 0.2,
+   "folate": 165.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.034,
+   "iron": 2.62,
+   "calcium": 86.0,
+   "potassium": 120.0,
+   "magnesium": 26.0,
+   "zinc": 0.84
+  }
  },
  {
   "name_ar": "خبز عربي بر",
@@ -117,7 +270,24 @@
   "fat_100": 1.7,
   "serving_g": 64,
   "serving_label": "رغيف صغير",
-  "source_ref": "174916"
+  "source_ref": "174916",
+  "source_type": "حبوب ونشويات",
+  "fiber_100": 6.1,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.61,
+   "vit_k": 1.4,
+   "folate": 35.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.265,
+   "iron": 3.06,
+   "calcium": 15.0,
+   "potassium": 170.0,
+   "magnesium": 69.0,
+   "zinc": 1.52
+  }
  },
  {
   "name_ar": "تورتيلا قمح",
@@ -129,7 +299,24 @@
   "fat_100": 8,
   "serving_g": 45,
   "serving_label": "حبة",
-  "source_ref": "175037"
+  "source_ref": "175037",
+  "source_type": "حبوب ونشويات",
+  "fiber_100": 3.5,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.0,
+   "vit_k": 7.2,
+   "folate": 149.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.059,
+   "iron": 3.63,
+   "calcium": 146.0,
+   "potassium": 125.0,
+   "magnesium": 22.0,
+   "zinc": 0.53
+  }
  },
  {
   "name_ar": "بطاطس مسلوقة",
@@ -141,7 +328,24 @@
   "fat_100": 0.1,
   "serving_g": 150,
   "serving_label": "حبة وسط",
-  "source_ref": "170440"
+  "source_ref": "170440",
+  "source_type": "خضار نشوية",
+  "fiber_100": 1.8,
+  "micros": {
+   "vit_c": 7.4,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.01,
+   "vit_k": 2.2,
+   "folate": 9.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.269,
+   "iron": 0.31,
+   "calcium": 8.0,
+   "potassium": 328.0,
+   "magnesium": 20.0,
+   "zinc": 0.27
+  }
  },
  {
   "name_ar": "بطاطا حلوة مشوية",
@@ -153,7 +357,24 @@
   "fat_100": 0.2,
   "serving_g": 150,
   "serving_label": "حبة وسط",
-  "source_ref": "168483"
+  "source_ref": "168483",
+  "source_type": "خضار نشوية",
+  "fiber_100": 3.3,
+  "micros": {
+   "vit_c": 19.6,
+   "vit_a": 961.0,
+   "vit_d": 0.0,
+   "vit_e": 0.71,
+   "vit_k": 2.3,
+   "folate": 6.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.286,
+   "iron": 0.69,
+   "calcium": 38.0,
+   "potassium": 475.0,
+   "magnesium": 27.0,
+   "zinc": 0.32
+  }
  },
  {
   "name_ar": "برغل مطبوخ",
@@ -165,7 +386,24 @@
   "fat_100": 0.2,
   "serving_g": 150,
   "serving_label": null,
-  "source_ref": "170287"
+  "source_ref": "170287",
+  "source_type": "حبوب ونشويات",
+  "fiber_100": 4.5,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.01,
+   "vit_k": 0.5,
+   "folate": 18.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.083,
+   "iron": 0.96,
+   "calcium": 10.0,
+   "potassium": 68.0,
+   "magnesium": 32.0,
+   "zinc": 0.57
+  }
  },
  {
   "name_ar": "كينوا مطبوخة",
@@ -177,7 +415,24 @@
   "fat_100": 1.9,
   "serving_g": 150,
   "serving_label": null,
-  "source_ref": "168917"
+  "source_ref": "168917",
+  "source_type": "حبوب ونشويات",
+  "fiber_100": 2.8,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.63,
+   "vit_k": 0.0,
+   "folate": 42.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.123,
+   "iron": 1.49,
+   "calcium": 17.0,
+   "potassium": 172.0,
+   "magnesium": 64.0,
+   "zinc": 1.09
+  }
  },
  {
   "name_ar": "كورن فليكس",
@@ -189,7 +444,23 @@
   "fat_100": 0.9,
   "serving_g": 30,
   "serving_label": null,
-  "source_ref": "174648"
+  "source_ref": "174648",
+  "source_type": "حبوب ونشويات",
+  "fiber_100": 2.7,
+  "micros": {
+   "vit_c": 65.0,
+   "vit_a": 981.0,
+   "vit_d": 7.1,
+   "vit_e": 0.02,
+   "vit_k": 0.0,
+   "vit_b12": 5.36,
+   "vit_b6": 1.907,
+   "iron": 19.4,
+   "calcium": 2.0,
+   "potassium": 107.0,
+   "magnesium": 7.0,
+   "zinc": 0.2
+  }
  },
  {
   "name_ar": "صدر دجاج مشوي",
@@ -201,7 +472,24 @@
   "fat_100": 3.6,
   "serving_g": 100,
   "serving_label": null,
-  "source_ref": "171477"
+  "source_ref": "171477",
+  "source_type": "لحوم بيضاء (دواجن)",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 6.0,
+   "vit_d": 0.1,
+   "vit_e": 0.27,
+   "vit_k": 0.3,
+   "folate": 4.0,
+   "vit_b12": 0.34,
+   "vit_b6": 0.6,
+   "iron": 1.04,
+   "calcium": 15.0,
+   "potassium": 256.0,
+   "magnesium": 29.0,
+   "zinc": 1.0
+  }
  },
  {
   "name_ar": "صدر دجاج نيء",
@@ -213,7 +501,24 @@
   "fat_100": 2.6,
   "serving_g": 150,
   "serving_label": null,
-  "source_ref": "171077"
+  "source_ref": "171077",
+  "source_type": "لحوم بيضاء (دواجن)",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 9.0,
+   "vit_d": 0.0,
+   "vit_e": 0.56,
+   "vit_k": 0.0,
+   "folate": 9.0,
+   "vit_b12": 0.21,
+   "vit_b6": 0.811,
+   "iron": 0.37,
+   "calcium": 5.0,
+   "potassium": 334.0,
+   "magnesium": 28.0,
+   "zinc": 0.68
+  }
  },
  {
   "name_ar": "فخذ دجاج مشوي (بدون جلد)",
@@ -225,7 +530,24 @@
   "fat_100": 8.2,
   "serving_g": 100,
   "serving_label": null,
-  "source_ref": "172388"
+  "source_ref": "172388",
+  "source_type": "لحوم بيضاء (دواجن)",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 8.0,
+   "vit_d": 0.2,
+   "vit_e": 0.18,
+   "vit_k": 3.9,
+   "folate": 5.0,
+   "vit_b12": 0.42,
+   "vit_b6": 0.462,
+   "iron": 1.13,
+   "calcium": 9.0,
+   "potassium": 269.0,
+   "magnesium": 24.0,
+   "zinc": 1.92
+  }
  },
  {
   "name_ar": "لحم بقري مفروم 90% مطبوخ",
@@ -237,7 +559,24 @@
   "fat_100": 11.8,
   "serving_g": 100,
   "serving_label": null,
-  "source_ref": "174031"
+  "source_ref": "174031",
+  "source_type": "لحوم حمراء",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 3.0,
+   "vit_d": 0.0,
+   "vit_e": 0.12,
+   "vit_k": 1.1,
+   "folate": 8.0,
+   "vit_b12": 2.56,
+   "vit_b6": 0.397,
+   "iron": 2.71,
+   "calcium": 13.0,
+   "potassium": 333.0,
+   "magnesium": 22.0,
+   "zinc": 6.37
+  }
  },
  {
   "name_ar": "لحم بقري مفروم 80% مطبوخ",
@@ -249,7 +588,24 @@
   "fat_100": 17.8,
   "serving_g": 100,
   "serving_label": null,
-  "source_ref": "171797"
+  "source_ref": "171797",
+  "source_type": "لحوم حمراء",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 3.0,
+   "vit_d": 0.0,
+   "vit_e": 0.12,
+   "vit_k": 1.6,
+   "folate": 10.0,
+   "vit_b12": 2.73,
+   "vit_b6": 0.366,
+   "iron": 2.48,
+   "calcium": 24.0,
+   "potassium": 304.0,
+   "magnesium": 20.0,
+   "zinc": 6.25
+  }
  },
  {
   "name_ar": "لحم غنم مطبوخ",
@@ -261,7 +617,22 @@
   "fat_100": 9.5,
   "serving_g": 100,
   "serving_label": null,
-  "source_ref": "174308"
+  "source_ref": "174308",
+  "source_type": "لحوم حمراء",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_e": 0.19,
+   "folate": 23.0,
+   "vit_b12": 2.61,
+   "vit_b6": 0.16,
+   "iron": 2.05,
+   "calcium": 15.0,
+   "potassium": 344.0,
+   "magnesium": 26.0,
+   "zinc": 5.27
+  }
  },
  {
   "name_ar": "ديك رومي (شرائح)",
@@ -273,7 +644,24 @@
   "fat_100": 2.1,
   "serving_g": 50,
   "serving_label": null,
-  "source_ref": "171496"
+  "source_ref": "171496",
+  "source_type": "لحوم بيضاء (دواجن)",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 3.0,
+   "vit_d": 0.3,
+   "vit_e": 0.06,
+   "vit_k": 0.0,
+   "folate": 9.0,
+   "vit_b12": 0.39,
+   "vit_b6": 0.807,
+   "iron": 0.71,
+   "calcium": 9.0,
+   "potassium": 249.0,
+   "magnesium": 32.0,
+   "zinc": 1.72
+  }
  },
  {
   "name_ar": "تونة معلبة بالماء",
@@ -285,7 +673,24 @@
   "fat_100": 1,
   "serving_g": 100,
   "serving_label": "علبة صغيرة مصفاة",
-  "source_ref": "173709"
+  "source_ref": "173709",
+  "source_type": "أسماك ومأكولات بحرية",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 17.0,
+   "vit_d": 1.2,
+   "vit_e": 0.33,
+   "vit_k": 0.2,
+   "folate": 4.0,
+   "vit_b12": 2.55,
+   "vit_b6": 0.319,
+   "iron": 1.63,
+   "calcium": 17.0,
+   "potassium": 179.0,
+   "magnesium": 23.0,
+   "zinc": 0.69
+  }
  },
  {
   "name_ar": "تونة معلبة بالزيت",
@@ -297,7 +702,24 @@
   "fat_100": 8.2,
   "serving_g": 100,
   "serving_label": null,
-  "source_ref": "173708"
+  "source_ref": "173708",
+  "source_type": "أسماك ومأكولات بحرية",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 23.0,
+   "vit_d": 6.7,
+   "vit_e": 0.87,
+   "vit_k": 44.0,
+   "folate": 5.0,
+   "vit_b12": 2.2,
+   "vit_b6": 0.11,
+   "iron": 1.39,
+   "calcium": 13.0,
+   "potassium": 207.0,
+   "magnesium": 31.0,
+   "zinc": 0.9
+  }
  },
  {
   "name_ar": "سلمون مطبوخ",
@@ -309,7 +731,24 @@
   "fat_100": 12.4,
   "serving_g": 120,
   "serving_label": null,
-  "source_ref": "175168"
+  "source_ref": "175168",
+  "source_type": "أسماك ومأكولات بحرية",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 3.7,
+   "vit_a": 69.0,
+   "vit_d": 13.1,
+   "vit_e": 1.14,
+   "vit_k": 0.1,
+   "folate": 34.0,
+   "vit_b12": 2.8,
+   "vit_b6": 0.647,
+   "iron": 0.34,
+   "calcium": 15.0,
+   "potassium": 384.0,
+   "magnesium": 30.0,
+   "zinc": 0.43
+  }
  },
  {
   "name_ar": "سلمون مدخن",
@@ -321,7 +760,24 @@
   "fat_100": 4.3,
   "serving_g": 60,
   "serving_label": null,
-  "source_ref": "173687"
+  "source_ref": "173687",
+  "source_type": "أسماك ومأكولات بحرية",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 26.0,
+   "vit_d": 17.1,
+   "vit_e": 1.35,
+   "vit_k": 0.1,
+   "folate": 2.0,
+   "vit_b12": 3.26,
+   "vit_b6": 0.278,
+   "iron": 0.85,
+   "calcium": 11.0,
+   "potassium": 175.0,
+   "magnesium": 18.0,
+   "zinc": 0.31
+  }
  },
  {
   "name_ar": "روبيان مطبوخ",
@@ -333,7 +789,16 @@
   "fat_100": 0.3,
   "serving_g": 100,
   "serving_label": null,
-  "source_ref": "175180"
+  "source_ref": "175180",
+  "source_type": "أسماك ومأكولات بحرية",
+  "fiber_100": 0.0,
+  "micros": {
+   "iron": 0.51,
+   "calcium": 70.0,
+   "potassium": 259.0,
+   "magnesium": 39.0,
+   "zinc": 1.64
+  }
  },
  {
   "name_ar": "هامور/سمك أبيض مطبوخ",
@@ -345,7 +810,21 @@
   "fat_100": 1.3,
   "serving_g": 150,
   "serving_label": null,
-  "source_ref": "171963"
+  "source_ref": "171963",
+  "source_type": "أسماك ومأكولات بحرية",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 50.0,
+   "folate": 10.0,
+   "vit_b12": 0.69,
+   "vit_b6": 0.35,
+   "iron": 1.14,
+   "calcium": 21.0,
+   "potassium": 475.0,
+   "magnesium": 37.0,
+   "zinc": 0.51
+  }
  },
  {
   "name_ar": "بيض كامل",
@@ -357,7 +836,24 @@
   "fat_100": 9.5,
   "serving_g": 50,
   "serving_label": "بيضة",
-  "source_ref": "171287"
+  "source_ref": "171287",
+  "source_type": "بيض",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 160.0,
+   "vit_d": 2.0,
+   "vit_e": 1.05,
+   "vit_k": 0.3,
+   "folate": 47.0,
+   "vit_b12": 0.89,
+   "vit_b6": 0.17,
+   "iron": 1.75,
+   "calcium": 56.0,
+   "potassium": 138.0,
+   "magnesium": 12.0,
+   "zinc": 1.29
+  }
  },
  {
   "name_ar": "بياض بيض",
@@ -369,7 +865,24 @@
   "fat_100": 0.2,
   "serving_g": 33,
   "serving_label": "بياض بيضة",
-  "source_ref": "172183"
+  "source_ref": "172183",
+  "source_type": "بيض",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.0,
+   "vit_k": 0.0,
+   "folate": 4.0,
+   "vit_b12": 0.09,
+   "vit_b6": 0.005,
+   "iron": 0.08,
+   "calcium": 7.0,
+   "potassium": 163.0,
+   "magnesium": 11.0,
+   "zinc": 0.03
+  }
  },
  {
   "name_ar": "بيض مسلوق",
@@ -381,7 +894,24 @@
   "fat_100": 10.6,
   "serving_g": 50,
   "serving_label": "بيضة",
-  "source_ref": "173424"
+  "source_ref": "173424",
+  "source_type": "بيض",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 149.0,
+   "vit_d": 2.2,
+   "vit_e": 1.03,
+   "vit_k": 0.3,
+   "folate": 44.0,
+   "vit_b12": 1.11,
+   "vit_b6": 0.121,
+   "iron": 1.19,
+   "calcium": 50.0,
+   "potassium": 126.0,
+   "magnesium": 10.0,
+   "zinc": 1.05
+  }
  },
  {
   "name_ar": "حليب كامل الدسم",
@@ -393,7 +923,24 @@
   "fat_100": 3.3,
   "serving_g": 244,
   "serving_label": "كوب",
-  "source_ref": "171265"
+  "source_ref": "171265",
+  "source_type": "ألبان وأجبان",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 46.0,
+   "vit_d": 1.3,
+   "vit_e": 0.07,
+   "vit_k": 0.3,
+   "folate": 5.0,
+   "vit_b12": 0.45,
+   "vit_b6": 0.036,
+   "iron": 0.03,
+   "calcium": 113.0,
+   "potassium": 132.0,
+   "magnesium": 10.0,
+   "zinc": 0.37
+  }
  },
  {
   "name_ar": "حليب قليل الدسم 1%",
@@ -405,7 +952,24 @@
   "fat_100": 1,
   "serving_g": 244,
   "serving_label": "كوب",
-  "source_ref": "170872"
+  "source_ref": "170872",
+  "source_type": "ألبان وأجبان",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 58.0,
+   "vit_d": 1.2,
+   "vit_e": 0.01,
+   "vit_k": 0.1,
+   "folate": 5.0,
+   "vit_b12": 0.47,
+   "vit_b6": 0.037,
+   "iron": 0.03,
+   "calcium": 125.0,
+   "potassium": 150.0,
+   "magnesium": 11.0,
+   "zinc": 0.42
+  }
  },
  {
   "name_ar": "حليب خالي الدسم",
@@ -417,7 +981,24 @@
   "fat_100": 0.1,
   "serving_g": 245,
   "serving_label": "كوب",
-  "source_ref": "171269"
+  "source_ref": "171269",
+  "source_type": "ألبان وأجبان",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 61.0,
+   "vit_d": 1.2,
+   "vit_e": 0.01,
+   "vit_k": 0.0,
+   "folate": 5.0,
+   "vit_b12": 0.5,
+   "vit_b6": 0.037,
+   "iron": 0.03,
+   "calcium": 122.0,
+   "potassium": 156.0,
+   "magnesium": 11.0,
+   "zinc": 0.42
+  }
  },
  {
   "name_ar": "زبادي كامل الدسم",
@@ -429,7 +1010,24 @@
   "fat_100": 3.3,
   "serving_g": 170,
   "serving_label": null,
-  "source_ref": "171284"
+  "source_ref": "171284",
+  "source_type": "ألبان وأجبان",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.5,
+   "vit_a": 27.0,
+   "vit_d": 0.1,
+   "vit_e": 0.06,
+   "vit_k": 0.2,
+   "folate": 7.0,
+   "vit_b12": 0.37,
+   "vit_b6": 0.032,
+   "iron": 0.05,
+   "calcium": 121.0,
+   "potassium": 155.0,
+   "magnesium": 12.0,
+   "zinc": 0.59
+  }
  },
  {
   "name_ar": "زبادي قليل الدسم",
@@ -441,7 +1039,24 @@
   "fat_100": 1.6,
   "serving_g": 170,
   "serving_label": null,
-  "source_ref": "170886"
+  "source_ref": "170886",
+  "source_type": "ألبان وأجبان",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.8,
+   "vit_a": 14.0,
+   "vit_d": 0.0,
+   "vit_e": 0.03,
+   "vit_k": 0.2,
+   "folate": 11.0,
+   "vit_b12": 0.56,
+   "vit_b6": 0.049,
+   "iron": 0.08,
+   "calcium": 183.0,
+   "potassium": 234.0,
+   "magnesium": 17.0,
+   "zinc": 0.89
+  }
  },
  {
   "name_ar": "زبادي يوناني قليل الدسم",
@@ -453,7 +1068,24 @@
   "fat_100": 1.9,
   "serving_g": 170,
   "serving_label": null,
-  "source_ref": "170903"
+  "source_ref": "170903",
+  "source_type": "ألبان وأجبان",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.8,
+   "vit_a": 90.0,
+   "vit_d": 0.0,
+   "vit_e": 0.04,
+   "vit_k": 0.2,
+   "folate": 12.0,
+   "vit_b12": 0.52,
+   "vit_b6": 0.055,
+   "iron": 0.04,
+   "calcium": 115.0,
+   "potassium": 141.0,
+   "magnesium": 11.0,
+   "zinc": 0.6
+  }
  },
  {
   "name_ar": "زبادي يوناني خالي الدسم",
@@ -465,7 +1097,24 @@
   "fat_100": 0.4,
   "serving_g": 170,
   "serving_label": null,
-  "source_ref": "170894"
+  "source_ref": "170894",
+  "source_type": "ألبان وأجبان",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 1.0,
+   "vit_d": 0.0,
+   "vit_e": 0.01,
+   "vit_k": 0.0,
+   "folate": 7.0,
+   "vit_b12": 0.75,
+   "vit_b6": 0.063,
+   "iron": 0.07,
+   "calcium": 110.0,
+   "potassium": 141.0,
+   "magnesium": 11.0,
+   "zinc": 0.52
+  }
  },
  {
   "name_ar": "جبنة قريش (كوتج)",
@@ -477,7 +1126,24 @@
   "fat_100": 2.3,
   "serving_g": 113,
   "serving_label": "نص كوب",
-  "source_ref": "172182"
+  "source_ref": "172182",
+  "source_type": "ألبان وأجبان",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 68.0,
+   "vit_d": 0.0,
+   "vit_e": 0.08,
+   "vit_k": 0.0,
+   "folate": 8.0,
+   "vit_b12": 0.47,
+   "vit_b6": 0.057,
+   "iron": 0.13,
+   "calcium": 111.0,
+   "potassium": 125.0,
+   "magnesium": 9.0,
+   "zinc": 0.51
+  }
  },
  {
   "name_ar": "جبنة موزاريلا قليلة الدسم",
@@ -489,7 +1155,24 @@
   "fat_100": 15.9,
   "serving_g": 28,
   "serving_label": null,
-  "source_ref": "170847"
+  "source_ref": "170847",
+  "source_type": "ألبان وأجبان",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 127.0,
+   "vit_d": 0.3,
+   "vit_e": 0.14,
+   "vit_k": 1.6,
+   "folate": 9.0,
+   "vit_b12": 0.82,
+   "vit_b6": 0.07,
+   "iron": 0.22,
+   "calcium": 782.0,
+   "potassium": 84.0,
+   "magnesium": 23.0,
+   "zinc": 2.76
+  }
  },
  {
   "name_ar": "جبنة شيدر",
@@ -501,7 +1184,24 @@
   "fat_100": 33.3,
   "serving_g": 28,
   "serving_label": "شريحة",
-  "source_ref": "173414"
+  "source_ref": "173414",
+  "source_type": "ألبان وأجبان",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 337.0,
+   "vit_d": 0.6,
+   "vit_e": 0.71,
+   "vit_k": 2.4,
+   "folate": 27.0,
+   "vit_b12": 1.1,
+   "vit_b6": 0.066,
+   "iron": 0.14,
+   "calcium": 710.0,
+   "potassium": 76.0,
+   "magnesium": 27.0,
+   "zinc": 3.64
+  }
  },
  {
   "name_ar": "جبنة فيتا",
@@ -513,7 +1213,24 @@
   "fat_100": 21.5,
   "serving_g": 28,
   "serving_label": null,
-  "source_ref": "173420"
+  "source_ref": "173420",
+  "source_type": "ألبان وأجبان",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 125.0,
+   "vit_d": 0.4,
+   "vit_e": 0.18,
+   "vit_k": 1.8,
+   "folate": 32.0,
+   "vit_b12": 1.69,
+   "vit_b6": 0.424,
+   "iron": 0.65,
+   "calcium": 493.0,
+   "potassium": 62.0,
+   "magnesium": 19.0,
+   "zinc": 2.88
+  }
  },
  {
   "name_ar": "جبنة كريمية",
@@ -525,7 +1242,24 @@
   "fat_100": 34.4,
   "serving_g": 30,
   "serving_label": null,
-  "source_ref": "173418"
+  "source_ref": "173418",
+  "source_type": "ألبان وأجبان",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 308.0,
+   "vit_d": 0.0,
+   "vit_e": 0.86,
+   "vit_k": 2.1,
+   "folate": 9.0,
+   "vit_b12": 0.22,
+   "vit_b6": 0.056,
+   "iron": 0.11,
+   "calcium": 97.0,
+   "potassium": 132.0,
+   "magnesium": 9.0,
+   "zinc": 0.5
+  }
  },
  {
   "name_ar": "واي بروتين",
@@ -537,7 +1271,24 @@
   "fat_100": 1.2,
   "serving_g": 30,
   "serving_label": "سكوب",
-  "source_ref": "173177"
+  "source_ref": "173177",
+  "source_type": "مكملات",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 34.9,
+   "vit_a": 872.0,
+   "vit_d": 0.0,
+   "vit_e": 7.85,
+   "vit_k": 46.5,
+   "folate": 395.0,
+   "vit_b12": 3.49,
+   "vit_b6": 1.163,
+   "iron": 1.26,
+   "calcium": 698.0,
+   "potassium": 872.0,
+   "magnesium": 233.0,
+   "zinc": 8.72
+  }
  },
  {
   "name_ar": "عدس مطبوخ",
@@ -549,7 +1300,24 @@
   "fat_100": 0.4,
   "serving_g": 150,
   "serving_label": null,
-  "source_ref": "172421"
+  "source_ref": "172421",
+  "source_type": "بقوليات",
+  "fiber_100": 7.9,
+  "micros": {
+   "vit_c": 1.5,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.11,
+   "vit_k": 1.7,
+   "folate": 181.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.178,
+   "iron": 3.33,
+   "calcium": 19.0,
+   "potassium": 369.0,
+   "magnesium": 36.0,
+   "zinc": 1.27
+  }
  },
  {
   "name_ar": "حمص مطبوخ",
@@ -561,7 +1329,24 @@
   "fat_100": 2.6,
   "serving_g": 150,
   "serving_label": null,
-  "source_ref": "173757"
+  "source_ref": "173757",
+  "source_type": "بقوليات",
+  "fiber_100": 7.6,
+  "micros": {
+   "vit_c": 1.3,
+   "vit_a": 1.0,
+   "vit_d": 0.0,
+   "vit_e": 0.35,
+   "vit_k": 4.0,
+   "folate": 172.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.139,
+   "iron": 2.89,
+   "calcium": 49.0,
+   "potassium": 291.0,
+   "magnesium": 48.0,
+   "zinc": 1.53
+  }
  },
  {
   "name_ar": "فول مدمس (مطبوخ)",
@@ -573,7 +1358,24 @@
   "fat_100": 0.4,
   "serving_g": 150,
   "serving_label": null,
-  "source_ref": "173753"
+  "source_ref": "173753",
+  "source_type": "بقوليات",
+  "fiber_100": 5.4,
+  "micros": {
+   "vit_c": 0.3,
+   "vit_a": 1.0,
+   "vit_d": 0.0,
+   "vit_e": 0.02,
+   "vit_k": 2.9,
+   "folate": 104.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.072,
+   "iron": 1.5,
+   "calcium": 36.0,
+   "potassium": 268.0,
+   "magnesium": 43.0,
+   "zinc": 1.01
+  }
  },
  {
   "name_ar": "فاصوليا حمراء مطبوخة",
@@ -585,7 +1387,24 @@
   "fat_100": 0.5,
   "serving_g": 150,
   "serving_label": null,
-  "source_ref": "173740"
+  "source_ref": "173740",
+  "source_type": "بقوليات",
+  "fiber_100": 6.4,
+  "micros": {
+   "vit_c": 1.2,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.03,
+   "vit_k": 8.4,
+   "folate": 130.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.12,
+   "iron": 2.22,
+   "calcium": 35.0,
+   "potassium": 405.0,
+   "magnesium": 42.0,
+   "zinc": 1.0
+  }
  },
  {
   "name_ar": "حمص بطحينة (حمص جاهز)",
@@ -597,7 +1416,24 @@
   "fat_100": 17.8,
   "serving_g": 60,
   "serving_label": null,
-  "source_ref": "174289"
+  "source_ref": "174289",
+  "source_type": "بقوليات",
+  "fiber_100": 5.5,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 1.0,
+   "vit_d": 0.0,
+   "vit_e": 1.54,
+   "vit_k": 22.8,
+   "folate": 48.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.146,
+   "iron": 2.54,
+   "calcium": 47.0,
+   "potassium": 312.0,
+   "magnesium": 75.0,
+   "zinc": 1.44
+  }
  },
  {
   "name_ar": "تمر مجدول",
@@ -609,7 +1445,22 @@
   "fat_100": 0.2,
   "serving_g": 24,
   "serving_label": "حبة",
-  "source_ref": "168191"
+  "source_ref": "168191",
+  "source_type": "فواكه",
+  "fiber_100": 6.7,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 7.0,
+   "vit_d": 0.0,
+   "vit_k": 2.7,
+   "folate": 15.0,
+   "vit_b6": 0.249,
+   "iron": 0.9,
+   "calcium": 64.0,
+   "potassium": 696.0,
+   "magnesium": 54.0,
+   "zinc": 0.44
+  }
  },
  {
   "name_ar": "تمر (دقلة نور)",
@@ -621,7 +1472,24 @@
   "fat_100": 0.4,
   "serving_g": 7,
   "serving_label": "حبة",
-  "source_ref": "171726"
+  "source_ref": "171726",
+  "source_type": "فواكه",
+  "fiber_100": 8.0,
+  "micros": {
+   "vit_c": 0.4,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.05,
+   "vit_k": 2.7,
+   "folate": 19.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.165,
+   "iron": 1.02,
+   "calcium": 39.0,
+   "potassium": 656.0,
+   "magnesium": 43.0,
+   "zinc": 0.29
+  }
  },
  {
   "name_ar": "موز",
@@ -633,7 +1501,24 @@
   "fat_100": 0.3,
   "serving_g": 118,
   "serving_label": "حبة وسط",
-  "source_ref": "173944"
+  "source_ref": "173944",
+  "source_type": "فواكه",
+  "fiber_100": 2.6,
+  "micros": {
+   "vit_c": 8.7,
+   "vit_a": 3.0,
+   "vit_d": 0.0,
+   "vit_e": 0.1,
+   "vit_k": 0.5,
+   "folate": 20.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.367,
+   "iron": 0.26,
+   "calcium": 5.0,
+   "potassium": 358.0,
+   "magnesium": 27.0,
+   "zinc": 0.15
+  }
  },
  {
   "name_ar": "تفاح",
@@ -645,7 +1530,24 @@
   "fat_100": 0.2,
   "serving_g": 182,
   "serving_label": "حبة وسط",
-  "source_ref": "171688"
+  "source_ref": "171688",
+  "source_type": "فواكه",
+  "fiber_100": 2.4,
+  "micros": {
+   "vit_c": 4.6,
+   "vit_a": 3.0,
+   "vit_d": 0.0,
+   "vit_e": 0.18,
+   "vit_k": 2.2,
+   "folate": 3.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.041,
+   "iron": 0.12,
+   "calcium": 6.0,
+   "potassium": 107.0,
+   "magnesium": 5.0,
+   "zinc": 0.04
+  }
  },
  {
   "name_ar": "برتقال",
@@ -657,7 +1559,24 @@
   "fat_100": 0.1,
   "serving_g": 131,
   "serving_label": "حبة",
-  "source_ref": "169097"
+  "source_ref": "169097",
+  "source_type": "فواكه",
+  "fiber_100": 2.4,
+  "micros": {
+   "vit_c": 53.2,
+   "vit_a": 11.0,
+   "vit_d": 0.0,
+   "vit_e": 0.18,
+   "vit_k": 0.0,
+   "folate": 30.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.06,
+   "iron": 0.1,
+   "calcium": 40.0,
+   "potassium": 181.0,
+   "magnesium": 10.0,
+   "zinc": 0.07
+  }
  },
  {
   "name_ar": "فراولة",
@@ -669,7 +1588,24 @@
   "fat_100": 0.3,
   "serving_g": 150,
   "serving_label": "كوب",
-  "source_ref": "167762"
+  "source_ref": "167762",
+  "source_type": "فواكه",
+  "fiber_100": 2.0,
+  "micros": {
+   "vit_c": 58.8,
+   "vit_a": 1.0,
+   "vit_d": 0.0,
+   "vit_e": 0.29,
+   "vit_k": 2.2,
+   "folate": 24.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.047,
+   "iron": 0.41,
+   "calcium": 16.0,
+   "potassium": 153.0,
+   "magnesium": 13.0,
+   "zinc": 0.14
+  }
  },
  {
   "name_ar": "عنب",
@@ -681,7 +1617,24 @@
   "fat_100": 0.2,
   "serving_g": 150,
   "serving_label": "كوب",
-  "source_ref": "174683"
+  "source_ref": "174683",
+  "source_type": "فواكه",
+  "fiber_100": 0.9,
+  "micros": {
+   "vit_c": 3.2,
+   "vit_a": 3.0,
+   "vit_d": 0.0,
+   "vit_e": 0.19,
+   "vit_k": 14.6,
+   "folate": 2.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.086,
+   "iron": 0.36,
+   "calcium": 10.0,
+   "potassium": 191.0,
+   "magnesium": 7.0,
+   "zinc": 0.07
+  }
  },
  {
   "name_ar": "بطيخ",
@@ -693,7 +1646,24 @@
   "fat_100": 0.2,
   "serving_g": 280,
   "serving_label": "كوب ونص",
-  "source_ref": "167765"
+  "source_ref": "167765",
+  "source_type": "فواكه",
+  "fiber_100": 0.4,
+  "micros": {
+   "vit_c": 8.1,
+   "vit_a": 28.0,
+   "vit_d": 0.0,
+   "vit_e": 0.05,
+   "vit_k": 0.1,
+   "folate": 3.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.045,
+   "iron": 0.24,
+   "calcium": 7.0,
+   "potassium": 112.0,
+   "magnesium": 10.0,
+   "zinc": 0.1
+  }
  },
  {
   "name_ar": "مانجو",
@@ -705,7 +1675,24 @@
   "fat_100": 0.4,
   "serving_g": 165,
   "serving_label": "كوب",
-  "source_ref": "169910"
+  "source_ref": "169910",
+  "source_type": "فواكه",
+  "fiber_100": 1.6,
+  "micros": {
+   "vit_c": 36.4,
+   "vit_a": 54.0,
+   "vit_d": 0.0,
+   "vit_e": 0.9,
+   "vit_k": 4.2,
+   "folate": 43.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.119,
+   "iron": 0.16,
+   "calcium": 11.0,
+   "potassium": 168.0,
+   "magnesium": 10.0,
+   "zinc": 0.09
+  }
  },
  {
   "name_ar": "أناناس",
@@ -717,7 +1704,24 @@
   "fat_100": 0.1,
   "serving_g": 165,
   "serving_label": "كوب",
-  "source_ref": "169124"
+  "source_ref": "169124",
+  "source_type": "فواكه",
+  "fiber_100": 1.4,
+  "micros": {
+   "vit_c": 47.8,
+   "vit_a": 3.0,
+   "vit_d": 0.0,
+   "vit_e": 0.02,
+   "vit_k": 0.7,
+   "folate": 18.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.112,
+   "iron": 0.29,
+   "calcium": 13.0,
+   "potassium": 109.0,
+   "magnesium": 12.0,
+   "zinc": 0.12
+  }
  },
  {
   "name_ar": "توت أزرق",
@@ -729,7 +1733,24 @@
   "fat_100": 0.3,
   "serving_g": 148,
   "serving_label": "كوب",
-  "source_ref": "171711"
+  "source_ref": "171711",
+  "source_type": "فواكه",
+  "fiber_100": 2.4,
+  "micros": {
+   "vit_c": 9.7,
+   "vit_a": 3.0,
+   "vit_d": 0.0,
+   "vit_e": 0.57,
+   "vit_k": 19.3,
+   "folate": 6.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.052,
+   "iron": 0.28,
+   "calcium": 6.0,
+   "potassium": 77.0,
+   "magnesium": 6.0,
+   "zinc": 0.16
+  }
  },
  {
   "name_ar": "كيوي",
@@ -741,7 +1762,24 @@
   "fat_100": 0.5,
   "serving_g": 75,
   "serving_label": "حبة",
-  "source_ref": "168153"
+  "source_ref": "168153",
+  "source_type": "فواكه",
+  "fiber_100": 3.0,
+  "micros": {
+   "vit_c": 92.7,
+   "vit_a": 4.0,
+   "vit_d": 0.0,
+   "vit_e": 1.46,
+   "vit_k": 40.3,
+   "folate": 25.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.063,
+   "iron": 0.31,
+   "calcium": 34.0,
+   "potassium": 312.0,
+   "magnesium": 17.0,
+   "zinc": 0.14
+  }
  },
  {
   "name_ar": "رمان",
@@ -753,7 +1791,24 @@
   "fat_100": 1.2,
   "serving_g": 87,
   "serving_label": "نص كوب حبوب",
-  "source_ref": "169134"
+  "source_ref": "169134",
+  "source_type": "فواكه",
+  "fiber_100": 4.0,
+  "micros": {
+   "vit_c": 10.2,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.6,
+   "vit_k": 16.4,
+   "folate": 38.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.075,
+   "iron": 0.3,
+   "calcium": 10.0,
+   "potassium": 236.0,
+   "magnesium": 12.0,
+   "zinc": 0.35
+  }
  },
  {
   "name_ar": "خيار",
@@ -765,7 +1820,24 @@
   "fat_100": 0.1,
   "serving_g": 100,
   "serving_label": null,
-  "source_ref": "168409"
+  "source_ref": "168409",
+  "source_type": "خضار",
+  "fiber_100": 0.5,
+  "micros": {
+   "vit_c": 2.8,
+   "vit_a": 5.0,
+   "vit_d": 0.0,
+   "vit_e": 0.03,
+   "vit_k": 16.4,
+   "folate": 7.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.04,
+   "iron": 0.28,
+   "calcium": 16.0,
+   "potassium": 147.0,
+   "magnesium": 13.0,
+   "zinc": 0.2
+  }
  },
  {
   "name_ar": "طماطم",
@@ -777,7 +1849,24 @@
   "fat_100": 0.2,
   "serving_g": 120,
   "serving_label": "حبة وسط",
-  "source_ref": "170457"
+  "source_ref": "170457",
+  "source_type": "خضار",
+  "fiber_100": 1.2,
+  "micros": {
+   "vit_c": 13.7,
+   "vit_a": 42.0,
+   "vit_d": 0.0,
+   "vit_e": 0.54,
+   "vit_k": 7.9,
+   "folate": 15.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.08,
+   "iron": 0.27,
+   "calcium": 10.0,
+   "potassium": 237.0,
+   "magnesium": 11.0,
+   "zinc": 0.17
+  }
  },
  {
   "name_ar": "خس",
@@ -789,7 +1878,24 @@
   "fat_100": 0.3,
   "serving_g": 50,
   "serving_label": null,
-  "source_ref": "169247"
+  "source_ref": "169247",
+  "source_type": "خضار",
+  "fiber_100": 2.1,
+  "micros": {
+   "vit_c": 4.0,
+   "vit_a": 436.0,
+   "vit_d": 0.0,
+   "vit_e": 0.13,
+   "vit_k": 102.5,
+   "folate": 136.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.074,
+   "iron": 0.97,
+   "calcium": 33.0,
+   "potassium": 247.0,
+   "magnesium": 14.0,
+   "zinc": 0.23
+  }
  },
  {
   "name_ar": "جزر",
@@ -801,7 +1907,24 @@
   "fat_100": 0.2,
   "serving_g": 60,
   "serving_label": "حبة",
-  "source_ref": "170393"
+  "source_ref": "170393",
+  "source_type": "خضار",
+  "fiber_100": 2.8,
+  "micros": {
+   "vit_c": 5.9,
+   "vit_a": 835.0,
+   "vit_d": 0.0,
+   "vit_e": 0.66,
+   "vit_k": 13.2,
+   "folate": 19.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.138,
+   "iron": 0.3,
+   "calcium": 33.0,
+   "potassium": 320.0,
+   "magnesium": 12.0,
+   "zinc": 0.24
+  }
  },
  {
   "name_ar": "بروكلي مطبوخ",
@@ -813,7 +1936,24 @@
   "fat_100": 0.4,
   "serving_g": 90,
   "serving_label": null,
-  "source_ref": "169967"
+  "source_ref": "169967",
+  "source_type": "خضار",
+  "fiber_100": 3.3,
+  "micros": {
+   "vit_c": 64.9,
+   "vit_a": 77.0,
+   "vit_d": 0.0,
+   "vit_e": 1.45,
+   "vit_k": 141.1,
+   "folate": 108.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.2,
+   "iron": 0.67,
+   "calcium": 40.0,
+   "potassium": 293.0,
+   "magnesium": 21.0,
+   "zinc": 0.45
+  }
  },
  {
   "name_ar": "سبانخ",
@@ -825,7 +1965,24 @@
   "fat_100": 0.4,
   "serving_g": 30,
   "serving_label": "كوب",
-  "source_ref": "168462"
+  "source_ref": "168462",
+  "source_type": "خضار",
+  "fiber_100": 2.2,
+  "micros": {
+   "vit_c": 28.1,
+   "vit_a": 469.0,
+   "vit_d": 0.0,
+   "vit_e": 2.03,
+   "vit_k": 482.9,
+   "folate": 194.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.195,
+   "iron": 2.71,
+   "calcium": 99.0,
+   "potassium": 558.0,
+   "magnesium": 79.0,
+   "zinc": 0.53
+  }
  },
  {
   "name_ar": "فلفل رومي أحمر",
@@ -837,7 +1994,24 @@
   "fat_100": 0.3,
   "serving_g": 120,
   "serving_label": "حبة",
-  "source_ref": "170108"
+  "source_ref": "170108",
+  "source_type": "خضار",
+  "fiber_100": 2.1,
+  "micros": {
+   "vit_c": 127.7,
+   "vit_a": 157.0,
+   "vit_d": 0.0,
+   "vit_e": 1.58,
+   "vit_k": 4.9,
+   "folate": 46.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.291,
+   "iron": 0.43,
+   "calcium": 7.0,
+   "potassium": 211.0,
+   "magnesium": 12.0,
+   "zinc": 0.25
+  }
  },
  {
   "name_ar": "بصل",
@@ -849,7 +2023,24 @@
   "fat_100": 0.1,
   "serving_g": 110,
   "serving_label": "حبة وسط",
-  "source_ref": "170000"
+  "source_ref": "170000",
+  "source_type": "خضار",
+  "fiber_100": 1.7,
+  "micros": {
+   "vit_c": 7.4,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.02,
+   "vit_k": 0.4,
+   "folate": 19.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.12,
+   "iron": 0.21,
+   "calcium": 23.0,
+   "potassium": 146.0,
+   "magnesium": 10.0,
+   "zinc": 0.17
+  }
  },
  {
   "name_ar": "فطر (مشروم)",
@@ -861,7 +2052,24 @@
   "fat_100": 0.3,
   "serving_g": 70,
   "serving_label": "كوب",
-  "source_ref": "169251"
+  "source_ref": "169251",
+  "source_type": "خضار",
+  "fiber_100": 1.0,
+  "micros": {
+   "vit_c": 2.1,
+   "vit_a": 0.0,
+   "vit_d": 0.2,
+   "vit_e": 0.01,
+   "vit_k": 0.0,
+   "folate": 17.0,
+   "vit_b12": 0.04,
+   "vit_b6": 0.104,
+   "iron": 0.5,
+   "calcium": 3.0,
+   "potassium": 318.0,
+   "magnesium": 9.0,
+   "zinc": 0.52
+  }
  },
  {
   "name_ar": "كوسا مطبوخة",
@@ -873,7 +2081,24 @@
   "fat_100": 0.4,
   "serving_g": 180,
   "serving_label": null,
-  "source_ref": "169292"
+  "source_ref": "169292",
+  "source_type": "خضار",
+  "fiber_100": 1.0,
+  "micros": {
+   "vit_c": 12.9,
+   "vit_a": 56.0,
+   "vit_d": 0.0,
+   "vit_e": 0.12,
+   "vit_k": 4.2,
+   "folate": 28.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.08,
+   "iron": 0.37,
+   "calcium": 18.0,
+   "potassium": 264.0,
+   "magnesium": 19.0,
+   "zinc": 0.33
+  }
  },
  {
   "name_ar": "باذنجان مطبوخ",
@@ -885,7 +2110,24 @@
   "fat_100": 0.2,
   "serving_g": 100,
   "serving_label": null,
-  "source_ref": "169229"
+  "source_ref": "169229",
+  "source_type": "خضار",
+  "fiber_100": 2.5,
+  "micros": {
+   "vit_c": 1.3,
+   "vit_a": 2.0,
+   "vit_d": 0.0,
+   "vit_e": 0.41,
+   "vit_k": 2.9,
+   "folate": 14.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.086,
+   "iron": 0.25,
+   "calcium": 6.0,
+   "potassium": 123.0,
+   "magnesium": 11.0,
+   "zinc": 0.12
+  }
  },
  {
   "name_ar": "ذرة حلوة مطبوخة",
@@ -897,7 +2139,24 @@
   "fat_100": 1.5,
   "serving_g": 150,
   "serving_label": null,
-  "source_ref": "169999"
+  "source_ref": "169999",
+  "source_type": "خضار نشوية",
+  "fiber_100": 2.4,
+  "micros": {
+   "vit_c": 5.5,
+   "vit_a": 13.0,
+   "vit_d": 0.0,
+   "vit_e": 0.09,
+   "vit_k": 0.4,
+   "folate": 23.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.139,
+   "iron": 0.45,
+   "calcium": 3.0,
+   "potassium": 218.0,
+   "magnesium": 26.0,
+   "zinc": 0.62
+  }
  },
  {
   "name_ar": "أفوكادو",
@@ -909,7 +2168,24 @@
   "fat_100": 14.7,
   "serving_g": 50,
   "serving_label": "ثلث حبة",
-  "source_ref": "171705"
+  "source_ref": "171705",
+  "source_type": "فواكه",
+  "fiber_100": 6.7,
+  "micros": {
+   "vit_c": 10.0,
+   "vit_a": 7.0,
+   "vit_d": 0.0,
+   "vit_e": 2.07,
+   "vit_k": 21.0,
+   "folate": 81.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.257,
+   "iron": 0.55,
+   "calcium": 12.0,
+   "potassium": 485.0,
+   "magnesium": 29.0,
+   "zinc": 0.64
+  }
  },
  {
   "name_ar": "زيت زيتون",
@@ -921,7 +2197,24 @@
   "fat_100": 100,
   "serving_g": 5,
   "serving_label": "ملعقة صغيرة",
-  "source_ref": "171413"
+  "source_ref": "171413",
+  "source_type": "دهون وزيوت",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 14.35,
+   "vit_k": 60.2,
+   "folate": 0.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.0,
+   "iron": 0.56,
+   "calcium": 1.0,
+   "potassium": 1.0,
+   "magnesium": 0.0,
+   "zinc": 0.0
+  }
  },
  {
   "name_ar": "زبدة",
@@ -933,7 +2226,24 @@
   "fat_100": 81.1,
   "serving_g": 5,
   "serving_label": "ملعقة صغيرة",
-  "source_ref": "173410"
+  "source_ref": "173410",
+  "source_type": "دهون وزيوت",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 684.0,
+   "vit_d": 0.0,
+   "vit_e": 2.32,
+   "vit_k": 7.0,
+   "folate": 3.0,
+   "vit_b12": 0.17,
+   "vit_b6": 0.003,
+   "iron": 0.02,
+   "calcium": 24.0,
+   "potassium": 24.0,
+   "magnesium": 2.0,
+   "zinc": 0.09
+  }
  },
  {
   "name_ar": "لوز",
@@ -945,7 +2255,24 @@
   "fat_100": 49.9,
   "serving_g": 28,
   "serving_label": "حفنة",
-  "source_ref": "170567"
+  "source_ref": "170567",
+  "source_type": "مكسرات وبذور",
+  "fiber_100": 12.5,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 25.63,
+   "vit_k": 0.0,
+   "folate": 44.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.137,
+   "iron": 3.71,
+   "calcium": 269.0,
+   "potassium": 733.0,
+   "magnesium": 270.0,
+   "zinc": 3.12
+  }
  },
  {
   "name_ar": "كاجو",
@@ -957,7 +2284,24 @@
   "fat_100": 43.9,
   "serving_g": 28,
   "serving_label": "حفنة",
-  "source_ref": "170162"
+  "source_ref": "170162",
+  "source_type": "مكسرات وبذور",
+  "fiber_100": 3.3,
+  "micros": {
+   "vit_c": 0.5,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.9,
+   "vit_k": 34.1,
+   "folate": 25.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.417,
+   "iron": 6.68,
+   "calcium": 37.0,
+   "potassium": 660.0,
+   "magnesium": 292.0,
+   "zinc": 5.78
+  }
  },
  {
   "name_ar": "فستق حلبي",
@@ -969,7 +2313,23 @@
   "fat_100": 45.3,
   "serving_g": 28,
   "serving_label": "حفنة",
-  "source_ref": "170184"
+  "source_ref": "170184",
+  "source_type": "مكسرات وبذور",
+  "fiber_100": 10.6,
+  "micros": {
+   "vit_c": 5.6,
+   "vit_a": 26.0,
+   "vit_d": 0.0,
+   "vit_e": 2.86,
+   "folate": 51.0,
+   "vit_b12": 0.0,
+   "vit_b6": 1.7,
+   "iron": 3.92,
+   "calcium": 105.0,
+   "potassium": 1025.0,
+   "magnesium": 121.0,
+   "zinc": 2.2
+  }
  },
  {
   "name_ar": "جوز (عين الجمل)",
@@ -981,7 +2341,24 @@
   "fat_100": 65.2,
   "serving_g": 28,
   "serving_label": "حفنة",
-  "source_ref": "170187"
+  "source_ref": "170187",
+  "source_type": "مكسرات وبذور",
+  "fiber_100": 6.7,
+  "micros": {
+   "vit_c": 1.3,
+   "vit_a": 1.0,
+   "vit_d": 0.0,
+   "vit_e": 0.7,
+   "vit_k": 2.7,
+   "folate": 98.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.537,
+   "iron": 2.91,
+   "calcium": 98.0,
+   "potassium": 441.0,
+   "magnesium": 158.0,
+   "zinc": 3.09
+  }
  },
  {
   "name_ar": "زبدة فول سوداني",
@@ -993,7 +2370,24 @@
   "fat_100": 51.4,
   "serving_g": 16,
   "serving_label": "ملعقة كبيرة",
-  "source_ref": "172470"
+  "source_ref": "172470",
+  "source_type": "مكسرات وبذور",
+  "fiber_100": 5.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 9.1,
+   "vit_k": 0.3,
+   "folate": 87.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.441,
+   "iron": 1.74,
+   "calcium": 49.0,
+   "potassium": 558.0,
+   "magnesium": 168.0,
+   "zinc": 2.51
+  }
  },
  {
   "name_ar": "فول سوداني",
@@ -1005,7 +2399,24 @@
   "fat_100": 49.2,
   "serving_g": 28,
   "serving_label": "حفنة",
-  "source_ref": "172430"
+  "source_ref": "172430",
+  "source_type": "مكسرات وبذور",
+  "fiber_100": 8.5,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 8.33,
+   "vit_k": 0.0,
+   "folate": 240.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.348,
+   "iron": 4.58,
+   "calcium": 92.0,
+   "potassium": 705.0,
+   "magnesium": 168.0,
+   "zinc": 3.27
+  }
  },
  {
   "name_ar": "طحينة",
@@ -1017,7 +2428,24 @@
   "fat_100": 53.8,
   "serving_g": 15,
   "serving_label": "ملعقة كبيرة",
-  "source_ref": "170189"
+  "source_ref": "170189",
+  "source_type": "مكسرات وبذور",
+  "fiber_100": 9.3,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 3.0,
+   "vit_d": 0.0,
+   "vit_e": 0.25,
+   "vit_k": 0.0,
+   "folate": 98.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.149,
+   "iron": 8.95,
+   "calcium": 426.0,
+   "potassium": 414.0,
+   "magnesium": 95.0,
+   "zinc": 4.62
+  }
  },
  {
   "name_ar": "بذور الشيا",
@@ -1029,7 +2457,19 @@
   "fat_100": 30.7,
   "serving_g": 12,
   "serving_label": "ملعقة كبيرة",
-  "source_ref": "170554"
+  "source_ref": "170554",
+  "source_type": "مكسرات وبذور",
+  "fiber_100": 34.4,
+  "micros": {
+   "vit_c": 1.6,
+   "vit_e": 0.5,
+   "vit_b12": 0.0,
+   "iron": 7.72,
+   "calcium": 631.0,
+   "potassium": 407.0,
+   "magnesium": 335.0,
+   "zinc": 4.58
+  }
  },
  {
   "name_ar": "عسل",
@@ -1041,7 +2481,24 @@
   "fat_100": 0,
   "serving_g": 21,
   "serving_label": "ملعقة كبيرة",
-  "source_ref": "169640"
+  "source_ref": "169640",
+  "source_type": "حلويات ومحليات",
+  "fiber_100": 0.2,
+  "micros": {
+   "vit_c": 0.5,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.0,
+   "vit_k": 0.0,
+   "folate": 2.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.024,
+   "iron": 0.42,
+   "calcium": 6.0,
+   "potassium": 52.0,
+   "magnesium": 2.0,
+   "zinc": 0.22
+  }
  },
  {
   "name_ar": "سكر أبيض",
@@ -1053,7 +2510,24 @@
   "fat_100": 0,
   "serving_g": 4,
   "serving_label": "ملعقة صغيرة",
-  "source_ref": "169655"
+  "source_ref": "169655",
+  "source_type": "حلويات ومحليات",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 0.0,
+   "vit_d": 0.0,
+   "vit_e": 0.0,
+   "vit_k": 0.0,
+   "folate": 0.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.0,
+   "iron": 0.05,
+   "calcium": 1.0,
+   "potassium": 2.0,
+   "magnesium": 0.0,
+   "zinc": 0.01
+  }
  },
  {
   "name_ar": "شوكولاتة داكنة 70-85%",
@@ -1065,7 +2539,21 @@
   "fat_100": 42.6,
   "serving_g": 20,
   "serving_label": null,
-  "source_ref": "170273"
+  "source_ref": "170273",
+  "source_type": "حلويات ومحليات",
+  "fiber_100": 10.9,
+  "micros": {
+   "vit_a": 2.0,
+   "vit_e": 0.59,
+   "vit_k": 7.3,
+   "vit_b12": 0.28,
+   "vit_b6": 0.038,
+   "iron": 11.9,
+   "calcium": 73.0,
+   "potassium": 715.0,
+   "magnesium": 228.0,
+   "zinc": 3.31
+  }
  },
  {
   "name_ar": "عصير برتقال",
@@ -1077,7 +2565,24 @@
   "fat_100": 0.2,
   "serving_g": 248,
   "serving_label": "كوب",
-  "source_ref": "169098"
+  "source_ref": "169098",
+  "source_type": "مشروبات",
+  "fiber_100": 0.2,
+  "micros": {
+   "vit_c": 50.0,
+   "vit_a": 10.0,
+   "vit_d": 0.0,
+   "vit_e": 0.04,
+   "vit_k": 0.1,
+   "folate": 30.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.04,
+   "iron": 0.2,
+   "calcium": 11.0,
+   "potassium": 200.0,
+   "magnesium": 11.0,
+   "zinc": 0.05
+  }
  },
  {
   "name_ar": "مايونيز",
@@ -1089,7 +2594,24 @@
   "fat_100": 74.9,
   "serving_g": 15,
   "serving_label": "ملعقة كبيرة",
-  "source_ref": "171009"
+  "source_ref": "171009",
+  "source_type": "دهون وزيوت",
+  "fiber_100": 0.0,
+  "micros": {
+   "vit_c": 0.0,
+   "vit_a": 16.0,
+   "vit_d": 0.2,
+   "vit_e": 3.28,
+   "vit_k": 163.0,
+   "folate": 5.0,
+   "vit_b12": 0.12,
+   "vit_b6": 0.008,
+   "iron": 0.21,
+   "calcium": 8.0,
+   "potassium": 20.0,
+   "magnesium": 1.0,
+   "zinc": 0.15
+  }
  },
  {
   "name_ar": "كاتشب",
@@ -1101,6 +2623,23 @@
   "fat_100": 0.1,
   "serving_g": 17,
   "serving_label": "ملعقة كبيرة",
-  "source_ref": "168556"
+  "source_ref": "168556",
+  "source_type": "صلصات",
+  "fiber_100": 0.3,
+  "micros": {
+   "vit_c": 4.1,
+   "vit_a": 26.0,
+   "vit_d": 0.0,
+   "vit_e": 1.46,
+   "vit_k": 3.0,
+   "folate": 9.0,
+   "vit_b12": 0.0,
+   "vit_b6": 0.158,
+   "iron": 0.35,
+   "calcium": 15.0,
+   "potassium": 281.0,
+   "magnesium": 13.0,
+   "zinc": 0.17
+  }
  }
 ]

@@ -57,6 +57,7 @@ export default async function NutritionPage({ params, searchParams }: { params: 
               <Link href={`${base}?tab=plans`} aria-current={tab === "plans" ? "true" : undefined}>جداولي الغذائية</Link>
               {routine && <Link href={`${base}?tab=supplements`} aria-current={tab === "supplements" ? "true" : undefined}>المكملات</Link>}
               <Link href={`${base}/log`}>سجل الماكروز</Link>
+              <Link href={`${base}/foods`}>دليل مصادر الأكل</Link>
             </nav>
 
             {tab === "today" && (
