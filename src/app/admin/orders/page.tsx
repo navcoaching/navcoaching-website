@@ -25,7 +25,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
     // البحث يشمل رقم الطلب والاسم والجوال والبريد، وملاحظات المدربة الخاصة
     rows: (await tx.query(
       `SELECT o.order_no, o.product_id, o.product_name, p.name AS current_name, o.offer_label, o.status, o.category,
-              o.amount_due_halalas, o.contact_name, o.contact_phone, o.created_at, o.student_discount_requested, o.is_demo, o.source, o.preferred_start::text,
+              o.amount_due_halalas, o.contact_name, o.contact_phone, o.created_at, o.student_discount_requested, o.is_demo, o.is_free, o.source, o.preferred_start::text,
               u.email, i.health_flag, EXISTS (SELECT 1 FROM order_note_entries n WHERE n.order_id = o.id) AS has_note
          FROM orders o JOIN "user" u ON u.id = o.user_id
          LEFT JOIN intakes i ON i.order_id = o.id
@@ -98,7 +98,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
                   </Link>
                   <div className="small muted">{o.offer_label}{o.student_discount_requested ? " · طالب" : ""}{o.health_flag ? " · ⚠︎ ملاحظة صحية" : ""}</div>
                 </td>
-                <td className="num">{o.amount_due_halalas == null ? "—" : riyals(o.amount_due_halalas)}</td>
+                <td className="num">{o.is_free ? <span className="status ok">مجاني</span> : o.amount_due_halalas == null ? "—" : riyals(o.amount_due_halalas)}</td>
                 <td><span className={`status ${statusTone(o.status)}`}>{statusLabel(o.status, o.category)}</span></td>
                 <td className="small">{fmtDate(o.created_at)}</td>
                 <td>

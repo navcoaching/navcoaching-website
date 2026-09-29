@@ -3,13 +3,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { createOrderAction } from "@/app/actions/client";
-import { AGE_MAX, AGE_MIN, EXPECTATIONS_Q, NUTRITION_SKUS, OPT } from "@/lib/intake";
+import { AGE_MAX, AGE_MIN, NUTRITION_SKUS, OPT } from "@/lib/intake";
+import { activeCustom, customField, hintOf, isHidden, labelOf, LIMITS, type CustomQuestion, type IntakeConfig } from "@/lib/intake-config";
 import { Submit, useFormAction } from "@/components/FormBits";
 import StartPrefFields from "@/components/StartPrefFields";
 import { validStartPref } from "@/lib/schedule";
 
 type OfferOpt = { sku: string; label: string; group: string; price: string };
-type Props = { sku: string; offers: OfferOpt[]; defaultName: string; responseTime: string };
+type Props = { sku: string; offers: OfferOpt[]; defaultName: string; responseTime: string; intake: IntakeConfig };
 
 const DRAFT_KEY = "nav_checkout_draft_v2";
 // البيانات الصحية والقياسات لا تُحفظ على الجهاز أثناء التعبئة (كما في الموقع الحالي)
@@ -26,7 +27,7 @@ const TITLES = ["الباقة والتواصل", "الهدف والتمرين", 
 type Draft = Record<string, string | string[]>;
 const readDraft = (): Draft => { try { return JSON.parse(localStorage.getItem(DRAFT_KEY) ?? "{}"); } catch { return {}; } };
 
-export default function CheckoutForm({ sku, offers, defaultName, responseTime }: Props) {
+export default function CheckoutForm({ sku, offers, defaultName, responseTime, intake }: Props) {
   const formRef = useRef<HTMLFormElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const { state, onSubmit, pending } = useFormAction(createOrderAction, () => step === 5 && validateStep(5));
@@ -48,7 +49,7 @@ export default function CheckoutForm({ sku, offers, defaultName, responseTime }:
   useEffect(() => {
     if (state.fieldErrors) {
       setErrors(state.fieldErrors);
-      const first = Object.keys(state.fieldErrors).map((k) => STEP_OF[k] ?? 5).sort()[0];
+      const first = Object.keys(state.fieldErrors).map((k) => STEP_OF[k] ?? intake.custom.find((c) => customField(c.id) === k)?.step ?? 5).sort()[0];
       if (first) setStep(first);
     }
   }, [state]);
@@ -96,6 +97,10 @@ export default function CheckoutForm({ sku, offers, defaultName, responseTime }:
   const inv = (n: string) => invalidProps(n, errors);
 
   const ctx = { d, errors };
+  const lab = (k: string) => labelOf(intake, k);
+  const hint = (k: string) => (hintOf(intake, k) ? <span className="hint">{hintOf(intake, k)}</span> : null);
+  const show = (k: string) => !isHidden(intake, k);
+  const extra = (n: number) => activeCustom(intake, n).map((q) => <CustomField key={q.id} q={q} ctx={ctx} />);
   return (
     <div ref={topRef} style={{ scrollMarginTop: 90 }}>
       <div className="progress" aria-hidden="true">{[1, 2, 3, 4, 5].map((i) => <span key={i} className={i <= step ? "on" : ""} />)}</div>
@@ -117,62 +122,64 @@ export default function CheckoutForm({ sku, offers, defaultName, responseTime }:
             {offer && <span className="hint">السعر: {offer.price}. تدفعه بتحويل بنكي بعد إرسال الاستبيان.</span>}
           </div>
           <div className="field">
-            <label htmlFor="name">الاسم <span className="req">*</span></label>
+            <label htmlFor="name">{lab("name")} <span className="req">*</span></label>
             <input id="name" name="name" type="text" autoComplete="name" defaultValue={d("name")} required minLength={2} maxLength={80} data-err="اكتب اسمك (حرفين على الأقل)." {...inv("name")} />
-            <ErrText n="name" errors={errors} />
+            {hint("name")}<ErrText n="name" errors={errors} />
           </div>
           <div className="field">
-            <label htmlFor="phone">رقم واتساب <span className="req">*</span></label>
+            <label htmlFor="phone">{lab("phone")} <span className="req">*</span></label>
             <div className="phone-row" dir="ltr">
               <select name="cc" aria-label="رمز الدولة" defaultValue={d("cc") || "+966"}>{OPT.cc.map((c) => <option key={c}>{c}</option>)}</select>
               <input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel-national" defaultValue={d("phone")} required
                 pattern={val("cc") === "+966" || !val("cc") ? "0?5[0-9]{8}" : "[0-9]{6,14}"}
                 data-err={val("cc") === "+966" || !val("cc") ? "الرقم السعودي يبدأ بـ 5 ويتكون من 9 أرقام، مثل 512345678." : "اكتب رقماً صحيحاً."} {...inv("phone")} />
             </div>
-            <span className="hint">الرقم اللي تستخدمه في واتساب — نتواصل معك عليه.</span>
+            <span className="hint">الرقم اللي تستخدمه في واتساب — نتواصل معك عليه.</span>{hint("phone")}
             <ErrText n="phone" errors={errors} />
           </div>
-          <fieldset className="field"><legend>الجنس <span className="req">*</span></legend><Radios ctx={ctx} name="gender" opts={OPT.gender} required err="اختر الجنس — نحتاجه لتصميم البرنامج والمراجع المناسبة." /><ErrText n="gender" errors={errors} /></fieldset>
+          <fieldset className="field"><legend>{lab("gender")} <span className="req">*</span></legend><Radios ctx={ctx} name="gender" opts={OPT.gender} required err="اختر الجنس — نحتاجه لتصميم البرنامج والمراجع المناسبة." />{hint("gender")}<ErrText n="gender" errors={errors} /></fieldset>
           <div className="field">
-            <label htmlFor="age">العمر <span className="req">*</span></label>
+            <label htmlFor="age">{lab("age")} <span className="req">*</span></label>
             <input id="age" name="age" type="number" inputMode="numeric" min={AGE_MIN} max={AGE_MAX} step={1} required defaultValue={d("age")}
               data-err={`اكتب عمرك رقماً صحيحاً بين ${AGE_MIN} و ${AGE_MAX}.`} {...inv("age")} style={{ maxWidth: 160 }} />
-            <ErrText n="age" errors={errors} />
+            {hint("age")}<ErrText n="age" errors={errors} />
           </div>
           <label className="check" hidden={!(Number(val("age")) > 0 && Number(val("age")) < 18)}>
             <input type="checkbox" name="guardian_ok" required={Number(val("age")) > 0 && Number(val("age")) < 18} data-err="للأعمار أقل من 18 نحتاج تأكيد موافقة ولي الأمر." {...inv("guardian_ok")} />
             <span>أؤكد أن ولي الأمر موافق على الاشتراك. <span className="req">*</span></span>
           </label>
           <ErrText n="guardian_ok" errors={errors} />
-          <div className="field"><label htmlFor="city">المدينة (اختياري)</label><Select ctx={ctx} name="city" opts={OPT.city} /></div>
+          {show("city") && <div className="field"><label htmlFor="city">{lab("city")}</label><Select ctx={ctx} name="city" opts={OPT.city} />{hint("city")}</div>}
           <label className="check"><input type="checkbox" name="student" value="نعم" defaultChecked={d("student") === "نعم"} /><span>أنا طالب/طالبة وأبي خصم 10% (يُطلب إثبات بسيط، ونؤكد لك المبلغ النهائي قبل التحويل)</span></label>
+          {extra(1)}
         </fieldset>
 
         {/* 2 */}
         <fieldset data-step="2" hidden={step !== 2} className="form">
-          <fieldset className="field"><legend>هدفك الرئيسي <span className="req">*</span></legend><Radios ctx={ctx} name="goal" opts={OPT.goal} required err="اختر هدفاً واحداً — الأقرب لك الآن." /><ErrText n="goal" errors={errors} /></fieldset>
-          <fieldset className="field"><legend>مستواك <span className="req">*</span></legend><Radios ctx={ctx} name="level" opts={OPT.level} required err="اختر مستواك." /><ErrText n="level" errors={errors} /></fieldset>
-          <fieldset className="field"><legend>مكان التمرين <span className="req">*</span></legend><Radios ctx={ctx} name="place" opts={OPT.place} required err="اختر مكان التمرين." /><ErrText n="place" errors={errors} /></fieldset>
+          <fieldset className="field"><legend>{lab("goal")} <span className="req">*</span></legend><Radios ctx={ctx} name="goal" opts={OPT.goal} required err="اختر هدفاً واحداً — الأقرب لك الآن." />{hint("goal")}<ErrText n="goal" errors={errors} /></fieldset>
+          <fieldset className="field"><legend>{lab("level")} <span className="req">*</span></legend><Radios ctx={ctx} name="level" opts={OPT.level} required err="اختر مستواك." />{hint("level")}<ErrText n="level" errors={errors} /></fieldset>
+          <fieldset className="field"><legend>{lab("place")} <span className="req">*</span></legend><Radios ctx={ctx} name="place" opts={OPT.place} required err="اختر مكان التمرين." />{hint("place")}<ErrText n="place" errors={errors} /></fieldset>
           <fieldset className="field" hidden={!atHome}>
-            <legend>الأدوات المتوفرة في البيت (اختر كل ما ينطبق)</legend>
+            <legend>{lab("equip")}</legend>
             <div className="choices">
               {OPT.equip.map((o) => (
                 <label className="choice" key={o}><input type="checkbox" name="equip" value={o} defaultChecked={Array.isArray(draft.equip) && draft.equip.includes(o)} /><span>{o}</span></label>
               ))}
             </div>
           </fieldset>
-          <div className="field"><label htmlFor="days">أيام التمرين بالأسبوع <span className="req">*</span></label><Select ctx={ctx} name="days" opts={OPT.days} required err="اختر عدد الأيام." /><ErrText n="days" errors={errors} /></div>
-          <div className="field"><label htmlFor="duration">وقت التمرين باليوم <span className="req">*</span></label><Select ctx={ctx} name="duration" opts={OPT.duration} required err="اختر الوقت المتاح." /><ErrText n="duration" errors={errors} /></div>
+          <div className="field"><label htmlFor="days">{lab("days")} <span className="req">*</span></label><Select ctx={ctx} name="days" opts={OPT.days} required err="اختر عدد الأيام." />{hint("days")}<ErrText n="days" errors={errors} /></div>
+          <div className="field"><label htmlFor="duration">{lab("duration")} <span className="req">*</span></label><Select ctx={ctx} name="duration" opts={OPT.duration} required err="اختر الوقت المتاح." />{hint("duration")}<ErrText n="duration" errors={errors} /></div>
+          {extra(2)}
         </fieldset>
 
         {/* 3 */}
         <fieldset data-step="3" hidden={step !== 3} className="form">
           <p className="alert info">هذه الأسئلة لسلامتك فقط، ولا تُحفظ على جهازك أثناء التعبئة، ولا يطّلع عليها إلا المدربة. اكتب الحد الأدنى الذي يساعدني أراعي حالتك.</p>
-          <fieldset className="field"><legend>هل عندك إصابة حالية أو ألم يحد من التمرين؟ <span className="req">*</span></legend><Radios ctx={ctx} name="injury" opts={OPT.yesno} required err="اختر نعم أو لا." /><ErrText n="injury" errors={errors} /></fieldset>
-          <fieldset className="field"><legend>هل عندك حالة صحية أو تعليمات طبية قد تؤثر على التمرين؟ <span className="req">*</span></legend><Radios ctx={ctx} name="condition" opts={OPT.yesno} required err="اختر نعم أو لا." /><ErrText n="condition" errors={errors} /></fieldset>
-          <fieldset className="field" hidden={!isFemale}><legend>هل أنتِ حامل أو في السنة الأولى بعد الولادة؟ (اختياري)</legend><Radios ctx={ctx} name="pregnancy" opts={OPT.pregnancy} /></fieldset>
+          <fieldset className="field"><legend>{lab("injury")} <span className="req">*</span></legend><Radios ctx={ctx} name="injury" opts={OPT.yesno} required err="اختر نعم أو لا." />{hint("injury")}<ErrText n="injury" errors={errors} /></fieldset>
+          <fieldset className="field"><legend>{lab("condition")} <span className="req">*</span></legend><Radios ctx={ctx} name="condition" opts={OPT.yesno} required err="اختر نعم أو لا." />{hint("condition")}<ErrText n="condition" errors={errors} /></fieldset>
+          <fieldset className="field" hidden={!isFemale}><legend>{lab("pregnancy")}</legend><Radios ctx={ctx} name="pregnancy" opts={OPT.pregnancy} /></fieldset>
           <div className="field" hidden={!healthYes}>
-            <label htmlFor="health_notes">وضّح باختصار (مثال: ألم أسفل الظهر مع الانحناء)</label>
+            <label htmlFor="health_notes">{lab("health_notes")}</label>
             <textarea id="health_notes" name="health_notes" maxLength={600} />
             <span className="hint">لا حاجة لإرسال تقارير طبية هنا.</span>
           </div>
@@ -181,47 +188,50 @@ export default function CheckoutForm({ sku, offers, defaultName, responseTime }:
             <span>أفهم أن البرنامج لا يغني عن استشارة الطبيب أو أخصائي العلاج الطبيعي عند وجود حالة صحية أو إصابة. <span className="req">*</span></span>
           </label>
           <ErrText n="health_ack" errors={errors} />
+          {extra(3)}
         </fieldset>
 
         {/* 4 */}
         <fieldset data-step="4" hidden={step !== 4} className="form">
           <div className="grid g2">
-            <div className="field"><label htmlFor="weight">الوزن الحالي (كغ) <span className="req">*</span></label><input id="weight" name="weight" type="number" inputMode="decimal" min={30} max={250} step="0.1" required data-err="اكتب وزناً بين 30 و 250 كغ." {...inv("weight")} /><ErrText n="weight" errors={errors} /></div>
-            <div className="field"><label htmlFor="height">الطول (سم) <span className="req">*</span></label><input id="height" name="height" type="number" inputMode="numeric" min={120} max={230} step="0.1" required data-err="اكتب طولاً بين 120 و 230 سم." {...inv("height")} /><ErrText n="height" errors={errors} /></div>
+            <div className="field"><label htmlFor="weight">{lab("weight")} <span className="req">*</span></label><input id="weight" name="weight" type="number" inputMode="decimal" min={30} max={250} step="0.1" required data-err="اكتب وزناً بين 30 و 250 كغ." {...inv("weight")} />{hint("weight")}<ErrText n="weight" errors={errors} /></div>
+            <div className="field"><label htmlFor="height">{lab("height")} <span className="req">*</span></label><input id="height" name="height" type="number" inputMode="numeric" min={120} max={230} step="0.1" required data-err="اكتب طولاً بين 120 و 230 سم." {...inv("height")} />{hint("height")}<ErrText n="height" errors={errors} /></div>
           </div>
-          <div className="field"><label htmlFor="bodyfat">نسبة الدهون التقريبية (اختياري)</label>
-            <select id="bodyfat" name="bodyfat" defaultValue=""><option value="">اختر</option>{bodyfat.map((o) => <option key={o}>{o}</option>)}</select>
-          </div>
-          <div className="field"><label htmlFor="steps">خطواتك اليومية</label><Select ctx={ctx} name="steps" opts={OPT.steps} /></div>
-          <div className="field"><label htmlFor="sleep">ساعات النوم</label><Select ctx={ctx} name="sleep" opts={OPT.sleep} /></div>
-          <div className="field"><label htmlFor="job">طبيعة يومك (اختياري)</label><Select ctx={ctx} name="job" opts={OPT.job} /></div>
+          {show("bodyfat") && <div className="field"><label htmlFor="bodyfat">{lab("bodyfat")}</label>
+            <select id="bodyfat" name="bodyfat" defaultValue=""><option value="">اختر</option>{bodyfat.map((o) => <option key={o}>{o}</option>)}</select>{hint("bodyfat")}
+          </div>}
+          <div className="field"><label htmlFor="steps">{lab("steps")}</label><Select ctx={ctx} name="steps" opts={OPT.steps} />{hint("steps")}</div>
+          {show("sleep") && <div className="field"><label htmlFor="sleep">{lab("sleep")}</label><Select ctx={ctx} name="sleep" opts={OPT.sleep} />{hint("sleep")}</div>}
+          {show("job") && <div className="field"><label htmlFor="job">{lab("job")}</label><Select ctx={ctx} name="job" opts={OPT.job} />{hint("job")}</div>}
           <div className="field">
-            <label htmlFor="calories">خبرتك في حساب السعرات {nutrition && <span className="req">*</span>}</label>
+            <label htmlFor="calories">{lab("calories")} {nutrition && <span className="req">*</span>}</label>
             <Select ctx={ctx} name="calories" opts={OPT.calories} required={nutrition} err="اختر خبرتك — باقتك تشمل تغذية." />
-            <ErrText n="calories" errors={errors} />
+            {hint("calories")}<ErrText n="calories" errors={errors} />
           </div>
+          {extra(4)}
         </fieldset>
 
         {/* 5 */}
         <fieldset data-step="5" hidden={step !== 5} className="form">
           <div className="field">
-            <label htmlFor="expectations">{EXPECTATIONS_Q} <span className="req">*</span></label>
+            <label htmlFor="expectations">{lab("expectations")} <span className="req">*</span></label>
             <textarea id="expectations" name="expectations" required minLength={3} maxLength={1000} defaultValue={d("expectations")} data-err="هذا السؤال مطلوب." {...inv("expectations")} />
-            <ErrText n="expectations" errors={errors} />
+            {hint("expectations")}<ErrText n="expectations" errors={errors} />
           </div>
           <StartPrefFields key={draft ? "draft" : "new"} idPrefix="co-start" error={errors.start_date}
             initial={draft?.start_mode === "date" && validStartPref(String(draft.start_date ?? "")) ? String(draft.start_date) : null} />
-          <div className="field"><label htmlFor="challenge">وش أكبر تحدي تواجهه الآن؟ (اختياري)</label><textarea id="challenge" name="challenge" maxLength={600} defaultValue={d("challenge")} /></div>
-          <fieldset className="field"><legend>تدربت مع مدرب قبل؟</legend><Radios ctx={ctx} name="prev_coach" opts={OPT.yesno} /></fieldset>
-          <div className="field" hidden={val("prev_coach") !== "نعم"}><label htmlFor="prev_why">ليه ما استمريت معه؟ (اختياري)</label><input id="prev_why" name="prev_why" type="text" maxLength={300} defaultValue={d("prev_why")} /></div>
-          <div className="field"><label htmlFor="source">من وين سمعت عني؟</label><Select ctx={ctx} name="source" opts={OPT.source} /></div>
+          {show("challenge") && <div className="field"><label htmlFor="challenge">{lab("challenge")}</label><textarea id="challenge" name="challenge" maxLength={600} defaultValue={d("challenge")} />{hint("challenge")}</div>}
+          {show("prev_coach") && <fieldset className="field"><legend>{lab("prev_coach")}</legend><Radios ctx={ctx} name="prev_coach" opts={OPT.yesno} />{hint("prev_coach")}</fieldset>}
+          <div className="field" hidden={val("prev_coach") !== "نعم" || !show("prev_why")}><label htmlFor="prev_why">{lab("prev_why")}</label><input id="prev_why" name="prev_why" type="text" maxLength={300} defaultValue={d("prev_why")} /></div>
+          {show("source") && <div className="field"><label htmlFor="source">{lab("source")}</label><Select ctx={ctx} name="source" opts={OPT.source} />{hint("source")}</div>}
           <div className="field">
-            <label htmlFor="media">هل تسمح بعرض نتيجتك في السوشل ميديا؟ <span className="req">*</span></label>
+            <label htmlFor="media">{lab("media")} <span className="req">*</span></label>
             <Select ctx={ctx} name="media" opts={OPT.media} required err="اختر إجابة." />
-            <span className="hint">اختيارك لا يؤثر على قبولك أو خدمتك أو التجديد المجاني، وتقدر تغيّره لاحقاً.</span>
+            <span className="hint">اختيارك لا يؤثر على قبولك أو خدمتك أو التجديد المجاني، وتقدر تغيّره لاحقاً.</span>{hint("media")}
             <ErrText n="media" errors={errors} />
           </div>
-          <div className="field"><label htmlFor="notes">أي شي تبي تضيفه؟ (اختياري)</label><textarea id="notes" name="notes" maxLength={800} defaultValue={d("notes")} /></div>
+          {show("notes") && <div className="field"><label htmlFor="notes">{lab("notes")}</label><textarea id="notes" name="notes" maxLength={800} defaultValue={d("notes")} />{hint("notes")}</div>}
+          {extra(5)}
           <label className="check">
             <input type="checkbox" name="consent_terms" required data-err="نحتاج موافقتك للإرسال." {...inv("consent_terms")} />
             <span>أؤكد صحة البيانات وأوافق على <Link href="/policies#terms" target="_blank">الشروط</Link> و<Link href="/policies#privacy" target="_blank">سياسة الخصوصية</Link>. <span className="req">*</span></span>
@@ -277,5 +287,32 @@ function Select({ ctx, name, opts, required, err, id }: { ctx: Ctx; name: string
       <option value="">اختر</option>
       {opts.map((o) => <option key={o}>{o}</option>)}
     </select>
+  );
+}
+
+/** سؤال إضافي من إعدادات لوحة الإدارة */
+function CustomField({ q, ctx }: { q: CustomQuestion; ctx: Ctx }) {
+  const name = customField(q.id);
+  const err = ctx.errors[name];
+  const mark = q.required ? <span className="req"> *</span> : null;
+  const props = { name, required: q.required, "data-err": "هذا السؤال مطلوب." };
+  return (
+    <div className="field" data-testid="custom-question">
+      {q.type === "choice" || q.type === "yesno" ? (
+        <fieldset className="field">
+          <legend>{q.label}{mark}</legend>
+          <Radios ctx={ctx} name={name} opts={q.type === "yesno" ? OPT.yesno.slice().reverse() : q.options} required={q.required} err="هذا السؤال مطلوب." />
+        </fieldset>
+      ) : (
+        <>
+          <label htmlFor={name}>{q.label}{mark}</label>
+          {q.type === "long"
+            ? <textarea id={name} {...props} maxLength={LIMITS.long} defaultValue={ctx.d(name)} {...invalidProps(name, ctx.errors)} />
+            : <input id={name} type="text" {...props} maxLength={LIMITS.text} defaultValue={ctx.d(name)} {...invalidProps(name, ctx.errors)} />}
+        </>
+      )}
+      {q.hint && <span className="hint">{q.hint}</span>}
+      {err && <span className="err-msg" id={`e-${name}`}>{err}</span>}
+    </div>
   );
 }

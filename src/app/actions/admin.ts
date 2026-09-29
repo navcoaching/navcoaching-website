@@ -13,6 +13,7 @@ import { loadAdherence } from "@/lib/program-data";
 import { statusLabel } from "@/lib/status";
 import { addDays } from "@/lib/schedule";
 import { youtubeId } from "@/lib/youtube";
+import { configFromForm, parseConfig } from "@/lib/intake-config";
 import type { ActionState } from "./client";
 
 const GENERIC = "تعذّر الحفظ. حاولي مرة أخرى.";
@@ -62,15 +63,20 @@ export async function transitionAction(_: ActionState, fd: FormData): Promise<Ac
   const to = String(fd.get("to") ?? "");
   const note = String(fd.get("note") ?? "").trim().slice(0, 500);
   const bank = fd.get("bank_confirmed") === "on";
+  const date = (k: string) => { const v = String(fd.get(k) ?? ""); return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null; };
   let results: ChannelResult[] = [];
   try {
     results = await asCoach(async (tx) => {
-      await tx.query("SELECT app.coach_transition($1,$2,$3,$4)", [orderNo, to, note, bank]);
+      // «مجاني»: قبول بدون دفع، ويتفعّل في المدة المحددة (بداية ونهاية) لاشتراكات المتابعة
+      if (to === "free") await tx.query("SELECT app.coach_accept_free($1,$2,$3,$4)", [orderNo, date("free_start"), date("free_end"), note]);
+      else await tx.query("SELECT app.coach_transition($1,$2,$3,$4)", [orderNo, to, note, bank]);
       return notifyStatus(tx, orderNo, note);
     });
   } catch (err) { return fail(err); }
   revalidatePath(`/admin/orders/${orderNo}`);
-  return { ok: true, message: "تم تحديث الحالة وتسجيلها." + summarize(results) };
+  revalidatePath("/admin/orders");
+  revalidatePath("/admin");
+  return { ok: true, message: (to === "free" ? "تم قبول الطلب مجاناً وتسجيله." : "تم تحديث الحالة وتسجيلها.") + summarize(results) };
 }
 
 export async function setAmountAction(_: ActionState, fd: FormData): Promise<ActionState> {
@@ -722,4 +728,27 @@ export async function markSurveySeenAction(_: ActionState, fd: FormData): Promis
   revalidatePath("/admin");
   revalidatePath(`/admin/orders/${orderNo}`);
   return { ok: true, message: "تم." };
+}
+
+// ---------- أسئلة الاستبيان (تتحدث في الموقع مباشرة) ----------
+export async function saveIntakeQuestionsAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  try {
+    await asCoach(async (tx, uid) => {
+      const old = parseConfig((await tx.query("SELECT value FROM site_settings WHERE key = 'intake_questions'")).rows[0]?.value);
+      const r = configFromForm((k) => String(fd.get(k) ?? ""), old.custom.map((c) => c.id));
+      if ("error" in r) throw new Error(`user:${r.error}`);
+      await tx.query(
+        `INSERT INTO site_settings (key, value, updated_by) VALUES ('intake_questions',$1,$2)
+         ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_by = EXCLUDED.updated_by, updated_at = now()`,
+        [JSON.stringify(r.config), uid]);
+      await log(tx, uid, "setting.save", "intake_questions", { edited: Object.keys(r.config.labels).length, custom: r.config.custom.length });
+    });
+  } catch (err) {
+    const m = (err as Error).message ?? "";
+    if (m.startsWith("user:")) return { error: m.slice(5) };
+    return fail(err);
+  }
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/content/intake");
+  return { ok: true, message: "تم حفظ الأسئلة، وتظهر الآن في استبيان الموقع." };
 }

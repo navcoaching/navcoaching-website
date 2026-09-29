@@ -4,6 +4,7 @@ import CheckoutForm from "./CheckoutForm";
 import { requireUser } from "@/lib/session";
 import { getOfferBySku, getProducts, getSettings } from "@/lib/data";
 import { CATEGORY_LABEL, riyals } from "@/lib/format";
+import { parseConfig } from "@/lib/intake-config";
 
 export const metadata: Metadata = { title: "استبيان المتدرب", robots: { index: false } };
 
@@ -28,7 +29,7 @@ export default async function Checkout({ params }: { params: Promise<{ sku: stri
       </section>
       <section className="section tight">
         <div className="wrap account-layout">
-          <div className="card"><CheckoutForm sku={sku} offers={offers} defaultName={user.name.includes("@") ? "" : user.name} responseTime={s.response_time} /></div>
+          <div className="card"><CheckoutForm sku={sku} offers={offers} defaultName={user.name.includes("@") ? "" : user.name} responseTime={s.response_time} intake={parseConfig(s.intake_questions)} /></div>
           <aside className="card flat stack">
             <span className="eyebrow">طلبك</span>
             <h2 style={{ fontSize: 20 }}>{found.product.name}</h2>

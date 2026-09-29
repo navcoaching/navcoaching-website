@@ -282,7 +282,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                 <dt>البرنامج</dt><dd>{o.product_name}</dd>
                 <dt>المدة</dt><dd>{o.offer_label}</dd>
                 <dt>السعر</dt><dd className="num">{riyals(o.list_price_halalas)}</dd>
-                <dt>المطلوب</dt><dd className="num">{amount == null ? "بانتظار التأكيد" : riyals(amount)}</dd>
+                <dt>المطلوب</dt><dd className="num">{o.is_free ? "مجاني 🎁" : amount == null ? "بانتظار التأكيد" : riyals(amount)}</dd>
                 <dt>طريقة الدفع</dt><dd>تحويل بنكي</dd>
                 {o.paid_at && (<><dt>تأكيد الدفع</dt><dd>{fmtDate(o.paid_at)}</dd></>)}
                 {!o.sub_start_at && o.status !== "cancelled" && (<><dt>موعد البداية</dt><dd data-testid="start-pref-value">{o.preferred_start ? fmtYMD(o.preferred_start) : "بأقرب وقت"}</dd></>)}

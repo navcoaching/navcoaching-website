@@ -12,6 +12,7 @@ import PackageTag from "@/components/admin/PackageTag";
 import Details from "@/components/admin/Details";
 import { AdminNotes, NotifLog, ReviewWeeks, SendReview, SubscriptionCard, loadSubscription } from "./FollowUp";
 import StatusBar from "./StatusBar";
+import { riyadhDate } from "@/lib/schedule";
 import StartTag from "@/components/admin/StartTag";
 import AdherenceBar from "@/components/account/AdherenceBar";
 import GrantedAlert from "@/components/admin/GrantedAlert";
@@ -70,9 +71,9 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
           <h1 style={{ marginBottom: 4 }}>{o.product_name} — {o.offer_label}</h1>
           <p className="muted">{o.contact_name} · <bdi dir="ltr">{o.contact_phone}</bdi> · <bdi dir="ltr">{o.user_email}</bdi></p>
         </div>
-        <span className={`status ${statusTone(o.status)}`}>{statusLabel(o.status, o.category)}</span>
+        <span className="row" style={{ gap: 6 }}>{o.is_free && <span className="status ok" data-testid="free-tag">مجاني</span>}<span className={`status ${statusTone(o.status)}`}>{statusLabel(o.status, o.category)}</span></span>
       </div>
-      <StatusBar orderNo={o.order_no} current={statusLabel(o.status, o.category)} steps={next}
+      <StatusBar orderNo={o.order_no} current={statusLabel(o.status, o.category)} steps={next} category={o.category} today={riyadhDate()} preferredStart={o.preferred_start ?? null}
         amount={o.amount_due_halalas == null ? "—" : riyals(o.amount_due_halalas)} />
       {granted && <GrantedAlert no={granted} sent={sent === "1"} />}
       {o.is_demo && <p className="alert warn">طلب تجريبي — ليس طلباً حقيقياً.</p>}
@@ -162,7 +163,10 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
                 </div>
               )}
               <dl className="kv small">
-                {Object.entries(intake.answers).filter(([k]) => !["expectations", "age"].includes(k)).map(([k, v]) => <Fragment key={k}><dt>{ANSWER_LABELS[k] ?? k}</dt><dd>{show(v)}</dd></Fragment>)}
+                {Object.entries(intake.answers).filter(([k]) => !["expectations", "age", "custom"].includes(k)).map(([k, v]) => <Fragment key={k}><dt>{ANSWER_LABELS[k] ?? k}</dt><dd>{show(v)}</dd></Fragment>)}
+                {Array.isArray(intake.answers.custom) && (intake.answers.custom as { id: string; label: string; value: string }[]).map((c) => (
+                  <Fragment key={c.id}><dt data-testid="custom-answer">{c.label}</dt><dd>{c.value}</dd></Fragment>
+                ))}
                 <dt>النشر في السوشل ميديا</dt><dd>{intake.media_consent}</dd>
                 <dt>طلب خصم طالب</dt><dd>{o.student_discount_requested ? "نعم" : "لا"}</dd>
                 <dt>ملاحظة العميل</dt><dd>{o.client_note ?? "—"}</dd>

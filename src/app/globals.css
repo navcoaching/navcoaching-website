@@ -992,3 +992,7 @@ dialog.video-modal.vertical .video-modal-frame { aspect-ratio: 9 / 16; max-heigh
   color: var(--cyan); font: inherit; font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; }
 .tutorial-link:hover { color: #fff; }
 dialog.video-modal .btn-ghost, dialog.video-modal .btn-ghost:hover { --fg: var(--text); --bd: var(--line); }
+
+/* قبول مجاني: تاريخ البداية والنهاية داخل شريط الحالة */
+.status-bar-free { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; }
+.status-bar-free label { display: grid; gap: 4px; font-size: 13px; }

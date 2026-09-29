@@ -57,14 +57,17 @@ export function stepIndex(status: string, category: string, student: boolean) {
 export const ENTITLED: string[] = ["active", "delivered", "completed"];
 
 /** الانتقالات المتاحة للمدربة في الواجهة (مطابقة لقاعدة البيانات) */
-export function coachNextSteps(status: string, category: string): { to: string; label: string; needsBank?: boolean; needsNote?: boolean }[] {
-  const out: { to: string; label: string; needsBank?: boolean; needsNote?: boolean }[] = [];
+export function coachNextSteps(status: string, category: string): { to: string; label: string; needsBank?: boolean; needsNote?: boolean; free?: boolean }[] {
+  const out: { to: string; label: string; needsBank?: boolean; needsNote?: boolean; free?: boolean }[] = [];
   // تأكيد الدفع (من الإيصال أو دفع مستلم خارج الموقع): إلى «قيد الإعداد» أو «تفعيل البرنامج» مباشرة
   if (status === "payment_review" || status === "awaiting_payment") {
     out.push({ to: "preparing", label: "قيد الإعداد (تأكيد الدفع)", needsBank: true });
     if (category === "follow") out.push({ to: "active", label: "تفعيل البرنامج (تأكيد الدفع)", needsBank: true });
   }
   if (status === "payment_review") out.push({ to: "awaiting_payment", label: "رفض الإيصال وإعادته للعميل", needsNote: true });
+  // قبول مجاني بدون دفع: لاشتراكات المتابعة يتفعّل في المدة اللي تحددها المدربة، وغيرها يتحول لـ «قيد الإعداد» (app.coach_accept_free)
+  if (["awaiting_quote", "awaiting_payment", "payment_review"].includes(status))
+    out.push({ to: "free", label: category === "follow" ? "مجاني (تفعيل بدون دفع)" : "مجاني (قبول بدون دفع)", free: true });
   if (status === "preparing") {
     if (category === "follow") out.push({ to: "active", label: "تفعيل البرنامج" });
     if (category === "files") out.push({ to: "delivered", label: "تم التسليم" });

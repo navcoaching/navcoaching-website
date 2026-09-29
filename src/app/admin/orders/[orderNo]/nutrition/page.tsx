@@ -26,7 +26,7 @@ export default async function OrderNutrition({ params }: { params: Promise<{ ord
     return {
       o, target, cal: await loadCalorieState(tx, o.id, o.user_id),
       plans: await loadPlans(tx, { orderId: o.id }),
-      templates: (await loadPlans(tx, { orderId: null })).filter((t) => !t.archived),
+      templates: (await loadPlans(tx, { orderId: null })).filter((t) => !t.archived && !t.is_library),
       routine: await loadRoutine(tx, { orderId: o.id }),
       routineTemplates: (await tx.query(`SELECT id, name FROM supplement_routines WHERE order_id IS NULL AND NOT archived ORDER BY created_at`)).rows as { id: string; name: string }[],
       logs: (await tx.query(

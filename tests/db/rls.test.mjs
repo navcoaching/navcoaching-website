@@ -559,10 +559,10 @@ describe("التغذية والمكملات", () => {
     const tl = (await as(A, "SELECT name, protein::float, carbs::float, fat::float FROM food_logs ORDER BY id DESC LIMIT 1")).rows[0];
     const sums = (await owner.query("SELECT sum(protein)::float p, sum(carbs)::float c, sum(fat)::float f FROM plan_items WHERE meal_id = $1", [tplMeal])).rows[0];
     assert.deepEqual([tl.protein, tl.carbs, tl.fat], [Math.round(sums.p * 10) / 10, Math.round(sums.c * 10) / 10, Math.round(sums.f * 10) / 10]);
-    assert.match(tl.name, /الجدول الغذائي 1 — /);
+    assert.ok(!tl.name.includes(" — ") || tl.name.split(" — ").length === 1, tl.name); // وجبة قالب: الاسم بدون اسم الجدول
     assert.equal((await as(A, "SELECT count(*)::int n FROM food_logs")).rows[0].n, before + 1);
     await as(A, "DELETE FROM food_logs WHERE id = (SELECT max(id) FROM food_logs)").catch(() => {});
-    await owner.query("DELETE FROM food_logs WHERE name LIKE 'الجدول الغذائي 1 — %' AND meal_id = $1", [tplMeal]);
+    await owner.query("DELETE FROM food_logs WHERE meal_id = $1", [tplMeal]);
     const otherMeal = (await owner.query("SELECT m.id FROM plan_meals m JOIN nutrition_plans p ON p.id = m.plan_id WHERE p.order_id IS NOT NULL AND p.order_id <> (SELECT id FROM orders WHERE order_no = $1) LIMIT 1", [noA])).rows[0]?.id;
     if (otherMeal) await assert.rejects(as(A, "SELECT app.log_food($1, current_date, 'lunch', $2, NULL, 0, 0, 0)", [noA, otherMeal]), /الوجبة غير موجودة/);
     // مكتبة الوجبات: للمشتركين والمدربة فقط، بدون طريقة التحضير
@@ -871,5 +871,49 @@ describe("مدة الاشتراك بالأسابيع", () => {
          FROM orders WHERE order_no = $1`, [no])).rows[0];
     assert.equal(o.same_day, true);
     assert.equal(o.span.days, 28 * o.months);
+  });
+});
+
+describe("القبول المجاني", () => {
+  const riyadh = "(now() AT TIME ZONE 'Asia/Riyadh')::date";
+  test("المتابعة: يتفعّل بدون دفع في المدة المحددة، وينتهي تلقائياً بعدها", async () => {
+    const no = await newOrder(A, "k-free-000000000000001", "int1");
+    await assert.rejects(as(A, `SELECT app.coach_accept_free($1, ${riyadh}, ${riyadh} + 27, NULL)`, [no]), /للمدربة فقط/);
+    await assert.rejects(as(COACH, "SELECT app.coach_accept_free($1, NULL, NULL, NULL)", [no]), /حددي تاريخ/);
+    await assert.rejects(as(COACH, `SELECT app.coach_accept_free($1, ${riyadh} + 5, ${riyadh} + 2, NULL)`, [no]), /بعد تاريخ البداية/);
+    await assert.rejects(as(COACH, `SELECT app.coach_accept_free($1, ${riyadh} - 30, ${riyadh} - 2, NULL)`, [no]), /مضى/);
+    await assert.rejects(as(COACH, `SELECT app.coach_accept_free($1, ${riyadh}, ${riyadh} + 400, NULL)`, [no]), /أطول من سنة/);
+
+    await as(COACH, `SELECT app.coach_accept_free($1, ${riyadh}, ${riyadh} + 27, 'مجاني لأهل غزة')`, [no]);
+    const o = (await owner.query(
+      `SELECT status, is_free, amount_due_halalas, paid_at,
+              (sub_start_at AT TIME ZONE 'Asia/Riyadh')::date = ${riyadh} AS start_ok,
+              (sub_end_at AT TIME ZONE 'Asia/Riyadh')::date = ${riyadh} + 27 AS end_ok,
+              review_weekday = extract(dow FROM (sub_start_at AT TIME ZONE 'Asia/Riyadh'))::int AS day_ok FROM orders WHERE order_no = $1`, [no])).rows[0];
+    assert.deepEqual(o, { status: "active", is_free: true, amount_due_halalas: 0, paid_at: null, start_ok: true, end_ok: true, day_ok: true });
+    const ev = (await owner.query(`SELECT note FROM order_events WHERE order_id = (SELECT id FROM orders WHERE order_no = $1) ORDER BY id DESC LIMIT 1`, [no])).rows[0].note;
+    assert.match(ev, /قبول مجاني من .* إلى .* — مجاني لأهل غزة/);
+    // المتدرب يصير له وصول (اشتراك نشط)، والقبول ما يتكرر
+    assert.equal((await as(A, "SELECT app.has_program() AS x")).rows[0].x, true);
+    await assert.rejects(as(COACH, `SELECT app.coach_accept_free($1, ${riyadh}, ${riyadh} + 27, NULL)`, [no]), /قبل الدفع فقط/);
+    // بعد نهاية المدة ينتهي تلقائياً
+    await owner.query("UPDATE orders SET sub_end_at = now() - interval '2 days' WHERE order_no = $1", [no]);
+    const ended = (await as(COACH, "SELECT app.expire_subscriptions() AS nos")).rows[0].nos;
+    assert.ok(ended.includes(no));
+    assert.equal((await owner.query("SELECT status FROM orders WHERE order_no = $1", [no])).rows[0].status, "completed");
+  });
+  test("الإيصال المعلّق يُقفل، والملفات والاستشارات تتحول لـ «قيد الإعداد» بدون تواريخ", async () => {
+    const no = await newOrder(B, "k-free-000000000000002", "int1");
+    await owner.query(`INSERT INTO payment_proofs (order_id, storage_key, mime, size_bytes, sha256, review_status)
+                       SELECT id, 'x/y.png', 'image/png', 10, 'abc', 'pending' FROM orders WHERE order_no = $1`, [no]).catch(() => {});
+    await as(COACH, `SELECT app.coach_accept_free($1, ${riyadh}, ${riyadh} + 6, NULL)`, [no]);
+    assert.equal((await owner.query(`SELECT count(*)::int n FROM payment_proofs WHERE order_id = (SELECT id FROM orders WHERE order_no = $1) AND review_status = 'pending'`, [no])).rows[0].n, 0);
+    const sku = (await owner.query("SELECT o.sku FROM product_offers o JOIN products p ON p.id = o.product_id WHERE p.category = 'consult' AND o.active LIMIT 1")).rows[0]?.sku;
+    if (sku) {
+      const c = await newOrder(A, "k-free-000000000000003", sku);
+      await as(COACH, "SELECT app.coach_accept_free($1, NULL, NULL, NULL)", [c]);
+      const r = (await owner.query("SELECT status, is_free, amount_due_halalas, sub_start_at FROM orders WHERE order_no = $1", [c])).rows[0];
+      assert.deepEqual(r, { status: "preparing", is_free: true, amount_due_halalas: 0, sub_start_at: null });
+    }
   });
 });

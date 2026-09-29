@@ -30,6 +30,8 @@ export type Settings = {
   intro_video: { url: string; title: string; body: string };
   /** فيديو «كيف تستخدم الموقع» (يوتيوب) يفتح في نافذة منبثقة من الصفحة الرئيسية */
   tutorial_video?: { url: string; label?: string };
+  /** أسئلة الاستبيان المعدّلة من لوحة الإدارة (انظر intake-config.ts) */
+  intake_questions?: unknown;
   testimonials_disclaimer: string;
   prices_note: string;
   checkins: { enabled: boolean; questions: { topic: string; q: string }[] };
@@ -96,6 +98,8 @@ export async function getApprovedMedia(usage: string) {
 
 // ---------- بيانات العميل (تمر بصلاحيات RLS) ----------
 export type OrderRow = {
+  /** قبول مجاني بدون دفع (خيار «مجاني» في تحديث الحالة) */
+  is_free?: boolean;
   id: string; order_no: string; category: string; product_name: string; offer_label: string; months: number;
   list_price_halalas: number; amount_due_halalas: number | null; currency: string; student_discount_requested: boolean;
   status: string; contact_name: string; contact_phone: string; created_at: string; updated_at: string; paid_at: string | null;

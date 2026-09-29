@@ -40,12 +40,20 @@ export const ANTIOXIDANT = { name: "قالب مضادات الأكسدة", ids: 
 // قالب عالي الألياف: وصفات فيها 8غ ألياف أو أكثر للوجبة الرئيسية (الاحتياج اليومي 28غ)، والألياف محسوبة من قاعدة الأكل
 export const FIBER = { name: "قالب عالي الألياف", ids: ["f-oats-chia", "f-chili", "f-salmon-lentil", "f-dates-almonds"],
   rule: "وجبات عالية بالألياف (بقوليات، شوفان، حبوب كاملة، خضار وفواكه ومكسرات). زيدي الألياف تدريجياً مع شرب ماء كافي" };
-const GROUPS = { main: TEMPLATES, antioxidant: [ANTIOXIDANT], fiber: [FIBER] };
+// مكتبة الوجبات: كل الوصفات (الكتيب + مضادات الأكسدة + الإضافية + الألياف) كوجبات لاختيار المتدرب من «كل الوجبات»
+export const LIBRARY = { name: "مكتبة الوجبات", library: true, all: true,
+  rule: "كل الوصفات كوجبات منفردة (فطور وغداء وسناك) ليختار منها المتدرب في «كل الوجبات». مو جدول يومي، فلا تُسند لمتدرب" };
+const GROUPS = { main: TEMPLATES, antioxidant: [ANTIOXIDANT], fiber: [FIBER], library: [LIBRARY] };
 
 export function buildPlans(recipes = loadRecipes(), group = "main") {
   const defs = GROUPS[group] ?? TEMPLATES;
   return defs.map((t) => {
     let b, l1, l2, s;
+    if (t.all) {
+      const kind = { b: "breakfast", l: "lunch", s: "snack" };
+      const meals = recipes.map((r) => mealOf(kind[r.slot], r));
+      return { name: t.name, notes: `${t.rule}. ${meals.length} وجبة.`, meals, library: true, kcal: 0, fiber: null, protein: 0, carbs: 0, fat: 0 };
+    }
     if (t.ids) {
       const get = (id) => recipes.find((r) => r.id === id);
       [b, l1, l2, s] = t.ids.map(get);
@@ -63,7 +71,7 @@ export function buildPlans(recipes = loadRecipes(), group = "main") {
 
 export function recipeTemplatesSql(group = "main") {
   const plans = buildPlans(loadRecipes(), group);
-  const json = JSON.stringify(plans.map(({ name, notes, meals }) => ({ name, notes, meals })));
+  const json = JSON.stringify(plans.map(({ name, notes, meals, library }) => ({ name, notes, meals, ...(library ? { library: true } : {}) })));
   if (json.includes("$rt$")) throw new Error("recipes.json يحتوي $rt$");
   return `DO $do$
 DECLARE
@@ -75,7 +83,9 @@ BEGIN
   FOR p IN SELECT * FROM jsonb_array_elements(d) LOOP
     SELECT id INTO v_plan FROM nutrition_plans WHERE order_id IS NULL AND lower(trim(name)) = lower(trim(p->>'name'));
     IF v_plan IS NULL THEN
-      INSERT INTO nutrition_plans (name, notes, position) VALUES (p->>'name', p->>'notes', i) RETURNING id INTO v_plan;
+      ${group === "library"
+        ? `INSERT INTO nutrition_plans (name, notes, position, is_library) VALUES (p->>'name', p->>'notes', 1000, true) RETURNING id INTO v_plan;`
+        : `INSERT INTO nutrition_plans (name, notes, position) VALUES (p->>'name', p->>'notes', i) RETURNING id INTO v_plan;`}
     ELSE
       -- تحديث: الوجبات تُستبدل بالنسخة الحالية (الحذف يشمل عناصرها)
       DELETE FROM plan_meals WHERE plan_id = v_plan;
@@ -105,8 +115,11 @@ function migrationStatements(file) {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const group = ["antioxidant", "fiber"].includes(process.argv[2]) ? process.argv[2] : "main";
-  const head = group === "fiber"
+  const group = ["antioxidant", "fiber", "library"].includes(process.argv[2]) ? process.argv[2] : "main";
+  const head = group === "library"
+    ? `-- مكتبة الوجبات: كل الوصفات كوجبات يختار منها المتدرب في «كل الوجبات» + migration 030 (عمود is_library وتسمية سجل الأكل).
+-- يُشغَّل في Neon ← SQL Editor في محرر فاضي، بعد ملف library-meals (029). تُضاف المكتبة مرة، وتُحدَّث لو انشغّل مرتين.`
+    : group === "fiber"
     ? `-- قالب عالي الألياف (فطور، غداء، عشاء، سناك) + تفاصيل مصادر الأكل (نوع المصدر، الألياف، الفيتامينات والمعادن من USDA).
 -- يُشغَّل مرة واحدة في Neon ← SQL Editor في محرر فاضي، بعد ملف antioxidant-template. تفاصيل الأكل تُضاف مرة وحدة، والقالب يُحدَّث لو انشغّل مرتين.`
     : group === "antioxidant"
@@ -116,7 +129,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 -- يُشغَّل مرة واحدة في Neon ← SQL Editor في محرر فاضي، بعد ملف auto-kcal-hidden. يضيف القوالب، أو يحدّث وجباتها إذا كانت موجودة (نسخ المتدربين ما تتأثر). آمن لو انشغّل مرتين.`;
   const names = buildPlans(loadRecipes(), group).map((p) => p.name.replace(/'/g, "''"));
   // ملف الألياف يحمل معه migration 028 (أعمدة التفاصيل) وتعبئتها من USDA، مرة وحدة
-  const details = group !== "fiber" ? "" : `DO $g$ BEGIN
+  const details = group === "library" ? `DO $g$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM schema_migrations WHERE name = '030_meal_library_plan.sql') THEN
+    EXECUTE $mig$${readFileSync(new URL("../db/migrations/030_meal_library_plan.sql", import.meta.url), "utf8")}$mig$;
+    INSERT INTO schema_migrations (name) VALUES ('030_meal_library_plan.sql');
+  END IF;
+END $g$;
+` : group !== "fiber" ? "" : `DO $g$ BEGIN
   IF NOT EXISTS (SELECT 1 FROM schema_migrations WHERE name = '028_food_details.sql') THEN
 ${migrationStatements("028_food_details.sql").map((st) => `    EXECUTE $m$${st}$m$;`).join("\n")}
     INSERT INTO schema_migrations (name) VALUES ('028_food_details.sql');

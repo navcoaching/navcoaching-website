@@ -104,9 +104,10 @@ test("كل الوجبات: المتدرب يضيف أي وجبة من قوالب
      VALUES ($1,$2,$3,$4,'follow',$5,$6,3,$7,$7,'active','متدرب مكتبة','+966500000000',$1, now(), now(), now() + interval '80 days') RETURNING id`,
     [orderNo, u.id, p.id, p.offer_id, p.name, p.label, p.price_halalas]);
   await db.query(`INSERT INTO nutrition_targets (order_id, kcal, protein, carbs, fat) VALUES ($1, 2000, 150, 200, 60)`, [o.id]); // بدون جداول مخصصة له
+  // وجبة موجودة في المكتبة فقط (وصفة مضادات الأكسدة «حمص بالخضار الملوّنة» مو داخل أي قالب)
   const { rows: [tm] } = await db.query(
-    `SELECT m.id, m.title, round(sum(i.protein)) AS p FROM plan_meals m JOIN nutrition_plans pl ON pl.id = m.plan_id AND pl.order_id IS NULL AND NOT pl.archived
-       JOIN plan_items i ON i.meal_id = m.id GROUP BY m.id ORDER BY m.title LIMIT 1`);
+    `SELECT m.id, m.title FROM plan_meals m JOIN nutrition_plans pl ON pl.id = m.plan_id AND pl.is_library WHERE m.title = 'حمص بالخضار الملوّنة'`);
+  expect(tm, "وصفة المكتبة غير موجودة بالبذور").toBeTruthy();
 
   await page.goto(`/account/orders/${orderNo}/nutrition`);
   const form = page.getByTestId("food-log-form");
@@ -118,8 +119,8 @@ test("كل الوجبات: المتدرب يضيف أي وجبة من قوالب
   await form.getByRole("button", { name: "إضافة" }).click();
   await expect(page.getByText("تمت الإضافة ✅")).toBeVisible();
   const { rows: [log] } = await db.query(`SELECT name, protein::float FROM food_logs WHERE order_id = $1`, [o.id]);
-  expect(log.name).toContain(tm.title);
-  expect(log.protein).toBeGreaterThan(0);
+  expect(log.name).toBe(tm.title); // بدون اسم الجدول
+  expect(log.protein).toBeCloseTo(6.2, 1);
   await page.reload();
   await expect(page.locator(".food-log-row", { hasText: tm.title })).toBeVisible();
   await noHorizontalScroll(page);

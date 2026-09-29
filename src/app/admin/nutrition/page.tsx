@@ -14,6 +14,8 @@ export default async function NutritionLibrary() {
       `SELECT r.id, r.name, (SELECT count(*)::int FROM supplement_items i JOIN supplement_sections s ON s.id = i.section_id WHERE s.routine_id = r.id) AS items
          FROM supplement_routines r WHERE r.order_id IS NULL ORDER BY r.created_at`)).rows as { id: string; name: string; items: number }[],
   }));
+  const library = plans.find((p) => p.is_library);
+  const templates = plans.filter((p) => !p.is_library);
   return (
     <div className="stack" style={{ ["--space" as string]: "18px" }}>
       <h1>التغذية والمكملات</h1>
@@ -25,8 +27,8 @@ export default async function NutritionLibrary() {
           <table className="t" data-testid="nutrition-templates">
             <thead><tr><th>الجدول</th><th>الوجبات</th><th>السعرات</th><th>بروتين</th><th>كارب</th><th>دهون</th><th><span className="sr-only">إجراء</span></th></tr></thead>
             <tbody>
-              {plans.length === 0 && <tr><td colSpan={7} className="muted">لا توجد جداول بعد.</td></tr>}
-              {plans.map((p) => (
+              {templates.length === 0 && <tr><td colSpan={7} className="muted">لا توجد جداول بعد.</td></tr>}
+              {templates.map((p) => (
                 <tr key={p.id}>
                   <td><b>{p.name}</b>{p.archived && <> <span className="status muted">مؤرشف</span></>}</td>
                   <td className="num">{p.meals.length}</td><td className="num">{Math.round(p.total.kcal)}</td>
@@ -41,6 +43,14 @@ export default async function NutritionLibrary() {
           <div className="field"><label htmlFor="np-name">اسم الجدول الجديد</label><input id="np-name" name="name" type="text" required maxLength={120} placeholder="الجدول الغذائي 6" /></div>
         </ActionForm>
       </section>
+
+      {library && (
+        <section className="card stack" data-testid="meal-library">
+          <h2 style={{ fontSize: 19 }}>{library.name}</h2>
+          <p className="small muted" style={{ margin: 0 }}>{library.meals.length} وجبة، يختار منها المتدرب في «أضف أكلة ← كل الوجبات» (مع وجبات القوالب الأخرى). ما تُسند كجدول، وما تظهر في «جداول مقترحة». تعديل الوجبة هنا يؤثر على التسجيلات الجديدة فقط.</p>
+          <div><Link className="btn btn-ghost btn-sm" href={`/admin/nutrition/plans/${library.id}`}>فتح المكتبة</Link></div>
+        </section>
+      )}
 
       <section className="card stack">
         <h2 style={{ fontSize: 19 }}>روتين المكملات</h2>

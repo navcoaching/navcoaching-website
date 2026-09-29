@@ -6,6 +6,8 @@ import { z } from "zod";
 import { dbErrorMessage, withUser } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { intakeSchema, normalizedPhone, splitIntake } from "@/lib/intake";
+import { parseConfig, validateCustomAnswers } from "@/lib/intake-config";
+import { getSettings } from "@/lib/data";
 import { allow, clientIp } from "@/lib/rate";
 import { cleanUpload, newKey, UploadError } from "@/lib/uploads";
 import { storage } from "@/lib/storage";
@@ -32,18 +34,21 @@ export async function createOrderAction(_: ActionState, fd: FormData): Promise<A
   const user = await getCurrentUser();
   if (!user) return { error: "انتهت الجلسة. سجّل الدخول مرة أخرى ثم أعد الإرسال (إجاباتك محفوظة على جهازك)." };
 
+  // الأسئلة الإضافية من إعدادات لوحة الإدارة (تُتحقق في الخادم مثل باقي الحقول)
+  const custom = validateCustomAnswers(parseConfig((await getSettings()).intake_questions), (k) => String(fd.get(k) ?? ""));
   const parsed = intakeSchema.safeParse(formToObject(fd));
-  if (!parsed.success) {
+  if (!parsed.success || Object.keys(custom.errors).length) {
     const fieldErrors: Record<string, string> = {};
-    for (const issue of parsed.error.issues) fieldErrors[String(issue.path[0])] ??= issue.message;
+    if (!parsed.success) for (const issue of parsed.error.issues) fieldErrors[String(issue.path[0])] ??= issue.message;
     if (fieldErrors.website) return { error: GENERIC };
-    return { error: "راجع الحقول المحددة.", fieldErrors };
+    return { error: "راجع الحقول المحددة.", fieldErrors: { ...fieldErrors, ...custom.errors } };
   }
   const v = parsed.data;
 
   if (!(await allow(`order:u:${user.id}`, 6, 3600)) || !(await allow(`order:ip:${await clientIp()}`, 20, 3600))) return { error: LIMITED };
 
-  const { answers, health, healthFlag } = splitIntake(v);
+  const { answers: baseAnswers, health, healthFlag } = splitIntake(v);
+  const answers = custom.answers.length ? { ...baseAnswers, custom: custom.answers } : baseAnswers;
   let orderNo: string;
   try {
     orderNo = await withUser(user.id, async (tx) => {

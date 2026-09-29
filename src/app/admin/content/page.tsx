@@ -57,6 +57,12 @@ export default async function AdminContent() {
         </ActionForm>
       </section>
 
+      <section className="card stack">
+        <H id="intake">أسئلة الاستبيان</H>
+        <p className="small muted">عدّلي نصوص الأسئلة، وأضيفي أسئلة جديدة، وأخفي الاختياري منها. تتحدث في الموقع مباشرة.</p>
+        <div><a className="btn btn-sm" href="/admin/content/intake">تعديل أسئلة الاستبيان</a></div>
+      </section>
+
       <section className="card stack" data-testid="tutorial-video-settings">
         <H id="tutorial">فيديو «كيف تستخدم الموقع»</H>
         <p className="small muted">يظهر زر في أعلى الصفحة الرئيسية يفتح الفيديو في نافذة منبثقة داخل الموقع. الحالة الآن: <b>{youtubeId(s.tutorial_video?.url) ? "ظاهر" : "مخفي (لا يوجد رابط)"}</b>. ارفعي الفيديو على يوتيوب (يقدر يكون «غير مدرج» Unlisted) والصقي رابطه هنا.</p>

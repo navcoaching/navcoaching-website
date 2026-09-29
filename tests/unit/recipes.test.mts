@@ -99,3 +99,14 @@ test("وصفات الألياف: كل وجبة رئيسية 8غ ألياف أو 
   assert.ok(p.fiber >= 28, String(p.fiber));
   assert.match(p.notes, /ألياف \d+غ/);
 });
+
+test("مكتبة الوجبات: كل الوصفات (60) كوجبات، وSQL المكتبة يضع is_library ولا يمس القوالب الخمسة", () => {
+  const [lib] = buildPlans(loadRecipes(), "library");
+  assert.equal(lib.name, "مكتبة الوجبات");
+  assert.equal(lib.meals.length, 60);
+  assert.equal(new Set(lib.meals.map((m: { title: string }) => m.title)).size, 60);
+  assert.ok(lib.meals.every((m: { kind: string; items: unknown[] }) => ["breakfast", "lunch", "snack"].includes(m.kind) && m.items.length === 1));
+  assert.match(recipeTemplatesSql("library") as string, /is_library/);
+  assert.doesNotMatch(recipeTemplatesSql("main") as string, /is_library/); // الملف الرئيسي يعمل قبل migration 030
+  assert.equal(buildPlans().length, 5);
+});
