@@ -8,6 +8,7 @@ import ReviewCard from "@/components/ReviewCard";
 import IntakeCalculator from "./calculator/IntakeCalculator";
 import { IconArrow, IconChat, IconFile, IconShield, IconTarget, IconTrend } from "@/components/Icons";
 import { getFaqs, getProducts, getPublicReviews, getSettings } from "@/lib/data";
+import VideoButton from "@/components/VideoButton";
 import { youtubeId } from "@/lib/youtube";
 
 export const revalidate = 300;
@@ -18,6 +19,7 @@ export default async function Home() {
   const [s, products, reviews, faqs] = await Promise.all([getSettings(), getProducts(), getPublicReviews(6), getFaqs()]);
   const follow = products.filter((p) => p.category === "follow");
   const videoId = youtubeId(s.intro_video?.url);
+  const tutorialUrl = youtubeId(s.tutorial_video?.url) ? s.tutorial_video!.url : null;
   const heroMedia = s.hero_image?.media_id;
   // صورة ثابتة توضّح شكل جدول المتدرب (أول لقطة في «نظرة داخل البرنامج»)
   const heroShot = s.program_shots?.[0];
@@ -38,6 +40,10 @@ export default async function Home() {
               <Link href="/programs" className="btn btn-cyan">اختر برنامجك <IconArrow size={18} className="arrow" /></Link>
               <Link href="/programs#quiz" className="btn btn-ghost">أي برنامج يناسبني؟</Link>
             </div>
+            {tutorialUrl && (
+              <VideoButton url={tutorialUrl} title={s.tutorial_video?.label || "كيف تستخدم الموقع"} className="tutorial-link"
+                label={<>▶ {s.tutorial_video?.label || "كيف تستخدم الموقع"}</>} testId="tutorial-video" />
+            )}
             <ul className="badges" aria-label="مزايا">
               {s.badges.map((b) => <li key={b}>{b}</li>)}
             </ul>

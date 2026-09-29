@@ -433,6 +433,12 @@ export async function saveSettingAction(_: ActionState, fd: FormData): Promise<A
       value = { url, title: g("title").slice(0, 80), body: g("body").slice(0, 400) };
       break;
     }
+    case "tutorial_video": {
+      const url = g("url");
+      if (url && !youtubeId(url)) return { error: "الرابط غير صالح. الصقي رابط يوتيوب مثل https://youtu.be/XXXXXXXXXXX" };
+      value = { url, label: g("label").slice(0, 60) };
+      break;
+    }
     case "hero":
       value = { eyebrow: g("eyebrow"), title: g("title"), title_tail: g("title_tail"), lead: g("lead"), tagline: g("tagline") };
       break;

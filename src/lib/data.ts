@@ -28,6 +28,8 @@ export type Settings = {
     experience_title?: string; experience?: string[];
   };
   intro_video: { url: string; title: string; body: string };
+  /** فيديو «كيف تستخدم الموقع» (يوتيوب) يفتح في نافذة منبثقة من الصفحة الرئيسية */
+  tutorial_video?: { url: string; label?: string };
   testimonials_disclaimer: string;
   prices_note: string;
   checkins: { enabled: boolean; questions: { topic: string; q: string }[] };

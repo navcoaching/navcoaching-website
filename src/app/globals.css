@@ -967,7 +967,7 @@ details.exercise-card > summary.exercise-summary h3::after { content: "▾"; fon
 details.exercise-card:not([open]) > summary.exercise-summary h3::after { transform: rotate(90deg); }
 
 /* مشغّل الفيديو المنبثق */
-dialog.video-modal { padding: 0; border: 0; border-radius: 16px; background: var(--surface); color: inherit; width: min(92vw, 860px); max-height: 92dvh; }
+dialog.video-modal { padding: 0; border: 0; border-radius: 16px; background: var(--surface); color: var(--text); width: min(92vw, 860px); max-height: 92dvh; }
 dialog.video-modal.vertical { width: min(92vw, 420px); }
 dialog.video-modal::backdrop { background: rgba(5, 12, 30, .75); }
 .video-modal-box { display: grid; gap: 8px; padding: 10px 10px 12px; }
@@ -987,3 +987,9 @@ dialog.video-modal.vertical .video-modal-frame { aspect-ratio: 9 / 16; max-heigh
 .food-rows { list-style: none; margin: 0; padding: 0; font-size: 14px; }
 .food-rows li { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line, #e3e9f2); }
 .food-rows li:last-child { border-bottom: 0; }
+
+/* زر «كيف تستخدم الموقع» في الهيرو (يفتح الفيديو في نافذة منبثقة) */
+.tutorial-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; min-height: 44px; padding: 0; border: 0; background: none;
+  color: var(--cyan); font: inherit; font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; }
+.tutorial-link:hover { color: #fff; }
+dialog.video-modal .btn-ghost, dialog.video-modal .btn-ghost:hover { --fg: var(--text); --bd: var(--line); }

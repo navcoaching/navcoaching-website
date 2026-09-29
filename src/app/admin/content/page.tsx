@@ -57,6 +57,16 @@ export default async function AdminContent() {
         </ActionForm>
       </section>
 
+      <section className="card stack" data-testid="tutorial-video-settings">
+        <H id="tutorial">فيديو «كيف تستخدم الموقع»</H>
+        <p className="small muted">يظهر زر في أعلى الصفحة الرئيسية يفتح الفيديو في نافذة منبثقة داخل الموقع. الحالة الآن: <b>{youtubeId(s.tutorial_video?.url) ? "ظاهر" : "مخفي (لا يوجد رابط)"}</b>. ارفعي الفيديو على يوتيوب (يقدر يكون «غير مدرج» Unlisted) والصقي رابطه هنا.</p>
+        <ActionForm action={saveSettingAction}>
+          <input type="hidden" name="key" value="tutorial_video" />
+          <div className="field"><label htmlFor="tv-url">رابط الفيديو على يوتيوب</label><input id="tv-url" name="url" type="url" dir="ltr" defaultValue={s.tutorial_video?.url} placeholder="https://youtu.be/XXXXXXXXXXX" /></div>
+          <div className="field"><label htmlFor="tv-label">نص الزر</label><input id="tv-label" name="label" type="text" defaultValue={s.tutorial_video?.label} maxLength={60} placeholder="كيف تستخدم الموقع" /></div>
+        </ActionForm>
+      </section>
+
       <section className="card stack">
         <H id="hero">الواجهة الرئيسية</H>
         <ActionForm action={saveSettingAction}>
