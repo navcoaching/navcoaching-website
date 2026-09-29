@@ -206,6 +206,8 @@ test("السعرات التلقائية: تنحسب لمتدرب جديد بشا
   await expect(ms.getByTestId("macro-high")).toContainText(`كارب ${mk.carbs}غ`);
   await ms.getByLabel("مستوى البروتين").selectOption("high");
   await ms.getByRole("button", { name: "تعبئة الماكروز" }).click();
+  // ننتظر حفظ الإجراء قبل التحديث (وإلا قد يسبق التحديثُ الحفظَ)
+  await expect.poll(async () => (await db.query(`SELECT protein::float AS p FROM nutrition_targets WHERE order_id = $1`, [o.id])).rows[0].p).toBe(mk.protein);
   await coach.reload();
   await expect(coach.getByTestId("targets").getByLabel("البروتين (غ)")).toHaveValue(String(mk.protein));
   await expect(coach.getByTestId("targets").getByLabel("الكارب (غ)")).toHaveValue(String(mk.carbs));
