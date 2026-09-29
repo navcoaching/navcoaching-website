@@ -30,6 +30,8 @@ export type Settings = {
   intro_video: { url: string; title: string; body: string };
   /** فيديو «كيف تستخدم الموقع» (يوتيوب) يفتح في نافذة منبثقة من الصفحة الرئيسية */
   tutorial_video?: { url: string; label?: string };
+  /** مقطع شرح استخدام الموقع بالكامل (يوتيوب، عرضي أو Shorts): قسم كامل في الصفحة الرئيسية */
+  guide_video?: { url: string; title?: string; body?: string };
   /** أسئلة الاستبيان المعدّلة من لوحة الإدارة (انظر intake-config.ts) */
   intake_questions?: unknown;
   testimonials_disclaimer: string;

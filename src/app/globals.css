@@ -397,6 +397,10 @@ dialog.lightbox .lb-bar { display: flex; justify-content: space-between; align-i
 .short-play:hover .disc { transform: scale(1.08); }
 .short-play .cap { position: absolute; bottom: 16px; inset-inline: 16px; color: #fff; font-size: 14px; text-align: center; }
 
+.short-frame.wide { aspect-ratio: 16 / 9; border-radius: 18px; width: 100%; }
+/* مقطع شرح استخدام الموقع: عرض كامل تحت العنوان */
+.guide-video { max-width: 980px; margin-inline: auto; display: grid; gap: 22px; }
+
 /* التقييمات */
 .reviews { display: grid; gap: clamp(14px, 2vw, 22px); grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); align-items: stretch; }
 .review { margin: 0; display: grid; grid-template-rows: auto 1fr auto auto; gap: 12px; }

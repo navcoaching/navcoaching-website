@@ -19,6 +19,8 @@ export default async function Home() {
   const [s, products, reviews, faqs] = await Promise.all([getSettings(), getProducts(), getPublicReviews(6), getFaqs()]);
   const follow = products.filter((p) => p.category === "follow");
   const videoId = youtubeId(s.intro_video?.url);
+  const guideId = youtubeId(s.guide_video?.url);
+  const guideVertical = /\/shorts\//.test(s.guide_video?.url ?? "");
   const tutorialUrl = youtubeId(s.tutorial_video?.url) ? s.tutorial_video!.url : null;
   const heroMedia = s.hero_image?.media_id;
   // صورة ثابتة توضّح شكل جدول المتدرب (أول لقطة في «نظرة داخل البرنامج»)
@@ -175,6 +177,22 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* ---------- مقطع شرح استخدام الموقع بالكامل (يظهر عند إضافة الرابط من لوحة الإدارة) ---------- */}
+      {guideId && (
+        <section className="section white" id="guide-video" data-testid="guide-video">
+          <div className={guideVertical ? "wrap short" : "wrap guide-video"}>
+            <div className="sec-head reveal" style={guideVertical ? undefined : { textAlign: "center", marginInline: "auto" }}>
+              <span className="eyebrow">شرح الموقع</span>
+              <h2>{s.guide_video?.title || "شرح استخدام الموقع خطوة بخطوة"}</h2>
+              {s.guide_video?.body && <p className="lead">{s.guide_video.body}</p>}
+            </div>
+            <div className="reveal" style={{ ["--d" as string]: "120ms" }}>
+              <YouTubeShort id={guideId} title={s.guide_video?.title || "شرح استخدام الموقع"} wide={!guideVertical} />
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ---------- عن المدربة ---------- */}
       <section className="section white">

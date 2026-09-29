@@ -73,6 +73,17 @@ export default async function AdminContent() {
         </ActionForm>
       </section>
 
+      <section className="card stack" data-testid="guide-video-settings">
+        <H id="guide-video">مقطع شرح استخدام الموقع بالكامل</H>
+        <p className="small muted">قسم كامل في الصفحة الرئيسية (بعد «كيف أشترك؟») يعرض المقطع بحجم كبير. يقبل رابط يوتيوب عادي أو Shorts، ويمكن أن يكون المقطع «غير مدرج» (Unlisted). الحالة الآن: <b>{youtubeId(s.guide_video?.url) ? "ظاهر" : "مخفي (لا يوجد رابط)"}</b>. لإخفائه امسحي الرابط واحفظي.</p>
+        <ActionForm action={saveSettingAction}>
+          <input type="hidden" name="key" value="guide_video" />
+          <div className="field"><label htmlFor="gv-url">رابط المقطع على يوتيوب</label><input id="gv-url" name="url" type="url" dir="ltr" defaultValue={s.guide_video?.url} placeholder="https://youtu.be/XXXXXXXXXXX" /></div>
+          <div className="field"><label htmlFor="gv-title">العنوان</label><input id="gv-title" name="title" type="text" defaultValue={s.guide_video?.title} maxLength={80} placeholder="شرح استخدام الموقع خطوة بخطوة" /></div>
+          <div className="field"><label htmlFor="gv-body">نص قصير تحت العنوان (اختياري)</label><textarea id="gv-body" name="body" defaultValue={s.guide_video?.body} maxLength={400} /></div>
+        </ActionForm>
+      </section>
+
       <section className="card stack">
         <H id="hero">الواجهة الرئيسية</H>
         <ActionForm action={saveSettingAction}>
