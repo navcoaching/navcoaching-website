@@ -28,7 +28,7 @@ export default async function Home() {
     <>
       {/* ---------- الهيرو ---------- */}
       <section className="hero">
-        <div className={`wrap hero-grid${heroMedia ? "" : " with-shot"}`}>
+        <div className={`wrap hero-grid${heroMedia ? " with-photo" : " with-shot"}`}>
           <div>
             <p className="eyebrow">{s.hero.eyebrow}</p>
             <h1 style={{ marginTop: 16 }}>

@@ -85,15 +85,17 @@ function FoodSearch({ orderNo, date, kind }: { orderNo: string; date: string; ki
   );
 }
 
-export type MealOption = { id: string; label: string; kind: MealKind; kcal: number };
+export type MealOption = { id: string; label: string; kind: MealKind; kcal: number; protein?: number; carbs?: number; fat?: number };
 
 /** إضافة أكلة لليوم: وجبة من جداولي (محسوبة) أو إدخال حر بالماكروز */
-export function FoodLogForm({ orderNo, date, meals }: { orderNo: string; date: string; meals: MealOption[] }) {
-  const [mode, setMode] = useState<"plan" | "search" | "free">(meals.length ? "plan" : "search");
+export function FoodLogForm({ orderNo, date, meals, library = [] }: { orderNo: string; date: string; meals: MealOption[]; library?: MealOption[] }) {
+  const [mode, setMode] = useState<"plan" | "library" | "search" | "free">(meals.length ? "plan" : library.length ? "library" : "search");
   const [kind, setKind] = useState<MealKind>("breakfast");
   const { state, onSubmit, pending } = useFormAction(logFoodAction);
-  const list = meals.filter((m) => m.kind === kind);
-  const others = meals.filter((m) => m.kind !== kind);
+  const pool = mode === "library" ? library : meals;
+  const list = pool.filter((m) => m.kind === kind);
+  const others = pool.filter((m) => m.kind !== kind);
+  const macros = (m: MealOption) => (m.protein != null ? ` · ب ${Math.round(m.protein)} ك ${Math.round(m.carbs ?? 0)} د ${Math.round(m.fat ?? 0)}` : "");
   return (
     <div className="form" data-testid="food-log-form">
       <fieldset className="field">
@@ -106,6 +108,7 @@ export function FoodLogForm({ orderNo, date, meals }: { orderNo: string; date: s
       </fieldset>
       <div className="choices" role="radiogroup" aria-label="طريقة الإضافة">
         {meals.length > 0 && <label className="choice"><input type="radio" name="mode" checked={mode === "plan"} onChange={() => setMode("plan")} /><span>من جداولي</span></label>}
+        {library.length > 0 && <label className="choice"><input type="radio" name="mode" checked={mode === "library"} onChange={() => setMode("library")} data-testid="mode-library" /><span>كل الوجبات</span></label>}
         <label className="choice"><input type="radio" name="mode" checked={mode === "search"} onChange={() => setMode("search")} /><span>ابحث بالغرام</span></label>
         <label className="choice"><input type="radio" name="mode" checked={mode === "free"} onChange={() => setMode("free")} /><span>أكلة أخرى</span></label>
       </div>
@@ -114,13 +117,13 @@ export function FoodLogForm({ orderNo, date, meals }: { orderNo: string; date: s
       <input type="hidden" name="order_no" value={orderNo} />
       <input type="hidden" name="date" value={date} />
       <input type="hidden" name="kind" value={kind} />
-      {mode === "plan" ? (
+      {mode === "plan" || mode === "library" ? (
         <div className="field">
-          <label htmlFor="fl-meal">اختر من وجبات جداولك</label>
-          <select id="fl-meal" name="meal" required defaultValue="">
+          <label htmlFor="fl-meal">{mode === "library" ? "اختر أي وجبة من وجبات قوالب التغذية" : "اختر من وجبات جداولك"}</label>
+          <select id="fl-meal" name="meal" key={mode} required defaultValue="">
             <option value="" disabled>اختر…</option>
-            {list.length > 0 && <optgroup label={MEAL_KINDS[kind]}>{list.map((m) => <option key={m.id} value={m.id}>{m.label} — {Math.round(m.kcal)} سعرة</option>)}</optgroup>}
-            {others.length > 0 && <optgroup label="وجبات أخرى">{others.map((m) => <option key={m.id} value={m.id}>{m.label} — {Math.round(m.kcal)} سعرة</option>)}</optgroup>}
+            {list.length > 0 && <optgroup label={MEAL_KINDS[kind]}>{list.map((m) => <option key={m.id} value={m.id}>{m.label} — {Math.round(m.kcal)} سعرة{macros(m)}</option>)}</optgroup>}
+            {others.length > 0 && <optgroup label="وجبات أخرى">{others.map((m) => <option key={m.id} value={m.id}>{m.label} — {Math.round(m.kcal)} سعرة{macros(m)}</option>)}</optgroup>}
           </select>
         </div>
       ) : (

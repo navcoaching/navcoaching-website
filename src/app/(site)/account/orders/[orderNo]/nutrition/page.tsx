@@ -29,13 +29,17 @@ export default async function NutritionPage({ params, searchParams }: { params: 
     const target = (await tx.query(`SELECT kcal, protein::float, carbs::float, fat::float, rules FROM nutrition_targets WHERE order_id = $1`, [o.id])).rows[0] as (Target & { rules: string | null }) | undefined;
     const plans = (await loadPlans(tx, { orderId: o.id })).filter((p) => !p.archived);
     const routine = await loadRoutine(tx, { orderId: o.id });
+    // كل وجبات قوالب التغذية (يقدر يضيف أي وجبة منها لأكله اليومي)
+    const library = tab === "today" && ["active", "delivered", "completed"].includes(o.status)
+      ? (await tx.query(`SELECT meal_id::text AS id, plan_name, kind, title, protein::float, carbs::float, fat::float FROM app.library_meals() ORDER BY title`)).rows as { id: string; plan_name: string; kind: MealKind; title: string; protein: number; carbs: number; fat: number }[]
+      : [];
     const logs = (await tx.query(
       `SELECT id::int, kind, name, protein::float, carbs::float, fat::float, meal_id FROM food_logs WHERE user_id = $1 AND order_id = $2 AND log_date = $3 ORDER BY created_at`,
       [user.id, o.id, date])).rows as Log[];
-    return { o, target, plans, routine, logs };
+    return { o, target, plans, routine, logs, library };
   });
   if (!data) notFound();
-  const { o, target, plans, routine, logs } = data;
+  const { o, target, plans, routine, logs, library } = data;
   // الجدول المعروض: المختار من القائمة، وإلا الأول
   const shownPlan = plans.find((p) => p.id === sp.plan) ?? plans[0];
   const base = `/account/orders/${o.order_no}/nutrition`;
@@ -43,6 +47,7 @@ export default async function NutritionPage({ params, searchParams }: { params: 
   const t: Target = target ?? { kcal: null, protein: null, carbs: null, fat: null };
   const total = sumMacros(logs);
   const mealOptions = plans.flatMap((p) => p.meals.map((m) => ({ id: m.id, kind: m.kind, label: `${p.name} — ${m.title}`, kcal: m.total.kcal })));
+  const libraryOptions = library.map((m) => ({ id: m.id, kind: m.kind, label: m.title, kcal: kcalOf(m), protein: m.protein, carbs: m.carbs, fat: m.fat }));
   const f1 = (v: number) => Math.round(v * 10) / 10;
 
   return (
@@ -71,7 +76,7 @@ export default async function NutritionPage({ params, searchParams }: { params: 
                   <MacroSummary target={t} total={total} />
                   <section className="card stack" style={{ ["--space" as string]: "10px" }}>
                     <h2 style={{ fontSize: 17 }}>أضف أكلة</h2>
-                    <FoodLogForm orderNo={o.order_no} date={date} meals={mealOptions} />
+                    <FoodLogForm orderNo={o.order_no} date={date} meals={mealOptions} library={libraryOptions} />
                   </section>
                 </div>
                 <section className="card stack" style={{ ["--space" as string]: "10px" }} data-testid="food-log-list">

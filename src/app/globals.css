@@ -262,7 +262,7 @@ bdi, .ltr { unicode-bidi: isolate; direction: ltr; }
   padding-block: clamp(48px, 9vw, 120px) clamp(56px, 10vw, 128px);
 }
 .hero-grid { display: grid; gap: clamp(28px, 5vw, 56px); align-items: center; grid-template-columns: 1.15fr 0.85fr; }
-@media (max-width: 900px) { .hero-grid, .hero-grid.with-shot { grid-template-columns: 1fr; } .hero-photo { max-width: 340px; } }
+@media (max-width: 900px) { .hero-grid, .hero-grid.with-shot, .hero-grid.with-photo { grid-template-columns: 1fr; } .hero-photo { max-width: 520px; } }
 .hero h1 { color: #fff; }
 .hero h1 .hl { color: var(--cyan); display: block; font-size: 0.62em; font-weight: 600; margin-top: 6px; }
 .hero .lead { color: var(--on-dark-muted); }
@@ -279,11 +279,10 @@ bdi, .ltr { unicode-bidi: isolate; direction: ltr; }
 .hero-shot { margin: 0; width: 100%; max-width: 680px; justify-self: center; display: grid; gap: 12px; }
 .hero-shot img { width: 100%; height: auto; border-radius: 14px; background: #fff; padding: 8px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4); }
 .hero-shot figcaption { color: var(--on-dark-muted); font-size: 14px; display: flex; gap: 8px; align-items: center; }
-.hero-photo {
-  position: relative; width: 100%; max-width: 480px; justify-self: center; aspect-ratio: 4 / 5;
-  clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%); overflow: hidden; border-radius: 8px;
-}
-.hero-photo img { width: 100%; height: 100%; object-fit: cover; }
+/* صورة الواجهة المرفوعة تظهر كاملة بدون قص (أي مقاس)، بزوايا مدوّرة وظل */
+.hero-photo { position: relative; width: 100%; max-width: 640px; justify-self: center; }
+.hero-photo img { display: block; width: 100%; height: auto; max-height: 560px; object-fit: contain; border-radius: 14px; }
+.hero-grid.with-photo { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
 .hero-slashes { position: absolute; inset-inline-end: -40px; bottom: -30px; width: 280px; height: 140px; background: var(--slash); opacity: 0.12; pointer-events: none; }
 
 .page-hero { background: var(--ink); color: #fff; padding-block: clamp(40px, 7vw, 80px); position: relative; overflow: hidden; }

@@ -552,8 +552,24 @@ describe("التغذية والمكملات", () => {
     assert.equal(rows.length, 2); assert.match(rows[0].name, /الجدول الغذائي 1/); assert.equal(rows[1].protein, 0.5);
     await assert.rejects(as(A, "SELECT app.log_food($1, current_date, 'lunch', NULL, '', 1, 1, 1)", [noA]), /اسم الأكلة/);
     await assert.rejects(as(A, "SELECT app.log_food($1, (now() AT TIME ZONE 'Asia/Riyadh')::date + 1, 'lunch', NULL, 'x', 1, 1, 1)", [noA]), /التاريخ/);
+    // وجبات القوالب مسموحة (مكتبة الوجبات)، لكن وجبات جداول متدرب آخر مرفوضة
     const tplMeal = (await owner.query("SELECT id FROM plan_meals WHERE plan_id = $1 LIMIT 1", [tpl])).rows[0].id;
-    await assert.rejects(as(A, "SELECT app.log_food($1, current_date, 'lunch', $2, NULL, 0, 0, 0)", [noA, tplMeal]), /غير موجودة في جداولك/);
+    const before = (await as(A, "SELECT count(*)::int n FROM food_logs")).rows[0].n;
+    await as(A, "SELECT app.log_food($1, current_date, 'lunch', $2, NULL, 0, 0, 0)", [noA, tplMeal]);
+    const tl = (await as(A, "SELECT name, protein::float, carbs::float, fat::float FROM food_logs ORDER BY id DESC LIMIT 1")).rows[0];
+    const sums = (await owner.query("SELECT sum(protein)::float p, sum(carbs)::float c, sum(fat)::float f FROM plan_items WHERE meal_id = $1", [tplMeal])).rows[0];
+    assert.deepEqual([tl.protein, tl.carbs, tl.fat], [Math.round(sums.p * 10) / 10, Math.round(sums.c * 10) / 10, Math.round(sums.f * 10) / 10]);
+    assert.match(tl.name, /الجدول الغذائي 1 — /);
+    assert.equal((await as(A, "SELECT count(*)::int n FROM food_logs")).rows[0].n, before + 1);
+    await as(A, "DELETE FROM food_logs WHERE id = (SELECT max(id) FROM food_logs)").catch(() => {});
+    await owner.query("DELETE FROM food_logs WHERE name LIKE 'الجدول الغذائي 1 — %' AND meal_id = $1", [tplMeal]);
+    const otherMeal = (await owner.query("SELECT m.id FROM plan_meals m JOIN nutrition_plans p ON p.id = m.plan_id WHERE p.order_id IS NOT NULL AND p.order_id <> (SELECT id FROM orders WHERE order_no = $1) LIMIT 1", [noA])).rows[0]?.id;
+    if (otherMeal) await assert.rejects(as(A, "SELECT app.log_food($1, current_date, 'lunch', $2, NULL, 0, 0, 0)", [noA, otherMeal]), /الوجبة غير موجودة/);
+    // مكتبة الوجبات: للمشتركين والمدربة فقط، بدون طريقة التحضير
+    assert.ok((await as(A, "SELECT count(*)::int n FROM app.library_meals()")).rows[0].n > 0);
+    assert.equal((await as(B, "SELECT count(*)::int n FROM app.library_meals()")).rows[0].n, 0);
+    assert.ok((await as(COACH, "SELECT count(*)::int n FROM app.library_meals()")).rows[0].n > 0);
+    assert.deepEqual((await as(A, "SELECT * FROM app.library_meals() LIMIT 1")).fields.map((f) => f.name), ["meal_id", "plan_name", "kind", "title", "protein", "carbs", "fat"]);
     await assert.rejects(as(B, "SELECT app.log_food($1, current_date, 'lunch', NULL, 'x', 1, 1, 1)", [noA]), /غير موجود/);
     assert.equal((await as(B, "SELECT count(*)::int n FROM food_logs")).rows[0].n, 0);
     assert.equal((await as(COACH, "SELECT count(*)::int n FROM food_logs")).rows[0].n, 2);

@@ -26,7 +26,7 @@ export default async function AdminMedia() {
         {rows.map((m) => (
           <div key={m.id} className="card stack">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/api/files/media/${m.id}`} alt={m.alt} loading="lazy" style={{ borderRadius: 12, aspectRatio: "4/3", objectFit: "cover", width: "100%" }} />
+            <img src={`/api/files/media/${m.id}`} alt={m.alt} loading="lazy" style={{ borderRadius: 12, aspectRatio: "4/3", objectFit: "contain", background: "var(--surface-2)", width: "100%" }} />
             <p className="small"><b>{m.alt}</b><br />{USAGE[m.usage]} · {fmtDate(m.created_at)}<br /><span className="muted">المصدر: {m.rights_note}</span></p>
             <span className={`status ${m.approved ? "ok" : "muted"}`}>{m.approved ? "معتمدة للنشر" : "غير منشورة"}</span>
             <div className="row">

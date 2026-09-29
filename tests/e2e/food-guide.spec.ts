@@ -89,3 +89,43 @@ test("دليل مصادر الأكل: المتدرب يصفّي بالنوع و�
   await login(other, `other-guide-${project}@e2e.test`);
   expect((await other.goto(base))?.status()).toBe(404);
 });
+
+test("كل الوجبات: المتدرب يضيف أي وجبة من قوالب التغذية لأكله اليومي (مو بس من جداوله)", async ({ browser }, info) => {
+  const project = info.project.name;
+  const email = `trainee-lib-${project}@e2e.test`;
+  const page = await newPage(browser, project + "-l");
+  await login(page, email);
+  const { rows: [u] } = await db.query(`SELECT id FROM "user" WHERE email = $1`, [email]);
+  const { rows: [p] } = await db.query(`SELECT p.id, p.name, o.id AS offer_id, o.label, o.price_halalas FROM products p JOIN product_offers o ON o.product_id = p.id WHERE p.slug = 'intensive' AND o.months = 3`);
+  const orderNo = (await db.query("SELECT app.new_order_no() AS no")).rows[0].no as string;
+  const { rows: [o] } = await db.query(
+    `INSERT INTO orders (order_no, user_id, product_id, offer_id, category, product_name, offer_label, months, list_price_halalas, amount_due_halalas, status,
+                         contact_name, contact_phone, idempotency_key, paid_at, sub_start_at, sub_end_at)
+     VALUES ($1,$2,$3,$4,'follow',$5,$6,3,$7,$7,'active','متدرب مكتبة','+966500000000',$1, now(), now(), now() + interval '80 days') RETURNING id`,
+    [orderNo, u.id, p.id, p.offer_id, p.name, p.label, p.price_halalas]);
+  await db.query(`INSERT INTO nutrition_targets (order_id, kcal, protein, carbs, fat) VALUES ($1, 2000, 150, 200, 60)`, [o.id]); // بدون جداول مخصصة له
+  const { rows: [tm] } = await db.query(
+    `SELECT m.id, m.title, round(sum(i.protein)) AS p FROM plan_meals m JOIN nutrition_plans pl ON pl.id = m.plan_id AND pl.order_id IS NULL AND NOT pl.archived
+       JOIN plan_items i ON i.meal_id = m.id GROUP BY m.id ORDER BY m.title LIMIT 1`);
+
+  await page.goto(`/account/orders/${orderNo}/nutrition`);
+  const form = page.getByTestId("food-log-form");
+  await expect(form.getByText("من جداولي")).toHaveCount(0); // ما عنده جداول
+  await form.getByTestId("mode-library").check();
+  // قد تتكرر الوجبة بين القوالب فتظهر مرة وحدة: نختار بالاسم
+  const value = await form.locator("#fl-meal option", { hasText: tm.title }).first().getAttribute("value");
+  await form.getByLabel("اختر أي وجبة من وجبات قوالب التغذية").selectOption(value!);
+  await form.getByRole("button", { name: "إضافة" }).click();
+  await expect(page.getByText("تمت الإضافة ✅")).toBeVisible();
+  const { rows: [log] } = await db.query(`SELECT name, protein::float FROM food_logs WHERE order_id = $1`, [o.id]);
+  expect(log.name).toContain(tm.title);
+  expect(log.protein).toBeGreaterThan(0);
+  await page.reload();
+  await expect(page.locator(".food-log-row", { hasText: tm.title })).toBeVisible();
+  await noHorizontalScroll(page);
+
+  // غير المشترك: ما عنده الخيار (الطلب غير مدفوع)
+  await db.query(`UPDATE orders SET status = 'awaiting_payment' WHERE id = $1`, [o.id]);
+  await page.goto(`/account/orders/${orderNo}/nutrition`);
+  await expect(page.getByTestId("mode-library")).toHaveCount(0);
+});
