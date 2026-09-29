@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { dbErrorMessage, withUser, type Tx } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, getFreshUser } from "@/lib/session";
 import { notifySafe } from "@/lib/mail";
 import { notifyTrainee, RESULT_LABEL, CHANNEL_LABEL, type ChannelResult } from "@/lib/notify";
 import { MAX_SETS, parseReps, parseRir, type PlanWeek } from "@/lib/training";
@@ -22,7 +22,7 @@ const GENERIC = "تعذّر الحفظ. حاولي مرة أخرى.";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 async function asCoach<T>(fn: (tx: Tx, userId: string) => Promise<T>): Promise<T> {
-  const u = await getCurrentUser();
+  const u = await getFreshUser();
   if (!u || u.role !== "coach") throw new Error("forbidden");
   return withUser(u.id, (tx) => fn(tx, u.id));
 }

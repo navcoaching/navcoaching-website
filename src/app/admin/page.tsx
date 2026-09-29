@@ -1,6 +1,6 @@
 import Link from "next/link";
 import StartTag from "@/components/admin/StartTag";
-import { withUser } from "@/lib/db";
+import { batch, litList, withUser } from "@/lib/db";
 import { requireCoach } from "@/lib/session";
 import { mailConfigured } from "@/lib/mail";
 import { riyals } from "@/lib/format";
@@ -12,6 +12,7 @@ import { loadReminders, loadWeekState } from "@/lib/reminders";
 import { daysBetween, fmtYMD, riyadhDate, subscriptionState } from "@/lib/schedule";
 import { loadRenewals } from "@/lib/renewal";
 import { loadAdherence } from "@/lib/program-data";
+import { prefetchOrders } from "@/lib/order-prefetch";
 import { pct } from "@/lib/adherence";
 import ActionForm from "@/components/admin/ActionForm";
 import { grantRewardAction } from "@/app/actions/admin";
@@ -35,16 +36,24 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
   const [data, s] = await Promise.all([
     withUser(coach.id, async (tx) => {
       // الاشتراكات التي مرّ يوم انتهائها تصبح «انتهى الاشتراك» (احتياط إن لم تعمل التذكيرات المجدولة)
-      await tx.query("SELECT app.expire_subscriptions()");
-      const counts = (await tx.query("SELECT status, count(*)::int n FROM orders WHERE NOT is_demo GROUP BY status")).rows as { status: string; n: number }[];
-      const newWeek = (await tx.query("SELECT count(*)::int n FROM orders WHERE NOT is_demo AND created_at > now() - interval '7 days'")).rows[0].n as number;
-      const pendingReviews = (await tx.query("SELECT count(*)::int n FROM reviews WHERE status = 'pending'")).rows[0].n as number;
-      const swaps = (await tx.query("SELECT count(DISTINCT user_id)::int n FROM exercise_swaps WHERE seen_at IS NULL")).rows[0].n as number;
-      const incomplete = (await tx.query(
+      // كل استعلام في رحلة شبكة مستقلة إلى قاعدة البيانات، فنجمع المستقل منها في رحلة واحدة (batch)
+      const [, countsR, newWeekR, pendingReviewsR, swapsR, incompleteR, demoR] = await batch(tx, [
+        "SELECT app.expire_subscriptions()",
+        "SELECT status, count(*)::int n FROM orders WHERE NOT is_demo GROUP BY status",
+        "SELECT count(*)::int n FROM orders WHERE NOT is_demo AND created_at > now() - interval '7 days'",
+        "SELECT count(*)::int n FROM reviews WHERE status = 'pending'",
+        "SELECT count(DISTINCT user_id)::int n FROM exercise_swaps WHERE seen_at IS NULL",
         `SELECT order_no, product_name, status, category, amount_due_halalas, contact_name, created_at, renewal_kind, preferred_start::text FROM orders
-          WHERE NOT is_demo AND archived_at IS NULL AND status = ANY($1::text[])
-          ORDER BY array_position($1::text[], status), preferred_start NULLS FIRST, created_at LIMIT 40`, [INCOMPLETE])).rows;
-      const demo = (await tx.query("SELECT (SELECT count(*) FROM products WHERE is_demo)::int + (SELECT count(*) FROM orders WHERE is_demo)::int AS n")).rows[0].n as number;
+          WHERE NOT is_demo AND archived_at IS NULL AND status = ANY(${litList(tx, INCOMPLETE, "text")})
+          ORDER BY array_position(${litList(tx, INCOMPLETE, "text")}, status), preferred_start NULLS FIRST, created_at LIMIT 40`,
+        "SELECT (SELECT count(*) FROM products WHERE is_demo)::int + (SELECT count(*) FROM orders WHERE is_demo)::int AS n",
+      ]);
+      const counts = countsR.rows as { status: string; n: number }[];
+      const newWeek = newWeekR.rows[0].n as number;
+      const pendingReviews = pendingReviewsR.rows[0].n as number;
+      const swaps = swapsR.rows[0].n as number;
+      const incomplete = incompleteR.rows;
+      const demo = demoR.rows[0].n as number;
 
       // تنبيهات داخلية للمدربة (لا تُرسل لأحد): قرب انتهاء الاشتراك، مراجعات قريبة أو فائتة، قياسات ناقصة
       const today = riyadhDate();
@@ -53,39 +62,47 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
       const alerts: Alert[] = [];
       const todos: Todo[] = [];
       const ending: Ending[] = [];
-      const { rows: subs } = await tx.query(
+      const [subsR, checkInsR, surveysR, swapTodoR, noProgramR, noMeasureR] = await batch(tx, [
         `SELECT id, order_no, user_id, contact_name, product_name, status, category, months, offer_id, list_price_halalas, renewal_kind,
                 sub_start_at, sub_end_at, review_weekday
            FROM orders WHERE status = 'active' AND category = 'follow' AND sub_start_at IS NOT NULL AND NOT is_demo AND archived_at IS NULL
-          ORDER BY sub_end_at`);
-      const renewals = await loadRenewals(tx, subs, (o) => daysBetween(today, riyadhDate(o.sub_end_at)));
-
-      // (ب) ما يحتاج تعديلاً منكِ
-      for (const x of (await tx.query(
+          ORDER BY sub_end_at`,
         `SELECT o.order_no, o.contact_name, count(*)::int n FROM check_ins c JOIN orders o ON o.id = c.order_id
-          WHERE c.replied_at IS NULL AND NOT o.is_demo GROUP BY 1, 2 ORDER BY min(c.created_at)`)).rows) {
-        todos.push({ order_no: x.order_no, name: x.contact_name, tone: "warn", href: `/admin/orders/${x.order_no}`,
-          text: x.n === 1 ? "مراجعة أسبوعية بدون رد" : `${x.n} مراجعات أسبوعية بدون رد` });
-      }
-      for (const x of (await tx.query(
+          WHERE c.replied_at IS NULL AND NOT o.is_demo GROUP BY 1, 2 ORDER BY min(c.created_at)`,
         `SELECT o.order_no, o.contact_name, s.wants_renewal FROM exit_surveys s JOIN orders o ON o.id = s.order_id
-          WHERE s.seen_at IS NULL AND NOT o.is_demo ORDER BY s.created_at`)).rows) {
-        todos.push({ order_no: x.order_no, name: x.contact_name, tone: x.wants_renewal ? "info" : "warn", href: `/admin/orders/${x.order_no}`,
-          text: `ردّ على استبيان نهاية البرنامج — ${x.wants_renewal ? "يرغب بالتجديد" : "لا يرغب بالتجديد"}` });
-      }
-      for (const x of (await tx.query(
+          WHERE s.seen_at IS NULL AND NOT o.is_demo ORDER BY s.created_at`,
         `SELECT o.order_no, o.contact_name, count(*)::int n FROM exercise_swaps s JOIN blocks b ON b.id = s.block_id JOIN orders o ON o.id = b.order_id
-          WHERE s.seen_at IS NULL AND NOT o.is_demo GROUP BY 1, 2 ORDER BY min(s.created_at)`)).rows) {
-        todos.push({ order_no: x.order_no, name: x.contact_name, tone: "info", href: `/admin/orders/${x.order_no}/program`,
-          text: x.n === 1 ? "بدّل تمريناً — راجعي التبديل" : `بدّل ${x.n} تمارين — راجعي التبديلات` });
-      }
-      for (const x of (await tx.query(
+          WHERE s.seen_at IS NULL AND NOT o.is_demo GROUP BY 1, 2 ORDER BY min(s.created_at)`,
         `SELECT o.order_no, o.contact_name, b.start_date::text AS start_date, b.weeks FROM orders o
            LEFT JOIN blocks b ON b.order_id = o.id AND b.status = 'active'
           WHERE o.status = 'active' AND o.category = 'follow' AND NOT o.is_demo AND o.archived_at IS NULL
             AND (o.sub_start_at IS NULL OR o.sub_start_at <= now() + interval '3 days')
             AND (b.id IS NULL OR b.start_date + b.weeks * 7 <= current_date + 3)
-          ORDER BY o.sub_start_at NULLS FIRST`)).rows) {
+          ORDER BY o.sub_start_at NULLS FIRST`,
+        `SELECT o.order_no, o.contact_name FROM orders o JOIN intakes i ON i.order_id = o.id
+          WHERE NOT o.is_demo AND o.archived_at IS NULL AND o.status NOT IN ('cancelled','completed')
+            AND (coalesce(i.health->>'weight','') = '' OR coalesce(i.health->>'height','') = '')
+          ORDER BY o.created_at DESC LIMIT 20`,
+      ]);
+      const subs = subsR.rows, noMeasure = noMeasureR.rows;
+      const renewals = await loadRenewals(tx, subs, (o) => daysBetween(today, riyadhDate(o.sub_end_at)));
+      // بيانات الالتزام والمراجعات لكل المشتركين دفعة واحدة (بدل 6 استعلامات لكل متدرب)
+      await prefetchOrders(tx, subs.map((o) => o.id as string));
+
+      // (ب) ما يحتاج تعديلاً منكِ
+      for (const x of checkInsR.rows) {
+        todos.push({ order_no: x.order_no, name: x.contact_name, tone: "warn", href: `/admin/orders/${x.order_no}`,
+          text: x.n === 1 ? "مراجعة أسبوعية بدون رد" : `${x.n} مراجعات أسبوعية بدون رد` });
+      }
+      for (const x of surveysR.rows) {
+        todos.push({ order_no: x.order_no, name: x.contact_name, tone: x.wants_renewal ? "info" : "warn", href: `/admin/orders/${x.order_no}`,
+          text: `ردّ على استبيان نهاية البرنامج — ${x.wants_renewal ? "يرغب بالتجديد" : "لا يرغب بالتجديد"}` });
+      }
+      for (const x of swapTodoR.rows) {
+        todos.push({ order_no: x.order_no, name: x.contact_name, tone: "info", href: `/admin/orders/${x.order_no}/program`,
+          text: x.n === 1 ? "بدّل تمريناً — راجعي التبديل" : `بدّل ${x.n} تمارين — راجعي التبديلات` });
+      }
+      for (const x of noProgramR.rows) {
         const endsOn = x.start_date ? fmtYMD(new Date(Date.parse(`${x.start_date}T00:00:00Z`) + (x.weeks * 7 - 1) * 86_400_000).toISOString().slice(0, 10)) : null;
         todos.push({ order_no: x.order_no, name: x.contact_name, tone: "bad", href: `/admin/orders/${x.order_no}/program`,
           text: endsOn ? `برنامج التمرين الحالي ينتهي ${endsOn} — جهّزي البرنامج التالي` : "لا يوجد برنامج تمرين مُسند" });
@@ -122,11 +139,6 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           alerts.push({ order_no: o.order_no, name: o.contact_name, tone: "bad", text: `لم تصل مراجعة الأسبوع ${missed.no} (انتهت نافذتها ${fmtYMD(missed.windowEnd)})` });
         }
       }
-      const { rows: noMeasure } = await tx.query(
-        `SELECT o.order_no, o.contact_name FROM orders o JOIN intakes i ON i.order_id = o.id
-          WHERE NOT o.is_demo AND o.archived_at IS NULL AND o.status NOT IN ('cancelled','completed')
-            AND (coalesce(i.health->>'weight','') = '' OR coalesce(i.health->>'height','') = '')
-          ORDER BY o.created_at DESC LIMIT 20`);
       // سعرات محسوبة تلقائياً تنتظر تأكيد الحسبة
       await autoFillTargets(tx);
       for (const a of await loadPendingAuto(tx)) {

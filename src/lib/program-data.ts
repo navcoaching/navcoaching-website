@@ -4,6 +4,7 @@ import { normalizePlan, type LiftLog, type PlanWeek } from "@/lib/training";
 import { computeAdherence, type Adherence, type TrainingWeek } from "@/lib/adherence";
 import { addDays, reviewWeeks, riyadhDate, weekStatuses } from "@/lib/schedule";
 import { DEFAULT_VOLUME_LIMIT } from "@/lib/volume";
+import { loadOrderProgress } from "@/lib/order-prefetch";
 
 /** أيام وتمارين قالب أو بلوك (للمدربة) */
 export async function loadProgramDays(tx: Tx, kind: "template" | "block", ownerId: string): Promise<(EditorDay & { items: (EditorDay["items"][number] & { plan: PlanWeek[]; primary_muscle: string | null; secondary_muscles: string[] | null })[] })[]> {
@@ -94,30 +95,23 @@ export type AdherenceOrder = {
 /** التزام المتدرب في اشتراك واحد (تمرين + مراجعة أسبوعية). null إذا لم يبدأ الاشتراك */
 export async function loadAdherence(tx: Tx, o: AdherenceOrder, reviewWindowDays: number, today = riyadhDate()): Promise<(Adherence & { rewarded: boolean }) | null> {
   if (!o.sub_start_at || !o.sub_end_at || o.months <= 0) return null;
-  const blocks = (await tx.query(`SELECT id, start_date::text AS start_date, weeks FROM blocks WHERE order_id = $1`, [o.id])).rows;
+  const d = await loadOrderProgress(tx, o.id, { training: true, reviews: o.review_weekday != null, reward: true });
   const training: TrainingWeek[] = [];
-  for (const b of blocks) {
-    const items = (await tx.query(
-      `SELECT i.id, i.plan FROM block_items i JOIN block_days d ON d.id = i.day_id WHERE d.block_id = $1`, [b.id])).rows
-      .map((i) => ({ id: i.id as string, plan: normalizePlan(i.plan, b.weeks) }));
-    const logs = (await tx.query(
-      `SELECT l.week_no, count(DISTINCT l.block_item_id)::int AS n FROM item_logs l JOIN block_items i ON i.id = l.block_item_id
-         JOIN block_days d ON d.id = i.day_id WHERE d.block_id = $1 GROUP BY l.week_no`, [b.id])).rows;
+  for (const b of d.blocks) {
+    const items = b.items.map((i) => ({ id: i.id, plan: normalizePlan(i.plan, b.weeks) }));
     for (let w = 1; w <= b.weeks; w++) {
       // المطلوب في الأسبوع = التمارين التي لها مجموعات فيه (وإلا كل التمارين)
       const planned = items.filter((i) => i.plan[w - 1]?.sets > 0).length || items.length;
-      const logged = logs.find((l) => l.week_no === w)?.n ?? 0;
+      const logged = b.logs.find((l) => l.week_no === w)?.n ?? 0;
       training.push({ start: addDays(b.start_date, 7 * (w - 1)), logged, total: planned });
     }
   }
   let reviews: { no: number; status: "done" | "current" | "missed" | "upcoming" }[] = [];
   if (o.review_weekday != null) {
     const weeks = reviewWeeks(o.sub_start_at, o.sub_end_at, o.review_weekday, reviewWindowDays);
-    const manual = new Set<number>((await tx.query("SELECT week_no FROM review_weeks WHERE order_id = $1", [o.id])).rows.map((x) => x.week_no));
-    const checkins = (await tx.query("SELECT created_at FROM check_ins WHERE order_id = $1", [o.id])).rows.map((x) => x.created_at);
-    reviews = weekStatuses(weeks, manual, checkins, today);
+    reviews = weekStatuses(weeks, d.manual, d.checkins, today);
   }
-  const rewarded = (await tx.query("SELECT EXISTS (SELECT 1 FROM loyalty_rewards WHERE order_id = $1) AS x", [o.id])).rows[0].x as boolean;
+  const rewarded = d.rewarded;
   return {
     ...computeAdherence({
       subStart: riyadhDate(o.sub_start_at), subEnd: riyadhDate(o.sub_end_at), months: o.months, today,

@@ -1,6 +1,7 @@
 import "server-only";
 import type { Tx } from "./db";
 import { fmtYMD, type Reminders } from "./schedule";
+import { prefetchOrders } from "./order-prefetch";
 import { loadWeekState } from "./reminders";
 import { loadPendingSuggestions } from "./calorie-data";
 import { notifySafe } from "./mail";
@@ -15,6 +16,7 @@ export async function buildDigest(tx: Tx, r: Reminders, today: string): Promise<
     `SELECT id, order_no, user_id, contact_name, product_name, sub_start_at, sub_end_at, review_weekday
        FROM orders WHERE status = 'active' AND category = 'follow' AND sub_start_at IS NOT NULL AND NOT is_demo AND archived_at IS NULL
       ORDER BY contact_name`);
+  await prefetchOrders(tx, orders.map((o) => o.id as string));
   for (const o of orders) {
     const weeks = await loadWeekState(tx, o, r, today);
     const w = weeks.find((x) => x.status !== "done" && x.windowStart <= today && x.windowEnd >= today);

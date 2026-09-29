@@ -1,5 +1,5 @@
 import "server-only";
-import { Pool, type PoolClient } from "pg";
+import { Pool, type PoolClient, type QueryResult } from "pg";
 
 /**
  * اتصال واحد بقاعدة البيانات بدور `nav_app` (ليس مالك الجداول، ولا يتجاوز RLS).
@@ -26,8 +26,8 @@ export async function withUser<T>(userId: string | null, fn: (tx: Tx) => Promise
   const client = await pool.connect();
   let broken = false;
   try {
-    await client.query("BEGIN");
-    await client.query("SELECT set_config('app.user_id', $1, true)", [userId ?? ""]);
+    // رحلة واحدة بدل اثنتين (كل رحلة إلى Neon تكلّف زمن الشبكة بالكامل). escapeLiteral يحمي من الحقن مثل المعاملات
+    await client.query(`BEGIN; SELECT set_config('app.user_id', ${client.escapeLiteral(userId)}, true)`);
     const result = await fn(client);
     await client.query("COMMIT");
     return result;
@@ -53,6 +53,20 @@ export async function withAnon<T>(fn: (tx: Tx) => Promise<T>): Promise<T> {
     client.release();
   }
 }
+
+/**
+ * يرسل عدة استعلامات مستقلة في رحلة شبكة واحدة ويرجع نتيجة كل واحد بترتيبه (نفس أنواع البيانات المعتادة).
+ * اتصال المعاملة الواحدة يعالج استعلاماً واحداً في كل رحلة، فكل استعلام منفصل يكلّف زمن الشبكة كاملاً إلى Neon.
+ * لا تدعم معاملات ($1): مرّر القيم عبر lit() وlitList()، ولا تضع قيمة من المستخدم في النص مباشرة.
+ */
+export async function batch(tx: Tx, sqls: string[]): Promise<QueryResult[]> {
+  const r = (await tx.query(sqls.map((q) => q.trim().replace(/;+$/, "")).join(";\n"))) as unknown as QueryResult | QueryResult[];
+  return Array.isArray(r) ? r : [r];
+}
+/** قيمة نصية آمنة داخل batch */
+export const lit = (tx: Tx, v: unknown) => tx.escapeLiteral(String(v));
+/** مصفوفة قيم آمنة داخل batch، مثل litList(tx, ids, "uuid") ← ARRAY['..','..']::uuid[] */
+export const litList = (tx: Tx, vs: unknown[], type: "uuid" | "text") => `ARRAY[${vs.map((v) => tx.escapeLiteral(String(v))).join(",")}]::${type}[]`;
 
 /** يحوّل أخطاء قاعدة البيانات المقصودة (RAISE ... USING ERRCODE='P0001') إلى رسالة عربية آمنة للعرض. */
 export function dbErrorMessage(err: unknown): string | null {

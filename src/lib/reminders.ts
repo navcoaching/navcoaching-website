@@ -3,6 +3,7 @@ import { autoFillTargets } from "./calorie-data";
 import { sendCoachDigest } from "./coach-digest";
 import { withUser, type Tx } from "./db";
 import { notifyTrainee, type ChannelResult } from "./notify";
+import { loadOrderProgress, prefetchOrders } from "./order-prefetch";
 import {
   DEFAULT_REMINDERS, type Reminders, daysBetween, fillTemplate, fmtYMD, reviewWeeks, riyadhDate, weekStatuses,
 } from "./schedule";
@@ -22,8 +23,7 @@ type ActiveOrder = {
 export async function loadWeekState(tx: Tx, o: ActiveOrder, r: Reminders, today = riyadhDate()) {
   if (o.review_weekday == null) return [];
   const weeks = reviewWeeks(o.sub_start_at, o.sub_end_at, o.review_weekday, r.review_window_days);
-  const manual = new Set<number>((await tx.query("SELECT week_no FROM review_weeks WHERE order_id = $1", [o.id])).rows.map((x) => x.week_no));
-  const checkins = (await tx.query("SELECT created_at FROM check_ins WHERE order_id = $1", [o.id])).rows.map((x) => x.created_at);
+  const { manual, checkins } = await loadOrderProgress(tx, o.id, { reviews: true });
   return weekStatuses(weeks, manual, checkins, today);
 }
 
@@ -55,6 +55,8 @@ export async function runReminders(now = new Date(), opts: { ignoreQuietHours?: 
     const { rows: orders } = await tx.query<ActiveOrder>(
       `SELECT id, order_no, user_id, contact_name, product_name, sub_start_at, sub_end_at, review_weekday
          FROM orders WHERE status = 'active' AND category = 'follow' AND sub_start_at IS NOT NULL AND NOT is_demo`);
+    // كل التذكيرات تقرأ بيانات المراجعات: نحمّلها دفعة واحدة بدل استعلامين لكل متدرب
+    await prefetchOrders(tx, orders.map((o) => o.id));
     const sent: { order: string; kind: string; results: ChannelResult[] }[] = [];
 
     for (const o of orders) {

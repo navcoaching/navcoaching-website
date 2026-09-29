@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { dbErrorMessage, withUser, type Tx } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
+import { getFreshUser } from "@/lib/session";
 import { cleanUpload, newKey, UploadError } from "@/lib/uploads";
 import { storage } from "@/lib/storage";
 import { CHANNEL_LABEL, RESULT_LABEL, notifyTrainee, type ChannelResult } from "@/lib/notify";
@@ -20,7 +20,7 @@ const GENERIC = "تعذّر الحفظ. حاولي مرة أخرى.";
 
 /** تحقق على الخادم أولاً، ثم قاعدة البيانات تتحقق مرة ثانية عبر app.is_coach()/require_coach(). */
 async function coach() {
-  const u = await getCurrentUser();
+  const u = await getFreshUser();
   if (!u || u.role !== "coach") throw new Error("forbidden");
   return u;
 }

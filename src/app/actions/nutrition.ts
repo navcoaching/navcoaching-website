@@ -5,7 +5,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { dbErrorMessage, withUser, type Tx } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, getFreshUser } from "@/lib/session";
 import { MEAL_KINDS } from "@/lib/nutrition";
 import type { ActionState } from "./client";
 
@@ -14,7 +14,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const ORDER_NO = /^[A-Z]{2,5}-\d{6}-[A-Z0-9]{3,8}$/;
 
 async function asCoach<T>(fn: (tx: Tx, userId: string) => Promise<T>): Promise<T> {
-  const u = await getCurrentUser();
+  const u = await getFreshUser();
   if (!u || u.role !== "coach") throw new Error("forbidden");
   return withUser(u.id, (tx) => fn(tx, u.id));
 }

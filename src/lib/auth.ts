@@ -40,6 +40,9 @@ export const auth = betterAuth({
   session: {
     expiresIn: 60 * 60 * 24 * 14,
     updateAge: 60 * 60 * 24,
+    // الجلسة تُقرأ من الكوكي الموقّع لمدة 5 دقائق بدل استعلامين لقاعدة البيانات في كل صفحة.
+    // الثمن: تغيير الدور (مدربة/متدرب) أو إلغاء الجلسة من قاعدة البيانات يتأخر حتى 5 دقائق.
+    cookieCache: { enabled: true, maxAge: 60 * 5 },
   },
   rateLimit: {
     enabled: true,

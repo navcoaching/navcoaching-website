@@ -1,7 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { dbErrorMessage, withUser, type Tx } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
+import { getFreshUser } from "@/lib/session";
 import { cleanUpload, newKey, UploadError } from "@/lib/uploads";
 import { storage } from "@/lib/storage";
 import type { ActionState } from "./client";
@@ -18,7 +18,7 @@ const fail = (err: unknown): ActionState => {
 const bad = (msg: string) => new Error(`user:${msg}`);
 
 async function asCoach<T>(fn: (tx: Tx, userId: string) => Promise<T>): Promise<T> {
-  const u = await getCurrentUser();
+  const u = await getFreshUser();
   if (!u || u.role !== "coach") throw bad("للمدربة فقط.");
   return withUser(u.id, (tx) => fn(tx, u.id));
 }

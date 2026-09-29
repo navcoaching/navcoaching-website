@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { withUser } from "@/lib/db";
+import { batch, litList, withUser } from "@/lib/db";
 import { getSettings } from "@/lib/data";
 import { DEFAULT_REMINDERS, daysBetween, fmtYMD, riyadhDate, subscriptionState } from "@/lib/schedule";
 import { waLink } from "@/lib/format";
 import { loadRenewals, type RenewalInfo } from "@/lib/renewal";
 import { loadAdherence } from "@/lib/program-data";
+import { prefetchOrders } from "@/lib/order-prefetch";
 import AdherenceBar from "./AdherenceBar";
 import ProgramInstructions from "./ProgramInstructions";
 import ProgramTodayView, { loadProgramToday, type ProgramToday } from "./ProgramToday";
@@ -80,17 +81,23 @@ export default async function MyProgram({ userId, orders }: { userId: string; or
   if (!current.length) return null;
   const [info, s] = await Promise.all([
     withUser(userId, async (tx) => {
-      const { rows: [{ r }] } = await tx.query("SELECT app.review_schedule() AS r");
       const ids = current.map((o) => o.id);
-      const blocks = new Set((await tx.query(`SELECT DISTINCT order_id FROM blocks WHERE order_id = ANY($1::uuid[])`, [ids])).rows.map((x) => x.order_id));
-      const nutrition = new Set((await tx.query(
-        `SELECT order_id FROM nutrition_targets WHERE order_id = ANY($1::uuid[])
-         UNION SELECT order_id FROM nutrition_plans WHERE order_id = ANY($1::uuid[]) AND NOT archived
-         UNION SELECT order_id FROM supplement_routines WHERE order_id = ANY($1::uuid[]) AND NOT archived`, [ids])).rows.map((x) => x.order_id));
+      const idList = litList(tx, ids, "uuid");
+      const [rR, blocksR, nutritionR] = await batch(tx, [
+        "SELECT app.review_schedule() AS r",
+        `SELECT DISTINCT order_id FROM blocks WHERE order_id = ANY(${idList})`,
+        `SELECT order_id FROM nutrition_targets WHERE order_id = ANY(${idList})
+         UNION SELECT order_id FROM nutrition_plans WHERE order_id = ANY(${idList}) AND NOT archived
+         UNION SELECT order_id FROM supplement_routines WHERE order_id = ANY(${idList}) AND NOT archived`,
+      ]);
+      const r = rR.rows[0].r;
+      const blocks = new Set(blocksR.rows.map((x) => x.order_id));
+      const nutrition = new Set(nutritionR.rows.map((x) => x.order_id));
       const soon = Math.max(0, ...((r?.sub_expiry_days as number[] | undefined) ?? DEFAULT_REMINDERS.sub_expiry_days));
       const today = riyadhDate();
       const renewals = await loadRenewals(tx, current, (o) => (o.sub_end_at ? daysBetween(today, riyadhDate(o.sub_end_at)) : null));
       const adherence = new Map<string, Awaited<ReturnType<typeof loadAdherence>>>();
+      await prefetchOrders(tx, current.filter((o) => o.category === "follow").map((o) => o.id));
       for (const o of current) if (o.category === "follow") {
         adherence.set(o.id, await loadAdherence(tx, { ...o, sub_start_at: o.sub_start_at ?? null, sub_end_at: o.sub_end_at ?? null },
           Number(r?.review_window_days ?? DEFAULT_REMINDERS.review_window_days), today));

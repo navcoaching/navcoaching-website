@@ -30,7 +30,17 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
   // RLS تمنع قراءة طلب شخص آخر؛ نتحقق من الملكية هنا أيضاً (المدربة تستخدم لوحة الإدارة)
   if (!detail || detail.order.user_id !== user.id) notFound();
   const { order: o, events, proofs, deliverables, checkins, review, intake } = detail;
-  const follow = await getMyFollowUp(user.id, o);
+  const entitled = ENTITLED.includes(o.status);
+  // أربع قراءات مستقلة بالتوازي (كل واحدة باتصالها) بدل التتابع: كل رحلة لقاعدة البيانات تكلّف زمن الشبكة كاملاً
+  const [follow, hasNutrition, endOfProgram, block] = await Promise.all([
+    getMyFollowUp(user.id, o),
+    entitled ? withUser(user.id, async (tx) => (await tx.query(
+      `SELECT EXISTS (SELECT 1 FROM nutrition_targets WHERE order_id = $1) OR EXISTS (SELECT 1 FROM nutrition_plans WHERE order_id = $1 AND NOT archived)
+              OR EXISTS (SELECT 1 FROM supplement_routines WHERE order_id = $1 AND NOT archived) AS x`, [o.id])).rows[0].x as boolean) : false,
+    entitled ? withUser(user.id, (tx) => loadEndOfProgram(tx, [o])).then((m) => m.get(o.id) ?? null) : null,
+    entitled ? withUser(user.id, async (tx) => (await tx.query(
+      `SELECT name, status FROM blocks WHERE order_id = $1 ORDER BY (status = 'active') DESC, created_at DESC LIMIT 1`, [o.id])).rows[0] as { name: string; status: string } | undefined) : undefined,
+  ]);
   const today = riyadhDate();
   const messages = events.filter(isMessage).reverse(); // الأحدث أولاً
   const cancelNote = o.status === "cancelled" ? [...events].reverse().find((e) => e.to_status === "cancelled" && e.from_status !== "cancelled")?.note ?? null : null;
@@ -43,15 +53,8 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
   const current = o.status === "cancelled" ? -1 : stepIndex(o.status, o.category, o.student_discount_requested);
   const whenOf = (key: string) => events.find((e) => (key === "received" ? e.from_status === null : e.to_status === key))?.created_at;
   const lastRejected = proofs.find((p) => p.review_status === "rejected");
-  const entitled = ENTITLED.includes(o.status);
   const waHelp = waLink(s.contact.whatsapp, `مرحباً، عندي استفسار عن طلبي رقم ${o.order_no}`);
   const amount = o.amount_due_halalas;
-  const hasNutrition = entitled ? await withUser(user.id, async (tx) => (await tx.query(
-    `SELECT EXISTS (SELECT 1 FROM nutrition_targets WHERE order_id = $1) OR EXISTS (SELECT 1 FROM nutrition_plans WHERE order_id = $1 AND NOT archived)
-            OR EXISTS (SELECT 1 FROM supplement_routines WHERE order_id = $1 AND NOT archived) AS x`, [o.id])).rows[0].x as boolean) : false;
-  const endOfProgram = entitled ? (await withUser(user.id, (tx) => loadEndOfProgram(tx, [o]))).get(o.id) ?? null : null;
-  const block = entitled ? await withUser(user.id, async (tx) => (await tx.query(
-    `SELECT name, status FROM blocks WHERE order_id = $1 ORDER BY (status = 'active') DESC, created_at DESC LIMIT 1`, [o.id])).rows[0] as { name: string; status: string } | undefined) : undefined;
 
   return (
     <section className="section tight">

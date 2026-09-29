@@ -32,21 +32,23 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
   const detail = await getOrderDetail(coach.id, orderNo);
   if (!detail) notFound();
   const { order: o, events, proofs, deliverables, checkins, intake, review } = detail;
-  const currentName = await withUser(coach.id, async (tx) =>
-    o.product_id ? (await tx.query("SELECT name FROM products WHERE id = $1", [o.product_id])).rows[0]?.name ?? null : null);
   const answers = (intake?.answers ?? {}) as Record<string, unknown>;
   const health = (intake?.health ?? {}) as Record<string, unknown>;
   const missingMeasures = intake && (health.weight == null || health.weight === "" || health.height == null || health.height === "");
-  const actorNames = await withUser(coach.id, async (tx) =>
+  // خمس قراءات مستقلة: تعمل بالتوازي (كل واحدة باتصالها) بدل التتابع، لأن كل رحلة إلى Neon تكلّف زمن الشبكة كاملاً
+  const [currentName, actorNames, program, retention, sub] = await Promise.all([
+    withUser(coach.id, async (tx) =>
+      o.product_id ? (await tx.query("SELECT name FROM products WHERE id = $1", [o.product_id])).rows[0]?.name ?? null : null),
+    withUser(coach.id, async (tx) =>
     Object.fromEntries((await tx.query(
       `SELECT DISTINCT e.actor_id, u.name FROM order_events e JOIN "user" u ON u.id = e.actor_id JOIN orders o ON o.id = e.order_id WHERE o.order_no = $1`,
-      [orderNo])).rows.map((r) => [r.actor_id, r.name])));
-  const program = await withUser(coach.id, async (tx) => (await tx.query(
+      [orderNo])).rows.map((r) => [r.actor_id, r.name]))),
+    withUser(coach.id, async (tx) => (await tx.query(
     `SELECT (SELECT name FROM blocks WHERE order_id = $1 AND status = 'active') AS active,
             (SELECT count(*)::int FROM blocks WHERE order_id = $1) AS blocks,
             (SELECT count(*)::int FROM exercise_swaps s JOIN blocks b ON b.id = s.block_id WHERE b.order_id = $1 AND s.seen_at IS NULL) AS unseen`,
-    [o.id])).rows[0] as { active: string | null; blocks: number; unseen: number });
-  const retention = o.category === "follow" ? await withUser(coach.id, async (tx) => {
+    [o.id])).rows[0] as { active: string | null; blocks: number; unseen: number }),
+    o.category === "follow" ? withUser(coach.id, async (tx) => {
     const r = await loadReminders(tx);
     const adherence = ["active", "completed"].includes(o.status) ? await loadAdherence(tx, o, r.review_window_days) : null;
     const links = (await tx.query(
@@ -57,8 +59,9 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
       `SELECT wants_renewal, reason, experience, created_at, seen_at FROM exit_surveys WHERE order_id = $1`, [o.id])).rows[0] as
       { wants_renewal: boolean; reason: string; experience: string; created_at: string; seen_at: string | null } | undefined;
     return { adherence, links, survey };
-  }) : null;
-  const sub = await loadSubscription(coach.id, o);
+  }) : Promise.resolve(null),
+    loadSubscription(coach.id, o),
+  ]);
   const next = coachNextSteps(o.status, o.category);
   const phoneDigits = o.contact_phone.replace(/\D/g, "");
 

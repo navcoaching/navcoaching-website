@@ -1,7 +1,7 @@
 "use server";
 import { z } from "zod";
 import { withUser } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, getFreshUser } from "@/lib/session";
 import { allow } from "@/lib/rate";
 import { pushConfigured, sendPush } from "@/lib/push";
 
@@ -49,7 +49,7 @@ export async function sendTestPushAction(): Promise<{ ok: boolean; error?: strin
 
 /** للمدربة: مفتاحا VAPID جديدان تضعهما في Netlify. لا يُحفظان في الموقع ولا يُسجَّلان */
 export async function generateVapidKeysAction(): Promise<{ ok: boolean; publicKey?: string; privateKey?: string; error?: string }> {
-  const user = await getCurrentUser();
+  const user = await getFreshUser();
   if (!user || user.role !== "coach") return { ok: false, error: "للمدربة فقط." };
   const { generateVapidKeys } = await import("@/lib/push");
   const k = generateVapidKeys();

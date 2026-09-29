@@ -4,7 +4,7 @@ import { loadRenewals } from "./renewal";
 import { loadAdherence } from "./program-data";
 import { loadWeekState } from "./reminders";
 import { cache } from "react";
-import { withAnon, withUser } from "./db";
+import { batch, lit, withAnon, withUser } from "./db";
 
 export type Offer = { id: string; sku: string; label: string; months: number; price_halalas: number; currency: string; active: boolean };
 export type Product = {
@@ -123,14 +123,16 @@ export async function getOrderDetail(userId: string, orderNo: string) {
          FROM orders o LEFT JOIN products p ON p.id = o.product_id JOIN "user" u ON u.id = o.user_id
         WHERE o.order_no = $1`, [orderNo]);
     if (!order) return null;
-    // اتصال المعاملة الواحدة لا يدعم استعلامات متوازية؛ ننفذها بالتتابع
-    const q = (sql: string) => tx.query(sql, [order.id]);
-    const events = await q("SELECT * FROM order_events WHERE order_id = $1 ORDER BY id");
-    const proofs = await q("SELECT id, mime, size_bytes, review_status, review_note, created_at, reviewed_at FROM payment_proofs WHERE order_id = $1 ORDER BY created_at DESC");
-    const deliverables = await q("SELECT id, title, kind, url, mime, size_bytes, created_at FROM deliverables WHERE order_id = $1 ORDER BY created_at");
-    const checkins = await q("SELECT id, answers, coach_reply, coach_video_url, replied_at, created_at FROM check_ins WHERE order_id = $1 ORDER BY created_at DESC");
-    const review = await q("SELECT id, rating, body, display_mode, display_name, consent_publish, status, coach_reply, moderation_reason, created_at FROM reviews WHERE order_id = $1");
-    const intake = await q("SELECT answers, health, health_flag, media_consent, consent_terms_at, created_at FROM intakes WHERE order_id = $1");
+    // ستة استعلامات مستقلة في رحلة واحدة (المعاملة الواحدة لا تنفّذ استعلامات متوازية)
+    const id = lit(tx, order.id);
+    const [events, proofs, deliverables, checkins, review, intake] = await batch(tx, [
+      `SELECT * FROM order_events WHERE order_id = ${id} ORDER BY id`,
+      `SELECT id, mime, size_bytes, review_status, review_note, created_at, reviewed_at FROM payment_proofs WHERE order_id = ${id} ORDER BY created_at DESC`,
+      `SELECT id, title, kind, url, mime, size_bytes, created_at FROM deliverables WHERE order_id = ${id} ORDER BY created_at`,
+      `SELECT id, answers, coach_reply, coach_video_url, replied_at, created_at FROM check_ins WHERE order_id = ${id} ORDER BY created_at DESC`,
+      `SELECT id, rating, body, display_mode, display_name, consent_publish, status, coach_reply, moderation_reason, created_at FROM reviews WHERE order_id = ${id}`,
+      `SELECT answers, health, health_flag, media_consent, consent_terms_at, created_at FROM intakes WHERE order_id = ${id}`,
+    ]);
     return {
       order: order as OrderRow & { user_id: string; client_note: string | null },
       events: events.rows as { id: number; actor_id: string | null; from_status: string | null; to_status: string; actor_role: string; note: string | null; created_at: string; client_visible: boolean }[],
