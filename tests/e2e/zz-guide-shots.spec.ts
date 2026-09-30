@@ -131,14 +131,18 @@ test("صور الدليل المصوّر", async ({ browser }) => {
   ]);
 
   await page.goto(`${base}/training?week=2&day=${days[0].id}`);
-  const card = page.getByTestId("exercise-card").first();
-  await capture(page, "training", page.getByRole("navigation", { name: "الأسبوع" }), card.locator(".target"), [
-    page.getByRole("navigation", { name: "الأسبوع" }), page.getByRole("navigation", { name: "اليوم" }), card.locator(".target"), card.getByRole("button", { name: "▶ فيديو" }),
+  await capture(page, "training", page.getByRole("navigation", { name: "اليوم" }), page.getByTestId("exercise-list"), [
+    page.getByRole("navigation", { name: "اليوم" }), page.getByTestId("exercise-list"),
   ]);
+  await page.getByTestId("exercise-card").first().click();
+  await page.waitForURL(/\/training\/[0-9a-f-]{36}/);
+  const card = page.getByTestId("exercise-log");
   await capture(page, "log", card, card, [
     card.locator(".set-rows"), card.locator(".rir-field"), card.getByTestId("one-rm"),
     card.getByRole("button", { name: "تحديث" }), card.locator(".swap-form"),
   ]);
+  await page.goBack();
+  await page.getByText("قيّم تمرين اليوم").click();
   await capture(page, "rate", page.getByTestId("rate-day"), page.getByTestId("rate-day"), [page.getByTestId("rate-day")]);
 
   await page.goto(`${base}/progress`);

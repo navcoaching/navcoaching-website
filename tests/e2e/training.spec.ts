@@ -163,16 +163,23 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await trainee.goto(`/account/orders/${orderNo}`);
   await trainee.getByTestId("training-link").click();
   await trainee.waitForURL(/\/training/);
-  const card = trainee.getByTestId("exercise-card").first();
-  // فيديو التمرين يشتغل في نافذة منبثقة داخل الموقع، والبطاقة ما تنطوي
-  await card.getByTestId("exercise-video").click();
+  // القائمة مختصرة: اسم التمرين والمستهدف فقط، والتفاصيل في صفحة التمرين
+  const row = trainee.getByTestId("exercise-card").first();
+  await expect(row).toContainText("Back Squat");
+  await expect(row).toContainText("3×10 · RIR 2");
+  await expect(trainee.getByTestId("exercise-list").getByLabel(/وزن الجولة/)).toHaveCount(0);
+  await expect(trainee.getByTestId("week-label")).toContainText("الأسبوع 1 من");
+  await noHorizontalScroll(trainee);
+  await row.click();
+  await trainee.waitForURL(/\/training\/[0-9a-f-]{36}/);
+  const card = trainee.getByTestId("exercise-log");
+  await expect(trainee.getByTestId("exercise-target")).toContainText("3×10 · RIR 2");
+  // فيديو التمرين يشتغل في نافذة منبثقة داخل الموقع
+  await trainee.getByTestId("exercise-video").click();
   await expect(trainee.getByTestId("video-iframe")).toHaveAttribute("src", /youtube-nocookie\.com\/embed\/[A-Za-z0-9_-]{11}\?autoplay=1/);
   await noHorizontalScroll(trainee);
   await trainee.keyboard.press("Escape");
   await expect(trainee.getByTestId("video-iframe")).toHaveCount(0);
-  await expect(card).toHaveAttribute("open", "");
-  await expect(card).toContainText("Back Squat");
-  await expect(card).toContainText("3×10 · RIR 2");
   // وزن لكل جولة: الجولة الثانية فارغة = نفس وزن الأولى، والتكرارات الفارغة = المستهدف
   await card.getByLabel("وزن الجولة 1").fill("60");
   // الجولات اللي بعدها تتعبّى تلقائياً بنفس الوزن
@@ -192,14 +199,18 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await card.getByLabel("تكرارات الجولة 5").fill("12");
   await card.getByRole("button", { name: "حفظ", exact: true }).click();
   await expect(card.getByText("تم الحفظ ✅")).toBeVisible();
-  await expect(card.getByLabel("مسجّل")).toBeVisible();
+  await expect(trainee.getByLabel("مسجّل")).toBeVisible();
   const log = (await db.query(
     `SELECT l.weight::float, l.weights::float[], l.reps, l.week_no FROM item_logs l JOIN block_items i ON i.id = l.block_item_id JOIN block_days d ON d.id = i.day_id
        JOIN blocks b ON b.id = d.block_id JOIN orders o ON o.id = b.order_id WHERE o.order_no = $1`, [orderNo])).rows;
   expect(log).toEqual([{ weight: 65, weights: [60, 60, 65, 65, 50], reps: [10, 10, 8, 8, 12], week_no: 1 }]);
   await trainee.reload();
-  await expect(trainee.getByTestId("exercise-card").first().getByLabel("وزن الجولة 3")).toHaveValue("65");
-  await expect(trainee.getByTestId("exercise-card").first()).toContainText("أعلى وزن تقديري (1RM): 82.5 كغ");
+  await expect(card.getByLabel("وزن الجولة 3")).toHaveValue("65");
+  await expect(card).toContainText("أعلى وزن تقديري (1RM): 82.5 كغ");
+  // القائمة: التمرين مسجّل، وتقييم اليوم داخل «قيّم تمرين اليوم»
+  await trainee.goto(`/account/orders/${orderNo}/training`);
+  await expect(trainee.getByTestId("exercise-card").first().getByLabel("مسجّل")).toBeVisible();
+  await trainee.getByText("قيّم تمرين اليوم").click();
   await trainee.getByTestId("rate-day").getByRole("radio", { name: "4", exact: true }).check();
   await trainee.getByRole("button", { name: "حفظ التقييم" }).click();
   await expect(trainee.getByText("تم حفظ تقييم اليوم")).toBeVisible();
@@ -209,15 +220,14 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await trainee.goto(`/account/orders/${orderNo}/training`);
 
   // ---------- المتدرب: تبديل التمرين من القائمة ----------
-  // التمرين المسجّل ينطوي بعد إعادة التحميل ← نفتحه بضغطة
-  await expect(card).not.toHaveAttribute("open", "");
-  await card.locator("summary h3").click();
-  const swap = card.locator("[data-testid^='swap-']");
+  await trainee.getByTestId("exercise-card").first().click();
+  await trainee.waitForURL(/\/training\/[0-9a-f-]{36}/);
+  const swap = trainee.locator("[data-testid^='swap-']");
   await swap.getByRole("combobox").selectOption({ label: "Box Squat" });
   trainee.once("dialog", (d) => d.accept());
   await swap.getByRole("button", { name: "تبديل" }).click();
   await expect(trainee.getByText("تم التبديل إلى Box Squat")).toBeVisible();
-  await trainee.reload();
+  await trainee.goto(`/account/orders/${orderNo}/training`);
   await expect(trainee.getByTestId("exercise-card").first()).toContainText("Box Squat");
 
   // ---------- المدربة: التنبيه عند اسم المتدرب ----------

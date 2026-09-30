@@ -312,15 +312,3 @@ function ImportFlow({ orderNo, day, week, again }: { orderNo: string; day: strin
       </div>
   );
 }
-
-/** بطاقة تمرين قابلة للطي: الحالة الأولى من الخادم (أول تمرين غير مسجّل مفتوح)، وبعدها يتحكم فيها المتدرب
- *  (ما تنطوي لحالها بعد الحفظ، فتبقى رسالة «تم الحفظ» ظاهرة) */
-export function ExerciseDetails({ defaultOpen, children, summary }: { defaultOpen: boolean; children: React.ReactNode; summary: React.ReactNode }) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <details className="card exercise-card" open={open} onToggle={(e) => setOpen(e.currentTarget.open)} data-testid="exercise-card">
-      <summary className="exercise-summary">{summary}</summary>
-      {children}
-    </details>
-  );
-}

@@ -1031,3 +1031,17 @@ dialog.video-modal .btn-ghost, dialog.video-modal .btn-ghost:hover { --fg: var(-
   .hero-cta { display: grid; grid-template-columns: 1fr; gap: 10px; }
   .hero-cta .btn { justify-content: center; width: 100%; }
 }
+
+/* ---------- قائمة تمارين اليوم (مختصرة) وصفحة التمرين ---------- */
+.day-pills { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-bottom: 10px; padding-bottom: 2px; }
+.day-pills::-webkit-scrollbar { display: none; }
+.day-pills a { flex: none; white-space: nowrap; }
+.ex-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.ex-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; min-height: 64px; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); text-decoration: none; color: inherit; }
+.ex-row:hover { border-color: var(--cyan-ink); }
+.ex-no { flex: none; inline-size: 30px; block-size: 30px; border-radius: 50%; background: var(--cyan-soft); color: var(--cyan-ink); display: grid; place-items: center; font-weight: 700; }
+.ex-main { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.ex-main b { overflow-wrap: anywhere; }
+.ex-go, .ex-done { flex: none; color: var(--muted); font-size: 20px; }
+.more-tools > summary { cursor: pointer; min-height: 40px; display: flex; align-items: center; font-weight: 700; }
+.ex-pager .btn { white-space: normal; text-align: center; }

@@ -57,6 +57,8 @@ test("تعبئة التسجيل من صورة: قراءة، ربط يدوي، ح
   const image = await sharp({ create: { width: 40, height: 60, channels: 3, background: "#ffffff" } }).png().toBuffer();
 
   await page.goto(`/account/orders/${orderNo}/training?week=1`);
+  // الأدوات الإضافية داخل «المزيد» لتخفيف زحمة الصفحة
+  await page.getByTestId("more-tools").locator("summary").first().click();
   const box = page.getByTestId("import-image");
   await box.locator("summary").click();
   // صورة كبيرة (أكبر من حد 5MB): تتصغّر في الجهاز قبل الرفع بدل ما يفشل الطلب
@@ -90,6 +92,7 @@ test("تعبئة التسجيل من صورة: قراءة، ربط يدوي، ح
 
   await page.reload();
   await expect(page.getByTestId("exercise-card").filter({ has: page.getByLabel("مسجّل") })).toHaveCount(3);
+  await page.getByTestId("more-tools").locator("summary").first().click();
   const logs = (await db.query(
     `SELECT e.name, l.weight::float AS w, l.weights::float[] AS ws, l.reps FROM item_logs l JOIN block_items i ON i.id = l.block_item_id JOIN exercises e ON e.id = i.exercise_id
       WHERE i.day_id = $1 AND l.week_no = 1 ORDER BY i.position`, [d.id])).rows;
