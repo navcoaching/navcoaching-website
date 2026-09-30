@@ -2,6 +2,7 @@ import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import GamersBanner from "@/components/GamersBanner";
 import Shots from "@/components/Shots";
+import { shotSrc } from "@/lib/shot-src";
 import YouTubeShort from "@/components/YouTubeShort";
 import RichText from "@/components/RichText";
 import ReviewCard from "@/components/ReviewCard";
@@ -59,7 +60,7 @@ export default async function Home() {
             heroShot && (
               <figure className="hero-shot">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={heroShot.src} alt={heroShot.alt} width={heroShot.w} height={heroShot.h} fetchPriority="high" />
+                <img src={shotSrc(heroShot.src)} alt={heroShot.alt} width={heroShot.w} height={heroShot.h} fetchPriority="high" />
                 <figcaption><span className="tag soft">نموذج توضيحي</span> {heroShot.title}</figcaption>
               </figure>
             )

@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import type { Settings } from "@/lib/data";
+import { shotSrc } from "@/lib/shot-src";
 
 export default function Shots({ shots }: { shots: Settings["program_shots"] }) {
   const dlg = useRef<HTMLDialogElement>(null);
@@ -13,7 +14,7 @@ export default function Shots({ shots }: { shots: Settings["program_shots"] }) {
           <figure className="shot reveal" key={sh.src} style={{ ["--d" as string]: `${i * 80}ms` }}>
             <button type="button" onClick={() => { setCur(i); dlg.current?.showModal(); }} aria-label={`تكبير: ${sh.title}`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={sh.src} alt={sh.alt} width={sh.w} height={sh.h} loading="lazy" decoding="async" />
+              <img src={shotSrc(sh.src)} alt={sh.alt} width={sh.w} height={sh.h} loading="eager" decoding="async" />
               <span className="tag soft sample">نموذج توضيحي</span>
             </button>
             <figcaption><b>{sh.title}</b><span>{sh.caption}</span></figcaption>
@@ -25,7 +26,7 @@ export default function Shots({ shots }: { shots: Settings["program_shots"] }) {
           <>
             <div className="lb-bar"><span>{s.title} — نموذج توضيحي</span><button className="btn btn-sm btn-cyan" onClick={() => dlg.current?.close()}>إغلاق</button></div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={s.src} alt={s.alt} />
+            <img src={shotSrc(s.src)} alt={s.alt} />
           </>
         )}
       </dialog>
