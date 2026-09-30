@@ -7,6 +7,7 @@ import {
   type ImportPreview,
 } from "@/app/actions/training";
 import { MAX_SETS, bestOneRm } from "@/lib/training";
+import FilePicker from "@/components/FilePicker";
 
 type Log = { weight: number; weights: number[] | null; reps: number[]; rir: number | null } | null;
 
@@ -266,7 +267,7 @@ function ImportFlow({ orderNo, day, week, again }: { orderNo: string; day: strin
               <input type="hidden" name="day" value={day} />
               <div className="field">
                 <label htmlFor={`img-${day}`}>لقطات شاشة لتمرين اليوم من تطبيقك (حتى 4 صور)</label>
-                <input id={`img-${day}`} name="image" type="file" accept="image/png,image/jpeg,image/webp" multiple required />
+                <FilePicker id={`img-${day}`} name="image" accept="image/png,image/jpeg,image/webp" multiple required hint="حتى 4 صور" />
                 <span className="hint">إذا التمرين طويل اختر اللقطات بالترتيب. نقرأ التمارين والأوزان والتكرارات، وتراجعها قبل الحفظ. الصور لا تُحفظ في الموقع، وتُرسل لخدمة قراءة الصور (Anthropic) للقراءة فقط.</span>
               </div>
               {preview.error && <p className="alert err" role="alert">{preview.error}</p>}

@@ -512,6 +512,12 @@ test("الجداول المجانية: عرض، طلب بعد الدخول، ت�
   }
   // ملف أكبر من 5 ميجابايت يُرفض في المتصفح برسالة واضحة (بدل صفحة خطأ من حد الخادم)
   await coach.goto("/admin/free-plans/new");
+  // الضغط في أي مكان من منطقة الملف (مو بس الزر الصغير) يفتح اختيار الملفات — مشكلة الآيباد
+  const zone = coach.locator(".file-picker").first();
+  const box = (await zone.boundingBox())!;
+  const [chooser] = await Promise.all([coach.waitForEvent("filechooser"), coach.mouse.click(box.x + box.width * 0.85, box.y + box.height / 2)]);
+  await chooser.setFiles({ name: "small.pdf", mimeType: "application/pdf", buffer: pdf });
+  await expect(zone).toContainText("small.pdf");
   await coach.setInputFiles("#fp-file", { name: "big.pdf", mimeType: "application/pdf", buffer: Buffer.alloc(7 * 1024 * 1024, 32) });
   await expect(coach.getByTestId("file-too-big")).toContainText("7.0 ميجابايت");
   expect(await coach.locator("#fp-file").evaluate((e: HTMLInputElement) => e.validity.valid)).toBe(false);

@@ -19,6 +19,7 @@ import GrantedAlert from "@/components/admin/GrantedAlert";
 import { loadAdherence } from "@/lib/program-data";
 import { loadReminders } from "@/lib/reminders";
 import { pct } from "@/lib/adherence";
+import FilePicker from "@/components/FilePicker";
 import {
   addDeliverableAction, grantRewardAction, markSurveySeenAction, archiveOrderAction, deleteOrderAction, removeDeliverableAction, replyCheckinAction, coachMessageAction, requestMeasurementsAction, setAmountAction, transitionAction,
 } from "@/app/actions/admin";
@@ -244,7 +245,7 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
               <input type="hidden" name="order_no" value={o.order_no} />
               <div className="field"><label>العنوان</label><input name="title" type="text" maxLength={120} required placeholder="ملف البرنامج — الشهر الأول" /></div>
               <div className="field"><label>رابط (https)</label><input name="url" type="url" dir="ltr" placeholder="https://" /></div>
-              <div className="field"><label>أو ملف (PDF / Excel / Word / صورة، حتى 5MB)</label><input name="file" type="file" accept=".pdf,.xlsx,.docx,image/*" /></div>
+              <div className="field"><label htmlFor="dl-file">أو ملف (PDF / Excel / Word / صورة، حتى 5MB)</label><FilePicker id="dl-file" name="file" accept=".pdf,.xlsx,.docx,image/*" /></div>
             </ActionForm>
           </div>
 

@@ -1,9 +1,9 @@
 import { withUser } from "@/lib/db";
-import SizedFileInput from "@/components/admin/SizedFileInput";
 import { requireCoach } from "@/lib/session";
 import { fmtDate } from "@/lib/format";
 import ActionForm from "@/components/admin/ActionForm";
 import { deleteBookletAction, saveBookletAction, uploadBookletAction } from "@/app/actions/booklets";
+import FilePicker from "@/components/FilePicker";
 
 export const metadata = { title: "الكتيبات" };
 
@@ -24,7 +24,7 @@ export default async function AdminBooklets() {
         <ActionForm action={uploadBookletAction} submit="رفع الكتيب" resetOnSuccess>
           <div className="field"><label htmlFor="bk-title">اسم الكتيب</label><input id="bk-title" name="title" required maxLength={120} /></div>
           <div className="field"><label htmlFor="bk-desc">وصف قصير (اختياري)</label><input id="bk-desc" name="description" maxLength={300} /></div>
-          <div className="field"><label htmlFor="bk-file">ملف PDF</label><SizedFileInput id="bk-file" name="file" accept="application/pdf,.pdf" required /></div>
+          <div className="field"><label htmlFor="bk-file">ملف PDF</label><FilePicker id="bk-file" name="file" accept="application/pdf,.pdf" required hint="PDF حتى 5 ميجابايت" /></div>
           <label className="row" style={{ gap: 8 }}><input type="checkbox" name="published" defaultChecked /> يظهر للمتدربين</label>
           <span className="hint">PDF فقط، وحجمه 5 ميجابايت أو أقل. لو أكبر: من كانفا اختاري «PDF Standard» بدل «PDF Print»، أو اضغطيه قبل الرفع.</span>
         </ActionForm>

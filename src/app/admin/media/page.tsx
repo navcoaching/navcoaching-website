@@ -3,6 +3,7 @@ import { requireCoach } from "@/lib/session";
 import { fmtDate } from "@/lib/format";
 import ActionForm from "@/components/admin/ActionForm";
 import { updateMediaAction, uploadMediaAction } from "@/app/actions/admin";
+import FilePicker from "@/components/FilePicker";
 
 const USAGE: Record<string, string> = { hero: "الواجهة", about: "عن المدربة", gallery: "معرض", product: "منتج", free_plan: "جدول مجاني" };
 
@@ -14,7 +15,7 @@ export default async function AdminMedia() {
       <h1>الصور</h1>
       <p className="alert warn small">ارفعي فقط صوراً مملوكة لك أو مرخّصة للاستخدام التجاري. لا تنشري صور متدربين أو نتائجهم إلا بإذن صريح مكتوب. الصور لا تظهر في الموقع قبل «اعتماد النشر».</p>
       <ActionForm action={uploadMediaAction} submit="رفع الصورة" className="form card">
-        <div className="field"><label>الصورة (JPG / PNG / WebP حتى 5MB)</label><input name="file" type="file" accept="image/jpeg,image/png,image/webp" required /></div>
+        <div className="field"><label htmlFor="media-file">الصورة (JPG / PNG / WebP حتى 5MB)</label><FilePicker id="media-file" name="file" accept="image/jpeg,image/png,image/webp" required hint="صورة حتى 5 ميجابايت" /></div>
         <div className="grid g2">
           <div className="field"><label>وصف الصورة *</label><input name="alt" type="text" required placeholder="مثال: بار أولمبي وأقراص أوزان في النادي" /></div>
           <div className="field"><label>الاستخدام</label><select name="usage" defaultValue="gallery">{Object.entries(USAGE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>

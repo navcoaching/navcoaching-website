@@ -5,7 +5,7 @@ import { requireCoach } from "@/lib/session";
 import { fmtDate } from "@/lib/format";
 import ActionForm from "@/components/admin/ActionForm";
 import { saveFreePlanAction } from "@/app/actions/admin";
-import SizedFileInput from "@/components/admin/SizedFileInput";
+import FilePicker from "@/components/FilePicker";
 
 type Plan = { id: string; slug: string; title: string; summary: string; audience: string | null; image_id: string | null; status: string; sort: number; file_size: number | null; file_updated_at: string | null };
 
@@ -51,7 +51,7 @@ export default async function EditFreePlan({ params, searchParams }: { params: P
               <span className="hint">ارفعي الصور من <Link href="/admin/media">الصور</Link> واختاري الاستخدام «جدول مجاني».</span></div>
           </div>
           <div className="field"><label htmlFor="fp-file">ملف PDF {isNew && <span className="req">*</span>}</label>
-            <SizedFileInput id="fp-file" name="file" accept="application/pdf,.pdf" required={isNew} />
+            <FilePicker id="fp-file" name="file" accept="application/pdf,.pdf" required={isNew} hint="PDF حتى 5 ميجابايت" />
             <span className="hint">
               PDF فقط، حتى 5 ميجابايت. {plan?.file_size ? <>الملف الحالي: {(plan.file_size / 1024 / 1024).toFixed(1)} م.ب{plan.file_updated_at ? ` · ${fmtDate(plan.file_updated_at)}` : ""}. رفع ملف جديد يستبدله لكل من طلب الجدول.</> : "لا يوجد ملف بعد."}
             </span></div>

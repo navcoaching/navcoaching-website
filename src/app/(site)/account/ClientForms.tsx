@@ -6,6 +6,7 @@ import {
 } from "@/app/actions/client";
 import { FormMessage, Submit, useFormAction } from "@/components/FormBits";
 import { authClient } from "@/lib/auth-client";
+import FilePicker from "@/components/FilePicker";
 
 export function ClearDraft() {
   useEffect(() => { try { localStorage.removeItem("nav_checkout_draft_v2"); } catch { /* */ } }, []);
@@ -39,7 +40,7 @@ export function UploadProofForm({ orderNo }: { orderNo: string }) {
       <input type="hidden" name="order_no" value={orderNo} />
       <div className="field">
         <label htmlFor="proof">صورة إيصال التحويل</label>
-        <input id="proof" name="proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required />
+        <FilePicker id="proof" name="proof" accept="image/jpeg,image/png,image/webp,application/pdf" required hint="صورة أو PDF حتى 5 ميجابايت" />
         <span className="hint">صورة أو PDF، حتى 5 ميجابايت. لا يُعتبر طلبك مدفوعاً إلا بعد التحقق من وصول المبلغ.</span>
       </div>
       <FormMessage state={state} />
