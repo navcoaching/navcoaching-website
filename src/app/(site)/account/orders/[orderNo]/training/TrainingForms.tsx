@@ -267,7 +267,7 @@ function ImportFlow({ orderNo, day, week, again }: { orderNo: string; day: strin
               <input type="hidden" name="day" value={day} />
               <div className="field">
                 <label htmlFor={`img-${day}`}>لقطات شاشة لتمرين اليوم من تطبيقك (حتى 4 صور)</label>
-                <FilePicker id={`img-${day}`} name="image" accept="image/png,image/jpeg,image/webp" multiple required hint="حتى 4 صور" />
+                <FilePicker id={`img-${day}`} name="image" accept="image/png,image/jpeg,image/webp" multiple required maxMb={40} hint="حتى 4 صور (تُصغَّر تلقائياً)" />
                 <span className="hint">إذا التمرين طويل اختر اللقطات بالترتيب. نقرأ التمارين والأوزان والتكرارات، وتراجعها قبل الحفظ. الصور لا تُحفظ في الموقع، وتُرسل لخدمة قراءة الصور (Anthropic) للقراءة فقط.</span>
               </div>
               {preview.error && <p className="alert err" role="alert">{preview.error}</p>}
