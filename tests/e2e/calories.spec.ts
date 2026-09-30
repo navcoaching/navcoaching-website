@@ -191,6 +191,8 @@ test("السعرات التلقائية: تنحسب لمتدرب جديد بشا
 
   // تأكيد الحسبة
   await auto.getByRole("button", { name: "أكدت الحسبة" }).click();
+  // ننتظر حفظ التأكيد في القاعدة قبل التحديث (وإلا يسبق التحديثُ الحفظَ فيظهر الوسم مرة ثانية)
+  await expect.poll(async () => (await db.query(`SELECT kcal_confirmed_at IS NOT NULL AS ok FROM nutrition_targets WHERE order_id = $1`, [o.id])).rows[0]?.ok).toBe(true);
   await coach.reload();
   await expect(coach.getByTestId("auto-kcal")).toHaveCount(0);
   await trainee.reload();
