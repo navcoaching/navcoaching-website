@@ -510,6 +510,11 @@ test("الجداول المجانية: عرض، طلب بعد الدخول، ت�
     await coach.getByRole("button", { name: "إنشاء الجدول" }).click();
     await expect(coach.getByText("تم إنشاء الجدول.")).toBeVisible();
   }
+  // ملف أكبر من 5 ميجابايت يُرفض في المتصفح برسالة واضحة (بدل صفحة خطأ من حد الخادم)
+  await coach.goto("/admin/free-plans/new");
+  await coach.setInputFiles("#fp-file", { name: "big.pdf", mimeType: "application/pdf", buffer: Buffer.alloc(7 * 1024 * 1024, 32) });
+  await expect(coach.getByTestId("file-too-big")).toContainText("7.0 ميجابايت");
+  expect(await coach.locator("#fp-file").evaluate((e: HTMLInputElement) => e.validity.valid)).toBe(false);
   // ملف غير PDF يُرفض على الخادم
   await coach.goto("/admin/free-plans/new");
   await coach.getByLabel("اسم الجدول").fill("ملف مزيف");
