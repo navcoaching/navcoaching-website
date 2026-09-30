@@ -91,7 +91,7 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   };
   // 1) بالقوائم المتسلسلة: العضلة ← النمط ← النمط الفرعي ← الحركة التشريحية ← التمرين
   await openAdd();
-  const picker = day1.getByTestId("exercise-picker");
+  const picker = addForm.getByTestId("exercise-picker");
   await picker.getByLabel("العضلة").selectOption("Quadriceps / الأمامية");
   await picker.getByLabel("نمط الحركة").selectOption("Squat (Knee-dominant) / سكوات (هيمنة الركبة)");
   await picker.getByLabel("النمط الفرعي / زاوية الحركة").selectOption("Free / Bodyweight Squat / سكوات حر أو بوزن الجسم");
@@ -99,17 +99,17 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   const exSelect = picker.getByLabel(/^التمرين/);
   await expect(exSelect).not.toContainText("Leg Extension");
   await exSelect.selectOption({ label: "Back Squat — بار" });
-  await day1.getByLabel("المجموعات × التكرارات").fill("3x10");
-  await day1.getByLabel("RIR", { exact: true }).fill("2");
-  await day1.getByRole("button", { name: "إضافة", exact: true }).click();
+  await addForm.getByLabel("المجموعات × التكرارات").fill("3x10");
+  await addForm.getByLabel("RIR", { exact: true }).fill("2");
+  await addForm.getByRole("button", { name: "إضافة", exact: true }).click();
   await expect(day1.locator(".program-items")).toContainText("Back Squat");
   // 2) بالبحث بالاسم
   await openAdd();
   await picker.getByLabel("العضلة").selectOption("");
-  await day1.getByLabel("أو ابحثي بالاسم").fill("Leg Extension");
-  await day1.getByLabel("المجموعات × التكرارات").fill("12-12-10");
-  await day1.getByLabel("RIR", { exact: true }).fill("1");
-  await day1.getByRole("button", { name: "إضافة", exact: true }).click();
+  await addForm.getByLabel("أو ابحثي بالاسم").fill("Leg Extension");
+  await addForm.getByLabel("المجموعات × التكرارات").fill("12-12-10");
+  await addForm.getByLabel("RIR", { exact: true }).fill("1");
+  await addForm.getByRole("button", { name: "إضافة", exact: true }).click();
   await expect(day1.locator(".program-items")).toContainText("Leg Extension");
   await expect(day1.locator(".program-items")).toContainText("3×10 · RIR 2");
   await noHorizontalScroll(coach);
