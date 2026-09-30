@@ -514,8 +514,11 @@ test("الجداول المجانية: عرض، طلب بعد الدخول، ت�
   await coach.goto("/admin/free-plans/new");
   // الضغط في أي مكان من منطقة الملف (مو بس الزر الصغير) يفتح اختيار الملفات — مشكلة الآيباد
   const zone = coach.locator(".file-picker").first();
+  await zone.scrollIntoViewIfNeeded();
   const box = (await zone.boundingBox())!;
-  const [chooser] = await Promise.all([coach.waitForEvent("filechooser"), coach.mouse.click(box.x + box.width * 0.85, box.y + box.height / 2)]);
+  const x = box.x + box.width * 0.85, y = box.y + box.height / 2;
+  const [chooser] = await Promise.all([coach.waitForEvent("filechooser"),
+    test.info().project.use.hasTouch ? coach.touchscreen.tap(x, y) : coach.mouse.click(x, y)]);
   await chooser.setFiles({ name: "small.pdf", mimeType: "application/pdf", buffer: pdf });
   await expect(zone).toContainText("small.pdf");
   await coach.setInputFiles("#fp-file", { name: "big.pdf", mimeType: "application/pdf", buffer: Buffer.alloc(7 * 1024 * 1024, 32) });
