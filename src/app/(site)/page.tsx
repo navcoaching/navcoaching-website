@@ -75,7 +75,7 @@ export default async function Home() {
             <span className="eyebrow">ليش Nav Coaching</span>
             <h2>تدريب مبني عليك، مو جدول جاهز</h2>
           </div>
-          <div className="grid g3">
+          <div className="grid g3 features">
             {s.why.map((w, i) => {
               const Icon = WHY_ICONS[i % WHY_ICONS.length];
               return (
@@ -140,7 +140,7 @@ export default async function Home() {
             <p className="lead">لقطات من ملف المتدرب الفعلي، بدون أي بيانات شخصية. اضغط على الصورة لتكبيرها.</p>
           </div>
           <Shots shots={s.program_shots} />
-          <div className="grid g3" style={{ marginTop: 40 }}>
+          <div className="grid g3 features" style={{ marginTop: 40 }}>
             {[
               { I: IconTrend, t: "تتابع طلبك خطوة بخطوة", b: "من حسابك تشوف حالة طلبك، والمطلوب منك الآن، وتاريخ كل تحديث." },
               { I: IconFile, t: "ملفاتك في مكان واحد", b: "بعد تأكيد الدفع تظهر لك ملفات برنامجك وروابطه، ولا يفتحها غيرك." },
@@ -219,7 +219,7 @@ export default async function Home() {
               <h2>تقييمات المتدربين</h2>
               <p className="muted small">{s.testimonials_disclaimer}</p>
             </div>
-            <div className="reviews">
+            <div className="reviews reviews-home">
               {reviews.map((r) => <ReviewCard key={r.id} r={r} />)}
             </div>
             <Link href="/reviews" className="btn btn-ghost" style={{ marginTop: 8 }}>كل التقييمات</Link>

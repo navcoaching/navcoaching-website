@@ -1011,3 +1011,23 @@ dialog.video-modal .btn-ghost, dialog.video-modal .btn-ghost:hover { --fg: var(-
 /* قبول مجاني: تاريخ البداية والنهاية داخل شريط الحالة */
 .status-bar-free { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; }
 .status-bar-free label { display: grid; gap: 4px; font-size: 13px; }
+
+/* ---------- تحسينات الجوال ---------- */
+/* بطاقات المميزات: قاعدة .g3 للنماذج (170px) كانت تجعلها عمودين ضيقين على الجوال */
+.grid.features { grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+@media (max-width: 640px) {
+  /* الأيقونة بجانب العنوان: البطاقة أقصر وأسهل قراءة */
+  .grid.features .feature { grid-template-columns: 48px minmax(0, 1fr); column-gap: 14px; align-items: center; }
+  .grid.features .feature > :not(.ico):not(h3) { grid-column: 1 / -1; }
+  .grid.features .feature h3 { margin: 0; }
+  /* التقييمات في الرئيسية: شريط سحب أفقي بدل عمود طويل */
+  .reviews-home { display: flex; align-items: flex-start; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px; margin-inline: -16px; padding: 4px 16px 12px; scrollbar-width: none; }
+  .reviews-home::-webkit-scrollbar { display: none; }
+  .reviews-home > * { flex: 0 0 86%; scroll-snap-align: center; }
+  /* شريط تثبيت التطبيق: النص بعرض كامل والأزرار تحته */
+  .install-bar { flex-wrap: wrap; }
+  .install-bar-text { flex-basis: calc(100% - 60px); }
+  .hero .badges li { font-size: 13px; padding: 6px 12px; }
+  .hero-cta { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .hero-cta .btn { justify-content: center; width: 100%; }
+}
