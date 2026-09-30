@@ -4,6 +4,7 @@ import { requireCoach } from "@/lib/session";
 import { fmtDate, fmtDateTime } from "@/lib/format";
 import ActionForm from "@/components/admin/ActionForm";
 import { markSwapsSeenAction } from "@/app/actions/training";
+import { deleteMemberAction } from "@/app/actions/admin";
 
 type SP = { q?: string; view?: string };
 type Swap = { user_id: string; order_no: string; from_name: string; to_name: string; day_title: string; created_at: string };
@@ -106,7 +107,19 @@ export default async function Members({ searchParams }: { searchParams: Promise<
                     : <span className="muted">لا يوجد</span>}
                   {m.manual_only && <div className="small muted">يدوي</div>}
                 </td>
-                <td><Link className="btn btn-ghost btn-sm" href={`/admin/orders/new?email=${encodeURIComponent(m.email)}`}>إضافة برنامج</Link></td>
+                <td>
+                  <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
+                    <Link className="btn btn-ghost btn-sm" href={`/admin/orders/new?email=${encodeURIComponent(m.email)}`}>إضافة برنامج</Link>
+                    {m.orders === 0 && (
+                      <span data-testid="delete-member">
+                        <ActionForm action={deleteMemberAction} className="form" submit="حذف العضو" submitClass="btn btn-ghost btn-sm danger"
+                          confirm={`حذف حساب ${m.email} نهائياً؟ ما يمكن التراجع، ويحتاج يسجّل من جديد.`}>
+                          <input type="hidden" name="user_id" value={m.id} />
+                        </ActionForm>
+                      </span>
+                    )}
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

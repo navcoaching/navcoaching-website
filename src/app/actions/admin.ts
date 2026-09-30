@@ -697,6 +697,19 @@ export async function saveFreePlanAction(_: ActionState, fd: FormData): Promise<
   return { ok: true, message: uploaded ? "تم الحفظ ورفع ملف PDF الجديد." : "تم الحفظ." };
 }
 
+// ---------- حذف عضو مسجّل (بدون أي طلب فقط، والقاعدة تتحقق) ----------
+export async function deleteMemberAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const user = String(fd.get("user_id") ?? "");
+  if (!user || user.length > 100) return { error: GENERIC };
+  let email = "";
+  try {
+    email = await asCoach(async (tx) => (await tx.query("SELECT app.coach_delete_member($1) AS email", [user])).rows[0].email as string);
+  } catch (err) { return fail(err); }
+  revalidatePath("/admin/members");
+  revalidatePath("/admin");
+  return { ok: true, message: `تم حذف العضو ${email}.` };
+}
+
 // ---------- مكافأة الالتزام: 3 أشهر مجاناً (يُعاد حساب الاستحقاق هنا قبل المنح) ----------
 export async function grantRewardAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const orderNo = String(fd.get("order_no") ?? "");

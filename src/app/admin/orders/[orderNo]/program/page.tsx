@@ -10,7 +10,7 @@ import ProgramEditor from "@/components/admin/ProgramEditor";
 import { loadExerciseOptions, loadProgramDays, loadVolumeSetup } from "@/lib/program-data";
 import VolumeTable from "@/components/admin/VolumeTable";
 import {
-  addBlockNoteAction, archiveBlockAction, assignTemplateAction, deleteBlockNoteAction, markSwapsSeenAction, notifyProgramAction, saveBlockAction,
+  addBlockNoteAction, archiveBlockAction, assignTemplateAction, deleteBlockAction, deleteBlockNoteAction, markSwapsSeenAction, notifyProgramAction, saveBlockAction,
 } from "@/app/actions/training";
 import TraineeLogs from "./TraineeLogs";
 import { CHANNEL_LABEL, RESULT_LABEL, type Channel, type ChannelResult } from "@/lib/notify";
@@ -19,7 +19,7 @@ type Block = { id: string; name: string; start_date: string; weeks: number; inst
 type Swap = { id: number; created_at: string; seen_at: string | null; week_no: number | null; from_name: string; to_name: string; day_title: string };
 
 /** برنامج التمرين لمتدرب: إسناد قالب، تعديل البلوك له، ملاحظات، تبديلاته، وسجلاته */
-export default async function OrderProgram({ params, searchParams }: { params: Promise<{ orderNo: string }>; searchParams: Promise<{ assigned?: string; n?: string }> }) {
+export default async function OrderProgram({ params, searchParams }: { params: Promise<{ orderNo: string }>; searchParams: Promise<{ assigned?: string; n?: string; deleted?: string }> }) {
   const coach = await requireCoach();
   const { orderNo } = await params;
   const sp = await searchParams;
@@ -36,16 +36,18 @@ export default async function OrderProgram({ params, searchParams }: { params: P
     const active = blocks.find((b) => b.status === "active") ?? null;
     const templates = (await tx.query(`SELECT id, name, weeks FROM program_templates WHERE NOT archived ORDER BY name`)).rows as { id: string; name: string; weeks: number }[];
     const days = active ? await loadProgramDays(tx, "block", active.id) : [];
+    const logCount = active ? (await tx.query(
+      `SELECT count(*)::int AS n FROM item_logs l JOIN block_items i ON i.id = l.block_item_id JOIN block_days d ON d.id = i.day_id WHERE d.block_id = $1`, [active.id])).rows[0].n as number : 0;
     const notes = active ? (await tx.query(`SELECT id, week_no, body, created_at FROM block_notes WHERE block_id = $1 ORDER BY created_at DESC`, [active.id])).rows : [];
     const swaps = (await tx.query(
       `SELECT s.id, s.created_at, s.seen_at, s.week_no, f.name AS from_name, t.name AS to_name, d.title AS day_title
          FROM exercise_swaps s JOIN exercises f ON f.id = s.from_exercise_id JOIN exercises t ON t.id = s.to_exercise_id
          JOIN block_items i ON i.id = s.block_item_id JOIN block_days d ON d.id = i.day_id
          JOIN blocks b ON b.id = s.block_id WHERE b.order_id = $1 ORDER BY s.created_at DESC LIMIT 50`, [o.id])).rows as Swap[];
-    return { o, blocks, active, templates, days, notes, swaps, exercises: active ? await loadExerciseOptions(tx) : [], volume: await loadVolumeSetup(tx) };
+    return { o, blocks, active, templates, days, logCount, notes, swaps, exercises: active ? await loadExerciseOptions(tx) : [], volume: await loadVolumeSetup(tx) };
   });
   if (!data) notFound();
-  const { o, blocks, active, templates, days, notes, swaps, exercises, volume } = data;
+  const { o, blocks, active, templates, days, logCount, notes, swaps, exercises, volume } = data;
   const today = riyadhDate();
   const week = active ? currentWeek(active.start_date, today, active.weeks) : 0;
   const unseen = swaps.filter((s) => !s.seen_at).length;
@@ -78,6 +80,7 @@ export default async function OrderProgram({ params, searchParams }: { params: P
         <h1 style={{ marginBottom: 4 }}>برنامج التمرين — {o.contact_name}</h1>
         <p className="muted">{o.product_name}{active && <> · {active.name} · {week === 0 ? `يبدأ ${fmtDate(active.start_date)}` : `الأسبوع ${week} من ${active.weeks}`}</>}</p>
       </div>
+      {sp.deleted && <p className="alert ok" role="status">تم حذف البرنامج.</p>}
       {sp.assigned && <p className="alert ok" role="status">تم إسناد البرنامج.{notified.length > 0 && ` الإشعار: ${notified.join("، ")}`}</p>}
       {!entitled && <p className="alert warn">المتدرب لا يرى البرنامج حتى تصبح حالة الطلب «نشط» أو «تم التسليم».</p>}
 
@@ -132,6 +135,14 @@ export default async function OrderProgram({ params, searchParams }: { params: P
                 confirm="إنهاء البرنامج؟ يبقى ظاهراً للمتدرب للقراءة فقط ولا يقدر يسجّل عليه.">
                 <input type="hidden" name="id" value={active.id} />
               </ActionForm>
+              {logCount === 0
+                ? (
+                  <span data-testid="delete-block"><ActionForm action={deleteBlockAction} className="form" submit="حذف البرنامج (أضفته بالخطأ)" submitClass="btn btn-ghost btn-sm danger"
+                    confirm="حذف البرنامج نهائياً مع كل أيامه وتمارينه؟ ما يمكن التراجع، ويختفي عن المتدرب تماماً.">
+                    <input type="hidden" name="id" value={active.id} />
+                  </ActionForm></span>
+                )
+                : <span className="small muted">سجّل المتدرب {logCount} تمرين على هذا البرنامج، فلا يُحذف (استخدمي «إنهاء البرنامج»).</span>}
             </div>
           </details>
 

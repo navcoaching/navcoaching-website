@@ -420,7 +420,7 @@ describe("منصة التدريب", () => {
     notAlt = await exId("Barbell Bench Press").catch(() => null) ?? (await owner.query("SELECT id FROM exercises WHERE primary_muscle LIKE 'Chest%' AND status = 'approved' LIMIT 1")).rows[0].id;
   });
   test("المكتبة للمدربة فقط (المتدرب لا يقرأها ولا يعدّلها)", async () => {
-    assert.equal((await as(COACH, "SELECT count(*)::int n FROM exercises")).rows[0].n, 219);
+    assert.equal((await as(COACH, "SELECT count(*)::int n FROM exercises")).rows[0].n, 229);
     assert.equal((await as(A, "SELECT count(*)::int n FROM exercises")).rows[0].n, 0);
     assert.equal((await as(null, "SELECT count(*)::int n FROM exercises")).rows[0].n, 0);
     await assert.rejects(as(A, "INSERT INTO exercises (name, primary_muscle) VALUES ('x','y')"), /row-level security/);
@@ -915,5 +915,49 @@ describe("القبول المجاني", () => {
       const r = (await owner.query("SELECT status, is_free, amount_due_halalas, sub_start_at FROM orders WHERE order_no = $1", [c])).rows[0];
       assert.deepEqual(r, { status: "preparing", is_free: true, amount_due_halalas: 0, sub_start_at: null });
     }
+  });
+});
+
+describe("حذف برنامج أُضيف بالخطأ وحذف عضو", () => {
+  const U1 = "user_del1", U2 = "user_del2";
+  before(async () => {
+    for (const id of [U1, U2]) await owner.query(`INSERT INTO "user" (id, name, email, "emailVerified", role) VALUES ($1, $1, $1 || '@test.local', true, 'client')`, [id]);
+  });
+  async function programFor(user, key) {
+    const no = await newOrder(user, key);
+    await owner.query("UPDATE orders SET status = 'active' WHERE order_no = $1", [no]);
+    const { rows: [o] } = await owner.query("SELECT id FROM orders WHERE order_no = $1", [no]);
+    const { rows: [b] } = await owner.query("INSERT INTO blocks (order_id, user_id, name, start_date, weeks) VALUES ($1,$2,'بلوك حذف',current_date,4) RETURNING id", [o.id, user]);
+    const { rows: [d] } = await owner.query("INSERT INTO block_days (block_id, day_no, title) VALUES ($1,1,'DAY 1') RETURNING id", [b.id]);
+    const ex = (await owner.query("SELECT id FROM exercises WHERE name = 'Back Squat'")).rows[0].id;
+    const { rows: [i] } = await owner.query("INSERT INTO block_items (day_id, position, exercise_id, coach_exercise_id, plan) VALUES ($1,0,$2,$2,'[]') RETURNING id", [d.id, ex]);
+    return { no, block: b.id, item: i.id };
+  }
+  test("حذف البرنامج: للمدربة فقط، ويمسح أيامه وتمارينه ويسجّل في السجل", async () => {
+    const { no, block } = await programFor(U1, "k-delblock-00000000001");
+    await assert.rejects(as(U1, "SELECT app.coach_delete_block($1)", [block]), /للمدربة فقط/);
+    await assert.rejects(as(null, "SELECT app.coach_delete_block($1)", [block]), /للمدربة فقط|permission|denied/);
+    assert.equal((await as(COACH, "SELECT app.coach_delete_block($1) AS no", [block])).rows[0].no, no);
+    assert.equal((await owner.query("SELECT count(*)::int n FROM blocks WHERE id = $1", [block])).rows[0].n, 0);
+    assert.equal((await owner.query("SELECT count(*)::int n FROM block_days WHERE block_id = $1", [block])).rows[0].n, 0);
+    assert.equal((await owner.query("SELECT count(*)::int n FROM admin_log WHERE action = 'block.delete' AND target = $1", [no])).rows[0].n, 1);
+    await assert.rejects(as(COACH, "SELECT app.coach_delete_block($1)", [block]), /غير موجود/);
+  });
+  test("برنامج سجّل عليه المتدرب لا يُحذف", async () => {
+    const { block, item } = await programFor(U2, "k-delblock-00000000002");
+    await owner.query("INSERT INTO item_logs (block_item_id, week_no, exercise_id, weight, reps) SELECT $1, 1, exercise_id, 50, '{10}' FROM block_items WHERE id = $1", [item]);
+    await assert.rejects(as(COACH, "SELECT app.coach_delete_block($1)", [block]), /سجّل على هذا البرنامج/);
+    assert.equal((await owner.query("SELECT count(*)::int n FROM blocks WHERE id = $1", [block])).rows[0].n, 1);
+  });
+  test("حذف العضو: فقط بدون طلبات، وللمدربة فقط، وحساب المدربة محمي", async () => {
+    const free = "user_del3";
+    await owner.query(`INSERT INTO "user" (id, name, email, "emailVerified", role) VALUES ($1, $1, $1 || '@test.local', true, 'client')`, [free]);
+    await assert.rejects(as(A, "SELECT app.coach_delete_member($1)", [free]), /للمدربة فقط/);
+    await assert.rejects(as(COACH, "SELECT app.coach_delete_member($1)", [U2]), /عنده طلبات|عند العضو طلبات/);
+    await assert.rejects(as(COACH, "SELECT app.coach_delete_member($1)", [COACH]), /لا يمكن حذف حساب المدربة/);
+    await assert.rejects(as(COACH, "SELECT app.coach_delete_member($1)", ["nobody"]), /غير موجود/);
+    assert.equal((await as(COACH, "SELECT app.coach_delete_member($1) AS e", [free])).rows[0].e, `${free}@test.local`);
+    assert.equal((await owner.query(`SELECT count(*)::int n FROM "user" WHERE id = $1`, [free])).rows[0].n, 0);
+    assert.equal((await owner.query("SELECT count(*)::int n FROM admin_log WHERE action = 'member.delete' AND target = $1", [`${free}@test.local`])).rows[0].n, 1);
   });
 });

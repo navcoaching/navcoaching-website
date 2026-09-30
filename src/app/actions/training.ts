@@ -464,6 +464,20 @@ export async function archiveBlockAction(_: ActionState, fd: FormData): Promise<
   return { ok: true, message: "تم إنهاء البرنامج. يبقى ظاهراً للمتدرب للقراءة فقط." };
 }
 
+/** حذف برنامج أُضيف بالخطأ (فقط إذا ما سجّل المتدرب عليه شيئاً، والقاعدة تتحقق) */
+export async function deleteBlockAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const id = idOf(fd, "id");
+  if (!id) return { error: GENERIC };
+  let orderNo = "";
+  try {
+    orderNo = await asCoach(async (tx) => (await tx.query("SELECT app.coach_delete_block($1) AS no", [id])).rows[0].no as string);
+  } catch (err) { return trainingFail(err); }
+  revalidatePath(`/admin/orders/${orderNo}/program`);
+  revalidatePath(`/admin/orders/${orderNo}`);
+  revalidatePath(`/account/orders/${orderNo}/training`);
+  redirect(`/admin/orders/${orderNo}/program?deleted=1`);
+}
+
 export async function notifyProgramAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const orderNo = String(fd.get("order_no") ?? "");
   if (!ORDER_NO.test(orderNo)) return { error: GENERIC };
