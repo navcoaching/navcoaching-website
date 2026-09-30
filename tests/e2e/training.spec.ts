@@ -84,7 +84,11 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await expect(coach.getByText("تم إنشاء القالب")).toBeVisible();
   const day1 = coach.getByTestId("day-1");
   const addForm = day1.locator("details.add-item");
-  const openAdd = async () => { if ((await addForm.getAttribute("open")) === null) await day1.getByText("+ إضافة تمرين").click(); };
+  const openAdd = async () => {
+    // الأيام مطوية تلقائياً: نفتح اليوم أولاً ثم نموذج الإضافة
+    if ((await day1.locator("details.day-fold").getAttribute("open")) === null) await day1.getByTestId("fold-1").click();
+    if ((await addForm.getAttribute("open")) === null) await day1.getByText("+ إضافة تمرين").click();
+  };
   // 1) بالقوائم المتسلسلة: العضلة ← النمط ← النمط الفرعي ← الحركة التشريحية ← التمرين
   await openAdd();
   const picker = day1.getByTestId("exercise-picker");

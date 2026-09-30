@@ -13,10 +13,10 @@ export async function loadProgramDays(tx: Tx, kind: "template" | "block", ownerI
     : (await tx.query(`SELECT id, day_no, title FROM block_days WHERE block_id = $1 ORDER BY day_no`, [ownerId])).rows;
   const items = kind === "template"
     ? (await tx.query(
-        `SELECT i.id, i.day_id, e.name, i.plan, i.note, e.primary_muscle, e.secondary_muscles FROM template_items i JOIN exercises e ON e.id = i.exercise_id
+        `SELECT i.id, i.day_id, i.exercise_id, e.name, i.plan, i.note, e.primary_muscle, e.secondary_muscles FROM template_items i JOIN exercises e ON e.id = i.exercise_id
           JOIN template_days d ON d.id = i.day_id WHERE d.template_id = $1 ORDER BY i.position, i.id`, [ownerId])).rows
     : (await tx.query(
-        `SELECT i.id, i.day_id, e.name, i.plan, i.note, e.primary_muscle, e.secondary_muscles, CASE WHEN i.coach_exercise_id <> i.exercise_id THEN c.name END AS coach_name,
+        `SELECT i.id, i.day_id, i.exercise_id, e.name, i.plan, i.note, e.primary_muscle, e.secondary_muscles, CASE WHEN i.coach_exercise_id <> i.exercise_id THEN c.name END AS coach_name,
                 (SELECT count(*)::int FROM item_logs l WHERE l.block_item_id = i.id) AS logs
            FROM block_items i JOIN exercises e ON e.id = i.exercise_id JOIN exercises c ON c.id = i.coach_exercise_id
            JOIN block_days d ON d.id = i.day_id WHERE d.block_id = $1 ORDER BY i.position, i.id`, [ownerId])).rows;
@@ -25,7 +25,7 @@ export async function loadProgramDays(tx: Tx, kind: "template" | "block", ownerI
 
 export async function loadExerciseOptions(tx: Tx): Promise<ExOption[]> {
   return (await tx.query(
-    `SELECT id, name, equipment, primary_muscle, pattern, sub_pattern, anatomical_action, movement_subcategory
+    `SELECT id, name, equipment, primary_muscle, pattern, sub_pattern, anatomical_action, movement_subcategory, rehab_category
        FROM exercises WHERE status = 'approved' ORDER BY name`)).rows;
 }
 

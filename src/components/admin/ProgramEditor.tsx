@@ -1,10 +1,10 @@
 import ActionForm from "@/components/admin/ActionForm";
-import ExercisePicker, { type PickerExercise } from "@/components/admin/ExercisePicker";
-import { addDayAction, addItemAction, deleteDayAction, deleteItemAction, moveItemAction, saveDayAction, saveItemAction } from "@/app/actions/training";
+import ExercisePicker, { ExercisesProvider, type PickerExercise } from "@/components/admin/ExercisePicker";
+import { addDayAction, addItemAction, deleteDayAction, deleteItemAction, saveDayAction, saveItemAction } from "@/app/actions/training";
 import { formatReps, planLabel, type PlanWeek } from "@/lib/training";
 import { muscleAr } from "@/lib/exercises";
 
-export type EditorItem = { id: string; name: string; plan: PlanWeek[]; note: string | null; coach_name?: string | null; logs?: number };
+export type EditorItem = { id: string; exercise_id?: string; name: string; plan: PlanWeek[]; note: string | null; coach_name?: string | null; logs?: number };
 export type EditorDay = { id: string; day_no: number; title: string; items: EditorItem[] };
 export type ExOption = PickerExercise;
 
@@ -16,13 +16,14 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
     <><input type="hidden" name="kind" value={kind} />{Object.entries(extra).map(([k, v]) => <input key={k} type="hidden" name={k} value={v} />)}</>
   );
   return (
+    <ExercisesProvider exercises={exercises}>
     <div className="stack" style={{ ["--space" as string]: "16px" }}>
       <datalist id="ex-options">
         {exercises.map((e) => <option key={e.name} value={e.name}>{muscleAr(e.primary_muscle)}{e.equipment ? ` · ${e.equipment}` : ""}</option>)}
       </datalist>
       {days.map((d) => (
         <section key={d.id} className="card program-day" data-testid={`day-${d.day_no}`}>
-          <details open className="day-fold">
+          <details className="day-fold">
           <summary className="day-toggle" data-testid={`fold-${d.day_no}`}>
             <b>اليوم {d.day_no}: <bdi dir="ltr">{d.title}</bdi></b>
             <span className="small muted">{d.items.length} تمارين</span>
@@ -53,9 +54,10 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
                   </summary>
                   <ActionForm action={saveItemAction} submit="حفظ التمرين">
                     {hidden({ item: it.id })}
+                    <ExercisePicker idPrefix={`ed-${it.id}`} defaultId={it.exercise_id} />
                     <div className="grid g2">
-                      <div className="field"><label htmlFor={`ex-${it.id}`}>التمرين</label>
-                        <input type="text" id={`ex-${it.id}`} name="exercise" list="ex-options" dir="ltr" required defaultValue={it.name} autoComplete="off" /></div>
+                      <div className="field"><label htmlFor={`pos-${it.id}`}>الترتيب في اليوم (من 1 إلى {d.items.length})</label>
+                        <input id={`pos-${it.id}`} name="position" type="number" inputMode="numeric" min={1} max={d.items.length} defaultValue={idx + 1} style={{ maxWidth: 120 }} /></div>
                       <div className="field"><label htmlFor={`nt-${it.id}`}>ملاحظة للمتدرب (اختياري)</label>
                         <input id={`nt-${it.id}`} name="note" type="text" maxLength={500} defaultValue={it.note ?? ""} placeholder="مثال: نزول بطيء 3 ثوانٍ" /></div>
                     </div>
@@ -74,8 +76,6 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
                     <label className="check"><input type="checkbox" name="copy_first" /><span>انسخي الأسبوع 1 لكل الأسابيع عند الحفظ</span></label>
                   </ActionForm>
                   <div className="row" style={{ gap: 8, marginTop: 8 }}>
-                    {idx > 0 && <ActionForm action={moveItemAction} className="form" submit="↑ لأعلى" submitClass="btn btn-ghost btn-sm">{hidden({ item: it.id, dir: "up" })}</ActionForm>}
-                    {idx < d.items.length - 1 && <ActionForm action={moveItemAction} className="form" submit="↓ لأسفل" submitClass="btn btn-ghost btn-sm">{hidden({ item: it.id, dir: "down" })}</ActionForm>}
                     <ActionForm action={deleteItemAction} className="form" submit="حذف التمرين" submitClass="btn btn-ghost btn-sm danger"
                       confirm={it.logs ? `عليه ${it.logs} تسجيل من المتدرب وستُحذف. متأكدة؟` : "حذف التمرين من اليوم؟"}>{hidden({ item: it.id })}</ActionForm>
                   </div>
@@ -88,8 +88,10 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
             <summary className="btn btn-ghost btn-sm">+ إضافة تمرين</summary>
             <ActionForm action={addItemAction} submit="إضافة" resetOnSuccess>
               {hidden({ day: d.id })}
-              <ExercisePicker exercises={exercises} idPrefix={`add-${d.id}`} />
-              <div className="grid g2">
+              <ExercisePicker idPrefix={`add-${d.id}`} />
+              <div className="grid g3">
+                <div className="field"><label htmlFor={`addp-${d.id}`}>الترتيب في اليوم</label>
+                  <input key={d.items.length} type="number" id={`addp-${d.id}`} name="position" inputMode="numeric" min={1} max={d.items.length + 1} defaultValue={d.items.length + 1} /></div>
                 <div className="field"><label htmlFor={`addr-${d.id}`}>المجموعات × التكرارات</label>
                   <input type="text" id={`addr-${d.id}`} name="reps" dir="ltr" placeholder="3x12" /></div>
                 <div className="field"><label htmlFor={`addi-${d.id}`}>RIR</label>
@@ -111,5 +113,6 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
         </ActionForm>
       </div>
     </div>
+    </ExercisesProvider>
   );
 }

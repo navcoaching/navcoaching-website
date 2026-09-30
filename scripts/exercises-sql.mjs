@@ -2,7 +2,10 @@
 // آمن للتكرار: لا يستبدل تمريناً موجوداً (حتى لا تضيع تعديلات المدربة)، والبدائل تُضاف فقط لتمرين بلا بدائل.
 import { readFileSync } from "node:fs";
 
-export const loadExercises = () => JSON.parse(readFileSync(new URL("../db/seed/exercises.json", import.meta.url), "utf8"));
+const readJson = (f) => JSON.parse(readFileSync(new URL(`../db/seed/${f}`, import.meta.url), "utf8"));
+/** مكتبة الشيت + التمارين التأهيلية الإضافية (rehab-extra.json: ركبة، أسفل الظهر، مرفق التنس، بمراجعها) */
+export const loadExercises = () => [...readJson("exercises.json"), ...readJson("rehab-extra.json")];
+export const loadRehabExtra = () => readJson("rehab-extra.json");
 const literal = (rows) => {
   const json = JSON.stringify(rows);
   if (json.includes("$ex$")) throw new Error("exercises.json يحتوي $ex$");

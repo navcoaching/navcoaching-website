@@ -75,6 +75,7 @@ export const REHAB_CATEGORIES = [
   "ضعف الألوية الكبرى / Gluteus Maximus Weakness", "ضعف الألوية المتوسطة / Gluteus Medius Weakness", "ضعف الألوية الصغرى / Gluteus Minimus Weakness",
   "مرفق التنس / Lateral Elbow Tendinopathy", "اللفافة الأخمصية / Plantar Fasciopathy", "وضعية الرأس للأمام / Forward Head Posture",
   "ضعف العضلة المعينية / Rhomboid Weakness",
+  "ألم الرضفة والفخذ (الركبة الأمامية) / Patellofemoral Pain", "اعتلال وتر الرضفة / Patellar Tendinopathy",
 ] as const;
 export const REHAB_PHASES = ["مبكرة", "مبكرة–متوسطة", "متوسطة", "متقدمة"] as const;
 export const REHAB_LOADS = ["منخفض", "منخفض–متوسط", "متوسط", "مرتفع"] as const;
@@ -84,3 +85,4 @@ export const REHAB_DISCLAIMER = "تنبيه: هذا التصنيف لأغراض 
 export const REHAB_STOP = "أوقفي التمرين وراجعي مختصاً إذا زاد الألم بوضوح، ظهر خدر أو تنميل، ضعف مفاجئ، فقدان توازن، أو ألم يمتد للطرف.";
 /** «أ | ب» → قائمة */
 export const splitPipes = (v: string | null | undefined) => (v ?? "").split("|").map((s) => s.trim()).filter(Boolean);
+

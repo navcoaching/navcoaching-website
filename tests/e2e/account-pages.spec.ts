@@ -132,13 +132,16 @@ test("محرر القالب: طيّ اليوم وفتحه", async ({ browser }, 
   await page.goto(`/admin/templates/${t.id}`);
   const day1 = page.getByTestId("day-1");
   const title = day1.getByLabel("اليوم 1");
-  await expect(title).toBeVisible();
-  await day1.getByTestId("fold-1").click();
+  // الأيام مطوية تلقائياً
   await expect(title).toBeHidden();
   await expect(day1.getByTestId("fold-1")).toContainText("فتح اليوم");
-  await expect(page.getByTestId("day-2").getByLabel("اليوم 2")).toBeVisible();
+  await expect(page.getByTestId("day-2").getByLabel("اليوم 2")).toBeHidden();
   await day1.getByTestId("fold-1").click();
   await expect(title).toBeVisible();
+  await expect(day1.getByTestId("fold-1")).toContainText("طيّ اليوم");
+  await expect(page.getByTestId("day-2").getByLabel("اليوم 2")).toBeHidden();
+  await day1.getByTestId("fold-1").click();
+  await expect(title).toBeHidden();
   await noHorizontalScroll(page);
   await db.query(`DELETE FROM program_templates WHERE id = $1`, [t.id]);
 });
@@ -151,9 +154,9 @@ test("التمارين التأهيلية: التصفية حسب التصنيف�
   await db.query(`UPDATE "user" SET role = 'coach' WHERE email = $1`, [email]);
   await page.goto("/admin/rehab");
   await expect(page.getByText("لأغراض تنظيمية وتعليمية فقط").first()).toBeVisible();
-  await expect(page.getByTestId("rehab-count")).toContainText("33");
+  await expect(page.getByTestId("rehab-count")).toContainText("43");
   await page.getByLabel("التصنيف").selectOption("آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain");
-  await expect(page.getByTestId("rehab-count")).toContainText("11");
+  await expect(page.getByTestId("rehab-count")).toContainText("13");
   const row = page.getByTestId("rehab-table").getByRole("row", { name: /Glute Bridge/ }).first();
   await expect(row).toContainText("تقوية بسط الورك وتحمّل الجذع");
   await expect(row).toContainText("يحتاج مراجعة أخصائي");

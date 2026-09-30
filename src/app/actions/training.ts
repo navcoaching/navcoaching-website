@@ -158,6 +158,15 @@ async function exerciseByName(tx: Tx, name: string, allowId?: string | null) {
     `SELECT id FROM exercises WHERE lower(trim(name)) = lower(trim($1)) AND (status = 'approved' OR id::text = $2)`, [name, allowId ?? ""]);
   return (e?.id as string | undefined) ?? null;
 }
+/** يضع التمرين في الترتيب المطلوب داخل يومه (1 = الأول) ويعيد ترقيم الباقي */
+async function placeAt(tx: Tx, table: string, dayId: string, itemId: string, pos: number | null) {
+  if (pos == null) return;
+  const ids = (await tx.query(`SELECT id FROM ${table} WHERE day_id = $1 AND id <> $2 ORDER BY position, id`, [dayId, itemId])).rows.map((r) => r.id as string);
+  ids.splice(Math.min(Math.max(pos - 1, 0), ids.length), 0, itemId);
+  await tx.query(`UPDATE ${table} SET position = x.ord - 1 FROM unnest($1::uuid[]) WITH ORDINALITY AS x(id, ord) WHERE ${table}.id = x.id`, [ids]);
+}
+/** رقم الترتيب من النموذج (فارغ = بدون تغيير) */
+const positionOf = (fd: FormData) => { const n = Number(String(fd.get("position") ?? "").trim()); return Number.isInteger(n) && n >= 1 && n <= 60 ? n : null; };
 const trainingFail = (err: unknown): ActionState =>
   (err as Error).message === "gone" ? { error: "العنصر غير موجود، حدّثي الصفحة." } : fail(err);
 
@@ -288,11 +297,10 @@ export async function addItemAction(_: ActionState, fd: FormData): Promise<Actio
       if (!ex) return { error: "التمرين غير موجود في المكتبة أو غير معتمد. اختاريه من القائمة." };
       const plan: PlanWeek[] = Array.from({ length: o.weeks }, () => ({ sets: reps.length, reps, rir }));
       const { rows: [{ pos }] } = await tx.query(`SELECT coalesce(max(position), -1) + 1 AS pos FROM ${t.items} WHERE day_id = $1`, [day]);
-      if (kind === "block") {
-        await tx.query(`INSERT INTO block_items (day_id, position, exercise_id, coach_exercise_id, plan) VALUES ($1,$2,$3,$3,$4)`, [day, pos, ex, JSON.stringify(plan)]);
-      } else {
-        await tx.query(`INSERT INTO template_items (day_id, position, exercise_id, plan) VALUES ($1,$2,$3,$4)`, [day, pos, ex, JSON.stringify(plan)]);
-      }
+      const { rows: [ins] } = kind === "block"
+        ? await tx.query(`INSERT INTO block_items (day_id, position, exercise_id, coach_exercise_id, plan) VALUES ($1,$2,$3,$3,$4) RETURNING id`, [day, pos, ex, JSON.stringify(plan)])
+        : await tx.query(`INSERT INTO template_items (day_id, position, exercise_id, plan) VALUES ($1,$2,$3,$4) RETURNING id`, [day, pos, ex, JSON.stringify(plan)]);
+      await placeAt(tx, t.items, day, ins.id, positionOf(fd));
       await revalidateOwner(tx, kind, o.owner);
       return null;
     });
@@ -306,16 +314,19 @@ export async function saveItemAction(_: ActionState, fd: FormData): Promise<Acti
   const kind = kindOf(fd), item = idOf(fd, "item");
   if (!kind || !item) return { error: GENERIC };
   const name = String(fd.get("exercise") ?? "").trim();
+  const pickedId = idOf(fd, "exercise_id");
   const note = String(fd.get("note") ?? "").trim();
-  if (!name) return { error: "اختاري التمرين من القائمة." };
+  if (!name && !pickedId) return { error: "اختاري التمرين من القائمة." };
   if (note.length > 500) return { error: "الملاحظة حتى 500 حرف." };
   const copyFirst = fd.get("copy_first") === "on";
   const t = T[kind];
   try {
     const res = await asCoach(async (tx) => {
       const o = await ownerOfItem(tx, kind, item);
-      const { rows: [cur] } = await tx.query(`SELECT exercise_id FROM ${t.items} WHERE id = $1`, [item]);
-      const ex = await exerciseByName(tx, name, cur.exercise_id);
+      const { rows: [cur] } = await tx.query(`SELECT exercise_id, day_id FROM ${t.items} WHERE id = $1`, [item]);
+      const ex = pickedId
+        ? ((await tx.query(`SELECT id FROM exercises WHERE id = $1 AND (status = 'approved' OR id = $2)`, [pickedId, cur.exercise_id])).rows[0]?.id as string | undefined) ?? null
+        : await exerciseByName(tx, name, cur.exercise_id);
       if (!ex) return { error: "التمرين غير موجود في المكتبة أو غير معتمد. اختاريه من القائمة." };
       const plan: PlanWeek[] = [];
       for (let w = 1; w <= o.weeks; w++) {
@@ -334,6 +345,7 @@ export async function saveItemAction(_: ActionState, fd: FormData): Promise<Acti
       } else {
         await tx.query(`UPDATE template_items SET exercise_id = $2, plan = $3, note = $4 WHERE id = $1`, [item, ex, JSON.stringify(plan), note || null]);
       }
+      await placeAt(tx, t.items, cur.day_id, item, positionOf(fd));
       await revalidateOwner(tx, kind, o.owner);
       return null;
     });
