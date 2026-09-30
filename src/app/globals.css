@@ -285,6 +285,8 @@ bdi, .ltr { unicode-bidi: isolate; direction: ltr; }
 /* نفس مقاس صورة «نموذج توضيحي»: عمود الصورة أعرض، وعنوان بنفس حجمه */
 .hero-grid.with-photo { grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); }
 .hero-grid.with-photo h1 { font-size: clamp(32px, 4.6vw, 54px); }
+/* على الجوال والآيباد العمودي: عمود واحد (هذي القاعدة لازم تكون بعد قاعدة العمودين وإلا تُلغى) */
+@media (max-width: 900px) { .hero-grid.with-photo { grid-template-columns: 1fr; } .hero-grid.with-photo h1 { font-size: clamp(30px, 8.5vw, 44px); } .hero-photo { max-width: 560px; } }
 .hero-slashes { position: absolute; inset-inline-end: -40px; bottom: -30px; width: 280px; height: 140px; background: var(--slash); opacity: 0.12; pointer-events: none; }
 
 .page-hero { background: var(--ink); color: #fff; padding-block: clamp(40px, 7vw, 80px); position: relative; overflow: hidden; }
