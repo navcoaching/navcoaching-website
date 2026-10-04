@@ -5,6 +5,7 @@ import { getProduct, getProducts, getSettings } from "@/lib/data";
 import { CATEGORY_LABEL, riyals, shortName } from "@/lib/format";
 import { timelineSteps } from "@/lib/status";
 import { IconArrow } from "@/components/Icons";
+import { productDescription } from "@/lib/seo";
 import JsonLd, { siteUrl } from "@/components/JsonLd";
 
 export const revalidate = 300;
@@ -15,7 +16,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const p = await getProduct((await params).slug);
-  return p ? { title: p.name, description: p.audience } : { title: "غير موجود" };
+  return p ? { title: p.name, description: productDescription(p) } : { title: "غير موجود" };
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
