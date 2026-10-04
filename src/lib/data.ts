@@ -28,8 +28,6 @@ export type Settings = {
     experience_title?: string; experience?: string[];
   };
   intro_video: { url: string; title: string; body: string };
-  /** فيديو «كيف تستخدم الموقع» (يوتيوب) يفتح في نافذة منبثقة من الصفحة الرئيسية */
-  tutorial_video?: { url: string; label?: string };
   /** مقطع شرح استخدام الموقع بالكامل (يوتيوب، عرضي أو Shorts): قسم كامل في الصفحة الرئيسية */
   guide_video?: { url: string; title?: string; body?: string };
   /** معرّف Google Analytics 4 (G-XXXXXXXXXX). فارغ = معطّل */
