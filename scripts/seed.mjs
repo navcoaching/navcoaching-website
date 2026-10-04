@@ -10,6 +10,7 @@ import { loadEnv } from "./env.mjs";
 import { exercisesSql } from "./exercises-sql.mjs";
 import { nutritionSql } from "./nutrition-sql.mjs";
 import { foodDetailsSql, foodsSql } from "./foods-sql.mjs";
+import { brandFoodsSql } from "./brand-foods-sql.mjs";
 import { recipeTemplatesSql } from "./recipes-sql.mjs";
 
 loadEnv();
@@ -137,7 +138,8 @@ try {
   await db.query(recipeTemplatesSql("library"));
   // ---------- قاعدة الأكل (USDA) إن وُلّد ملفها ----------
   const fsql = foodsSql();
-  if (fsql) { await db.query(fsql); await db.query(foodDetailsSql()); } // التفاصيل (نوع المصدر والألياف والفيتامينات) للموجود أيضاً
+  if (fsql) { await db.query(fsql); await db.query(foodDetailsSql()); }
+  await db.query(brandFoodsSql()); // منتجات ندى والمراعي
   const { rows: [{ n: exCount }] } = await db.query("SELECT count(*)::int AS n FROM exercises");
 
   await db.query("COMMIT");
