@@ -5,6 +5,7 @@ import { getProduct, getProducts, getSettings } from "@/lib/data";
 import { CATEGORY_LABEL, riyals, shortName } from "@/lib/format";
 import { timelineSteps } from "@/lib/status";
 import { IconArrow } from "@/components/Icons";
+import JsonLd, { siteUrl } from "@/components/JsonLd";
 
 export const revalidate = 300;
 
@@ -24,8 +25,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const offers = p.offers.filter((o) => o.active);
   const steps = timelineSteps(p.category, false);
 
+  const url = `${siteUrl()}/programs/${p.slug}`;
   return (
     <>
+      {!p.is_demo && offers.length > 0 && (
+        <JsonLd data={{ "@context": "https://schema.org", "@type": "Service", name: p.name, description: p.audience, url, provider: { "@type": "Organization", name: "Nav Coaching", url: siteUrl() },
+          areaServed: "SA", offers: offers.map((o) => ({ "@type": "Offer", name: o.label, price: (o.price_halalas / 100).toFixed(2), priceCurrency: o.currency || "SAR", url })) }} />
+      )}
       <section className="page-hero">
         <div className="wrap">
           <nav className="small" aria-label="مسار التنقل"><Link href="/programs" style={{ color: "var(--on-dark-muted)" }}>البرامج</Link> / <span>{CATEGORY_LABEL[p.category]}</span></nav>

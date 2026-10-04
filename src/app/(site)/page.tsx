@@ -10,6 +10,7 @@ import IntakeCalculator from "./calculator/IntakeCalculator";
 import { IconArrow, IconChat, IconFile, IconShield, IconTarget, IconTrend } from "@/components/Icons";
 import { getFaqs, getProducts, getPublicReviews, getSettings } from "@/lib/data";
 import { youtubeId } from "@/lib/youtube";
+import JsonLd, { siteUrl } from "@/components/JsonLd";
 
 export const revalidate = 300;
 
@@ -27,6 +28,11 @@ export default async function Home() {
 
   return (
     <>
+      <JsonLd data={{ "@context": "https://schema.org", "@graph": [
+        { "@type": "Organization", "@id": `${siteUrl()}/#org`, name: "Nav Coaching", url: siteUrl(), logo: `${siteUrl()}/brand/og-logo.png`,
+          description: "برامج تدريب وتغذية مخصصة لأهدافك مع الكوتش ساره: خطة منظمة ومتابعة أسبوعية.", ...(s.contact?.instagram ? { sameAs: [s.contact.instagram] } : {}) },
+        { "@type": "WebSite", "@id": `${siteUrl()}/#site`, url: siteUrl(), name: "Nav Coaching", inLanguage: "ar", publisher: { "@id": `${siteUrl()}/#org` } },
+      ] }} />
       {/* ---------- الهيرو ---------- */}
       <section className="hero">
         <div className={`wrap hero-grid${heroMedia ? " with-photo" : " with-shot"}`}>

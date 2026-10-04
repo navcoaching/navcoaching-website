@@ -4,14 +4,16 @@ import RichText from "@/components/RichText";
 import { CopyButton } from "@/components/FormBits";
 import { getFaqs, getSettings } from "@/lib/data";
 import { waLink } from "@/lib/format";
+import JsonLd, { plain, siteUrl } from "@/components/JsonLd";
 
 export const revalidate = 300;
-export const metadata: Metadata = { title: "الأسئلة الشائعة" };
+export const metadata: Metadata = { title: "الأسئلة الشائعة عن برامج التدريب والتغذية", description: "إجابات عن الاشتراك والدفع والمتابعة والمراجعة الأسبوعية وبرامج التدريب والتغذية مع الكوتش ساره قبل ما تشترك." };
 
 export default async function Faq() {
   const [faqs, s] = await Promise.all([getFaqs(), getSettings()]);
   return (
     <>
+      <JsonLd data={{ "@context": "https://schema.org", "@type": "FAQPage", url: `${siteUrl()}/faq`, mainEntity: faqs.map((f) => ({ "@type": "Question", name: plain(f.question), acceptedAnswer: { "@type": "Answer", text: plain(f.answer) } })) }} />
       <section className="page-hero">
         <div className="wrap">
           <span className="eyebrow">الأسئلة الشائعة</span>

@@ -4,7 +4,7 @@ import ReviewCard from "@/components/ReviewCard";
 import { getPublicReviews, getSettings } from "@/lib/data";
 
 export const revalidate = 300;
-export const metadata: Metadata = { title: "تقييمات المتدربين" };
+export const metadata: Metadata = { title: "تقييمات المتدربين", description: "تجارب حقيقية لمتدربين مع برامج التدريب والتغذية في Nav Coaching، تُنشر بموافقتهم وبدون تعديل." };
 
 export default async function Reviews() {
   const [reviews, s] = await Promise.all([getPublicReviews(), getSettings()]);

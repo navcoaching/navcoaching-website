@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(site),
   title: { default: "Nav Coaching — برامج تدريب وتغذية مخصصة لأهدافك", template: "%s — Nav Coaching" },
   description: "برامج تدريب وتغذية مخصصة لأهدافك مع الكوتش ساره: خطة منظمة، متابعة للتقدم، وتعديلات أسبوعية تناسب مستواك وظروفك.",
+  alternates: { canonical: "./" }, // رابط أساسي لكل صفحة (يمنع تكرار الصفحة بروابط مختلفة)
   openGraph: { type: "website", locale: "ar_SA", siteName: "Nav Coaching", images: ["/brand/og-logo.png"] },
   appleWebApp: { capable: true, title: "Nav Coaching", statusBarStyle: "default" },
 };

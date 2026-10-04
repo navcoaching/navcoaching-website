@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getApprovedMedia, getProducts, getSettings } from "@/lib/data";
 
 export const revalidate = 300;
-export const metadata: Metadata = { title: "عن المدربة" };
+export const metadata: Metadata = { title: "عن الكوتش ساره | ناڤ", description: "تعرّفي على الكوتش ساره (ناڤ): خلفيتها في التدريب والتغذية وأسلوب المتابعة الأسبوعية في برامج Nav Coaching." };
 
 /** فقرة تبدأ اختيارياً بجزء عريض بين ** ** */
 function Para({ text }: { text: string }) {
