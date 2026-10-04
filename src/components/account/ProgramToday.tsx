@@ -2,17 +2,15 @@ import Link from "next/link";
 import type { Tx } from "@/lib/db";
 import { currentWeek } from "@/lib/training";
 import { sumMacros } from "@/lib/nutrition";
-import { loadRoutine, type Routine } from "@/lib/nutrition-data";
 
 export type ProgramToday = {
   block: { name: string; week: number; weeks: number; steps_goal_week: number; days: { id: string; day_no: number; title: string; items: number; logged: number }[] } | null;
   target: { kcal: number | null; protein: number | null; carbs: number | null; fat: number | null; rules: string | null } | null;
   eaten: { kcal: number; protein: number; carbs: number; fat: number };
   plans: { id: string; name: string }[];
-  routine: Routine | null;
 };
 
-/** ما يحتاجه المتدرب اليوم من اشتراكه: أيام تمرين الأسبوع، أهداف التغذية وما سجّله اليوم، والمكملات */
+/** ما يحتاجه المتدرب اليوم من اشتراكه: أيام تمرين الأسبوع، أهداف التغذية وما سجّله اليوم (المكملات في صفحة التغذية والمكملات) */
 export async function loadProgramToday(tx: Tx, orderId: string, userId: string, today: string): Promise<ProgramToday> {
   const { rows: [b] } = await tx.query(
     `SELECT id, name, start_date::text AS start_date, weeks, steps_goal_week FROM blocks WHERE order_id = $1 AND status = 'active'`, [orderId]);
@@ -32,8 +30,7 @@ export async function loadProgramToday(tx: Tx, orderId: string, userId: string, 
     `SELECT protein::float, carbs::float, fat::float FROM food_logs WHERE order_id = $1 AND user_id = $2 AND log_date = $3`, [orderId, userId, today])).rows;
   const plans = (await tx.query(
     `SELECT id, name FROM nutrition_plans WHERE order_id = $1 AND NOT archived ORDER BY position, created_at`, [orderId])).rows;
-  const routine = await loadRoutine(tx, { orderId });
-  return { block, target, eaten: sumMacros(logs), plans, routine };
+  return { block, target, eaten: sumMacros(logs), plans };
 }
 
 const n0 = (v: number) => Math.round(v).toLocaleString("en-US");
@@ -41,7 +38,7 @@ const n0 = (v: number) => Math.round(v).toLocaleString("en-US");
 export default function ProgramTodayView({ orderNo, p }: { orderNo: string; p: ProgramToday }) {
   const base = `/account/orders/${orderNo}`;
   const hasNutrition = p.target || p.plans.length > 0;
-  if (!p.block && !hasNutrition && !p.routine) return null;
+  if (!p.block && !hasNutrition) return null;
   return (
     <div className="program-today stack" style={{ ["--space" as string]: "14px" }} data-testid="program-today">
       {p.block && (
@@ -87,23 +84,6 @@ export default function ProgramTodayView({ orderNo, p }: { orderNo: string; p: P
               <span key={pl.id}>{i > 0 && "، "}<Link href={`${base}/nutrition?tab=plans`}>{pl.name}</Link></span>
             ))}</p>
           )}
-        </section>
-      )}
-
-      {p.routine && (
-        <section className="stack" style={{ ["--space" as string]: "8px" }} data-testid="today-supplements">
-          <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
-            <h3 style={{ fontSize: 17 }}>💊 روتين المكملات</h3>
-            <Link className="small" href={`${base}/nutrition?tab=supplements`}>التفاصيل ←</Link>
-          </div>
-          {p.routine.sections.filter((s) => s.items.length).map((s) => (
-            <div key={s.id} className="small">
-              <b>{s.title}</b>
-              <ul className="supp-mini">
-                {s.items.map((it) => <li key={it.id}><bdi>{it.name}</bdi>{it.timing ? <span className="muted"> — {it.timing}</span> : null}</li>)}
-              </ul>
-            </div>
-          ))}
         </section>
       )}
     </div>

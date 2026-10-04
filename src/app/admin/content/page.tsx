@@ -84,6 +84,15 @@ export default async function AdminContent() {
         </ActionForm>
       </section>
 
+      <section className="card stack" data-testid="analytics-settings">
+        <H id="analytics">Google Analytics</H>
+        <p className="small muted">الصقي معرّف القياس (Measurement ID) من حسابك في Google Analytics، ويبدأ بـ G-. يُحمَّل القياس في الصفحات العامة فقط (الرئيسية، البرامج، المدونة…) وبعد موافقة الزائر، ولا يعمل أبداً داخل حساب المتدرب أو الطلب أو الدفع أو لوحة الإدارة. الحالة الآن: <b>{s.analytics?.ga_id ? "مفعّل" : "غير مفعّل"}</b>. لإيقافه امسحي المعرّف واحفظي. أضيفي ذكره في سياسة الخصوصية.</p>
+        <ActionForm action={saveSettingAction}>
+          <input type="hidden" name="key" value="analytics" />
+          <div className="field"><label htmlFor="ga-id">معرّف القياس</label><input id="ga-id" name="ga_id" type="text" dir="ltr" defaultValue={s.analytics?.ga_id} maxLength={20} placeholder="G-XXXXXXXXXX" autoComplete="off" /></div>
+        </ActionForm>
+      </section>
+
       <section className="card stack">
         <H id="hero">الواجهة الرئيسية</H>
         <ActionForm action={saveSettingAction}>

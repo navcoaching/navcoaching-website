@@ -89,9 +89,13 @@ test("حساب المتدرب: التقدم، سجل الماكروز، التع
   await noHorizontalScroll(page);
 
   // سجل الماكروز
-  await side.getByRole("link", { name: "سجل الماكروز" }).click();
+  await expect(side.getByRole("link", { name: "سجل الماكروز" })).toHaveCount(0); // موجود في صفحة التغذية فقط
+  await expect(side.getByRole("link", { name: "دليل مصادر الأكل" })).toHaveCount(0);
+  await expect(side.getByRole("link", { name: "التعليمات" })).toHaveCount(0);
+  await side.getByRole("link", { name: "التغذية والمكملات" }).click();
+  await page.locator(".tabs").getByRole("link", { name: "سجل الماكروز" }).click();
   await expect(page).toHaveURL(new RegExp(`/nutrition/log$`));
-  await expect(page.locator(".account-side a[aria-current=page]")).toHaveText(/سجل الماكروز/);
+  await expect(page.locator(".account-side a[aria-current=page]")).toHaveText(/التغذية والمكملات/);
   const table = page.getByTestId("macro-log");
   await expect(table.locator("tbody tr")).toHaveCount(2);
   await expect(table.locator("tbody tr").first()).toContainText("780"); // 50×4 + 100×4 + 20×9

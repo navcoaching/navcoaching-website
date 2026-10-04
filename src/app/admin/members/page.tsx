@@ -4,11 +4,12 @@ import { requireCoach } from "@/lib/session";
 import { fmtDate, fmtDateTime } from "@/lib/format";
 import ActionForm from "@/components/admin/ActionForm";
 import { markSwapsSeenAction } from "@/app/actions/training";
+import { ANSWER_LABELS } from "@/lib/intake";
 import { deleteMemberAction } from "@/app/actions/admin";
 
 type SP = { q?: string; view?: string };
 type Swap = { user_id: string; order_no: string; from_name: string; to_name: string; day_title: string; created_at: string };
-type Row = { swaps: number; id: string; name: string; email: string; phone: string | null; created: string; last_seen: string | null; orders: number; active: number; verified: boolean; manual_only: boolean };
+type Row = { profile: { answers: Record<string, unknown>; health: Record<string, unknown>; flag: boolean; at: string } | null; swaps: number; id: string; name: string; email: string; phone: string | null; created: string; last_seen: string | null; orders: number; active: number; verified: boolean; manual_only: boolean };
 
 /** حسابات الأعضاء المسجلين (المتدربين) — للقراءة فقط، والتواصل والطلبات من الروابط */
 export default async function Members({ searchParams }: { searchParams: Promise<SP> }) {
@@ -24,7 +25,8 @@ export default async function Members({ searchParams }: { searchParams: Promise<
              count(o.id) FILTER (WHERE NOT o.is_demo)::int AS orders,
              count(o.id) FILTER (WHERE NOT o.is_demo AND o.status IN ('active', 'delivered', 'preparing'))::int AS active,
              (count(o.id) > 0 AND bool_and(o.source = 'manual')) AS manual_only,
-             (SELECT count(*)::int FROM exercise_swaps s WHERE s.user_id = u.id AND s.seen_at IS NULL) AS swaps
+             (SELECT count(*)::int FROM exercise_swaps s WHERE s.user_id = u.id AND s.seen_at IS NULL) AS swaps,
+             (SELECT jsonb_build_object('answers', p.answers, 'health', p.health, 'flag', p.health_flag, 'at', p.updated_at) FROM member_profiles p WHERE p.user_id = u.id) AS profile
         FROM "user" u LEFT JOIN orders o ON o.user_id = u.id
        WHERE u.role = 'client'
        GROUP BY u.id`;
@@ -82,6 +84,17 @@ export default async function Members({ searchParams }: { searchParams: Promise<
                   <b>{m.name && !m.name.includes("@") ? m.name : "—"}</b>
                   <div className="small"><bdi dir="ltr">{m.email}</bdi></div>
                   {m.phone && <div className="small muted"><bdi dir="ltr">{m.phone}</bdi></div>}
+                  {m.profile && (
+                    <details className="small" data-testid="member-profile">
+                      <summary style={{ cursor: "pointer", minHeight: 36 }}>استبيان العضو (بدون طلب){m.profile.flag ? " ⚠️" : ""}</summary>
+                      <dl className="kv small">
+                        {Object.entries({ ...m.profile.answers, ...m.profile.health }).filter(([, v]) => v !== "" && v != null && !(Array.isArray(v) && !v.length)).map(([k, v]) => (
+                          <span key={k} style={{ display: "contents" }}><dt>{ANSWER_LABELS[k] ?? k}</dt><dd>{Array.isArray(v) ? v.join("، ") : String(v)}</dd></span>
+                        ))}
+                      </dl>
+                      <span className="muted">آخر تحديث {fmtDate(m.profile.at)}</span>
+                    </details>
+                  )}
                   {m.swaps > 0 && (
                     <div className="swap-note" data-testid="member-swaps">
                       <b>🔁 بدّل {m.swaps === 1 ? "تمريناً" : `${m.swaps} تمارين`}:</b>
@@ -110,14 +123,14 @@ export default async function Members({ searchParams }: { searchParams: Promise<
                 <td>
                   <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
                     <Link className="btn btn-ghost btn-sm" href={`/admin/orders/new?email=${encodeURIComponent(m.email)}`}>إضافة برنامج</Link>
-                    {m.orders === 0 && (
-                      <span data-testid="delete-member">
-                        <ActionForm action={deleteMemberAction} className="form" submit="حذف العضو" submitClass="btn btn-ghost btn-sm danger"
-                          confirm={`حذف حساب ${m.email} نهائياً؟ ما يمكن التراجع، ويحتاج يسجّل من جديد.`}>
-                          <input type="hidden" name="user_id" value={m.id} />
-                        </ActionForm>
-                      </span>
-                    )}
+                    <span data-testid="delete-member">
+                      <ActionForm action={deleteMemberAction} className="form" submit="حذف العضو" submitClass="btn btn-ghost btn-sm danger"
+                        confirm={m.orders > 0
+                          ? `حذف حساب ${m.email} نهائياً مع ${m.orders} ${m.orders === 1 ? "طلب" : "طلبات"} وكل بياناتها (برامج، تغذية، إيصالات)؟ ما يمكن التراجع.`
+                          : `حذف حساب ${m.email} نهائياً؟ ما يمكن التراجع، ويحتاج يسجّل من جديد.`}>
+                        <input type="hidden" name="user_id" value={m.id} />
+                      </ActionForm>
+                    </span>
                   </div>
                 </td>
               </tr>

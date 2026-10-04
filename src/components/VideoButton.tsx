@@ -1,19 +1,20 @@
 "use client";
 import { useRef, useState } from "react";
-import { youtubeId } from "@/lib/youtube";
+import { tiktokId, youtubeId } from "@/lib/youtube";
 
 /**
  * زر «▶ فيديو» يشغّل مقطع يوتيوب داخل نافذة منبثقة في الموقع (بدل الخروج لتطبيق يوتيوب).
- * المشغّل يُحمَّل فقط عند الفتح ويُزال عند الإغلاق (يوقف الصوت). أي رابط غير يوتيوب يفتح كرابط عادي.
+ * يدعم يوتيوب وتيك توك (الرابط الكامل). المشغّل يُحمَّل فقط عند الفتح ويُزال عند الإغلاق (يوقف الصوت). أي رابط آخر يفتح كرابط عادي.
  */
 export default function VideoButton({ url, label = "▶ فيديو", title, className = "btn btn-ghost btn-sm", testId }: {
   url: string; label?: React.ReactNode; title?: string; className?: string; testId?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
-  const id = youtubeId(url);
+  const yt = youtubeId(url), tt = yt ? null : tiktokId(url);
+  const id = yt ?? tt;
   if (!id) return <a className={className} href={url} target="_blank" rel="noopener noreferrer" data-testid={testId}>{label}</a>;
-  const vertical = /\/shorts\//.test(url);
+  const vertical = Boolean(tt) || /\/shorts\//.test(url);
   const show = (e: React.MouseEvent) => {
     e.preventDefault(); e.stopPropagation(); // داخل <summary> ما يطوي البطاقة
     setOpen(true);
@@ -32,11 +33,11 @@ export default function VideoButton({ url, label = "▶ فيديو", title, clas
           </div>
           <div className="video-modal-frame">
             {open && (
-              <iframe src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1&modestbranding=1`}
+              <iframe src={tt ? `https://www.tiktok.com/embed/v2/${tt}` : `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1&modestbranding=1`}
                 title={title ?? "فيديو"} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen data-testid="video-iframe" />
             )}
           </div>
-          <a className="small muted" href={url} target="_blank" rel="noopener noreferrer">ما اشتغل؟ افتحه في يوتيوب</a>
+          <a className="small muted" href={url} target="_blank" rel="noopener noreferrer">{tt ? "ما اشتغل؟ افتحه في تيك توك" : "ما اشتغل؟ افتحه في يوتيوب"}</a>
         </div>
       </dialog>
     </>

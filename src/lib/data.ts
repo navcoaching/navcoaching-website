@@ -32,6 +32,8 @@ export type Settings = {
   tutorial_video?: { url: string; label?: string };
   /** مقطع شرح استخدام الموقع بالكامل (يوتيوب، عرضي أو Shorts): قسم كامل في الصفحة الرئيسية */
   guide_video?: { url: string; title?: string; body?: string };
+  /** معرّف Google Analytics 4 (G-XXXXXXXXXX). فارغ = معطّل */
+  analytics?: { ga_id: string };
   /** أسئلة الاستبيان المعدّلة من لوحة الإدارة (انظر intake-config.ts) */
   intake_questions?: unknown;
   testimonials_disclaimer: string;
@@ -166,7 +168,8 @@ export async function getMyFollowUp(userId: string, o: { id: string; order_no: s
 export async function getMyPrefs(userId: string) {
   const row = await withUser(userId, async (tx) =>
     (await tx.query("SELECT email_enabled, whatsapp_enabled, push_enabled FROM user_prefs WHERE user_id = $1", [userId])).rows[0]);
-  return (row ?? { email_enabled: true, whatsapp_enabled: true, push_enabled: true }) as { email_enabled: boolean; whatsapp_enabled: boolean; push_enabled: boolean };
+  // saved=false: لم يحفظ تفضيلاته بعد (تظهر له بطاقة التفضيلات أعلى «حسابي» مرة واحدة)
+  return { ...(row ?? { email_enabled: true, whatsapp_enabled: true, push_enabled: true }), saved: Boolean(row) } as { email_enabled: boolean; whatsapp_enabled: boolean; push_enabled: boolean; saved: boolean };
 }
 
 // ---------- الجداول المجانية ----------
@@ -193,4 +196,19 @@ export type MyBooklet = { id: string; title: string; description: string | null;
 export async function getMyBooklets(userId: string): Promise<MyBooklet[]> {
   return withUser(userId, async (tx) => (await tx.query(
     `SELECT id, title, description, file_size FROM booklets WHERE published ORDER BY sort, created_at`)).rows as MyBooklet[]);
+}
+
+/** أول طلب فعّال أو مكتمل لم يكتب عليه المتدرب تقييماً بعد (لبطاقة «قيّم تجربتك» في حسابي) */
+export async function getReviewableOrder(userId: string): Promise<{ order_no: string; product_name: string } | null> {
+  return withUser(userId, async (tx) => (await tx.query(
+    `SELECT o.order_no, o.product_name FROM orders o
+      WHERE o.user_id = $1 AND o.status IN ('active', 'delivered', 'completed')
+        AND NOT EXISTS (SELECT 1 FROM reviews r WHERE r.order_id = o.id)
+      ORDER BY o.created_at DESC LIMIT 1`, [userId])).rows[0] ?? null);
+}
+
+/** هل عنده استبيان محفوظ (بدون طلب أو مع طلب)؟ لتسمية الزر: «تعبئة» أو «تحديث» */
+export async function hasIntake(userId: string): Promise<boolean> {
+  return withUser(userId, async (tx) => (await tx.query(
+    `SELECT EXISTS (SELECT 1 FROM member_profiles WHERE user_id = $1) OR EXISTS (SELECT 1 FROM intakes WHERE user_id = $1) AS x`, [userId])).rows[0].x as boolean);
 }

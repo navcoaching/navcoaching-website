@@ -2,15 +2,15 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
 
-// سياسة أمان المحتوى: لا سكربتات خارجية، والإطار الخارجي الوحيد هو يوتيوب (بعد نقر المستخدم).
+// سياسة أمان المحتوى: السكربت الخارجي الوحيد Google Analytics (بعد موافقة الزائر وفي الصفحات العامة فقط)، والإطار الخارجي الوحيد هو يوتيوب (بعد نقر المستخدم).
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://i.ytimg.com",
+  "img-src 'self' data: blob: https://i.ytimg.com https://*.google-analytics.com https://*.googletagmanager.com",
   "font-src 'self'",
-  "connect-src 'self'",
-  "frame-src https://www.youtube-nocookie.com",
+  "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
+  "frame-src https://www.youtube-nocookie.com https://www.tiktok.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

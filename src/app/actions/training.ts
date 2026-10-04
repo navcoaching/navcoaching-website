@@ -798,13 +798,14 @@ export async function checkVideosAction(): Promise<VideoCheck> {
   try {
     list = await asCoach(async (tx) => (await tx.query(`SELECT id, name, video_url FROM exercises WHERE video_url IS NOT NULL AND video_url <> '' ORDER BY name`)).rows);
   } catch (err) { return { error: dbErrorMessage(err) ?? "للمدربة فقط." }; }
-  const { youtubeId } = await import("@/lib/youtube");
+  const { youtubeId, tiktokId } = await import("@/lib/youtube");
   const bad: NonNullable<VideoCheck["bad"]> = [];
   const REASON: Record<number, string> = { 401: "ممنوع تشغيله داخل المواقع", 403: "خاص أو ممنوع تشغيله داخل المواقع", 404: "محذوف أو خاص", 400: "رابط غير صالح" };
   for (let i = 0; i < list.length; i += 12) {
     await Promise.all(list.slice(i, i + 12).map(async (e) => {
+      if (tiktokId(e.video_url)) return; // تيك توك: لا يوجد فحص موثوق من الخادم
       const id = youtubeId(e.video_url);
-      if (!id) { bad.push({ id: e.id, name: e.name, url: e.video_url, reason: "ليس رابط يوتيوب (يفتح خارج الموقع)" }); return; }
+      if (!id) { bad.push({ id: e.id, name: e.name, url: e.video_url, reason: "ليس رابط يوتيوب أو تيك توك كامل (يفتح خارج الموقع)" }); return; }
       try {
         const r = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${id}`)}&format=json`, { signal: AbortSignal.timeout(6000), cache: "no-store" });
         if (!r.ok) bad.push({ id: e.id, name: e.name, url: e.video_url, reason: REASON[r.status] ?? `رد يوتيوب ${r.status}` });

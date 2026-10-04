@@ -5,7 +5,7 @@ import { requireCoach } from "@/lib/session";
 import ActionForm from "@/components/admin/ActionForm";
 import { saveExerciseAction } from "@/app/actions/training";
 import { ANATOMICAL_ACTIONS, EQUIPMENT, EX_STATUS, KINDS, LEVELS, MOVEMENT_SUBCATEGORIES, MUSCLES, PATTERNS, REHAB_CATEGORIES, REHAB_DISCLAIMER, REHAB_LOADS, REHAB_PHASES, REHAB_REVIEW, SECONDARY_MUSCLES, SUB_PATTERNS, muscleAr, splitPipes } from "@/lib/exercises";
-import { youtubeId } from "@/lib/youtube";
+import { tiktokId, youtubeId } from "@/lib/youtube";
 
 type Ex = {
   id: string; name: string; primary_muscle: string; secondary_muscles: string[]; pattern: string | null; kind: string | null; equipment: string | null;
@@ -43,7 +43,7 @@ export default async function EditExercise({ params, searchParams }: { params: P
         {list.map((o) => <option key={o} value={o}>{o}</option>)}
       </select></div>
   );
-  const yt = youtubeId(ex?.video_url);
+  const yt = youtubeId(ex?.video_url) ?? tiktokId(ex?.video_url);
 
   return (
     <div className="stack" style={{ ["--space" as string]: "18px", maxWidth: 900 }}>
@@ -85,8 +85,8 @@ export default async function EditExercise({ params, searchParams }: { params: P
             </div>
           </fieldset>
           <div className="field"><label htmlFor="ex-video">رابط الفيديو</label>
-            <input id="ex-video" name="video_url" type="url" dir="ltr" maxLength={500} placeholder="https://youtu.be/…" defaultValue={ex?.video_url ?? ""} />
-            {ex?.video_url && <span className="hint"><a href={ex.video_url} target="_blank" rel="noopener noreferrer">فتح الفيديو ↗</a>{!yt && " · رابط غير يوتيوب: يفتح في صفحة خارجية."}</span>}</div>
+            <input id="ex-video" name="video_url" type="url" dir="ltr" maxLength={500} placeholder="https://youtu.be/… أو https://www.tiktok.com/@…/video/…" defaultValue={ex?.video_url ?? ""} />
+            {ex?.video_url && <span className="hint"><a href={ex.video_url} target="_blank" rel="noopener noreferrer">فتح الفيديو ↗</a>{!yt && " · رابط غير يوتيوب/تيك توك الكامل: يفتح في صفحة خارجية (الروابط المختصرة vm.tiktok.com تفتح خارجياً، انسخي الرابط الكامل)."}</span>}</div>
           <div className="field"><label htmlFor="ex-instr">تعليمات الأداء (تظهر للمتدرب)</label>
             <textarea id="ex-instr" name="instructions" maxLength={4000} rows={4} defaultValue={ex?.instructions ?? ""} /></div>
           <div className="field"><label htmlFor="ex-notes">ملاحظات (للمدربة فقط)</label>

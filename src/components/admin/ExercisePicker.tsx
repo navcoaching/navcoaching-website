@@ -1,10 +1,11 @@
 "use client";
 import { createContext, useContext, useMemo, useState } from "react";
-import { TAXONOMY_LEVELS, arPart, cascade, resetAfter, splitPipes, type TaxonomyKey } from "@/lib/exercises";
+import { TAXONOMY_LEVELS, arPart, muscleAr, cascade, resetAfter, splitPipes, type TaxonomyKey } from "@/lib/exercises";
 
 export type PickerExercise = {
   id: string; name: string; equipment: string | null;
   primary_muscle: string; pattern: string | null; sub_pattern: string | null; anatomical_action: string | null; movement_subcategory: string | null;
+  secondary_muscles?: string[] | null;
   rehab_category?: string | null;
 };
 
@@ -27,6 +28,7 @@ export default function ExercisePicker({ exercises: own, idPrefix, defaultId }: 
   const [condition, setCondition] = useState("");
   const [chosen, setChosen] = useState<Partial<Record<TaxonomyKey, string>>>(() => current ? { primary_muscle: current.primary_muscle } : {});
   const [exId, setExId] = useState(defaultId ?? "");
+  const [secondary, setSecondary] = useState("");
 
   const rehabConditions = useMemo(() => {
     const m = new Map<string, number>();
@@ -34,9 +36,15 @@ export default function ExercisePicker({ exercises: own, idPrefix, defaultId }: 
     return [...m].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
   }, [exercises]);
   const pool = useMemo(() => {
-    if (section !== "rehab") return exercises;
-    return exercises.filter((e) => e.rehab_category && (!condition || splitPipes(e.rehab_category).includes(condition)));
-  }, [exercises, section, condition]);
+    const base = section !== "rehab" ? exercises : exercises.filter((e) => e.rehab_category && (!condition || splitPipes(e.rehab_category).includes(condition)));
+    return secondary ? base.filter((e) => e.secondary_muscles?.includes(secondary)) : base;
+  }, [exercises, section, condition, secondary]);
+  const secondaryOptions = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const e of exercises) for (const s of new Set(e.secondary_muscles ?? [])) m.set(s, (m.get(s) ?? 0) + 1);
+    return [...m].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  }, [exercises]);
+  const exSecondary = useMemo(() => exercises.find((e) => e.id === exId)?.secondary_muscles ?? [], [exercises, exId]);
   const { options, matches } = useMemo(() => cascade(pool, chosen), [pool, chosen]);
   // التمرين الحالي يبقى في القائمة حتى لو ضيّقت التصفية بعيداً عنه
   const list = useMemo(() => {
@@ -79,6 +87,13 @@ export default function ExercisePicker({ exercises: own, idPrefix, defaultId }: 
             </div>
           );
         })}
+        <div className="field">
+          <label htmlFor={id("secondary")}>العضلة الثانوية</label>
+          <select id={id("secondary")} value={secondary} onChange={(e) => { setSecondary(e.target.value); setExId(""); }} disabled={secondaryOptions.length === 0}>
+            <option value="">الكل</option>
+            {secondaryOptions.map(([m, n]) => <option key={m} value={m}>{muscleAr(m)} ({n})</option>)}
+          </select>
+        </div>
       </div>
       <div className="grid g2">
         <div className="field">
@@ -87,6 +102,7 @@ export default function ExercisePicker({ exercises: own, idPrefix, defaultId }: 
             <option value="">اختاري…</option>
             {list.map((e) => <option key={e.id} value={e.id}>{e.name}{e.equipment ? ` — ${e.equipment}` : ""}</option>)}
           </select>
+          {exId && <span className="hint" data-testid="picker-secondary">{(() => { const e = exercises.find((x) => x.id === exId); return e ? `الأساسية: ${muscleAr(e.primary_muscle)} · الثانوية: ${exSecondary.length ? [...new Set(exSecondary)].map(muscleAr).join("، ") : "—"}` : ""; })()}</span>}
         </div>
         <div className="field">
           <label htmlFor={id("name")}>أو ابحثي بالاسم</label>

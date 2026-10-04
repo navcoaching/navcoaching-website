@@ -3,6 +3,7 @@
 //   التواصل والحساب البنكي والتقييمات المنشورة ← db/seed/source/site.json
 //   النصوص والأسئلة الشائعة والسياسات ← db/seed/content.json
 // الإعدادات والأسئلة والسياسات لا تُستبدل إذا كانت موجودة (حتى لا تضيع تعديلات لوحة الإدارة)، إلا مع --force.
+import { notesSql } from "./exercise-notes.mjs";
 import { readFile } from "node:fs/promises";
 import pg from "pg";
 import { loadEnv } from "./env.mjs";
@@ -129,6 +130,7 @@ try {
   await db.query(exercisesSql());
   await db.query(exercisesSql(undefined, "taxonomy"));
   await db.query(exercisesSql(undefined, "rehab"));
+  await db.query(notesSql()); // ملاحظات الأداء المهمة (تُضاف مرة واحدة)
   // ---------- قوالب التغذية والمكملات (لا تستبدل الموجود) ----------
   await db.query(nutritionSql());
   // ---------- مكتبة الوجبات (كل الوصفات كوجبات يختار منها المتدرب) ----------

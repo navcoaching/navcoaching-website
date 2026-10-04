@@ -110,14 +110,17 @@ test("كل الوجبات: المتدرب يضيف أي وجبة من قوالب
   expect(tm, "وصفة المكتبة غير موجودة بالبذور").toBeTruthy();
 
   await page.goto(`/account/orders/${orderNo}/nutrition`);
+  await page.getByTestId("add-food-breakfast").click();
   const form = page.getByTestId("food-log-form");
-  await expect(form.getByText("من جداولي")).toHaveCount(0); // ما عنده جداول
-  await form.getByTestId("mode-library").check();
-  // قد تتكرر الوجبة بين القوالب فتظهر مرة وحدة: نختار بالاسم
-  const value = await form.locator("#fl-meal option", { hasText: tm.title }).first().getAttribute("value");
-  await form.getByLabel("اختر أي وجبة من وجبات قوالب التغذية").selectOption(value!);
-  await form.getByRole("button", { name: "إضافة" }).click();
-  await expect(page.getByText("تمت الإضافة ✅")).toBeVisible();
+  await expect(form.getByText("من جدولي")).toHaveCount(0); // ما عنده جداول
+  await form.getByTestId("tab-meals").click();
+  // قد تتكرر الوجبة بين القوالب فتظهر مرة وحدة: نبحث بالاسم
+  await form.getByLabel("بحث في الوجبات").fill(tm.title);
+  await form.getByRole("radio", { name: "الكل" }).check();
+  await expect(form.getByText("طريقة التحضير")).toHaveCount(0);
+  await expect(form.getByText("المكونات")).toHaveCount(0);
+  await form.getByRole("button", { name: new RegExp(`إضافة ${tm.title}`) }).first().click();
+  await expect(page.locator(".food-log-row", { hasText: tm.title })).toBeVisible();
   const { rows: [log] } = await db.query(`SELECT name, protein::float FROM food_logs WHERE order_id = $1`, [o.id]);
   expect(log.name).toBe(tm.title); // بدون اسم الجدول
   expect(log.protein).toBeCloseTo(6.2, 1);
@@ -128,5 +131,5 @@ test("كل الوجبات: المتدرب يضيف أي وجبة من قوالب
   // غير المشترك: ما عنده الخيار (الطلب غير مدفوع)
   await db.query(`UPDATE orders SET status = 'awaiting_payment' WHERE id = $1`, [o.id]);
   await page.goto(`/account/orders/${orderNo}/nutrition`);
-  await expect(page.getByTestId("mode-library")).toHaveCount(0);
+  await expect(page.getByTestId("add-food-breakfast")).toHaveCount(0); // قبل الدفع لا يظهر التسجيل
 });

@@ -58,3 +58,17 @@ export function plansNear<T extends { total: { kcal: number } }>(plans: T[], kca
     .sort((a, b) => Math.abs(a.diff) - Math.abs(b.diff))
     .map((p) => ({ ...p, close: Math.abs(p.diff) <= 100 }));
 }
+
+/**
+ * اسم الوجبة للعرض. بعض العناوين في القوالب مجرد «الفطور»، أو «الغداء — شورما دجاج» (النوع داخل الاسم).
+ * نحذف بادئة النوع، وإن لم يبقَ اسم نستعمل أسماء الأطعمة فيها، وآخر الأمر عنوانها كما هو.
+ */
+export function mealName(kind: MealKind, title: string, foods?: string | null): string {
+  const label = MEAL_KINDS[kind];
+  const t = title.trim();
+  const stripped = t.replace(new RegExp(`^${label}\\s*[—–:\\-]+\\s*`), "").trim();
+  if (stripped && stripped !== label && stripped !== t) return stripped;
+  if (t && t !== label) return t;
+  const f = (foods ?? "").split("،").map((x) => x.trim()).filter(Boolean);
+  return f.length ? f.slice(0, 3).join(" + ") : t;
+}

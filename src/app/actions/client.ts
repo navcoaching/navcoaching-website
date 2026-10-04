@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { dbErrorMessage, withUser } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
+import { profileSchema, splitProfile } from "@/lib/profile";
 import { intakeSchema, normalizedPhone, splitIntake } from "@/lib/intake";
 import { parseConfig, validateCustomAnswers } from "@/lib/intake-config";
 import { getSettings } from "@/lib/data";
@@ -311,4 +312,26 @@ export async function setStartPrefAction(_: ActionState, fd: FormData): Promise<
   }
   revalidatePath(`/account/orders/${orderNo}`);
   return { ok: true, message: mode === "date" ? "تم حفظ موعد البداية." : "تم: نبدأ بأقرب وقت." };
+}
+
+// ---------- استبيان العضو بدون طلب (من «بياناتي») ----------
+export async function saveProfileAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const user = await getCurrentUser();
+  if (!user) return { error: "سجّل الدخول أولاً." };
+  const parsed = profileSchema.safeParse(formToObject(fd));
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string> = {};
+    for (const issue of parsed.error.issues) fieldErrors[String(issue.path[0])] ??= issue.message;
+    return { error: "راجع الحقول المحددة.", fieldErrors };
+  }
+  if (!(await allow(`profile:u:${user.id}`, 20, 3600))) return { error: LIMITED };
+  const { answers, health, flag } = splitProfile(parsed.data);
+  try {
+    await withUser(user.id, (tx) => tx.query("SELECT app.save_my_profile($1, $2, $3)", [JSON.stringify(answers), JSON.stringify(health), flag]));
+  } catch (err) {
+    return { error: dbErrorMessage(err) ?? GENERIC };
+  }
+  revalidatePath("/account");
+  revalidatePath("/account/profile");
+  return { ok: true, message: "تم حفظ استبيانك. شكراً لك." };
 }

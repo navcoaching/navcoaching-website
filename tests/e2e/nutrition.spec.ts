@@ -111,37 +111,40 @@ test("التغذية والمكملات: الأهداف، الجداول، ال�
   await trainee.goto(`/account/orders/${orderNo}`);
   await trainee.getByTestId("nutrition-link").click();
   await trainee.waitForURL(/\/nutrition/);
-  const form = trainee.getByTestId("food-log-form");
-  await form.getByRole("radio", { name: "الغداء" }).check();
-  const mealSel = form.getByLabel("اختر من وجبات جداولك");
-  const shawarma = await mealSel.locator("option", { hasText: "شورما دجاج" }).getAttribute("value");
-  await mealSel.selectOption(shawarma!);
-  await form.getByRole("button", { name: "إضافة" }).click();
-  await expect(trainee.getByText("تمت الإضافة ✅")).toBeVisible();
-  await expect(trainee.getByTestId("food-log-list")).toContainText("شورما دجاج");
+  // الغداء: وجبة جاهزة من جدولي (بدون مكونات أو طريقة تحضير في النافذة)
+  await trainee.getByTestId("add-food-lunch").click();
+  let form = trainee.getByTestId("food-log-form");
+  await form.getByTestId("tab-meals").click();
+  await form.getByRole("radio", { name: "الكل" }).check();
+  await expect(form.getByText("طريقة التحضير")).toHaveCount(0);
+  await form.getByRole("button", { name: /إضافة شورما دجاج/ }).first().click();
+  await expect(trainee.getByTestId("meal-lunch")).toContainText("شورما دجاج");
+  await expect(trainee.getByTestId("meal-lunch").getByTestId("meal-details")).toBeVisible(); // المكونات وطريقة التحضير
   await expect(trainee.getByTestId("macro-summary")).toContainText("383"); // 382.5 من الورقة
-  await form.getByRole("radio", { name: "سناك" }).check();
-  await form.getByRole("radio", { name: "أكلة أخرى" }).check();
+  // سناك: أكلة أخرى
+  await trainee.getByTestId("add-food-snack").click();
+  form = trainee.getByTestId("food-log-form");
+  await form.getByTestId("tab-quick").click();
   await form.getByLabel("اسم الأكلة").fill("تفاحة");
   await form.getByLabel("كارب (غ)").fill("25");
   await form.getByRole("button", { name: "إضافة" }).click();
-  await expect(trainee.getByTestId("food-log-list")).toContainText("تفاحة");
-  await expect(trainee.getByTestId("macro-summary")).toContainText("المتبقي");
+  await expect(trainee.getByTestId("meal-snack")).toContainText("تفاحة");
+  await expect(trainee.getByTestId("macro-summary")).toContainText("متبقي");
   await noHorizontalScroll(trainee);
   trainee.once("dialog", (d) => d.accept());
   await trainee.getByRole("button", { name: "حذف تفاحة" }).click();
   await expect(trainee.getByTestId("food-log-list")).not.toContainText("تفاحة");
 
   // البحث بالغرام: يختار الصنف ويكتب الكمية، وتظهر الماكروز قبل الحفظ
-  await form.getByRole("radio", { name: "العشاء" }).check();
-  await form.getByRole("radio", { name: "ابحث بالغرام" }).check();
-  await form.getByLabel("ابحث عن أكل").fill(`بسمتي مطبوخ ${project}`);
+  await trainee.getByTestId("add-food-dinner").click();
+  form = trainee.getByTestId("food-log-form");
+  await form.getByLabel("بحث", { exact: true }).fill(`بسمتي مطبوخ ${project}`);
   await form.getByTestId("food-results").getByRole("button", { name: new RegExp(foodName) }).click();
   await expect(form.getByLabel("الكمية (غرام)")).toHaveValue("150");
   await form.getByLabel("الكمية (غرام)").fill("200");
   await expect(form.getByTestId("grams-preview")).toContainText("كارب 56.4");
   await form.getByRole("button", { name: "إضافة" }).click();
-  await expect(trainee.getByTestId("food-log-list")).toContainText(`${foodName} — 200غ`);
+  await expect(trainee.getByTestId("meal-dinner")).toContainText(`${foodName} — 200غ`);
   await noHorizontalScroll(trainee);
 
   await trainee.getByRole("link", { name: "جداولي الغذائية" }).click();
@@ -171,7 +174,7 @@ test("التغذية والمكملات: الأهداف، الجداول، ال�
   const mine = trainee.getByTestId("my-program");
   await expect(mine).toContainText("التغذية والمكملات");
   await expect(mine.getByTestId("today-nutrition")).toContainText("السعرات");
-  await expect(mine.getByTestId("today-supplements")).toContainText("مغنيسيوم سترات");
+  await expect(mine.getByTestId("today-supplements")).toHaveCount(0); // المكملات في صفحة التغذية والمكملات فقط
   await expect(mine.getByTestId("expiry-alert")).toContainText("ينتهي خلال 3 أيام");
   await expect(mine.getByTestId("expiry-alert").getByRole("button", { name: "جدّد بخصم 10%" })).toBeVisible();
   await trainee.getByTestId("renewal-popup").getByRole("button", { name: "لاحقاً" }).click();

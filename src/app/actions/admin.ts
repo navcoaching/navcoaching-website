@@ -451,6 +451,12 @@ export async function saveSettingAction(_: ActionState, fd: FormData): Promise<A
       value = { url, title: g("title").slice(0, 80), body: g("body").slice(0, 400) };
       break;
     }
+    case "analytics": {
+      const id = g("ga_id").toUpperCase();
+      if (id && !/^G-[A-Z0-9]{6,12}$/.test(id)) return { error: "المعرّف غير صالح. الصيغة: G- ثم أحرف وأرقام، مثل G-ABC123XYZ4 (تلقينه من Google Analytics ← Admin ← Data streams)." };
+      value = { ga_id: id };
+      break;
+    }
     case "hero":
       value = { eyebrow: g("eyebrow"), title: g("title"), title_tail: g("title_tail"), lead: g("lead"), tagline: g("tagline") };
       break;
@@ -697,14 +703,17 @@ export async function saveFreePlanAction(_: ActionState, fd: FormData): Promise<
   return { ok: true, message: uploaded ? "تم الحفظ ورفع ملف PDF الجديد." : "تم الحفظ." };
 }
 
-// ---------- حذف عضو مسجّل (بدون أي طلب فقط، والقاعدة تتحقق) ----------
+// ---------- حذف عضو مسجّل (حتى لو عنده طلبات: لحسابات التجربة). المدربة لا تُحذف، والقاعدة تتحقق ----------
 export async function deleteMemberAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const user = String(fd.get("user_id") ?? "");
   if (!user || user.length > 100) return { error: GENERIC };
-  let email = "";
+  let res: { email: string; keys: string[] };
   try {
-    email = await asCoach(async (tx) => (await tx.query("SELECT app.coach_delete_member($1) AS email", [user])).rows[0].email as string);
+    res = await asCoach(async (tx) => (await tx.query("SELECT app.coach_delete_member($1) AS r", [user])).rows[0].r as { email: string; keys: string[] });
   } catch (err) { return fail(err); }
+  const email = res.email;
+  const store = await storage();
+  await Promise.all(res.keys.map((k) => store.remove(k).catch(() => {})));
   revalidatePath("/admin/members");
   revalidatePath("/admin");
   return { ok: true, message: `تم حذف العضو ${email}.` };

@@ -2,7 +2,7 @@
 // الحدود (أدنى/أعلى) تضعها المدربة لكل عضلة، ولا أرقام افتراضية من الموقع.
 import type { PlanWeek } from "./training.ts";
 
-export type VolumeItem = { primary_muscle?: string | null; secondary_muscles?: string[] | null; plan: PlanWeek[] };
+export type VolumeItem = { name?: string | null; pattern?: string | null; sub_pattern?: string | null; primary_muscle?: string | null; secondary_muscles?: string[] | null; plan: PlanWeek[] };
 export type Limits = Record<string, { min?: number | null; max?: number | null }>;
 
 /** الحد الافتراضي لكل عضلة (من المدربة): 6 إلى 20 جولة أسبوعياً، ويتعدّل لكل عضلة من «تعديل الحدود» */
@@ -11,6 +11,24 @@ export const DEFAULT_VOLUME_LIMIT = { min: 6, max: 20 };
 /** تصنيفات في المكتبة ليست عضلات، فلا تُحسب في الحجم */
 export const NOT_MUSCLES = ["Functional", "Stretching", "Plyometrics", "CrossFit"];
 const isMuscle = (m: string | null | undefined): m is string => Boolean(m) && !NOT_MUSCLES.some((x) => m!.startsWith(x));
+
+/** الأكتاف تُحسب بثلاثة رؤوس (أمامي/جانبي/خلفي)، ومن تمارين الأكتاف الأساسية فقط (الثانوية من الصدر والظهر لا تدخل) */
+export const SHOULDER_HEADS = { front: "Front Delts / الكتف الأمامي", side: "Side Delts / الكتف الجانبي", rear: "Rear Delts / الكتف الخلفي" } as const;
+export const SHOULDER_HEAD_LIST: string[] = Object.values(SHOULDER_HEADS);
+export const isShoulders = (m: string | null | undefined) => Boolean(m) && m!.startsWith("Shoulders");
+
+/** رأس الكتف المستهدف: من نمط الحركة أولاً، ثم من اسم التمرين */
+export function shoulderHead(it: Pick<VolumeItem, "name" | "pattern" | "sub_pattern">): string {
+  const p = `${it.pattern ?? ""} ${it.sub_pattern ?? ""}`;
+  if (/Rear|High Row|Face Pull/i.test(p)) return SHOULDER_HEADS.rear;
+  if (/Front Raise/i.test(p)) return SHOULDER_HEADS.front;
+  if (/Lateral Raise|Y Raise|Diagonal/i.test(p)) return SHOULDER_HEADS.side;
+  if (/Vertical Push|Shoulder Press/i.test(p)) return SHOULDER_HEADS.front;
+  const n = it.name ?? "";
+  if (/rear|reverse|face\s*pull|high row|bent/i.test(n)) return SHOULDER_HEADS.rear;
+  if (/front|press|push/i.test(n)) return SHOULDER_HEADS.front;
+  return SHOULDER_HEADS.side;
+}
 
 /** لكل أسبوع: خريطة العضلة ← عدد الجولات (مقرّب لنصف) */
 export function weeklyVolume(items: VolumeItem[], weeks: number): Map<string, number>[] {
@@ -21,8 +39,8 @@ export function weeklyVolume(items: VolumeItem[], weeks: number): Map<string, nu
     for (let w = 0; w < weeks; w++) {
       const sets = it.plan[w]?.sets ?? 0;
       if (!sets) continue;
-      add(out[w], it.primary_muscle, sets);
-      for (const s of new Set(it.secondary_muscles ?? [])) if (isMuscle(s) && s !== it.primary_muscle) add(out[w], s, sets / 2);
+      add(out[w], isShoulders(it.primary_muscle) ? shoulderHead(it) : it.primary_muscle, sets);
+      for (const s of new Set(it.secondary_muscles ?? [])) if (isMuscle(s) && s !== it.primary_muscle && !isShoulders(s)) add(out[w], s, sets / 2);
     }
   }
   return out;

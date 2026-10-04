@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireUser } from "@/lib/session";
-import { getMyBooklets, getMyFreePlans, getMyOrders, getMyPrefs } from "@/lib/data";
+import { getMyBooklets, getMyFreePlans, getMyOrders, getMyPrefs, getReviewableOrder, hasIntake } from "@/lib/data";
 import { fmtDate, riyals } from "@/lib/format";
 import { statusLabel, statusTone } from "@/lib/status";
-import { PrefsForm, ProfileForm, SignOut } from "./ClientForms";
+import { PrefsForm, ProfileForm, ReviewForm, SignOut } from "./ClientForms";
 import PushCard from "@/components/account/PushCard";
 import InstallPrompt from "@/components/account/InstallPrompt";
 import { pushPublicKey } from "@/lib/push";
@@ -18,8 +18,14 @@ const IN_PROGRAM = ["active", "delivered"];
 
 export default async function Account({ searchParams }: { searchParams: Promise<{ denied?: string; plan?: string; booklet?: string }> }) {
   const user = await requireUser("/account");
-  const [orders, prefs, freePlans, booklets, { denied, plan: planMsg, booklet: bookletMsg }] = await Promise.all([
-    getMyOrders(user.id), getMyPrefs(user.id), getMyFreePlans(user.id), getMyBooklets(user.id), searchParams]);
+  const [orders, prefs, freePlans, booklets, reviewable, intakeSaved, { denied, plan: planMsg, booklet: bookletMsg }] = await Promise.all([
+    getMyOrders(user.id), getMyPrefs(user.id), getMyFreePlans(user.id), getMyBooklets(user.id), getReviewableOrder(user.id), hasIntake(user.id), searchParams]);
+  const prefsCard = (
+    <div className="card stack" aria-labelledby="prefs-h">
+      <h2 id="prefs-h" style={{ fontSize: 18 }}>تفضيلات التواصل</h2>
+      <PrefsForm email={prefs.email_enabled} whatsapp={prefs.whatsapp_enabled} push={pushPublicKey() ? prefs.push_enabled : null} />
+    </div>
+  );
   // الطلبات المكتملة والملغاة تنطوي تحت «طلبات سابقة»
   const past = orders.filter((o) => PAST.includes(o.status));
   // الطلبات الفعّالة تظهر في «برنامجي» فوق، فما نكررها هنا (توفير مساحة على الجوال)
@@ -35,6 +41,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
             <span className="eyebrow">حسابي</span>
             <h1 style={{ fontSize: "clamp(26px,4vw,36px)", marginTop: 8 }}>أهلاً {user.name.includes("@") ? "" : user.name.split(" ")[0]}</h1>
           </div>
+          {!prefs.saved && <div data-testid="prefs-first">{prefsCard}</div>}
           <InstallPrompt />
           {denied && <p className="alert warn">لوحة الإدارة للمدربة فقط.</p>}
           {needsAction.length > 0 && <p className="alert warn">عندك {needsAction.length === 1 ? "طلب يحتاج" : `${needsAction.length} طلبات تحتاج`} إجراء منك.</p>}
@@ -56,6 +63,13 @@ export default async function Account({ searchParams }: { searchParams: Promise<
               ))}
             </ul>
           </section>}
+          {reviewable && (
+            <section className="card stack" style={{ ["--space" as string]: "10px" }} aria-labelledby="rv-h" data-testid="review-card">
+              <h2 id="rv-h" style={{ fontSize: 20 }}>⭐ قيّم تجربتك</h2>
+              <p className="small muted">عن <b>{reviewable.product_name}</b>. تقييمك يساعدنا نتحسّن، وما ينشر إلا بموافقتك.</p>
+              <ReviewForm orderNo={reviewable.order_no} name={user.name.includes("@") ? "" : user.name} />
+            </section>
+          )}
           <h2 style={{ fontSize: 22 }}>طلباتي</h2>
           {orders.length === 0 ? (
             <div className="card stack">
@@ -106,11 +120,9 @@ export default async function Account({ searchParams }: { searchParams: Promise<
             <h2 style={{ fontSize: 18 }}>بياناتي</h2>
             <p className="small muted">البريد: <bdi dir="ltr">{user.email}</bdi></p>
             <ProfileForm name={user.name.includes("@") ? "" : user.name} />
+            <Link href="/account/profile" className="btn btn-ghost btn-sm" style={{ width: "fit-content" }} data-testid="profile-link">{intakeSaved ? "تحديث الاستبيان" : "تعبئة الاستبيان"}</Link>
           </div>
-          <div className="card stack" aria-labelledby="prefs-h">
-            <h2 id="prefs-h" style={{ fontSize: 18 }}>تفضيلات التواصل</h2>
-            <PrefsForm email={prefs.email_enabled} whatsapp={prefs.whatsapp_enabled} push={pushPublicKey() ? prefs.push_enabled : null} />
-          </div>
+          {prefs.saved && prefsCard}
           {pushPublicKey() && <PushCard publicKey={pushPublicKey()} />}
           <Link href="/install" className="card flat install-cta" data-testid="install-link">
             <b>📱 أضف الموقع كتطبيق على جوالك</b>

@@ -5,10 +5,10 @@ import { requireUser } from "@/lib/session";
 import { withUser } from "@/lib/db";
 import { fmtDate } from "@/lib/format";
 import { addDays, riyadhDate } from "@/lib/schedule";
-import { MEAL_ICON, MEAL_KINDS, kcalOf, sumMacros, type MealKind, type Target } from "@/lib/nutrition";
+import { MEAL_ICON, MEAL_KINDS, kcalOf, mealName, sumMacros, type MealKind, type Target } from "@/lib/nutrition";
 import { loadPlans, loadRoutine } from "@/lib/nutrition-data";
-import MacroSummary from "@/components/nutrition/MacroSummary";
-import { DeleteFoodLog, FoodLogForm } from "./NutritionForms";
+import DaySummary from "@/components/nutrition/DaySummary";
+import { AddFoodSheet, DeleteFoodLog, type MealOption } from "./NutritionForms";
 
 export const metadata: Metadata = { title: "التغذية والمكملات", robots: { index: false } };
 type SP = { tab?: string; date?: string; plan?: string };
@@ -31,23 +31,31 @@ export default async function NutritionPage({ params, searchParams }: { params: 
     const routine = await loadRoutine(tx, { orderId: o.id });
     // كل وجبات قوالب التغذية (يقدر يضيف أي وجبة منها لأكله اليومي)
     const library = tab === "today" && ["active", "delivered", "completed"].includes(o.status)
-      ? (await tx.query(`SELECT meal_id::text AS id, plan_name, kind, title, protein::float, carbs::float, fat::float FROM app.library_meals() ORDER BY title`)).rows as { id: string; plan_name: string; kind: MealKind; title: string; protein: number; carbs: number; fat: number }[]
+      ? (await tx.query(`SELECT meal_id::text AS id, plan_name, kind, title, protein::float, carbs::float, fat::float, foods FROM app.library_meals() ORDER BY title`)).rows as { id: string; plan_name: string; kind: MealKind; title: string; protein: number; carbs: number; fat: number; foods: string | null }[]
       : [];
     const logs = (await tx.query(
       `SELECT id::int, kind, name, protein::float, carbs::float, fat::float, meal_id FROM food_logs WHERE user_id = $1 AND order_id = $2 AND log_date = $3 ORDER BY created_at`,
       [user.id, o.id, date])).rows as Log[];
-    return { o, target, plans, routine, logs, library };
+    // مكونات وطريقة تحضير الوجبات المسجّلة اليوم (من جداوله أو قوالب التغذية)
+    const mealIds = [...new Set(logs.map((l) => l.meal_id).filter((x): x is string => Boolean(x)))];
+    const details = mealIds.length
+      ? (await tx.query(`SELECT meal_id::text AS id, method, items FROM app.meal_details($1::uuid[])`, [mealIds])).rows as { id: string; method: string | null; items: { food: string; portion: string | null; protein: number; carbs: number; fat: number }[] }[]
+      : [];
+    return { o, target, plans, routine, logs, library, details };
   });
   if (!data) notFound();
-  const { o, target, plans, routine, logs, library } = data;
+  const { o, target, plans, routine, logs, library, details } = data;
+  const detailOf = new Map(details.map((d) => [d.id, d]));
   // الجدول المعروض: المختار من القائمة، وإلا الأول
   const shownPlan = plans.find((p) => p.id === sp.plan) ?? plans[0];
   const base = `/account/orders/${o.order_no}/nutrition`;
   const nothing = !target && plans.length === 0 && !routine;
   const t: Target = target ?? { kcal: null, protein: null, carbs: null, fat: null };
   const total = sumMacros(logs);
-  const mealOptions = plans.flatMap((p) => p.meals.map((m) => ({ id: m.id, kind: m.kind, label: `${p.name} — ${m.title}`, kcal: m.total.kcal })));
-  const libraryOptions = library.map((m) => ({ id: m.id, kind: m.kind, label: m.title, kcal: kcalOf(m), protein: m.protein, carbs: m.carbs, fat: m.fat }));
+  // وجبات جاهزة: من جداولي ثم من قوالب التغذية (اسم الوجبة وماكروزها فقط)
+  const ownMeals: MealOption[] = plans.flatMap((p) => p.meals.map((m) => ({ id: m.id, kind: m.kind, label: mealName(m.kind, m.title, m.items.map((it) => it.food).join("، ")), kcal: m.total.kcal, protein: m.total.protein, carbs: m.total.carbs, fat: m.total.fat, own: true })));
+  const seen = new Set(ownMeals.map((m) => m.id));
+  const readyMeals: MealOption[] = [...ownMeals, ...library.filter((m) => !seen.has(m.id)).map((m) => ({ id: m.id, kind: m.kind, label: mealName(m.kind, m.title, m.foods), kcal: kcalOf(m), protein: m.protein, carbs: m.carbs, fat: m.fat }))];
   const f1 = (v: number) => Math.round(v * 10) / 10;
 
   return (
@@ -72,31 +80,45 @@ export default async function NutritionPage({ params, searchParams }: { params: 
                   <b data-testid="log-date">{date === today ? "اليوم" : fmtDate(date)}</b>
                   {date < today ? <Link className="btn btn-ghost btn-sm" href={`${base}?date=${addDays(date, 1)}`}>اليوم التالي ←</Link> : <span />}
                 </div>
-                <div className="grid g2" style={{ alignItems: "start" }}>
-                  <MacroSummary target={t} total={total} />
-                  <section className="card stack" style={{ ["--space" as string]: "10px" }}>
-                    <h2 style={{ fontSize: 17 }}>أضف أكلة</h2>
-                    <FoodLogForm orderNo={o.order_no} date={date} meals={mealOptions} library={libraryOptions} />
-                  </section>
-                </div>
-                <section className="card stack" style={{ ["--space" as string]: "10px" }} data-testid="food-log-list">
-                  <h2 style={{ fontSize: 17 }}>أكل {date === today ? "اليوم" : "هذا اليوم"}</h2>
-                  {logs.length === 0 ? <p className="small muted">ما سجّلت شيء بعد.</p> : (Object.keys(MEAL_KINDS) as MealKind[]).map((k) => {
+                <DaySummary target={t} total={total} />
+                <div className="stack" style={{ ["--space" as string]: "12px" }} data-testid="food-log-list">
+                  {(Object.keys(MEAL_KINDS) as MealKind[]).map((k) => {
                     const kl = logs.filter((l) => l.kind === k);
-                    if (!kl.length) return null;
+                    const kc = Math.round(kl.reduce((a, l) => a + kcalOf(l), 0));
                     return (
-                      <div key={k} className="stack" style={{ ["--space" as string]: "6px" }}>
-                        <b>{MEAL_ICON[k]} {MEAL_KINDS[k]}</b>
-                        {kl.map((l) => (
-                          <div key={l.id} className="row food-log-row" style={{ justifyContent: "space-between" }}>
-                            <span>{l.name}<span className="small muted"> · {Math.round(kcalOf(l))} سعرة · ب {f1(l.protein)} · ك {f1(l.carbs)} · د {f1(l.fat)}</span></span>
-                            <DeleteFoodLog id={l.id} orderNo={o.order_no} name={l.name} />
-                          </div>
-                        ))}
-                      </div>
+                      <section key={k} className="card meal-section" aria-label={MEAL_KINDS[k]} data-testid={`meal-${k}`}>
+                        <header className="meal-head">
+                          <h2>{MEAL_ICON[k]} {MEAL_KINDS[k]}</h2>
+                          <span className="small muted num">{kc} سعرة</span>
+                        </header>
+                        {kl.length > 0 && (
+                          <ul className="meal-entries">
+                            {kl.map((l) => (
+                              <li key={l.id} className="food-log-row">
+                                <div className="food-log-main">
+                                  <span className="food-name">{l.meal_id ? mealName(l.kind, l.name, (detailOf.get(l.meal_id)?.items ?? []).map((it) => it.food).join("، ")) : l.name}<span className="small muted num"> · {Math.round(kcalOf(l))} سعرة · ب {f1(l.protein)} · ك {f1(l.carbs)} · د {f1(l.fat)}</span></span>
+                                  {l.meal_id && detailOf.get(l.meal_id) && (
+                                    <details className="meal-more small" data-testid="meal-details">
+                                      <summary>المكونات وطريقة التحضير</summary>
+                                      {detailOf.get(l.meal_id)!.items.length > 0 && (
+                                        <ul className="meal-ingredients">
+                                          {detailOf.get(l.meal_id)!.items.map((it, i) => <li key={i}>{it.food}{it.portion ? <span className="muted"> — {it.portion}</span> : null}</li>)}
+                                        </ul>
+                                      )}
+                                      {detailOf.get(l.meal_id)!.method && <p className="meal-method">{detailOf.get(l.meal_id)!.method}</p>}
+                                    </details>
+                                  )}
+                                </div>
+                                <DeleteFoodLog id={l.id} orderNo={o.order_no} name={l.name} />
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        <AddFoodSheet orderNo={o.order_no} date={date} kind={k} meals={readyMeals} />
+                      </section>
                     );
                   })}
-                </section>
+                </div>
                 {target?.rules && <details className="card"><summary style={{ cursor: "pointer", minHeight: 40, fontWeight: 700 }}>قواعد التغذية</summary><p style={{ whiteSpace: "pre-wrap", margin: "8px 0 0" }}>{target.rules}</p></details>}
               </>
             )}
@@ -154,7 +176,7 @@ export default async function NutritionPage({ params, searchParams }: { params: 
                         </div>
                         <span className="small">{[it.dose && `الجرعة: ${it.dose}`, it.timing && `التوقيت: ${it.timing}`].filter(Boolean).join(" · ")}</span>
                         {it.benefit && <span className="small muted">{it.benefit}</span>}
-                        {it.link && <a className="small" href={it.link} target="_blank" rel="noopener noreferrer">فتح الرابط ↗</a>}
+                        {it.link && <a className="small supp-link" href={it.link} target="_blank" rel="noopener noreferrer">فتح الرابط ↗</a>}
                       </div>
                     ))}
                     {s.routine && <p className="small" style={{ whiteSpace: "pre-wrap", margin: 0 }}>{s.routine}</p>}

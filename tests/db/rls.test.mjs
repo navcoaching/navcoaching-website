@@ -569,7 +569,7 @@ describe("التغذية والمكملات", () => {
     assert.ok((await as(A, "SELECT count(*)::int n FROM app.library_meals()")).rows[0].n > 0);
     assert.equal((await as(B, "SELECT count(*)::int n FROM app.library_meals()")).rows[0].n, 0);
     assert.ok((await as(COACH, "SELECT count(*)::int n FROM app.library_meals()")).rows[0].n > 0);
-    assert.deepEqual((await as(A, "SELECT * FROM app.library_meals() LIMIT 1")).fields.map((f) => f.name), ["meal_id", "plan_name", "kind", "title", "protein", "carbs", "fat"]);
+    assert.deepEqual((await as(A, "SELECT * FROM app.library_meals() LIMIT 1")).fields.map((f) => f.name), ["meal_id", "plan_name", "kind", "title", "protein", "carbs", "fat", "foods"]);
     await assert.rejects(as(B, "SELECT app.log_food($1, current_date, 'lunch', NULL, 'x', 1, 1, 1)", [noA]), /غير موجود/);
     assert.equal((await as(B, "SELECT count(*)::int n FROM food_logs")).rows[0].n, 0);
     assert.equal((await as(COACH, "SELECT count(*)::int n FROM food_logs")).rows[0].n, 2);
@@ -949,15 +949,34 @@ describe("حذف برنامج أُضيف بالخطأ وحذف عضو", () => {
     await assert.rejects(as(COACH, "SELECT app.coach_delete_block($1)", [block]), /سجّل على هذا البرنامج/);
     assert.equal((await owner.query("SELECT count(*)::int n FROM blocks WHERE id = $1", [block])).rows[0].n, 1);
   });
-  test("حذف العضو: فقط بدون طلبات، وللمدربة فقط، وحساب المدربة محمي", async () => {
+  test("حذف العضو: للمدربة فقط، وحساب المدربة محمي، ويُحذف حتى مع طلبات", async () => {
     const free = "user_del3";
     await owner.query(`INSERT INTO "user" (id, name, email, "emailVerified", role) VALUES ($1, $1, $1 || '@test.local', true, 'client')`, [free]);
     await assert.rejects(as(A, "SELECT app.coach_delete_member($1)", [free]), /للمدربة فقط/);
-    await assert.rejects(as(COACH, "SELECT app.coach_delete_member($1)", [U2]), /عنده طلبات|عند العضو طلبات/);
     await assert.rejects(as(COACH, "SELECT app.coach_delete_member($1)", [COACH]), /لا يمكن حذف حساب المدربة/);
     await assert.rejects(as(COACH, "SELECT app.coach_delete_member($1)", ["nobody"]), /غير موجود/);
-    assert.equal((await as(COACH, "SELECT app.coach_delete_member($1) AS e", [free])).rows[0].e, `${free}@test.local`);
+    assert.equal((await as(COACH, "SELECT app.coach_delete_member($1) AS r", [free])).rows[0].r.email, `${free}@test.local`);
     assert.equal((await owner.query(`SELECT count(*)::int n FROM "user" WHERE id = $1`, [free])).rows[0].n, 0);
     assert.equal((await owner.query("SELECT count(*)::int n FROM admin_log WHERE action = 'member.delete' AND target = $1", [`${free}@test.local`])).rows[0].n, 1);
+  });
+  test("حذف عضو عنده طلب وبرنامج وسجلات: يُحذف كل شيء ويُسجَّل رقم الطلب", async () => {
+    const { no, item } = await programFor(U2, "k-delmember-0000000001");
+    await owner.query("INSERT INTO item_logs (block_item_id, week_no, exercise_id, weight, reps) SELECT $1, 1, exercise_id, 50, '{10}' FROM block_items WHERE id = $1", [item]);
+    await as(U2, "SELECT app.save_my_profile($1::jsonb, $2::jsonb, false)", [JSON.stringify({ goal: "بناء عضل" }), JSON.stringify({ weight: 70 })]);
+    await assert.rejects(as(A, "SELECT app.coach_delete_member($1)", [U2]), /للمدربة فقط/);
+    assert.equal((await as(COACH, "SELECT app.coach_delete_member($1) AS r", [U2])).rows[0].r.email, `${U2}@test.local`);
+    for (const [t, col] of [["orders", "user_id"], ["blocks", "user_id"], ["member_profiles", "user_id"]]) assert.equal((await owner.query(`SELECT count(*)::int n FROM ${t} WHERE ${col} = $1`, [U2])).rows[0].n, 0, t);
+    const { rows: [log] } = await owner.query("SELECT details FROM admin_log WHERE action = 'member.delete' AND target = $1", [`${U2}@test.local`]);
+    assert.ok(log.details.orders.includes(no));
+  });
+  test("استبيان العضو: يحفظه صاحبه ويقرؤه هو والمدربة فقط", async () => {
+    const m = "user_prof1", o = "user_prof2";
+    for (const id of [m, o]) await owner.query(`INSERT INTO "user" (id, name, email, "emailVerified", role) VALUES ($1, $1, $1 || '@test.local', true, 'client')`, [id]);
+    await as(m, "SELECT app.save_my_profile($1::jsonb, $2::jsonb, true)", [JSON.stringify({ goal: "نزول دهون" }), JSON.stringify({ weight: 80 })]);
+    await as(m, "SELECT app.save_my_profile($1::jsonb, $2::jsonb, false)", [JSON.stringify({ goal: "بناء عضل" }), JSON.stringify({ weight: 78 })]);
+    assert.equal((await as(m, "SELECT answers->>'goal' g FROM member_profiles WHERE user_id = $1", [m])).rows[0].g, "بناء عضل");
+    assert.equal((await as(o, "SELECT count(*)::int n FROM member_profiles", [])).rows[0].n, 0);
+    assert.equal((await as(COACH, "SELECT count(*)::int n FROM member_profiles WHERE user_id = $1", [m])).rows[0].n, 1);
+    await assert.rejects(as(null, "SELECT app.save_my_profile('{}'::jsonb, '{}'::jsonb, false)", []), /سجّل الدخول|permission|denied/);
   });
 });

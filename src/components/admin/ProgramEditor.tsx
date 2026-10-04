@@ -18,6 +18,7 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
   return (
     <ExercisesProvider exercises={exercises}>
     <div className="stack" style={{ ["--space" as string]: "16px" }}>
+      <datalist id="rir-options"><option value="3" /><option value="2" /><option value="1" /><option value="0" /></datalist>
       <datalist id="ex-options">
         {exercises.map((e) => <option key={e.name} value={e.name}>{muscleAr(e.primary_muscle)}{e.equipment ? ` · ${e.equipment}` : ""}</option>)}
       </datalist>
@@ -67,7 +68,7 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
                           <div key={w} className="plan-week">
                             <span className="small muted">الأسبوع {w + 1}</span>
                             <input type="text" name={`w${w + 1}_reps`} aria-label={`تكرارات الأسبوع ${w + 1}`} dir="ltr" inputMode="text" placeholder="3x12" defaultValue={formatReps(it.plan[w]?.reps ?? []).replace("×", "x")} />
-                            <input type="text" name={`w${w + 1}_rir`} aria-label={`RIR الأسبوع ${w + 1}`} dir="ltr" inputMode="decimal" placeholder="RIR" defaultValue={it.plan[w]?.rir ?? ""} />
+                            <input type="text" name={`w${w + 1}_rir`} aria-label={`RIR الأسبوع ${w + 1}`} dir="ltr" inputMode="decimal" list="rir-options" placeholder={w === 0 ? "RIR 3·2·1·0" : "RIR"} defaultValue={it.plan[w]?.rir ?? ""} />
                           </div>
                         ))}
                       </div>
@@ -95,7 +96,7 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
                 <div className="field"><label htmlFor={`addr-${d.id}`}>المجموعات × التكرارات</label>
                   <input type="text" id={`addr-${d.id}`} name="reps" dir="ltr" placeholder="3x12" /></div>
                 <div className="field"><label htmlFor={`addi-${d.id}`}>RIR</label>
-                  <input type="text" id={`addi-${d.id}`} name="rir" dir="ltr" inputMode="decimal" placeholder="2" /></div>
+                  <input type="text" id={`addi-${d.id}`} name="rir" dir="ltr" inputMode="decimal" list="rir-options" placeholder="3 · 2 · 1 · 0" /></div>
               </div>
               <span className="hint">تُطبّق على كل الأسابيع، ثم عدّلي كل أسبوع من التمرين نفسه.</span>
             </ActionForm>

@@ -86,10 +86,10 @@ test("حذف برنامج بالخطأ وحذف عضو بدون طلبات", asy
   await expect(coach.getByTestId("delete-block")).toHaveCount(0);
   await expect(coach.getByText(/فلا يُحذف/)).toBeVisible();
 
-  // الأعضاء: زر الحذف لمن بلا طلبات فقط
+  // الأعضاء: زر الحذف لكل عضو (حتى مع طلبات: حسابات التجربة)
   await coach.goto(`/admin/members?q=${encodeURIComponent(traineeEmail)}`);
   await expect(coach.getByTestId("members").getByText(traineeEmail)).toBeVisible();
-  await expect(coach.getByTestId("delete-member")).toHaveCount(0);
+  await expect(coach.getByTestId("delete-member")).toHaveCount(1);
   await coach.goto(`/admin/members?q=${encodeURIComponent(lonelyEmail)}`);
   await expect(coach.getByTestId("delete-member")).toHaveCount(1);
   coach.once("dialog", (d) => d.accept());

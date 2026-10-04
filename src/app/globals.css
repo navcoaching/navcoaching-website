@@ -1045,3 +1045,55 @@ dialog.video-modal .btn-ghost, dialog.video-modal .btn-ghost:hover { --fg: var(-
 .ex-go, .ex-done { flex: none; color: var(--muted); font-size: 20px; }
 .more-tools > summary { cursor: pointer; min-height: 40px; display: flex; align-items: center; font-weight: 700; }
 .ex-pager .btn { white-space: normal; text-align: center; }
+
+.supp-link { display: block; width: fit-content; margin-top: 6px; }
+
+/* ---------- يوميات التغذية (بأسلوب تطبيقات الأكل) ---------- */
+.day-summary { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px 18px; align-items: center; }
+.ring-wrap { position: relative; width: 132px; height: 132px; }
+.ring { width: 100%; height: 100%; }
+.ring-bg { fill: none; stroke: var(--surface-2); stroke-width: 11; }
+.ring-fg { fill: none; stroke: var(--cyan); stroke-width: 11; stroke-linecap: round; transition: stroke-dasharray .4s; }
+.ring-fg.over { stroke: #d1481d; }
+.ring-text { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 0; }
+.ring-text b { font-size: 26px; line-height: 1.1; }
+.day-eq { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: center; }
+.day-eq div { background: var(--surface-2); border-radius: 12px; padding: 8px 6px; }
+.day-eq dt { font-size: 12px; color: var(--muted); }
+.day-eq dd { margin: 0; font-weight: 700; font-size: 18px; }
+.day-macros { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.day-macro { display: grid; gap: 4px; min-width: 0; }
+.day-macro .small { overflow-wrap: anywhere; }
+.day-macro.m-protein .bar i { background: #2f7d6d; } .day-macro.m-carbs .bar i { background: #284da0; } .day-macro.m-fat .bar i { background: #c98a1a; }
+@media (max-width: 420px) { .day-summary { grid-template-columns: minmax(0, 1fr); justify-items: center; } .day-eq { width: 100%; } .day-macros { width: 100%; } }
+.meal-section { display: grid; gap: 8px; }
+.meal-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.meal-head h2 { font-size: 17px; margin: 0; }
+.meal-entries { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.meal-entries .food-log-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.meal-entries .food-name { min-width: 0; overflow-wrap: anywhere; display: grid; }
+.add-food-btn { width: fit-content; }
+dialog.sheet { padding: 0; border: 0; border-radius: 18px; background: var(--surface); color: var(--text); width: min(94vw, 560px); max-height: 90dvh; margin: auto; }
+dialog.sheet::backdrop { background: rgba(5, 12, 30, .6); }
+.sheet-box { display: grid; gap: 10px; padding: 12px 14px 16px; max-height: 90dvh; overflow-y: auto; }
+.sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.sheet-tabs { display: flex; gap: 6px; padding: 4px; background: var(--surface-2); border-radius: 999px; }
+.sheet-tabs button { flex: 1; min-height: 40px; border: 0; border-radius: 999px; background: transparent; color: inherit; font: inherit; cursor: pointer; padding: 0 10px; }
+.sheet-tabs button.on { background: var(--surface); box-shadow: var(--shadow-1); font-weight: 700; color: var(--accent-text); }
+dialog.sheet .btn-ghost, dialog.sheet .btn-ghost:hover { --fg: var(--text); --bd: var(--line); }
+.meal-picks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 46dvh; overflow-y: auto; }
+.meal-pick form { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; }
+.meal-pick-main { display: grid; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+
+/* الحقول المجمّعة لا توسّع الصفحة: نص العنوان يلتف بدل أن يخرج عن الشاشة (جوال) */
+fieldset { min-width: 0; max-width: 100%; }
+legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-inline: 0; }
+.choices { max-width: 100%; }
+
+.consent-bar { position: fixed; inset-inline: 12px; bottom: 12px; z-index: 60; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;
+  padding: 12px 14px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-2, 0 8px 30px rgba(0,0,0,.18)); max-width: 640px; margin-inline: auto; }
+.consent-bar p { margin: 0; flex: 1 1 260px; }
+.food-log-main { min-width: 0; display: grid; gap: 4px; flex: 1; }
+.meal-more summary { cursor: pointer; min-height: 36px; display: flex; align-items: center; color: var(--accent-text); }
+.meal-ingredients { margin: 4px 0; padding-inline-start: 18px; display: grid; gap: 2px; }
+.meal-method { white-space: pre-wrap; margin: 6px 0 0; overflow-wrap: anywhere; }
