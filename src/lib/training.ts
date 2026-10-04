@@ -147,3 +147,6 @@ export function weeklyAverages(entries: { date: string; value: number }[], start
   }
   return [...m.entries()].sort((a, b) => a[0] - b[0]).map(([week, v]) => ({ week, avg: v.reduce((a, b) => a + b, 0) / v.length, n: v.length }));
 }
+
+/** RIR الافتراضي لكل أسبوع عند إضافة تمرين بدون كتابة RIR: الأسبوع 1 = 3، 2 = 2، 3 = 1، 4 فأكثر = 0 */
+export const DEFAULT_WEEK_RIR = [3, 2, 1, 0] as const;

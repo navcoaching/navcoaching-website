@@ -96,7 +96,7 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
                 <div className="field"><label htmlFor={`addr-${d.id}`}>المجموعات × التكرارات</label>
                   <input type="text" id={`addr-${d.id}`} name="reps" dir="ltr" placeholder="3x12" /></div>
                 <div className="field"><label htmlFor={`addi-${d.id}`}>RIR</label>
-                  <input type="text" id={`addi-${d.id}`} name="rir" dir="ltr" inputMode="decimal" list="rir-options" placeholder="3 · 2 · 1 · 0" /></div>
+                  <input type="text" id={`addi-${d.id}`} name="rir" dir="ltr" inputMode="decimal" list="rir-options" placeholder="فارغ = 3 · 2 · 1 · 0 للأسابيع" /></div>
               </div>
               <span className="hint">تُطبّق على كل الأسابيع، ثم عدّلي كل أسبوع من التمرين نفسه.</span>
             </ActionForm>

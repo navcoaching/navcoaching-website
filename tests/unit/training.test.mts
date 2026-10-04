@@ -102,3 +102,8 @@ describe("تعليمات التمرين: الخطوات اليومية لكل م
     assert.equal(trainingRules(56000).length, TRAINING_RULES.length);
   });
 });
+
+import { DEFAULT_WEEK_RIR } from "../../src/lib/training.ts";
+test("RIR الافتراضي للأسابيع: 3 ثم 2 ثم 1 ثم 0", () => {
+  assert.deepEqual([...DEFAULT_WEEK_RIR], [3, 2, 1, 0]);
+});

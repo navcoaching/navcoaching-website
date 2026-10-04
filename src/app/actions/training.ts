@@ -9,7 +9,7 @@ import { dbErrorMessage, withUser, type Tx } from "@/lib/db";
 import { getCurrentUser, getFreshUser } from "@/lib/session";
 import { notifySafe } from "@/lib/mail";
 import { notifyTrainee, RESULT_LABEL, CHANNEL_LABEL, type ChannelResult } from "@/lib/notify";
-import { MAX_SETS, parseReps, parseRir, type PlanWeek } from "@/lib/training";
+import { DEFAULT_WEEK_RIR, MAX_SETS, parseReps, parseRir, type PlanWeek } from "@/lib/training";
 import { ANATOMICAL_ACTIONS, EQUIPMENT, EX_STATUS, KINDS, LEVELS, MOVEMENT_SUBCATEGORIES, MUSCLES, PATTERNS, REHAB_CATEGORIES, REHAB_LOADS, REHAB_PHASES, REHAB_REVIEW, SECONDARY_MUSCLES, SUB_PATTERNS, placeFor, type RehabReview } from "@/lib/exercises";
 import type { ActionState } from "./client";
 import { allow } from "@/lib/rate";
@@ -295,7 +295,7 @@ export async function addItemAction(_: ActionState, fd: FormData): Promise<Actio
         ? ((await tx.query(`SELECT id FROM exercises WHERE id = $1 AND status = 'approved'`, [pickedId])).rows[0]?.id as string | undefined) ?? null
         : await exerciseByName(tx, name);
       if (!ex) return { error: "التمرين غير موجود في المكتبة أو غير معتمد. اختاريه من القائمة." };
-      const plan: PlanWeek[] = Array.from({ length: o.weeks }, () => ({ sets: reps.length, reps, rir }));
+      const plan: PlanWeek[] = Array.from({ length: o.weeks }, (_, w) => ({ sets: reps.length, reps, rir: rir ?? DEFAULT_WEEK_RIR[Math.min(w, DEFAULT_WEEK_RIR.length - 1)] }));
       const { rows: [{ pos }] } = await tx.query(`SELECT coalesce(max(position), -1) + 1 AS pos FROM ${t.items} WHERE day_id = $1`, [day]);
       const { rows: [ins] } = kind === "block"
         ? await tx.query(`INSERT INTO block_items (day_id, position, exercise_id, coach_exercise_id, plan) VALUES ($1,$2,$3,$3,$4) RETURNING id`, [day, pos, ex, JSON.stringify(plan)])
