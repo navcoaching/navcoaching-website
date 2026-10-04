@@ -420,7 +420,7 @@ describe("منصة التدريب", () => {
     notAlt = await exId("Barbell Bench Press").catch(() => null) ?? (await owner.query("SELECT id FROM exercises WHERE primary_muscle LIKE 'Chest%' AND status = 'approved' LIMIT 1")).rows[0].id;
   });
   test("المكتبة للمدربة فقط (المتدرب لا يقرأها ولا يعدّلها)", async () => {
-    assert.equal((await as(COACH, "SELECT count(*)::int n FROM exercises")).rows[0].n, 229);
+    assert.equal((await as(COACH, "SELECT count(*)::int n FROM exercises")).rows[0].n, 228);
     assert.equal((await as(A, "SELECT count(*)::int n FROM exercises")).rows[0].n, 0);
     assert.equal((await as(null, "SELECT count(*)::int n FROM exercises")).rows[0].n, 0);
     await assert.rejects(as(A, "INSERT INTO exercises (name, primary_muscle) VALUES ('x','y')"), /row-level security/);

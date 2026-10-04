@@ -5337,21 +5337,6 @@
   "anatomical_action": "Hip Extension (Ballistic) / بسط الورك الانفجاري"
  },
  {
-  "name": "left over db",
-  "primary_muscle": "Functional / التمارين الوظيفية",
-  "equipment": "دمبل",
-  "place": "منزل",
-  "status": "approved",
-  "alternatives": [
-   "Turkish Get-Up",
-   "Farmer’s Walk",
-   "Kettlebell Swing"
-  ],
-  "video_url": "https://youtu.be/pLnRt-caepc?si=DAS9jeYr8vS6RRtz",
-  "instructions": "طبق الحركة بأقصى عدد ممكن من التكرارات وأحسبها كجولة، ثم ابدأ بالجولة الثانية بنفس الطريقة",
-  "source": "المكتبة الأصلية"
- },
- {
   "name": "Serratus Punches Supine",
   "primary_muscle": "Functional / التمارين الوظيفية",
   "secondary_muscles": [
