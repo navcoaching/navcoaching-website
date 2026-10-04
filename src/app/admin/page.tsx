@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LineChart from "@/components/LineChart";
 import StartTag from "@/components/admin/StartTag";
 import { batch, litList, withUser } from "@/lib/db";
 import { requireCoach } from "@/lib/session";
@@ -37,7 +38,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
     withUser(coach.id, async (tx) => {
       // الاشتراكات التي مرّ يوم انتهائها تصبح «انتهى الاشتراك» (احتياط إن لم تعمل التذكيرات المجدولة)
       // كل استعلام في رحلة شبكة مستقلة إلى قاعدة البيانات، فنجمع المستقل منها في رحلة واحدة (batch)
-      const [, countsR, newWeekR, pendingReviewsR, swapsR, incompleteR, demoR] = await batch(tx, [
+      const [, countsR, newWeekR, pendingReviewsR, swapsR, incompleteR, demoR, monthlyR] = await batch(tx, [
         "SELECT app.expire_subscriptions()",
         "SELECT status, count(*)::int n FROM orders WHERE NOT is_demo GROUP BY status",
         "SELECT count(*)::int n FROM orders WHERE NOT is_demo AND created_at > now() - interval '7 days'",
@@ -47,7 +48,15 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           WHERE NOT is_demo AND archived_at IS NULL AND status = ANY(${litList(tx, INCOMPLETE, "text")})
           ORDER BY array_position(${litList(tx, INCOMPLETE, "text")}, status), preferred_start NULLS FIRST, created_at LIMIT 40`,
         "SELECT (SELECT count(*) FROM products WHERE is_demo)::int + (SELECT count(*) FROM orders WHERE is_demo)::int AS n",
+        // آخر 6 أشهر (بتوقيت الرياض): عدد الطلبات، الأعضاء الجدد، ومجموع المبالغ المدفوعة (طلبات مؤكدة الدفع، بدون المجاني والتجريبي)
+        `SELECT to_char(m, 'YYYY-MM') AS ym,
+                (SELECT count(*)::int FROM orders o WHERE NOT o.is_demo AND NOT o.is_free AND date_trunc('month', o.created_at AT TIME ZONE 'Asia/Riyadh') = m) AS orders,
+                (SELECT count(*)::int FROM "user" u WHERE u.role = 'client' AND date_trunc('month', u."createdAt" AT TIME ZONE 'Asia/Riyadh') = m) AS members,
+                (SELECT coalesce(sum(o.amount_due_halalas), 0)::bigint FROM orders o WHERE NOT o.is_demo AND NOT o.is_free AND o.paid_at IS NOT NULL AND o.status <> 'cancelled'
+                    AND date_trunc('month', o.paid_at AT TIME ZONE 'Asia/Riyadh') = m) AS revenue
+           FROM generate_series(date_trunc('month', now() AT TIME ZONE 'Asia/Riyadh') - interval '5 months', date_trunc('month', now() AT TIME ZONE 'Asia/Riyadh'), interval '1 month') m ORDER BY m`,
       ]);
+      const monthly = (monthlyR.rows as { ym: string; orders: number; members: number; revenue: string }[]).map((r) => ({ ym: r.ym, orders: r.orders, members: r.members, revenue: Number(r.revenue) / 100 }));
       const counts = countsR.rows as { status: string; n: number }[];
       const newWeek = newWeekR.rows[0].n as number;
       const pendingReviews = pendingReviewsR.rows[0].n as number;
@@ -151,7 +160,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           text: `🔥 سعرات مقترحة جديدة: ${sg.kcal.toLocaleString("en-US")} (${sg.diff > 0 ? "+" : ""}${sg.diff})` });
       }
       for (const o of noMeasure) alerts.push({ order_no: o.order_no, name: o.contact_name, tone: "warn", text: "الوزن أو الطول غير موجود في الاستبيان" });
-      return { swaps, counts, newWeek, pendingReviews, incomplete, todos, ending, demo, alerts, today };
+      return { monthly, swaps, counts, newWeek, pendingReviews, incomplete, todos, ending, demo, alerts, today };
     }),
     getSettings(),
   ]);
@@ -171,6 +180,22 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
       <h1>أهلاً {coach.name.split(" ")[0]}</h1>
       {sp.granted && <GrantedAlert no={sp.granted} sent={sp.sent === "1"} />}
       {data.demo > 0 && <p className="alert warn">توجد بيانات تجريبية ({data.demo}) في قاعدة البيانات. لا تُنشر في الإنتاج — احذفيها قبل الإطلاق.</p>}
+      <section className="stack" style={{ ["--space" as string]: "10px" }} aria-labelledby="stats-h" data-testid="monthly-stats">
+        <h2 id="stats-h" style={{ fontSize: 20 }}>الأرقام الشهرية (آخر 6 أشهر)</h2>
+        <div className="grid g3">
+          {([["orders", "عدد الطلبات", "", "var(--navy)"], ["members", "عدد الأعضاء الجدد", "", "var(--cyan)"], ["revenue", "مجموع المبالغ المدفوعة", " ريال", "#c77d00"]] as const).map(([k, title, unit, color]) => {
+            const total = data.monthly.reduce((a, m) => a + m[k], 0);
+            return (
+              <div key={k} className="card stack" style={{ ["--space" as string]: "6px" }}>
+                <span className="muted">{title}</span>
+                <b className="num" style={{ fontSize: 24 }}>{total.toLocaleString("en-US")}{unit}</b>
+                <LineChart title={title} unit={unit} height={160} series={[{ label: title, color, points: data.monthly.map((m) => ({ x: m.ym.slice(2), y: m[k] })) }]} />
+              </div>
+            );
+          })}
+        </div>
+        <p className="small muted">الطلبات بدون المجانية والتجريبية. المبالغ لطلبات تأكد دفعها (حسب شهر الدفع)، بدون الملغاة والمجانية.</p>
+      </section>
       <div className="grid g4">
         <Link href="/admin/orders?status=awaiting_payment" className="card stat" style={{ textDecoration: "none", color: "inherit" }} data-testid="stat-new-orders"><span className="muted">طلبات جديدة بانتظار الدفع</span><b>{c("awaiting_payment")}</b><span className="small muted">{data.newWeek} طلب خلال آخر 7 أيام</span></Link>
         <Link href="/admin/orders?status=payment_review" className="card stat" style={{ textDecoration: "none", color: "inherit" }}><span className="muted">إيصالات بانتظار التحقق</span><b>{c("payment_review")}</b></Link>

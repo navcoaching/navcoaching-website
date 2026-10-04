@@ -11,7 +11,15 @@ import { archiveOrderAction } from "@/app/actions/admin";
 const STATUSES = ["", "awaiting_quote", "awaiting_payment", "payment_review", "preparing", "active", "delivered", "completed", "cancelled"];
 const UUID = /^[0-9a-f-]{36}$/;
 
-type SP = { status?: string; q?: string; view?: string; deleted?: string; pkg?: string };
+type SP = { status?: string; q?: string; view?: string; deleted?: string; pkg?: string; sec?: string };
+
+/** أقسام الطلبات: الباقات (متابعة وملفات)، الاستشارات، الجداول المجانية */
+const SECTIONS = [["", "الكل"], ["packages", "الباقات"], ["consult", "الاستشارات"], ["free", "الجداول المجانية"]] as const;
+const SECTION_SQL: Record<string, string> = {
+  packages: "NOT o.is_free AND o.category IN ('follow', 'files')",
+  consult: "NOT o.is_free AND o.category = 'consult'",
+  free: "o.is_free",
+};
 
 export default async function AdminOrders({ searchParams }: { searchParams: Promise<SP> }) {
   const coach = await requireCoach();
@@ -20,8 +28,9 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
   const q = (sp.q ?? "").trim().slice(0, 80);
   const archived = sp.view === "archived";
   const pkg = sp.pkg && UUID.test(sp.pkg) ? sp.pkg : "";
+  const sec = sp.sec && SECTION_SQL[sp.sec] ? sp.sec : "";
 
-  const { rows, packages } = await withUser(coach.id, async (tx) => ({
+  const { rows, packages, counts } = await withUser(coach.id, async (tx) => ({
     // البحث يشمل رقم الطلب والاسم والجوال والبريد، وملاحظات المدربة الخاصة
     rows: (await tx.query(
       `SELECT o.order_no, o.product_id, o.product_name, p.name AS current_name, o.offer_label, o.status, o.category,
@@ -33,9 +42,15 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
         WHERE ($1 = '' OR o.status = $1)
           AND (o.archived_at IS NOT NULL) = $3
           AND ($4 = '' OR o.product_id::text = $4)
+          AND (${sec ? SECTION_SQL[sec] : "true"})
           AND ($2 = '' OR o.order_no ILIKE '%' || $2 || '%' OR o.contact_name ILIKE '%' || $2 || '%'
                OR o.contact_phone LIKE '%' || $2 || '%' OR u.email ILIKE '%' || $2 || '%' OR EXISTS (SELECT 1 FROM order_note_entries n WHERE n.order_id = o.id AND n.body ILIKE '%' || $2 || '%'))
         ORDER BY o.created_at DESC LIMIT 200`, [status, q, archived, pkg])).rows,
+    counts: (await tx.query(
+      `SELECT count(*) FILTER (WHERE NOT o.is_free AND o.category IN ('follow', 'files'))::int AS packages,
+              count(*) FILTER (WHERE NOT o.is_free AND o.category = 'consult')::int AS consult,
+              count(*) FILTER (WHERE o.is_free)::int AS free, count(*)::int AS all
+         FROM orders o WHERE (o.archived_at IS NOT NULL) = $1`, [archived])).rows[0] as Record<string, number>,
     packages: (await tx.query(
       `SELECT o.product_id, coalesce(p.name, max(o.product_name)) AS name, count(*)::int AS n
          FROM orders o LEFT JOIN products p ON p.id = o.product_id
@@ -43,7 +58,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
   }));
 
   const link = (over: Partial<SP>) => {
-    const params = { status, q, pkg, ...(archived ? { view: "archived" } : {}), ...over };
+    const params = { status, q, pkg, sec, ...(archived ? { view: "archived" } : {}), ...over };
     return `/admin/orders?${new URLSearchParams(Object.entries(params).filter(([, v]) => v) as [string, string][])}`;
   };
 
@@ -57,6 +72,11 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
         </div>
       </div>
       {sp.deleted && <p className="alert ok" style={{ marginBottom: 14 }}>تم حذف الطلب نهائياً.</p>}
+      <nav className="tabs" aria-label="أقسام الطلبات" data-testid="order-sections">
+        {SECTIONS.map(([k, l]) => (
+          <Link key={k || "all"} href={link({ sec: k, pkg: "" })} aria-current={k === sec ? "true" : undefined}>{l} <span className="small muted num">({counts[k || "all"]})</span></Link>
+        ))}
+      </nav>
       <nav className="pill-nav" aria-label="تصفية حسب الحالة">
         {STATUSES.map((st) => (
           <Link key={st || "all"} href={link({ status: st })} aria-current={st === status ? "true" : undefined}>
@@ -67,6 +87,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
       <form className="filters" role="search">
         {status && <input type="hidden" name="status" value={status} />}
         {archived && <input type="hidden" name="view" value="archived" />}
+        {sec && <input type="hidden" name="sec" value={sec} />}
         <div className="field"><label htmlFor="q">بحث برقم الطلب أو الاسم أو الجوال أو البريد أو الملاحظات</label><input id="q" name="q" type="search" defaultValue={q} /></div>
         <div className="field">
           <label htmlFor="pkg">الباقة</label>
