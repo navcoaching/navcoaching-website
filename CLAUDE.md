@@ -1,5 +1,12 @@
 # SEO operating rules
 
+Site: https://navcoaching.com (Arabic, `lang="ar"`; Next.js hosted on Netlify).
+Coaching brand: personalised training and nutrition programs with Coach Sarah.
+Money pages: `/programs`, `/programs/{basic,advanced,intensive,nutrition,gamers}`.
+Supporting pages: `/about`, `/faq`, `/reviews`, `/calculator`, `/free-plans`, `/policies`.
+Site source code: NOT in this repo yet. Until it is, skills may research and write
+briefs, but must not claim to edit or publish pages.
+
 Roles:
 - Claude Code is the Chief of SEO: plans, orchestrates, edits the site, runs the routines.
 - The ChatSEO MCP (`https://api.chatseo.app/mcp`) is the data layer: Search Console,
