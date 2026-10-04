@@ -121,6 +121,10 @@ test("التغذية والمكملات: الأهداف، الجداول، ال�
   await expect(trainee.getByTestId("meal-lunch")).toContainText("شورما دجاج");
   await expect(trainee.getByTestId("meal-lunch").getByTestId("meal-details")).toBeVisible(); // المكونات وطريقة التحضير
   await expect(trainee.getByTestId("macro-summary")).toContainText("383"); // 382.5 من الورقة
+  await expect(trainee.getByTestId("meal-lunch").locator("table.meal-table")).toContainText("إجمالي الغداء");
+  await trainee.getByTestId("meal-lunch").getByTestId("meal-details").locator("summary").click();
+  await expect(trainee.getByTestId("meal-lunch").locator(".rec")).toBeVisible();
+  if (process.env.SHOT) await trainee.getByTestId("macro-summary").scrollIntoViewIfNeeded(); await trainee.evaluate(() => document.querySelectorAll("header, .site-header").forEach((h) => ((h as HTMLElement).style.position = "static"))); await trainee.locator(".wrap.stack").first().screenshot({ path: `${process.env.SHOT}-${project}.png` });
   // سناك: أكلة أخرى
   await trainee.getByTestId("add-food-snack").click();
   form = trainee.getByTestId("food-log-form");

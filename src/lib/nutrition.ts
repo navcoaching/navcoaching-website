@@ -66,9 +66,9 @@ export function plansNear<T extends { total: { kcal: number } }>(plans: T[], kca
 export function mealName(kind: MealKind, title: string, foods?: string | null): string {
   const label = MEAL_KINDS[kind];
   const t = title.trim();
-  const stripped = t.replace(new RegExp(`^${label}\\s*[—–:\\-]+\\s*`), "").trim();
-  if (stripped && stripped !== label && stripped !== t) return stripped;
-  if (t && t !== label) return t;
+  // «الجدول — الغداء — شورما»: نأخذ آخر جزء، ونحذف أجزاء تسمية نوع الوجبة
+  const parts = t.split(/\s+[—–]\s+|\s*:\s*/).map((x) => x.trim()).filter((x) => x && x !== label);
+  if (parts.length) return parts[parts.length - 1];
   const f = (foods ?? "").split("،").map((x) => x.trim()).filter(Boolean);
   return f.length ? f.slice(0, 3).join(" + ") : t;
 }

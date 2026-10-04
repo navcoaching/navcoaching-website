@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -92,27 +93,38 @@ export default async function NutritionPage({ params, searchParams }: { params: 
                           <span className="small muted num">{kc} سعرة</span>
                         </header>
                         {kl.length > 0 && (
-                          <ul className="meal-entries">
-                            {kl.map((l) => (
-                              <li key={l.id} className="food-log-row">
-                                <div className="food-log-main">
-                                  <span className="food-name">{l.meal_id ? mealName(l.kind, l.name, (detailOf.get(l.meal_id)?.items ?? []).map((it) => it.food).join("، ")) : l.name}<span className="small muted num"> · {Math.round(kcalOf(l))} سعرة · ب {f1(l.protein)} · ك {f1(l.carbs)} · د {f1(l.fat)}</span></span>
-                                  {l.meal_id && detailOf.get(l.meal_id) && (
-                                    <details className="meal-more small" data-testid="meal-details">
-                                      <summary>المكونات وطريقة التحضير</summary>
-                                      {detailOf.get(l.meal_id)!.items.length > 0 && (
-                                        <ul className="meal-ingredients">
-                                          {detailOf.get(l.meal_id)!.items.map((it, i) => <li key={i}>{it.food}{it.portion ? <span className="muted"> — {it.portion}</span> : null}</li>)}
-                                        </ul>
+                          <div className="table-wrap">
+                            <table className="meal-table">
+                              <thead><tr><th scope="col">الصنف</th><th scope="col">سعرات</th><th scope="col">كارب</th><th scope="col">دهون</th><th scope="col">بروتين</th><th scope="col"><span className="sr-only">حذف</span></th></tr></thead>
+                              <tbody>
+                                {kl.map((l) => {
+                                  const d = l.meal_id ? detailOf.get(l.meal_id) : undefined;
+                                  const name = l.meal_id ? mealName(l.kind, l.name, (d?.items ?? []).map((it) => it.food).join("، ")) : l.name;
+                                  return (
+                                    <Fragment key={l.id}>
+                                      <tr className="food-log-row">
+                                        <th scope="row" className="mt-name">{name}</th>
+                                        <td className="num">{Math.round(kcalOf(l))}</td><td className="num">{f1(l.carbs)}</td><td className="num">{f1(l.fat)}</td><td className="num">{f1(l.protein)}</td>
+                                        <td className="mt-del"><DeleteFoodLog id={l.id} orderNo={o.order_no} name={l.name} /></td>
+                                      </tr>
+                                      {d && (d.items.length > 0 || d.method) && (
+                                        <tr className="mt-recipe"><td colSpan={6}>
+                                          <details className="meal-more small" data-testid="meal-details">
+                                            <summary>المكونات وطريقة التحضير</summary>
+                                            <div className="rec">
+                                              {d.items.length > 0 && (<><h3>المكونات</h3><ul className="meal-ingredients">{d.items.map((it, i) => <li key={i}>{it.food}{it.portion ? <span className="muted"> — {it.portion}</span> : null}</li>)}</ul></>)}
+                                              {d.method && (<><h3>طريقة التحضير</h3><p className="meal-method">{d.method}</p></>)}
+                                            </div>
+                                          </details>
+                                        </td></tr>
                                       )}
-                                      {detailOf.get(l.meal_id)!.method && <p className="meal-method">{detailOf.get(l.meal_id)!.method}</p>}
-                                    </details>
-                                  )}
-                                </div>
-                                <DeleteFoodLog id={l.id} orderNo={o.order_no} name={l.name} />
-                              </li>
-                            ))}
-                          </ul>
+                                    </Fragment>
+                                  );
+                                })}
+                                <tr className="mt-total"><th scope="row">إجمالي {MEAL_KINDS[k]}</th><td className="num">{kc}</td><td className="num">{f1(kl.reduce((a, l) => a + l.carbs, 0))}</td><td className="num">{f1(kl.reduce((a, l) => a + l.fat, 0))}</td><td className="num">{f1(kl.reduce((a, l) => a + l.protein, 0))}</td><td /></tr>
+                              </tbody>
+                            </table>
+                          </div>
                         )}
                         <AddFoodSheet orderNo={o.order_no} date={date} kind={k} meals={readyMeals} />
                       </section>

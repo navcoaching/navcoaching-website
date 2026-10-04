@@ -183,7 +183,7 @@ export function DeleteFoodLog({ id, orderNo, name }: { id: number; orderNo: stri
   return (
     <form onSubmit={onSubmit} style={{ display: "inline" }}>
       <input type="hidden" name="id" value={id} /><input type="hidden" name="order_no" value={orderNo} />
-      <button type="submit" className="btn btn-ghost btn-sm danger" disabled={pending} aria-label={`حذف ${name}`}>حذف</button>
+      <button type="submit" className="btn btn-ghost btn-sm danger" disabled={pending} aria-label={`حذف ${name}`}>✕</button>
       {state.error && <span className="err-msg">{state.error}</span>}
     </form>
   );

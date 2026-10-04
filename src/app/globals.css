@@ -1097,3 +1097,22 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 .meal-more summary { cursor: pointer; min-height: 36px; display: flex; align-items: center; color: var(--accent-text); }
 .meal-ingredients { margin: 4px 0; padding-inline-start: 18px; display: grid; gap: 2px; }
 .meal-method { white-space: pre-wrap; margin: 6px 0 0; overflow-wrap: anywhere; }
+
+/* جدول وجبات اليوم: الصنف + سعرات/كارب/دهون/بروتين، وإجمالي الوجبة */
+.meal-table { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: fixed; }
+.meal-table th, .meal-table td { padding: 8px 3px; text-align: center; border-bottom: 1px solid var(--line); }
+.meal-table thead th { background: var(--navy); color: #fff; font-size: 12px; font-weight: 600; padding: 7px 2px; }
+.meal-table thead th:first-child { text-align: start; padding-inline-start: 8px; border-start-start-radius: 8px; }
+.meal-table thead th:last-child { border-start-end-radius: 8px; }
+.meal-table th:first-child, .meal-table td:first-child { width: 36%; }
+.meal-table th:nth-child(n+2), .meal-table td:nth-child(n+2) { width: 13%; }
+.meal-table th:last-child, .meal-table td:last-child { width: 13%; }
+.meal-table th.mt-name { text-align: start; font-weight: 600; padding-inline-start: 6px; overflow-wrap: anywhere; }
+.meal-table .mt-total th, .meal-table .mt-total td { font-weight: 700; background: var(--surface-2); border-bottom: 0; }
+.meal-table .mt-total th { text-align: start; padding-inline-start: 6px; }
+.meal-table .mt-recipe td { padding: 2px 0 6px; text-align: start; }
+.meal-table .mt-del .btn { padding-inline: 6px; min-height: 34px; }
+.rec { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; margin-top: 4px; line-height: 1.7; }
+.rec h3 { font-size: 13px; margin: 2px 0; color: var(--navy); }
+.rec .meal-ingredients { margin: 0 0 6px; }
+@media (max-width: 420px) { .meal-table { font-size: 13px; } .meal-table th:first-child, .meal-table td:first-child { width: 31%; } .meal-table th:nth-child(n+2), .meal-table td:nth-child(n+2) { width: 14%; } .meal-table th:last-child, .meal-table td:last-child { width: 12%; } }
