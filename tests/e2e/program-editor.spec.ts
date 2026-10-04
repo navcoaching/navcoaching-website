@@ -72,9 +72,9 @@ test("محرر البرنامج: ترتيب بالأرقام، قوائم الت
   const first = day1.locator(".program-items > li").nth(0);
   await first.locator("summary").click();
   const ped = first.getByTestId("exercise-picker");
-  await expect(ped.getByLabel("العضلة")).toHaveValue("Glutes / المؤخرة");
+  await expect(ped.getByLabel(/^\d+ العضلة$/)).toHaveValue("Glutes / المؤخرة");
   await expect(ped.getByLabel(/^التمرين/)).toHaveValue(ids[2]);
-  await ped.getByLabel("العضلة").selectOption("Hamstrings / الخلفية");
+  await ped.getByLabel(/^\d+ العضلة$/).selectOption("Hamstrings / الخلفية");
   const hamOptions = ped.getByLabel(/^التمرين/).locator("option");
   expect(await hamOptions.count()).toBeGreaterThan(3);
   const rdl = (await db.query(`SELECT id, name FROM exercises WHERE primary_muscle = 'Hamstrings / الخلفية' AND status = 'approved' ORDER BY name LIMIT 1`)).rows[0];

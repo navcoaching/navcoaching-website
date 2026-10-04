@@ -41,7 +41,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
             <span className="eyebrow">حسابي</span>
             <h1 style={{ fontSize: "clamp(26px,4vw,36px)", marginTop: 8 }}>أهلاً {user.name.includes("@") ? "" : user.name.split(" ")[0]}</h1>
           </div>
-          {!prefs.saved && <div data-testid="prefs-first">{prefsCard}</div>}
+          {prefsCard}
           <InstallPrompt />
           {denied && <p className="alert warn">لوحة الإدارة للمدربة فقط.</p>}
           {needsAction.length > 0 && <p className="alert warn">عندك {needsAction.length === 1 ? "طلب يحتاج" : `${needsAction.length} طلبات تحتاج`} إجراء منك.</p>}
@@ -122,7 +122,6 @@ export default async function Account({ searchParams }: { searchParams: Promise<
             <ProfileForm name={user.name.includes("@") ? "" : user.name} />
             <Link href="/account/profile" className="btn btn-ghost btn-sm" style={{ width: "fit-content" }} data-testid="profile-link">{intakeSaved ? "تحديث الاستبيان" : "تعبئة الاستبيان"}</Link>
           </div>
-          {prefs.saved && prefsCard}
           {pushPublicKey() && <PushCard publicKey={pushPublicKey()} />}
           <Link href="/install" className="card flat install-cta" data-testid="install-link">
             <b>📱 أضف الموقع كتطبيق على جوالك</b>

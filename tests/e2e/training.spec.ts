@@ -68,7 +68,7 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   }
   // الفلاتر المتسلسلة في المكتبة (تُرسل تلقائياً عند التغيير)
   await coach.goto("/admin/exercises");
-  await coach.getByLabel("العضلة").selectOption("Quadriceps / الأمامية");
+  await coach.getByLabel(/^\d+ العضلة$/).selectOption("Quadriceps / الأمامية");
   await coach.waitForURL(/primary_muscle=/);
   await coach.getByLabel("نمط الحركة").selectOption("Squat (Knee-dominant) / سكوات (هيمنة الركبة)");
   await coach.waitForURL(/pattern=/);
@@ -92,7 +92,7 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   // 1) بالقوائم المتسلسلة: العضلة ← النمط ← النمط الفرعي ← الحركة التشريحية ← التمرين
   await openAdd();
   const picker = addForm.getByTestId("exercise-picker");
-  await picker.getByLabel("العضلة").selectOption("Quadriceps / الأمامية");
+  await picker.getByLabel(/^\d+ العضلة$/).selectOption("Quadriceps / الأمامية");
   await picker.getByLabel("نمط الحركة").selectOption("Squat (Knee-dominant) / سكوات (هيمنة الركبة)");
   await picker.getByLabel("النمط الفرعي / زاوية الحركة").selectOption("Free / Bodyweight Squat / سكوات حر أو بوزن الجسم");
   await expect(picker.getByLabel("الحركة التشريحية الأساسية")).toContainText("Knee Extension + Hip Extension");
@@ -105,7 +105,7 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await expect(day1.locator(".program-items")).toContainText("Back Squat");
   // 2) بالبحث بالاسم
   await openAdd();
-  await picker.getByLabel("العضلة").selectOption("");
+  await picker.getByLabel(/^\d+ العضلة$/).selectOption("");
   await addForm.getByLabel("أو ابحثي بالاسم").fill("Leg Extension");
   await addForm.getByLabel("المجموعات × التكرارات").fill("12-12-10");
   await addForm.getByLabel("RIR", { exact: true }).fill("1");
