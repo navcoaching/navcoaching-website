@@ -20,7 +20,7 @@ export default async function About() {
   const linkOk = (href?: string) => !!href && (!href.startsWith("/programs/") || published.has(href));
 
   return (
-    <>
+    <div className="pub">
       <section className="page-hero">
         <div className="wrap">
           <span className="eyebrow">عن المدربة</span>
@@ -94,6 +94,6 @@ export default async function About() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

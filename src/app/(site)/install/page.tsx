@@ -134,7 +134,7 @@ const ANDROID = [
 
 export default function InstallGuide() {
   return (
-    <section className="section tight">
+    <section className="section tight pub">
       <div className="wrap stack" style={{ ["--space" as string]: "20px", maxWidth: 900 }}>
         <div>
           <span className="eyebrow">دليل سريع</span>

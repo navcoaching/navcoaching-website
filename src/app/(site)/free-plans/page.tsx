@@ -15,7 +15,7 @@ export default async function FreePlans() {
   const user = await getCurrentUser().catch(() => null);
   const plans = await getFreePlans(user?.id ?? null);
   return (
-    <>
+    <div className="pub">
       <section className="page-hero">
         <div className="wrap">
           <span className="eyebrow">الجداول المجانية</span>
@@ -52,6 +52,6 @@ export default async function FreePlans() {
           </p>
         </div>
       </section>
-    </>
+    </div>
   );
 }

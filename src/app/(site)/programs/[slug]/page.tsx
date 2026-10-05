@@ -28,7 +28,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   const url = `${siteUrl()}/programs/${p.slug}`;
   return (
-    <>
+    <div className="pub">
       {!p.is_demo && offers.length > 0 && (
         <JsonLd data={{ "@context": "https://schema.org", "@type": "Service", name: p.name, description: p.audience, url, provider: { "@type": "Organization", name: "Nav Coaching", url: siteUrl() },
           areaServed: "SA", offers: offers.map((o) => ({ "@type": "Offer", name: o.label, price: (o.price_halalas / 100).toFixed(2), priceCurrency: o.currency || "SAR", url })) }} />
@@ -94,6 +94,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </aside>
         </div>
       </section>
-    </>
+    </div>
   );
 }

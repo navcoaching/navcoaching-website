@@ -64,6 +64,8 @@ test("الكتيبات: المدربة ترفع، والمتدرب المشتر�
   await up.getByLabel("يظهر للمتدربين").uncheck();
   await expect(up.getByLabel("يظهر للمتدربين")).not.toBeChecked();
   await up.getByRole("button", { name: "رفع الكتيب" }).click();
+  // رسالة النجاح باقية من الرفع الأول، فننتظر إعادة تعيين النموذج (تحدث فقط بعد نجاح الرفع الثاني)
+  await expect(up.getByLabel("اسم الكتيب")).toHaveValue("");
   await expect(up.getByText("تم رفع الكتيب.")).toBeVisible();
   await coach.reload();
   await expect(coach.getByTestId("booklet-row").filter({ hasText: title })).toContainText("ظاهر");

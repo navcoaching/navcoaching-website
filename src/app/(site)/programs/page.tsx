@@ -36,7 +36,7 @@ export default async function Programs() {
   }])));
 
   return (
-    <>
+    <div className="pub">
       <section className="page-hero">
         <div className="wrap">
           <span className="eyebrow">البرامج والأسعار</span>
@@ -97,6 +97,6 @@ export default async function Programs() {
           <Quiz offers={quizOffers} />
         </div>
       </section>
-    </>
+    </div>
   );
 }

@@ -25,40 +25,47 @@ export default async function Home() {
   const heroMedia = s.hero_image?.media_id;
   // صورة ثابتة توضّح شكل جدول المتدرب (أول لقطة في «نظرة داخل البرنامج»)
   const heroShot = s.program_shots?.[0];
+  // لقطة ثانية بجانب خطوات الاشتراك (إن وُجدت)
+  const howShot = s.program_shots?.[1] ?? null;
 
   return (
-    <>
+    <div className="pub">
       <JsonLd data={{ "@context": "https://schema.org", "@graph": [
         { "@type": "Organization", "@id": `${siteUrl()}/#org`, name: "Nav Coaching", url: siteUrl(), logo: `${siteUrl()}/brand/og-logo.png`,
           description: "برامج تدريب وتغذية مخصصة لأهدافك مع الكوتش ساره: خطة منظمة ومتابعة أسبوعية.", ...(s.contact?.instagram ? { sameAs: [s.contact.instagram] } : {}) },
         { "@type": "WebSite", "@id": `${siteUrl()}/#site`, url: siteUrl(), name: "Nav Coaching", inLanguage: "ar", publisher: { "@id": `${siteUrl()}/#org` } },
       ] }} />
-      {/* ---------- الهيرو ---------- */}
-      <section className="hero">
-        <div className={`wrap hero-grid${heroMedia ? " with-photo" : " with-shot"}`}>
-          <div>
-            <p className="eyebrow">{s.hero.eyebrow}</p>
-            <h1 style={{ marginTop: 16 }}>
-              {s.hero.title}
-              {s.hero.title_tail && <span className="hl">{s.hero.title_tail}</span>}
-            </h1>
-            <p className="lead" style={{ marginTop: 18 }}>{s.hero.lead}</p>
-            <div className="row hero-cta">
-              <Link href="/programs" className="btn btn-cyan">اختر برنامجك <IconArrow size={18} className="arrow" /></Link>
-              <Link href="/programs#quiz" className="btn btn-ghost">أي برنامج يناسبني؟</Link>
-            </div>
-            <ul className="badges" aria-label="مزايا">
-              {s.badges.map((b) => <li key={b}>{b}</li>)}
-            </ul>
+      {/* ---------- الهيرو: شبكة نقاط + خطوط الشعار المائلة + معاينة البرنامج ---------- */}
+      <section className="hero hero-v2">
+        <div className="hero-clip" aria-hidden="true">
+          <div className="hero-bars"><i /><i /><i /></div>
+          <div className="hero-bars alt"><i /><i /></div>
+        </div>
+        <div className="wrap hero-center">
+          <p className="tagline" lang="en" dir="ltr">{s.hero.tagline || "Where Passion Meets Quality"}</p>
+          <p className="eyebrow">{s.hero.eyebrow}</p>
+          <h1>
+            {s.hero.title}
+            {s.hero.title_tail && <> <span className="hl">{s.hero.title_tail}</span></>}
+          </h1>
+          <p className="lead">{s.hero.lead}</p>
+          <div className="row hero-cta">
+            <Link href="/programs" className="btn btn-cyan btn-slit">اختر برنامجك <IconArrow size={18} className="arrow" /></Link>
+            <Link href="/programs#quiz" className="btn btn-ghost">أي برنامج يناسبني؟</Link>
           </div>
+          <ul className="badges" aria-label="مزايا">
+            {s.badges.map((b) => <li key={b}>{b}</li>)}
+          </ul>
           {heroMedia ? (
-            <div className="hero-photo">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/api/files/media/${heroMedia}`} alt="" fetchPriority="high" />
+            <div className="preview">
+              <div className="hero-photo">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/api/files/media/${heroMedia}`} alt="" fetchPriority="high" />
+              </div>
             </div>
           ) : (
             heroShot && (
-              <figure className="hero-shot">
+              <figure className="preview hero-shot">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={shotSrc(heroShot.src)} alt={heroShot.alt} width={heroShot.w} height={heroShot.h} fetchPriority="high" />
                 <figcaption><span className="tag soft">نموذج توضيحي</span> {heroShot.title}</figcaption>
@@ -66,30 +73,56 @@ export default async function Home() {
             )
           )}
         </div>
-        <div className="hero-slashes" aria-hidden="true" />
       </section>
 
-      {/* ---------- ليش Nav ---------- */}
+      {/* ---------- ليش Nav: شبكة بطاقات (bento) ---------- */}
       <section className="section white">
         <div className="wrap">
           <div className="sec-head reveal">
             <span className="eyebrow">ليش Nav Coaching</span>
-            <h2>تدريب مبني عليك، مو جدول جاهز</h2>
+            <h2>تدريب مبني <span className="hl">عليك</span>، مو جدول جاهز</h2>
+            <p className="lead">كل برنامج يُصمم بعد استبيان مفصل، ويتعدّل حسب قياساتك والتزامك.</p>
           </div>
-          <div className="grid g3 features">
+          <div className="bento">
             {s.why.map((w, i) => {
               const Icon = WHY_ICONS[i % WHY_ICONS.length];
+              const wide = i === 0;
               return (
-                <div className="card feature reveal" key={w.title} style={{ ["--d" as string]: `${i * 90}ms` }}>
+                <div className={`card feature accent reveal ${wide ? "c4" : "c2"}`} key={w.title} style={{ ["--d" as string]: `${i * 90}ms` }}>
                   <span className="ico"><Icon /></span>
                   <h3>{w.title}</h3>
                   <p className="muted">{w.body}</p>
+                  {wide && (
+                    <ol className="flow" aria-label="دورة المتابعة الأسبوعية">
+                      <li><i>📝</i>ترسل مراجعتك<small>يوم المراجعة</small></li>
+                      <li><i>👀</i>المدربة تراجع<small>القياسات والالتزام</small></li>
+                      <li><i>🎥</i>رد ومتابعة<small>فيديو أو صوت</small></li>
+                      <li><i>📈</i>برنامج محدّث<small>الأسبوع الجاي</small></li>
+                    </ol>
+                  )}
                 </div>
               );
             })}
+            <div className="card feature reveal c2">
+              <span className="ico"><IconFile /></span>
+              <h3>طلبك وملفاتك في مكان واحد</h3>
+              <p className="muted">من حسابك تشوف حالة طلبك والمطلوب منك، وبعد تأكيد الدفع تظهر ملفات برنامجك ولا يفتحها غيرك.</p>
+            </div>
+            <div className="card feature darkc reveal c2">
+              <span className="ico"><IconShield /></span>
+              <h3>بياناتك خاصة</h3>
+              <p>إجاباتك الصحية لا يطّلع عليها إلا المدربة، ولا تُرسل في أي تنبيه.</p>
+            </div>
           </div>
+          <dl className="stats reveal">
+            <div><dt>شهادات واعتمادات مهنية</dt><dd className="num">{s.about.certs.length}</dd></div>
+            <div><dt>برامج متابعة تختار منها</dt><dd className="num">{follow.length}</dd></div>
+            <div><dt>مراجعة وتعديل للبرنامج</dt><dd>كل أسبوع</dd></div>
+          </dl>
         </div>
       </section>
+
+      <div className="divider" aria-hidden="true" />
 
       {/* ---------- البرامج ---------- */}
       <section className="section" id="programs">
@@ -141,41 +174,36 @@ export default async function Home() {
             <p className="lead">لقطات من ملف المتدرب الفعلي، بدون أي بيانات شخصية. اضغط على الصورة لتكبيرها.</p>
           </div>
           <Shots shots={s.program_shots} />
-          <div className="grid g3 features" style={{ marginTop: 40 }}>
-            {[
-              { I: IconTrend, t: "تتابع طلبك خطوة بخطوة", b: "من حسابك تشوف حالة طلبك، والمطلوب منك الآن، وتاريخ كل تحديث." },
-              { I: IconFile, t: "ملفاتك في مكان واحد", b: "بعد تأكيد الدفع تظهر لك ملفات برنامجك وروابطه، ولا يفتحها غيرك." },
-              { I: IconShield, t: "بياناتك خاصة", b: "إجاباتك الصحية لا يطّلع عليها إلا المدربة، ولا تُرسل في أي تنبيه." },
-            ].map(({ I, t, b }, i) => (
-              <div className="card flat feature reveal" key={t} style={{ ["--d" as string]: `${i * 90}ms` }}>
-                <span className="ico"><I /></span>
-                <h3>{t}</h3>
-                <p className="muted">{b}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
       {/* ---------- كيف أشترك ---------- */}
-      <section className="section dark" id="how">
-        <div className="wrap">
-          <div className="sec-head reveal">
-            <span className="eyebrow">كيف أشترك؟</span>
-            <h2>ثلاث خطوات لأول تمرين</h2>
+      <section className="section" id="how">
+        <div className={`wrap${howShot ? " how-grid" : ""}`}>
+          <div>
+            <div className="sec-head reveal">
+              <span className="eyebrow">كيف أشترك؟</span>
+              <h2>ثلاث خطوات لأول تمرين</h2>
+            </div>
+            <ol className="steps">
+              {s.how_steps.map((st, i) => (
+                <li key={st.title} className="reveal" style={{ ["--d" as string]: `${i * 100}ms` }}>
+                  <h3>{st.title}</h3>
+                  <p>{st.body}</p>
+                </li>
+              ))}
+            </ol>
+            <div className="row" style={{ marginTop: 28 }}>
+              <Link href="/programs" className="btn btn-cyan btn-slit">اختر برنامجك</Link>
+              <Link href="/faq" className="btn btn-ghost">الأسئلة الشائعة</Link>
+            </div>
           </div>
-          <ol className="steps">
-            {s.how_steps.map((st, i) => (
-              <li key={st.title} className="reveal" style={{ ["--d" as string]: `${i * 100}ms` }}>
-                <h3>{st.title}</h3>
-                <p>{st.body}</p>
-              </li>
-            ))}
-          </ol>
-          <div className="row" style={{ marginTop: 28 }}>
-            <Link href="/programs" className="btn btn-cyan">اختر برنامجك</Link>
-            <Link href="/faq" className="btn btn-ghost">الأسئلة الشائعة</Link>
-          </div>
+          {howShot && (
+            <figure className="how-shot reveal" style={{ ["--d" as string]: "120ms" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={shotSrc(howShot.src)} alt={howShot.alt} width={howShot.w} height={howShot.h} loading="lazy" />
+            </figure>
+          )}
         </div>
       </section>
 
@@ -262,6 +290,6 @@ export default async function Home() {
           <IntakeCalculator idPrefix="h" />
         </div>
       </section>
-    </>
+    </div>
   );
 }

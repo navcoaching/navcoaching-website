@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: "الأسئلة الشائعة عن �
 export default async function Faq() {
   const [faqs, s] = await Promise.all([getFaqs(), getSettings()]);
   return (
-    <>
+    <div className="pub">
       <JsonLd data={{ "@context": "https://schema.org", "@type": "FAQPage", url: `${siteUrl()}/faq`, mainEntity: faqs.map((f) => ({ "@type": "Question", name: plain(f.question), acceptedAnswer: { "@type": "Answer", text: plain(f.answer) } })) }} />
       <section className="page-hero">
         <div className="wrap">
@@ -49,6 +49,6 @@ export default async function Faq() {
           </aside>
         </div>
       </section>
-    </>
+    </div>
   );
 }

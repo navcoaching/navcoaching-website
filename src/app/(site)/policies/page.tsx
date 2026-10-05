@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "السياسات", description: "ا�
 export default async function Policies() {
   const policies = await getPolicies();
   return (
-    <>
+    <div className="pub">
       <section className="page-hero">
         <div className="wrap">
           <span className="eyebrow">السياسات</span>
@@ -28,6 +28,6 @@ export default async function Policies() {
           ))}
         </div>
       </section>
-    </>
+    </div>
   );
 }

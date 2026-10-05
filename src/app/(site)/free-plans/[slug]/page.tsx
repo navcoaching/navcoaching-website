@@ -24,7 +24,7 @@ export default async function FreePlanPage({ params }: P) {
   const [plan] = await getFreePlans(user?.id ?? null, slug);
   if (!plan) notFound();
   return (
-    <section className="section tight">
+    <section className="section tight pub">
       <div className="wrap stack" style={{ ["--space" as string]: "18px", maxWidth: 860 }}>
         <nav className="small"><Link href="/free-plans">الجداول المجانية</Link> / {plan.title}</nav>
         <div className="card fp-detail">

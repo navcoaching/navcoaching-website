@@ -36,7 +36,7 @@ const FAQ = [
 
 export default function Calculator() {
   return (
-    <>
+    <div className="pub">
       <section className="page-hero">
         <div className="wrap">
           <span className="eyebrow">أداة مجانية</span>
@@ -76,6 +76,6 @@ export default function Calculator() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

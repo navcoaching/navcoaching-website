@@ -12,6 +12,7 @@ export default function Footer({ s }: { s: Settings }) {
           <div className="foot-grid">
             <div className="stack" style={{ ["--space" as string]: "14px" }}>
               <Image src="/brand/logo-white.webp" alt="Nav Coaching" width={150} height={34} />
+              <p className="foot-tag" lang="en" dir="ltr">{s.hero.tagline || "Where Passion Meets Quality"}</p>
               <p>برامج تدريب وتغذية مخصصة لأهدافك، مع متابعة أسبوعية.</p>
               <p className="small">ساعات العمل والرد: {s.response_time}</p>
               <div className="social" aria-label="حساباتنا">

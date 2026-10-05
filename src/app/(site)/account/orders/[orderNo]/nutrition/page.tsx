@@ -111,7 +111,7 @@ export default async function NutritionPage({ params, searchParams }: { params: 
                                         <tr className="mt-recipe"><td colSpan={6}>
                                           <details className="meal-more small" data-testid="meal-details">
                                             <summary>المكونات وطريقة التحضير</summary>
-                                            <div className="rec">
+                                            <div className="recipe">
                                               {d.items.length > 0 && (<><h3>المكونات</h3><ul className="meal-ingredients">{d.items.map((it, i) => <li key={i}>{it.food}{it.portion ? <span className="muted"> — {it.portion}</span> : null}</li>)}</ul></>)}
                                               {d.method && (<><h3>طريقة التحضير</h3><p className="meal-method">{d.method}</p></>)}
                                             </div>

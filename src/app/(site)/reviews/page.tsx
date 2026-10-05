@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "تقييمات المتدربين", 
 export default async function Reviews() {
   const [reviews, s] = await Promise.all([getPublicReviews(), getSettings()]);
   return (
-    <>
+    <div className="pub">
       <section className="page-hero">
         <div className="wrap">
           <span className="eyebrow">التقييمات</span>
@@ -23,6 +23,6 @@ export default async function Reviews() {
           <p className="small muted">كل تقييم يُراجع قبل النشر ولا يُعدّل نصه. <Link href="/policies#reviews">سياسة التقييمات</Link></p>
         </div>
       </section>
-    </>
+    </div>
   );
 }
