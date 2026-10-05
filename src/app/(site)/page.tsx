@@ -12,7 +12,7 @@ import { getFaqs, getProducts, getPublicReviews, getSettings } from "@/lib/data"
 import { youtubeId } from "@/lib/youtube";
 import JsonLd, { siteUrl } from "@/components/JsonLd";
 
-export const revalidate = 300;
+export const revalidate = 3600; // ساعة. تعديلات الإدارة تُحدّث الصفحات فوراً (revalidatePath)، فلا حاجة لإعادة توليد كل 5 دقائق (وهي ما تسبب بطء أول زائر)
 
 const WHY_ICONS = [IconTarget, IconChat, IconTrend];
 

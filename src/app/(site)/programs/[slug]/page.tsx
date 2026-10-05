@@ -8,7 +8,7 @@ import { IconArrow } from "@/components/Icons";
 import { productDescription } from "@/lib/seo";
 import JsonLd, { siteUrl } from "@/components/JsonLd";
 
-export const revalidate = 300;
+export const revalidate = 3600; // ساعة. تعديلات الإدارة تُحدّث الصفحات فوراً (revalidatePath)، فلا حاجة لإعادة توليد كل 5 دقائق (وهي ما تسبب بطء أول زائر)
 
 export async function generateStaticParams() {
   try { return (await getProducts()).map((p) => ({ slug: p.slug })); } catch { return []; }

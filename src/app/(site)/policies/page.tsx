@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import RichText from "@/components/RichText";
 import { getPolicies } from "@/lib/data";
 
-export const revalidate = 300;
+export const revalidate = 3600; // ساعة. تعديلات الإدارة تُحدّث الصفحات فوراً (revalidatePath)، فلا حاجة لإعادة توليد كل 5 دقائق (وهي ما تسبب بطء أول زائر)
 export const metadata: Metadata = { title: "السياسات", description: "الشروط والأحكام، والضمان والاسترجاع، وسياسة الخصوصية، وسياسة التقييمات." };
 
 export default async function Policies() {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getApprovedMedia, getProducts, getSettings } from "@/lib/data";
 
-export const revalidate = 300;
+export const revalidate = 3600; // ساعة. تعديلات الإدارة تُحدّث الصفحات فوراً (revalidatePath)، فلا حاجة لإعادة توليد كل 5 دقائق (وهي ما تسبب بطء أول زائر)
 export const metadata: Metadata = { title: "عن الكوتش ساره | ناڤ", description: "تعرّفي على الكوتش ساره (ناڤ): خلفيتها في التدريب والتغذية وأسلوب المتابعة الأسبوعية في برامج Nav Coaching." };
 
 /** فقرة تبدأ اختيارياً بجزء عريض بين ** ** */

@@ -6,7 +6,7 @@ import ProgramTabs from "@/components/ProgramTabs";
 import { getProducts, getSettings } from "@/lib/data";
 import { CATEGORY_LABEL, riyals, shortName } from "@/lib/format";
 
-export const revalidate = 300;
+export const revalidate = 3600; // ساعة. تعديلات الإدارة تُحدّث الصفحات فوراً (revalidatePath)، فلا حاجة لإعادة توليد كل 5 دقائق (وهي ما تسبب بطء أول زائر)
 export const metadata: Metadata = { title: "البرامج والأسعار", description: "باقات المتابعة، والملفات بدون متابعة، والاستشارات — مع الأسعار بالريال السعودي." };
 
 const CATS = ["follow", "files", "consult"] as const;

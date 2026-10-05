@@ -3,7 +3,7 @@ import Link from "next/link";
 import ReviewCard from "@/components/ReviewCard";
 import { getPublicReviews, getSettings } from "@/lib/data";
 
-export const revalidate = 300;
+export const revalidate = 3600; // ساعة. تعديلات الإدارة تُحدّث الصفحات فوراً (revalidatePath)، فلا حاجة لإعادة توليد كل 5 دقائق (وهي ما تسبب بطء أول زائر)
 export const metadata: Metadata = { title: "تقييمات المتدربين", description: "تجارب حقيقية لمتدربين مع برامج التدريب والتغذية في Nav Coaching، تُنشر بموافقتهم وبدون تعديل." };
 
 export default async function Reviews() {
