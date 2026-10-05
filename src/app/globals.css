@@ -1313,7 +1313,7 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 :root { --shine: rgba(255, 255, 255, 0.6); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --shine: rgba(160, 225, 250, 0.22); } }
 :root[data-theme="dark"] { --shine: rgba(160, 225, 250, 0.22); }
-.pub .card.feature, .pub .steps > li { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.pub .card.feature, .pub .steps > li, .pub .pcard { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .fx { position: relative; overflow: hidden; }
 .fx-shine {
   position: absolute; inset: 0; z-index: 3; pointer-events: none;
@@ -1326,4 +1326,5 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
   from { transform: perspective(1000px) rotateY(0deg); }
   to { transform: perspective(1000px) rotateY(360deg); }
 }
+.pcard.fx-spin { animation-duration: 0.7s; }
 @media (prefers-reduced-motion: reduce) { .fx-spin { animation: none; } }

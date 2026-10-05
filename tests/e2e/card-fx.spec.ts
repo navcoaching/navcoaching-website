@@ -27,3 +27,13 @@ test("البطاقات: تفضيل تقليل الحركة يلغي الدورا
   expect(await card.evaluate((e) => getComputedStyle(e).animationName)).toBe("none");
   await ctx.close();
 });
+
+test("بطاقات البرامج: تلمع وتدور ثم تفتح صفحة الباقة", async ({ page }) => {
+  await page.goto("/programs");
+  const card = page.locator(".pcard:visible").first();
+  const href = await card.getAttribute("href");
+  await card.click();
+  await expect(card).toHaveClass(/fx-spin/);
+  await expect(page).toHaveURL(new RegExp(`${href}$`), { timeout: 5000 });
+  await expect(page.locator("h1")).toHaveCount(1);
+});
