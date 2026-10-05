@@ -1328,3 +1328,19 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 }
 .pcard.fx-spin { animation-duration: 0.7s; }
 @media (prefers-reduced-motion: reduce) { .fx-spin { animation: none; } }
+
+/* ---------- ظهور تدريجي أوضح في الصفحات العامة ---------- */
+.js .pub .reveal { transform: translateY(34px) scale(0.98); transition-duration: 0.8s; }
+.js .pub .reveal.in { transform: none; }
+/* أعلى الصفحة: عناصر الهيرو ورأس الصفحات الداخلية تظهر واحداً بعد الآخر عند الفتح (CSS فقط) */
+@keyframes pub-rise { from { opacity: 0; transform: translateY(26px); } }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-v2 .hero-center > *, .pub .page-hero .wrap > * { animation: pub-rise 0.8s var(--ease) both; }
+  .hero-v2 .hero-center > :nth-child(2), .pub .page-hero .wrap > :nth-child(2) { animation-delay: 0.08s; }
+  .hero-v2 .hero-center > :nth-child(3), .pub .page-hero .wrap > :nth-child(3) { animation-delay: 0.16s; }
+  .hero-v2 .hero-center > :nth-child(4), .pub .page-hero .wrap > :nth-child(4) { animation-delay: 0.24s; }
+  .hero-v2 .hero-center > :nth-child(5), .pub .page-hero .wrap > :nth-child(5) { animation-delay: 0.32s; }
+  .hero-v2 .hero-center > :nth-child(6) { animation-delay: 0.4s; }
+  .hero-v2 .hero-center > :nth-child(n+7) { animation-delay: 0.5s; animation-duration: 1s; }
+}
+@media (prefers-reduced-motion: reduce) { .js .pub .reveal { transform: none; } }
