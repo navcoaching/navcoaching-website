@@ -1308,3 +1308,22 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 .foot-tag::before { content: ""; width: 18px; height: 8px; background: var(--logo-cyan); transform: skewX(var(--slant)); }
 /* لقطة البرنامج طويلة: نعرض أعلاها فقط مع تلاشٍ ناعم (الصورة الكاملة في «كيف يبدو برنامجك؟») */
 .hero.hero-v2 .hero-shot img { max-height: 620px; object-fit: cover; object-position: top; -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent); mask-image: linear-gradient(180deg, #000 78%, transparent); }
+
+/* ---------- حركة البطاقات عند الضغط: لمعة + دوران 360° (CardFx) ---------- */
+:root { --shine: rgba(255, 255, 255, 0.6); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --shine: rgba(160, 225, 250, 0.22); } }
+:root[data-theme="dark"] { --shine: rgba(160, 225, 250, 0.22); }
+.pub .card.feature, .pub .steps > li { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.fx { position: relative; overflow: hidden; }
+.fx-shine {
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: linear-gradient(115deg, transparent 30%, var(--shine) 48%, rgba(41, 181, 232, 0.25) 52%, transparent 70%);
+  transform: translateX(-120%); animation: fx-shine 0.9s var(--ease) forwards;
+}
+@keyframes fx-shine { to { transform: translateX(120%); } }
+.fx-spin { animation: fx-spin 0.9s var(--ease); }
+@keyframes fx-spin {
+  from { transform: perspective(1000px) rotateY(0deg); }
+  to { transform: perspective(1000px) rotateY(360deg); }
+}
+@media (prefers-reduced-motion: reduce) { .fx-spin { animation: none; } }
