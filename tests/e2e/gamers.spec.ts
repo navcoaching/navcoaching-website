@@ -65,6 +65,13 @@ test("بانر باقة القيمرز: مخفي بدون باقة، ويظهر 
     await expect(banner).toContainText("سرعة استجابة أفضل");
     await expect(banner).toContainText("تقييم مختص");
     await expect(banner).toContainText("300");
+    // العنوان أبيض على خلفية البانر الداكنة (لا يرث لون عناوين الأقسام الفاتحة)
+    expect(await banner.locator("h2").evaluate((e) => getComputedStyle(e).color)).toBe("rgb(255, 255, 255)");
+    if (process.env.SHOT_DIR) {
+      await banner.scrollIntoViewIfNeeded();
+      await visitor.waitForTimeout(1200); // انتهاء حركة الظهور
+      await banner.screenshot({ path: `${process.env.SHOT_DIR}/gamers-${project}.png` });
+    }
     // بعد قسم البرامج مباشرة
     expect(await visitor.evaluate(() => document.querySelector("#programs")?.nextElementSibling?.id)).toBe("gamers");
     await noHorizontalScroll(visitor);

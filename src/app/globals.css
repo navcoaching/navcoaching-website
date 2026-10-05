@@ -1142,8 +1142,8 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 .pub .section.white { background: var(--pub-bg); }
 .pub .section:not(.white):not(.dark) { background: var(--pub-soft); }
 .pub .btn { border-radius: 12px; }
-.pub h2 { color: var(--heading); }
-.pub .section.dark h2 { color: #fff; }
+/* لون العناوين في الأقسام الفاتحة فقط (البانرات الداكنة مثل باقة القيمرز تحتفظ بلونها الأبيض) */
+.pub .section:not(.dark) .sec-head h2 { color: var(--heading); }
 .pub .eyebrow::before { width: 16px; height: 8px; background: var(--logo-cyan); transform: skewX(var(--slant)); }
 
 /* كلمة مميزة بخط سماوي مائل تحتها (مثل ضربة الشعار) */
