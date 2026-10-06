@@ -154,17 +154,7 @@ def search(question: str, k: int | None = None, doc_ids: list[str] | None = None
     concepts = query_concepts(question)
     diag: dict = {"concepts": [sorted(g) for g in concepts]}
     with db.session() as conn:
-        allowed: set[str] | None = None
-        if doc_ids:
-            allowed = set(doc_ids)
-        if collection_id:
-            ids = {r["doc_id"] for r in conn.execute(
-                "SELECT doc_id FROM document_collections WHERE collection_id=?", (collection_id,))}
-            allowed = ids if allowed is None else allowed & ids
-        # Only processed documents are searchable.
-        live = {r["id"] for r in conn.execute(
-            "SELECT id FROM documents WHERE status IN ('processed','needs_review')")}
-        allowed = live if allowed is None else allowed & live
+        allowed = allowed_docs(conn, doc_ids, collection_id)
         if not allowed:
             return [], {**diag, "reason": "no_documents"}
 
@@ -235,6 +225,67 @@ def search(question: str, k: int | None = None, doc_ids: list[str] | None = None
     hits.sort(key=lambda h: h.score, reverse=True)
     diag["semantic_embedder"] = bool(emb and emb.semantic)
     return hits[: max(k * 3, k)], diag
+
+
+def allowed_docs(conn, doc_ids: list[str] | None = None, collection_id: str | None = None) -> set[str]:
+    """Documents in scope: optional explicit ids ∩ optional collection ∩ processed documents."""
+    allowed: set[str] | None = set(doc_ids) if doc_ids else None
+    if collection_id:
+        ids = {r["doc_id"] for r in conn.execute(
+            "SELECT doc_id FROM document_collections WHERE collection_id=?", (collection_id,))}
+        allowed = ids if allowed is None else allowed & ids
+    # Only processed documents are searchable.
+    live = {r["id"] for r in conn.execute(
+        "SELECT id FROM documents WHERE status IN ('processed','needs_review')")}
+    return live if allowed is None else allowed & live
+
+
+def full_scan(concepts: list[set[str]], weights: list[float] | None, doc_ids: list[str] | None = None,
+              collection_id: str | None = None) -> tuple[list[Hit], dict]:
+    """Read EVERY passage of every in-scope file (not only the top-ranked candidates) and
+    score each one by weighted concept coverage. Uses the stemmed text already stored in
+    the keyword index, so a whole library is scanned in well under a second.
+
+    Returns (hits with coverage > 0, scan statistics)."""
+    stats = {"files": 0, "passages": 0, "pages": 0, "unreadable_pages": 0, "filenames": []}
+    if not concepts:
+        return [], stats
+    with db.session() as conn:
+        allowed = allowed_docs(conn, doc_ids, collection_id)
+        if not allowed:
+            return [], stats
+        q = ",".join("?" * len(allowed))
+        docs = conn.execute(f"SELECT id, filename, page_count, pages_failed FROM documents WHERE id IN ({q})",
+                            list(allowed)).fetchall()
+        stats["files"] = len(docs)
+        stats["filenames"] = sorted(d["filename"] for d in docs)
+        stats["unreadable_pages"] = sum(d["pages_failed"] or 0 for d in docs)
+        matched: dict[str, tuple[float, list[str]]] = {}
+        pages: set[tuple[str, int]] = set()
+        for r in conn.execute(f"SELECT f.chunk_id, f.body, c.doc_id, c.page FROM chunks_fts f "
+                              f"JOIN chunks c ON c.id=f.chunk_id WHERE c.doc_id IN ({q})", list(allowed)):
+            stats["passages"] += 1
+            pages.add((r["doc_id"], r["page"] or 0))
+            toks = set((r["body"] or "").split())
+            cov = concept_coverage(concepts, toks, weights)
+            if cov > 0:
+                matched[r["chunk_id"]] = (cov, [sorted(g)[0] for g in concepts if g & toks])
+        stats["pages"] = len(pages)
+        hits: list[Hit] = []
+        ids = list(matched)
+        for i in range(0, len(ids), 500):
+            part = ids[i:i + 500]
+            rows = conn.execute(
+                f"SELECT c.*, d.filename, d.title, d.authors, d.year, d.doc_type FROM chunks c "
+                f"JOIN documents d ON d.id=c.doc_id WHERE c.id IN ({','.join('?' * len(part))})", part).fetchall()
+            for r in rows:
+                cov, m = matched[r["id"]]
+                hits.append(Hit(chunk_id=r["id"], doc_id=r["doc_id"], text=r["text"], page=r["page"],
+                                printed_page=r["printed_page"], location=r["location"], section=r["section"],
+                                quality=r["quality"], flags=json.loads(r["flags"] or "[]"), filename=r["filename"],
+                                title=r["title"], authors=r["authors"], year=r["year"], doc_type=r["doc_type"],
+                                coverage=cov, score=0.5 * cov, matched_concepts=m))
+    return hits, stats
 
 
 def concept_weights(conn, concepts: list[set[str]]) -> list[float]:

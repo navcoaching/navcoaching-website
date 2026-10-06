@@ -25,6 +25,22 @@ def _norm(s: str) -> str:
     return fold(s).replace("\n", " ")
 
 
+NUM_WORDS = set("zero one two three four five six seven eight nine ten eleven twelve twenty thirty forty fifty "
+                "hundred thousand once twice half double".split())
+NEGATION = set("no not never without none neither nor cannot".split())
+
+
+def _same_facts(quote: str, span: str) -> bool:
+    """A fuzzy match may differ in spacing/punctuation, never in numbers or negation."""
+    qw = set(raw_tokens(fold(quote)))
+    sw = set(raw_tokens(fold(span)))
+    if not numbers(quote) <= numbers(span):
+        return False
+    if (qw & NUM_WORDS) - sw:
+        return False
+    return (qw & NEGATION) == (sw & NEGATION) or not (qw & NEGATION) and not (sw & NEGATION)
+
+
 def locate_quote(quote: str, passage: str) -> str | None:
     """Return the exact span of `passage` matching `quote`, or None."""
     if not quote or not passage:
@@ -45,14 +61,14 @@ def locate_quote(quote: str, passage: str) -> str | None:
         r = difflib.SequenceMatcher(None, q, _norm(s)).ratio()
         if r > best_ratio:
             best, best_ratio = s, r
-    if best_ratio >= 0.9:
+    if best_ratio >= 0.9 and _same_facts(quote, best):
         return best
     # A quote that is a sub-span of one sentence
     for s in sentences(passage):
         sn = _norm(s)
         if len(q) < len(sn):
             m = difflib.SequenceMatcher(None, q, sn).find_longest_match(0, len(q), 0, len(sn))
-            if m.size >= 0.92 * len(q):
+            if m.size >= 0.92 * len(q) and _same_facts(quote, s):
                 return s
     return None
 

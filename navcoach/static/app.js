@@ -114,6 +114,19 @@
     }));
   }
 
+  function renderVerification(v) {
+    if (!v) return "";
+    const cls = v.verdict === "verified" ? "ok" : "warn";
+    const vals = (v.values || []).filter((u) => u.values.length).map((u) => `<tr><td>${esc(u.unit)}</td><td>${u.values.map((x) =>
+      `<b>${esc(x.value)}</b> — ${x.sources.map((s) => `${esc(s.filename)}${s.page ? ` (${t("page")} ${esc(s.page)})` : ""} <a href="#/evidence/${esc(s.chunk_id)}">${esc(s.evidence_id)}</a>`).join("، ")}`).join("<br>")}</td></tr>`).join("");
+    const files = Object.entries(v.supporting_by_file || {}).map(([f, n]) => `${esc(f)}: ${esc(n)}`).join(" • ");
+    return `<div class="notice ${cls}" style="margin-top:12px"><h3 style="margin-top:0">🔎 ${t("final_check")}</h3>
+      ${(v.summary || []).map((l) => `<div>${esc(l)}</div>`).join("")}
+      ${files ? `<div class="small muted" style="margin-top:4px">${t("support_by_file")}: ${files}</div>` : ""}
+      ${vals ? `<table class="small" style="margin-top:6px"><tr><th>${t("stated_values")}</th><th></th></tr>${vals}</table>` : ""}
+      <details class="small"><summary>${t("files_scanned")} (${esc((v.files_scanned || []).length)})</summary>${(v.files_scanned || []).map(esc).join("<br>")}</details></div>`;
+  }
+
   function renderAnswer(r) {
     const parts = [];
     parts.push(`<div class="notice">${esc(r.notice)}</div>`);
@@ -132,6 +145,7 @@
         parts.push(`<div class="claim"><div class="meta"><span class="badge ${badge}">${esc(typ)}</span></div>
           ${c.type === "quote" ? `<div class="quote">${esc(c.text)}</div>` : `<div>${esc(c.text)}</div>`}
           <div>${citeChips(c.citations)}</div>
+          ${(c.also_stated_in || []).length ? `<div class="small muted">✔ ${t("also_stated")} ${esc(c.also_stated_in.length)}: ${c.also_stated_in.slice(0, 12).map((x) => `<a href="#/evidence/${esc(x.chunk_id)}">${esc(x.filename)}${x.page ? ` ${t("page")} ${esc(x.page)}` : ""}</a>`).join("، ")}${c.also_stated_in.length > 12 ? " …" : ""}</div>` : ""}
           ${(c.warnings || []).map((w) => `<div class="small" style="color:#9a6a0f">⚠ ${esc(w)}</div>`).join("")}</div>`);
       });
       if (r.conflicts && r.conflicts.length) {
@@ -142,6 +156,7 @@
             ${p.text ? `<div class="quote">${esc(p.text)}</div>` : ""}</div>`).join("")}</div>`);
         });
       }
+      parts.push(renderVerification(r.verification));
       parts.push(`<h2>${t("evidence")}</h2>`);
       Object.values(r.citations || {}).forEach((c) => parts.push(citationCard(c)));
       if (r.documents_used) parts.push(`<p class="small muted">${t("documents_used")}: ${r.documents_used.map(esc).join("، ")}</p>`);

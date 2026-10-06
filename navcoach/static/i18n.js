@@ -32,6 +32,7 @@ window.I18N = {
     // ask
     ask_title: "اسأل مكتبتي", ask_sub: "تُبنى الإجابات حصريًا على ملفاتك. إن لم توجد أدلة كافية سيخبرك النظام بذلك بدل التخمين.",
     ask_placeholder: "مثال: ماذا تقول ملفاتي عن الحجم التدريبي الأمثل للتضخم العضلي؟", ask_btn: "اسأل", limit_scope: "حصر البحث في:", all_library: "كل المكتبة",
+    final_check: "التحقق النهائي من الإجابة", also_stated: "وردت العبارة نفسها في مواضع أخرى", support_by_file: "العبارات الداعمة لكل ملف", stated_values: "القيم المذكورة في الملفات", files_scanned: "الملفات التي قُرئت كاملة",
     answer: "الإجابة", evidence: "الأدلة", conflicts: "تعارض بين المصادر", limitations: "القيود والفجوات", gaps: "ما لم تغطه المقاطع",
     rejected: "عبارات حذفها المدقق لعدم كفاية الدليل", warnings: "تنبيهات", stated: "منصوص عليه", inference: "استنتاج", quote: "اقتباس حرفي",
     open_evidence: "فتح الدليل", open_in_file: "فتح في الملف", section: "القسم", mode: "وضع الإجابة", network_ok: "لم تُجرَ أي محاولة اتصال خارجي أثناء هذه الإجابة.",
@@ -134,6 +135,7 @@ window.I18N = {
     new_collection: "New collection", add: "Add",
     ask_title: "Ask My Library", ask_sub: "Answers are built exclusively from your files. If evidence is insufficient, the system says so instead of guessing.",
     ask_placeholder: "e.g. What do my files say about optimal training volume for hypertrophy?", ask_btn: "Ask", limit_scope: "Limit search to:", all_library: "Whole library",
+    final_check: "Final answer check", also_stated: "Same statement also found in other places", support_by_file: "Supporting statements per file", stated_values: "Values stated in the files", files_scanned: "Files read in full",
     answer: "Answer", evidence: "Evidence", conflicts: "Conflicting sources", limitations: "Limitations & gaps", gaps: "Not covered by the passages",
     rejected: "Statements removed by the verifier (insufficient support)", warnings: "Warnings", stated: "Stated", inference: "Inference", quote: "Verbatim quote",
     open_evidence: "Open evidence", open_in_file: "Open in file", section: "Section", mode: "Answer mode", network_ok: "No external connection was attempted during this answer.",

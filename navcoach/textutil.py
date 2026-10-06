@@ -133,6 +133,7 @@ AR_EN_GLOSSARY: dict[str, list[str]] = {
     "دقيقه": ["minute", "minutes"], "دقائق": ["minutes"], "ثانيه": ["second", "seconds"], "ثواني": ["seconds"],
     "فتره": ["interval", "period"], "فترات": ["intervals"], "اسبوعيا": ["weekly", "week"], "اسبوعيه": ["weekly", "week"],
     "يوميا": ["daily"], "شهر": ["month"], "اشهر": ["months"], "مرات": ["times", "frequency"], "مره": ["time", "frequency"],
+    "جلسه": ["session", "sessions"], "جلسات": ["sessions", "session"], "حصه": ["session", "sessions"], "حصص": ["sessions", "session"],
     "تكراريه": ["frequency"],
     # nutrition
     "ماكروز": ["macronutrients"], "كرب": ["carbohydrate"], "كاربوهيدرات": ["carbohydrate"], "مكمل": ["supplement"],
