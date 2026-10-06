@@ -11,7 +11,7 @@ window.I18N = {
     k_docs: "ملفات", k_pages: "صفحات/وحدات مقروءة", k_failed_pages: "صفحات تعذر قراءتها", k_chunks: "مقاطع مفهرسة",
     k_queries: "أسئلة مسجلة", k_clients: "متدربون", k_programs: "برامج",
     by_status: "حالة المعالجة", by_type: "أنواع المستندات (مكتشفة آليًا)", recent_docs: "آخر الملفات",
-    index_needs_rebuild: "تم تغيير مزود التضمين؛ يجب إعادة بناء الفهرس من الإعدادات.",
+    index_needs_rebuild: "الفهرس يحتاج إعادة بناء (تغيّر مزود التضمين أو تحسّنت طريقة معالجة النص). من الإعدادات اضغطي «إعادة بناء الفهرس من الملفات الأصلية».",
     // statuses
     st_pending: "بانتظار المعالجة", st_processing: "قيد المعالجة", st_processed: "تمت المعالجة", st_failed: "فشلت المعالجة", st_needs_review: "يحتاج إلى مراجعة",
     // library
@@ -116,7 +116,7 @@ window.I18N = {
     k_docs: "Files", k_pages: "Pages/units read", k_failed_pages: "Unreadable pages", k_chunks: "Indexed passages",
     k_queries: "Logged questions", k_clients: "Clients", k_programs: "Programs",
     by_status: "Processing status", by_type: "Document types (auto-detected)", recent_docs: "Recent files",
-    index_needs_rebuild: "The embedding provider changed; rebuild the index from Settings.",
+    index_needs_rebuild: "The index needs a rebuild (embedding provider changed or text processing improved). In Settings, click “Rebuild index from original files”.",
     st_pending: "Pending", st_processing: "Processing", st_processed: "Processed", st_failed: "Failed", st_needs_review: "Needs review",
     lib_title: "Knowledge Library", lib_sub: "Upload your scientific files (PDF, DOCX, PPTX, XLSX, CSV, TXT, MD). Stored locally; adding files never reprocesses existing ones.",
     drop_here: "Drop files here or", choose_files: "Choose files", choose_folder: "Choose a folder",

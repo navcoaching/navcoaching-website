@@ -173,31 +173,53 @@ def quote_claim(model: DocModel, s: Sentence, scores: dict[int, float] | None = 
 
 # ----------------------------------------------------------------------------- extractive engine
 
+STRONG_DEFINITION = re.compile(r"\b(refers? to|(?:is|are|can be) defined as|is termed|denotes|(?:is|are) known as)\b", re.I)
+NOT_A_TERM = set("""what which who whom whose how why when where whether this these those that it its they them there here
+one each such both all some many most our their his her my your we you he she results result findings data study studies
+table figure participants subjects group groups however therefore thus also""".split())
+ARTICLE = re.compile(r"^(?:a|an|the)\s+", re.I)
+
+
+def _acronym_term(words: list[str], abbr: str) -> str | None:
+    """Shortest run of words just before "(ABBR)" whose initials spell ABBR (hyphenated parts count)."""
+    target = abbr.lower().rstrip("s") if len(abbr) > 2 and abbr.endswith("s") else abbr.lower()
+    for k in range(1, min(len(words), 8) + 1):
+        tail = words[-k:]
+        initials = "".join(p[0] for w in tail for p in w.split("-") if p).lower()
+        if initials == target or initials == abbr.lower():
+            return " ".join(tail)
+    return None
+
+
 def _concepts(model: DocModel, scores, n: int) -> list[dict]:
+    """Concepts the file itself defines: explicit definitions and spelled-out abbreviations only."""
+    text_low = " ".join(s.text.lower() for s in model.sentences)
     out, seen = [], set()
     for s in model.sentences:
         m = DEFINITION.match(s.text)
-        if m:
-            term = m.group("term").strip()
-            key = term.lower()
-            abbr = re.search(r"\(([A-Za-z]{2,8})\)", term)
-            if len(term) < 3 or key in seen or key.split()[0] in ("this", "these", "it", "there", "that", "the", "our", "which", "they", "results"):
-                continue
-            seen.add(key)
-            seen.add(re.sub(r"\s*\(.*\)", "", key))
-            if abbr:
-                seen.add(abbr.group(1).lower())
-            out.append({"term": term, "basis": "definition", **quote_claim(model, s, scores)})
+        if not m:
+            continue
+        term = ARTICLE.sub("", m.group("term").strip())
+        key = term.lower()
+        first = key.split()[0] if key.split() else ""
+        if len(term) < 3 or key in seen or first in NOT_A_TERM or s.text.rstrip().endswith("?"):
+            continue
+        # Weak pattern ("X is a ...") needs the term to recur in the file; strong wording does not.
+        strong = bool(STRONG_DEFINITION.search(s.text[:len(m.group(0)) + 20]))
+        if not strong and text_low.count(re.sub(r"\s*\(.*\)", "", key)) < 2:
+            continue
+        seen.update({key, re.sub(r"\s*\(.*\)", "", key)})
+        abbr = re.search(r"\(([A-Za-z]{2,8})\)", term)
+        if abbr:
+            seen.add(abbr.group(1).lower())
+        out.append({"term": term, "basis": "definition", **quote_claim(model, s, scores)})
     for s in model.sentences:
         for m in ACRONYM.finditer(s.text):
-            words = m.group("term").strip().split()
             abbr = m.group("abbr")
-            initials = "".join(w[0] for w in words[-len(abbr):]).lower() if len(words) >= len(abbr) else ""
-            term = " ".join(words[-len(abbr):]) if initials == abbr.lower() else m.group("term").strip()
-            key = abbr.lower()
-            if key in seen or term.lower() in seen or len(term) < 4:
+            term = _acronym_term(m.group("term").strip().split(), abbr)
+            if not term or abbr.lower() in seen or term.lower() in seen or term.split()[0].lower() in NOT_A_TERM:
                 continue
-            seen.update({key, term.lower()})
+            seen.update({abbr.lower(), term.lower()})
             out.append({"term": f"{term} ({abbr})", "basis": "abbreviation", **quote_claim(model, s, scores)})
     order = {"definition": 0, "abbreviation": 1}
     out.sort(key=lambda c: (order[c["basis"]], -(c.get("importance") or 0)))

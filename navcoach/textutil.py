@@ -20,7 +20,7 @@ EN_STOP = set(
 EN_QUESTION_FRAME = set(
     """say says tell according file files library my document documents study studies research paper papers
     evidence evidences find found show shows available regarding concerning relation relationship best
-    optimal compare comparison summarize summary explain many much use used using does do give""".split()
+    optimal compare comparison summarize summary explain many much use used using does do give effect effects impact impacts influence happen happens happened role affect affects outcome outcomes benefit benefits know tell""".split()
 )
 AR_STOP = set(
     """في من على إلى الى عن مع هذا هذه ذلك تلك التي الذي الذين هو هي هم ما ماذا لماذا كيف هل أو او و ثم لا لم لن
@@ -77,7 +77,7 @@ AR_EN_GLOSSARY: dict[str, list[str]] = {
     "اصابه": ["injury"],
     "اصابات": ["injury", "injuries"],
     "الم": ["pain"],
-    "ايام": ["days", "frequency"],
+    "ايام": ["days", "frequency", "week"],
     "يوم": ["day", "days"],
     "اسبوعي": ["weekly", "week"],
     "اسبوع": ["week", "weekly"],
@@ -114,6 +114,8 @@ AR_EN_GLOSSARY: dict[str, list[str]] = {
     "سكوات": ["squat"],
     "اطاله": ["stretching"],
     "اطالات": ["stretching"],
+    "كيتو": ["ketogenic", "keto"], "كيتوني": ["ketogenic", "ketone"], "كيتونات": ["ketones", "ketone"],
+    "صيام": ["fasting"], "متقطع": ["intermittent"], "نباتي": ["vegetarian", "vegan"], "حميه": ["diet"], "رجيم": ["diet"],
     # sets / reps (incl. colloquial)
     "جوله": ["set", "sets", "round"], "جولات": ["sets", "rounds"], "جول": ["sets", "rounds"],
     "سيت": ["set", "sets"], "سيتات": ["sets"], "مجاميع": ["sets"], "مجموعه": ["set", "sets"],
@@ -202,7 +204,16 @@ def fold(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+IRREGULAR = {"slept": "sleep", "ran": "run", "ate": "eat", "eaten": "eat", "grew": "grow", "grown": "grow",
+             "lost": "lose", "fed": "feed", "fell": "fall", "fallen": "fall", "gave": "give", "given": "give",
+             "took": "take", "taken": "take", "rode": "ride", "swam": "swim", "lifted": "lift", "felt": "feel",
+             "kept": "keep", "made": "make", "led": "lead", "rose": "rise", "risen": "rise", "drank": "drink",
+             "women": "woman", "men": "man", "children": "child", "analyses": "analysis", "studies": "study"}
+
+
 def stem_en(w: str) -> str:
+    if w in IRREGULAR:
+        return IRREGULAR[w]
     if len(w) <= 3 or w.isdigit():
         return w
     for suf, rep in (("ational", "ate"), ("ization", "ize"), ("iveness", "ive"), ("fulness", "ful"),
@@ -274,7 +285,11 @@ def query_concepts(question: str) -> list[set[str]]:
     """
     groups: list[set[str]] = []
     seen: set[str] = set()
-    for t in raw_tokens(question):
+    q = fold(question)
+    q = re.sub(r"\bhow long\b", " duration ", q)
+    q = re.sub(r"\bhow often\b", " frequency ", q)
+    q = re.sub(r"\bhow (many|much)\b", " ", q)
+    for t in raw_tokens(q):
         if t in EN_STOP or t in AR_STOP or t in EN_QUESTION_FRAME or t in AR_QUESTION_FRAME:
             continue
         if len(t) == 1 and not t.isdigit():
@@ -296,6 +311,10 @@ def query_concepts(question: str) -> list[set[str]]:
                 group.update({"reserve", "rir"})
             if s == "rpe":
                 group.update({"rpe", "exertion"})
+            if s == "duration":
+                group.update({"week", "month", "day", "year", "last", "long"})
+            if s == "frequency":
+                group.update({"day", "time", "week", "session"})
         groups.append(group)
     return groups
 
@@ -329,11 +348,16 @@ def untranslated_terms(question: str) -> list[str]:
     return out
 
 
-def concept_coverage(concepts: list[set[str]], text_tokens: set[str]) -> float:
+def concept_coverage(concepts: list[set[str]], text_tokens: set[str], weights: list[float] | None = None) -> float:
+    """Share of the question's concepts found in the text.
+
+    With `weights` (from index.concept_weights), rare/specific concepts count more than
+    words that appear everywhere in the library (e.g. "training")."""
     if not concepts:
         return 0.0
-    hit = sum(1 for g in concepts if g & text_tokens)
-    return hit / len(concepts)
+    if not weights or len(weights) != len(concepts) or sum(weights) <= 0:
+        return sum(1 for g in concepts if g & text_tokens) / len(concepts)
+    return sum(w for g, w in zip(concepts, weights) if g & text_tokens) / sum(weights)
 
 
 _SENT_SPLIT = re.compile(r"(?<=[.!?؟])\s+(?=[A-Z0-9ء-ي(\"'])|\n{2,}")

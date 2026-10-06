@@ -96,22 +96,34 @@ def _evidence_block(eid: str, h: Hit) -> str:
             f"{h.text}\n</passage>")
 
 
-def _extractive_claims(evidence: list[tuple[str, Hit]], concepts) -> list[dict]:
-    claims = []
+def _extractive_claims(evidence: list[tuple[str, Hit]], concepts, weights=None) -> list[dict]:
+    """Verbatim sentences that address the question.
+
+    A sentence must match at least two question concepts (when the question has two) and come
+    close to the best sentence's weighted coverage, so generic matches (e.g. only the word
+    "training") are dropped."""
+    cands = []
     for eid, h in evidence:
-        scored = []
         for s in sentences(h.text):
             if not is_statement(s) or looks_like_injection(s):
                 continue
-            cov = concept_coverage(concepts, set(tokens(s)))
+            toks = set(tokens(s))
+            cov = concept_coverage(concepts, toks, weights)
+            hits = sum(1 for g in concepts if g & toks)
             if cov > 0:
-                scored.append((cov, s))
-        scored.sort(key=lambda x: -x[0])
-        threshold = max(0.34, scored[0][0] * 0.6) if scored else 1
-        for cov, s in scored[:2]:
-            if cov >= threshold:
-                claims.append({"text": s, "type": "quote", "citations": [eid], "quotes": {eid: s},
-                               "warnings": [], "doc_id": h.doc_id})
+                cands.append((cov, hits, eid, h, s))
+    if not cands:
+        return []
+    best = max(c[0] for c in cands)
+    need_hits = min(2, len(concepts))
+    threshold = max(0.34, best * 0.75)
+    claims, per_chunk = [], {}
+    for cov, hits, eid, h, s in sorted(cands, key=lambda c: -c[0]):
+        if cov < threshold or hits < need_hits or per_chunk.get(eid, 0) >= 2:
+            continue
+        per_chunk[eid] = per_chunk.get(eid, 0) + 1
+        claims.append({"text": s, "type": "quote", "citations": [eid], "quotes": {eid: s},
+                       "warnings": [], "doc_id": h.doc_id})
         if len(claims) >= 10:
             break
     return claims
@@ -259,7 +271,7 @@ def ask(question: str, lang: str = "ar", doc_ids: list[str] | None = None, colle
             model = None
     if model is None:
         result["mode_note"] = EXTRACTIVE_NOTE[lang]
-        claims = _extractive_claims(evidence, concepts)
+        claims = _extractive_claims(evidence, concepts, diag.get("concept_weights"))
 
     used_ids = {e for c in claims for e in c["citations"]}
     if not claims:

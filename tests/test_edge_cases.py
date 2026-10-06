@@ -455,3 +455,15 @@ def test_rebuild_refuses_when_embedder_unreachable_and_keeps_index(env):
         update_settings({"embedding_provider": "hash"})
         embeddings._cache.clear()
     assert rag.ask("How many sets per week did the high-volume group perform?", lang="en")["status"] == "answered"
+
+
+def test_old_index_is_flagged_for_rebuild(env):
+    _add(F.study_a(env["files"]))
+    with db.session() as conn:
+        from navcoach import index
+        assert index.index_status(conn)["needs_rebuild"] is False
+        db.set_meta(conn, "text_version", "1")
+        assert index.index_status(conn)["needs_rebuild"] is True
+    ingest.rebuild_index()
+    with db.session() as conn:
+        assert index.index_status(conn)["needs_rebuild"] is False

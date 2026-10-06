@@ -385,3 +385,32 @@ def test_summary_api_end_to_end(env):
     assert c.delete(f"/api/summaries/{sid}").status_code == 400
     assert c.delete(f"/api/summaries/{sid}?confirm=true").json()["deleted"]
     assert c.get(f"/api/summaries/{sid}").status_code == 404
+
+
+def test_concept_cards_are_real_terms_not_fragments(env):
+    """Reported: concept cards like 'What', 'fat diet', 'Ketonix', 'consume medium-chain triglyceride (MCT)'."""
+    doc = _add(F.keto_notes(env["files"]))
+    s = _summary(doc, "expert", lang="ar")
+    terms = [c["term"] for c in s["content"]["concepts"]]
+    assert "Nutritional ketosis" in terms and "ketogenic diet" in terms
+    assert "medium-chain triglyceride (MCT)" in terms
+    for bad in ("What", "Ketonix", "A ketogenic diet", "A high fat diet"):
+        assert bad not in terms
+    assert not any(t.lower().startswith(("consume", "athletes", "what", "a ", "the ")) for t in terms)
+    assert not any(len(t.split()) > 6 for t in terms)
+
+
+def test_search_answers_stay_on_topic(env):
+    """Reported: answers unrelated to the question. Generic words must not carry a match."""
+    from navcoach import rag
+    _add(F.keto_notes(env["files"]))
+    _add(F.study_a(env["files"]))
+    _add(F.rich_study(env["files"]))
+    r = rag.ask("كم عدد أيام تدريب المقاومة؟", lang="ar")
+    texts = [c["text"] for c in r["claims"]]
+    assert texts and all(re.search(r"days per week|times per week", t) for t in texts), texts
+    r = rag.ask("What happens to sprint performance on a ketogenic diet?", lang="en")
+    assert [c["text"] for c in r["claims"]] == [
+        "Sprint performance decreased by 4% during the ketogenic diet compared with a high carbohydrate diet."]
+    r = rag.ask("ما تأثير الكيتو على الأداء؟", lang="ar")
+    assert r["claims"] and all("ketogenic" in c["text"] for c in r["claims"])

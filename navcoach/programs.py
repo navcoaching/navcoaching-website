@@ -34,7 +34,7 @@ ELEMENTS = [
     ("weekly_volume", "الحجم الأسبوعي (مجموعات لكل عضلة)", "Weekly volume (sets per muscle)",
      "{goal} weekly training volume sets per muscle group per week",
      r"\b" + N + r"(?:\s*(?:-|–|to|or|,)\s*" + N + r")?(?:\s*(?:,|or)\s*" + N + r")?\s*(?:weekly\s+sets|sets\s*(?:per\s+(?:muscle(?:\s+group)?\s+)?(?:per\s+)?week|weekly|a week))"),
-    ("reps", "التكرارات لكل مجموعة", "Repetitions per set", "{goal} repetitions per set range load",
+    ("reps", "التكرارات لكل مجموعة", "Repetitions per set", "{goal} repetitions per set",
      r"(\d+)\s*(?:-|–|to)\s*(\d+)\s*(?:repetitions|reps)(?!\s+in reserve)"),
     ("effort", "الشدة / قرب الفشل (RIR/RPE)", "Effort / proximity to failure (RIR/RPE)",
      "{goal} repetitions in reserve RIR RPE failure",

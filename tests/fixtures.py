@@ -133,3 +133,20 @@ def rich_study(dir: Path) -> Path:
          "5. Conclusion",
          "In conclusion, training to failure was not necessary to maximise quadriceps hypertrophy in trained women over 10 weeks."],
     ], title="Training to Failure Versus Repetitions in Reserve", author="Lee M, Park S", first_printed=1)
+
+
+def keto_notes(dir: Path) -> Path:
+    """Nutrition notes with questions-as-headings, brand names and acronyms (concept-extraction traps)."""
+    return make_pdf(dir / "Keto_Nutrition_Notes.pdf", [
+        ["Ketogenic Diets for Athletes",
+         "What is a ketogenic diet? A ketogenic diet is a dietary approach that restricts carbohydrate to induce ketosis.",
+         "A high fat diet is a diet in which most energy comes from fat.",
+         "Ketonix is a breath ketone analyzer that some athletes use.",
+         "Athletes often consume medium-chain triglyceride (MCT) oil to raise blood ketones.",
+         "Nutritional ketosis is defined as blood beta-hydroxybutyrate (BHB) between 0.5 and 3.0 mmol/L."],
+        ["Training and Performance",
+         "Endurance training performance was maintained during the ketogenic diet in trained cyclists.",
+         "Sprint performance decreased by 4% during the ketogenic diet compared with a high carbohydrate diet.",
+         "Training volume was kept constant across the 6-week intervention.",
+         "Resistance training sessions were performed three times per week."],
+    ], title="Ketogenic Diets for Athletes")

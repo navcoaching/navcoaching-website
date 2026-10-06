@@ -6,6 +6,7 @@ replaced (e.g. by ChromaDB/pgvector) without touching the rest.
 from __future__ import annotations
 
 import json
+import math
 import threading
 from dataclasses import dataclass, field
 
@@ -15,6 +16,10 @@ from . import db
 from .config import Settings, get_settings
 from .embeddings import get_embedder, normalise_for_embedding
 from .textutil import concept_coverage, query_concepts, search_text, tokens
+
+
+# Bump when tokenisation/stemming changes so existing indexes are flagged for a rebuild.
+TEXT_VERSION = "2"
 
 
 @dataclass
@@ -98,6 +103,7 @@ def add_chunks(conn, doc_id: str, chunks: list, settings: Settings | None = None
             conn.execute("INSERT INTO vectors(chunk_id,doc_id,dim,vec) VALUES(?,?,?,?)",
                          (cid, doc_id, int(v.shape[0]), v.astype(np.float32).tobytes()))
     db.set_meta(conn, "embedder", emb.name)
+    db.set_meta(conn, "text_version", TEXT_VERSION)
     vector_cache.invalidate()
     return len(chunks)
 
@@ -128,8 +134,9 @@ def index_status(conn, settings: Settings | None = None) -> dict:
     except Exception as exc:  # provider not reachable / not installed
         current = f"unavailable ({type(exc).__name__})"
     n = conn.execute("SELECT COUNT(*) c FROM chunks").fetchone()["c"]
-    return {"chunks": n, "embedder_indexed": stored, "embedder_configured": current,
-            "needs_rebuild": bool(n) and stored is not None and stored != current}
+    text_ok = db.get_meta(conn, "text_version") == TEXT_VERSION
+    return {"chunks": n, "embedder_indexed": stored, "embedder_configured": current, "text_version_ok": text_ok,
+            "needs_rebuild": bool(n) and ((stored is not None and stored != current) or not text_ok)}
 
 
 def _fts_query(concepts: list[set[str]]) -> str | None:
@@ -161,6 +168,8 @@ def search(question: str, k: int | None = None, doc_ids: list[str] | None = None
         if not allowed:
             return [], {**diag, "reason": "no_documents"}
 
+        weights = concept_weights(conn, concepts)
+        diag["concept_weights"] = [round(w, 3) for w in weights]
         bm25: dict[str, int] = {}
         fq = _fts_query(concepts)
         if fq:
@@ -208,7 +217,7 @@ def search(question: str, k: int | None = None, doc_ids: list[str] | None = None
     hits = []
     for r in rows:
         toks = set(tokens((r["section"] or "") + " " + r["text"]))
-        cov = concept_coverage(concepts, toks)
+        cov = concept_coverage(concepts, toks, weights)
         matched = [sorted(g)[0] for g in concepts if g & toks]
         rrf = 0.0
         if r["id"] in bm25:
@@ -226,6 +235,23 @@ def search(question: str, k: int | None = None, doc_ids: list[str] | None = None
     hits.sort(key=lambda h: h.score, reverse=True)
     diag["semantic_embedder"] = bool(emb and emb.semantic)
     return hits[: max(k * 3, k)], diag
+
+
+def concept_weights(conn, concepts: list[set[str]]) -> list[float]:
+    """IDF-style weight per concept group: words found in most passages (e.g. "training")
+    weigh little, specific terms weigh more. Concepts absent from the library weigh most."""
+    n = conn.execute("SELECT COUNT(*) c FROM chunks").fetchone()["c"]
+    raw = []
+    for g in concepts:
+        q = " OR ".join('"' + t.replace('"', "") + '"' for t in sorted(g) if t)
+        df = conn.execute("SELECT COUNT(*) c FROM chunks_fts WHERE chunks_fts MATCH ?", (q,)).fetchone()["c"] if q else 0
+        raw.append((df, max(0.15, math.log((n + 1) / (df + 0.5)))))
+    # A word that never occurs in the library weighs like a typical word that does (median),
+    # so one unknown phrasing word cannot sink an otherwise well-covered question, while a
+    # question made mostly of absent topics (e.g. "caffeine sprint") still fails the gate.
+    present = sorted(w for df, w in raw if df > 0)
+    cap = present[len(present) // 2] if present else 1.0
+    return [w if df > 0 else cap for df, w in raw]
 
 
 def passes_gate(hit: Hit, settings: Settings, semantic: bool) -> bool:
