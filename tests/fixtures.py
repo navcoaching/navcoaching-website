@@ -98,3 +98,38 @@ def client_complete(dir: Path) -> Path:
         "Bench press: 3 sets x 8 reps @ 80 kg RIR 2\nSquat: 3 sets x 6 reps @ 100 kg RPE 8\n",
         encoding="utf-8")
     return p
+
+
+def rich_study(dir: Path) -> Path:
+    """Multi-section research paper with definitions, a numeric table, limitations and practical applications."""
+    return make_pdf(dir / "Failure_Training_Study.pdf", [
+        ["Training to Failure Versus Repetitions in Reserve",
+         "Abstract",
+         "The purpose of this study was to compare training to momentary muscular failure with training that leaves "
+         "repetitions in reserve in resistance-trained women. Twenty-four participants trained for 10 weeks. "
+         "Both conditions increased quadriceps cross-sectional area, with no significant difference between conditions.",
+         "1. Introduction",
+         "Repetitions in reserve (RIR) is defined as the number of additional repetitions a lifter could complete before failure. "
+         "Proximity to failure is important because it determines how many effective repetitions are performed in each set.",
+         "It is commonly believed that every set must be taken to failure to maximise hypertrophy."],
+        ["2. Methods",
+         "2.1 Participants",
+         "Twenty-four resistance-trained women aged 20 to 32 years (n = 24) volunteered for the study.",
+         "2.2 Training Protocol",
+         "The intervention consisted of 4 sets of leg extension performed three days per week for 10 weeks, "
+         "with 2 minutes of rest between sets.",
+         "Quadriceps cross-sectional area was measured using ultrasound before and after the intervention."],
+        ["3. Results",
+         "The failure group increased cross-sectional area by 8.1% and the 2 RIR group by 7.4%, "
+         "with no significant difference between groups (p = 0.41).",
+         "Perceived fatigue was significantly greater after failure sessions than after RIR sessions.",
+         "[Table 1 on this page]\nGroup | CSA change % | Fatigue score\nFailure | 8.1 | 7.2\n2 RIR | 7.4 | 5.1\nControl | 0.6 | 2.0"],
+        ["4. Discussion",
+         "Training with 2 RIR was associated with lower fatigue while producing similar hypertrophy to failure training.",
+         "Limitations",
+         "Limitations include the small sample of 24 women and the use of a single exercise, so the findings may not generalize to men.",
+         "Practical Applications",
+         "Coaches can prescribe sets ending 1-3 repetitions in reserve to reduce fatigue without compromising hypertrophy.",
+         "5. Conclusion",
+         "In conclusion, training to failure was not necessary to maximise quadriceps hypertrophy in trained women over 10 weeks."],
+    ], title="Training to Failure Versus Repetitions in Reserve", author="Lee M, Park S", first_printed=1)

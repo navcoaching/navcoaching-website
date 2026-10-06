@@ -111,6 +111,17 @@ CREATE TABLE IF NOT EXISTS programs (
     created_at REAL
 );
 CREATE INDEX IF NOT EXISTS idx_programs_client ON programs(client_id);
+CREATE TABLE IF NOT EXISTS summaries (
+    id TEXT PRIMARY KEY,
+    doc_id TEXT NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+    title TEXT, level TEXT, lang TEXT, mode TEXT,
+    status TEXT,                     -- running | done | failed
+    progress TEXT, error TEXT,
+    doc_sha256 TEXT,                 -- file version the summary was built from (stale detection)
+    content TEXT, slides TEXT, study TEXT, verification TEXT,   -- JSON
+    created_at REAL, updated_at REAL, generated_at REAL
+);
+CREATE INDEX IF NOT EXISTS idx_summaries_doc ON summaries(doc_id);
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT);
 """
 

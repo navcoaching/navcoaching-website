@@ -7,6 +7,7 @@ import io
 import logging
 import mimetypes
 import os
+import re
 import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -15,7 +16,9 @@ from fastapi import Body, FastAPI, File, Form, HTTPException, Query, Request, Up
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, PlainTextResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
-from . import __version__, backup, clients, compare, db, index, ingest, netguard, programs, rag
+from . import __version__, backup, clients, compare, db, docmodel, index, ingest, netguard, programs, rag
+from . import slides as slides_mod
+from . import study, summarize
 from .config import data_dir, get_settings, update_settings
 from .llm import LLMUnavailable, PrivacyBlocked, get_llm
 
@@ -484,6 +487,129 @@ def delete_program(lineage_id: str, confirm: bool = False):
     if not confirm:
         raise HTTPException(400, "confirmation required (confirm=true)")
     return {"deleted": programs.delete_program_lineage(lineage_id)}
+
+
+# ----------------------------------------------------------------- summaries, slides, study
+
+def _summary_or_404(sid: str, answers: bool = False) -> dict:
+    s = summarize.get(sid, include_answers=answers)
+    if s is None:
+        raise HTTPException(404, "summary not found")
+    return s
+
+
+def _ready(s: dict) -> dict:
+    if s["status"] != "done":
+        raise HTTPException(409, f"summary is {s['status']}")
+    return s
+
+
+def _model_for(s: dict):
+    m = docmodel.load(s["doc_id"])
+    if m is None:
+        raise HTTPException(404, "source file not found")
+    return m
+
+
+@app.get("/api/summaries")
+def list_summaries(doc_id: str | None = None):
+    return summarize.list_all(doc_id)
+
+
+@app.post("/api/summaries")
+def create_summary(payload: dict = Body(...)):
+    try:
+        return summarize.create(payload.get("doc_id", ""), payload.get("level", "standard"), payload.get("lang", "ar"),
+                                payload.get("title"))
+    except KeyError:
+        raise HTTPException(404, "file not found")
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
+
+
+@app.get("/api/summaries/{sid}")
+def get_summary(sid: str):
+    return _summary_or_404(sid)
+
+
+@app.patch("/api/summaries/{sid}")
+def rename_summary(sid: str, payload: dict = Body(...)):
+    _summary_or_404(sid)
+    try:
+        return summarize.rename(sid, payload.get("title", ""))
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
+
+
+@app.post("/api/summaries/{sid}/regenerate")
+def regenerate_summary(sid: str, payload: dict = Body(default={})):
+    _summary_or_404(sid)
+    try:
+        return summarize.regenerate(sid, payload.get("level"), payload.get("lang"))
+    except ValueError as exc:
+        raise HTTPException(400, str(exc))
+
+
+@app.delete("/api/summaries/{sid}")
+def delete_summary(sid: str, confirm: bool = False):
+    if not confirm:
+        raise HTTPException(400, "confirmation required (confirm=true)")
+    if not summarize.delete(sid):
+        raise HTTPException(404, "summary not found")
+    return {"deleted": True}
+
+
+@app.get("/api/summaries/{sid}/export")
+def export_summary(sid: str, format: str = "md"):
+    s = _ready(_summary_or_404(sid))
+    name = re.sub(r"[^\w\-]+", "_", s["title"])[:60] or "summary"
+    if format == "pptx":
+        data = slides_mod.to_pptx(s["slides"])
+        return Response(data, media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                        headers={"Content-Disposition": f'attachment; filename="{name}.pptx"'})
+    return PlainTextResponse(summarize.to_markdown(s))
+
+
+@app.post("/api/summaries/{sid}/explain")
+def explain(sid: str, payload: dict = Body(...)):
+    s = _ready(_summary_or_404(sid))
+    claims, title = study.section_claims(s["content"], payload.get("section", ""), s["slides"])
+    if not claims:
+        lang = payload.get("lang", s["lang"])
+        return {"title": title, "parts": [], "note": summarize.NOT_FOUND["en" if lang == "en" else "ar"], "mode": "extractive"}
+    return study.explain_claims(_model_for(s), claims, payload.get("title") or title, payload.get("lang", s["lang"]),
+                                study.get_llm_or_none())
+
+
+@app.post("/api/summaries/{sid}/answer")
+def answer_question(sid: str, payload: dict = Body(...)):
+    s = _ready(_summary_or_404(sid, answers=True))
+    try:
+        return study.check_answer(s["study"], payload.get("question_id", ""), payload.get("answer"), payload.get("lang", s["lang"]))
+    except KeyError:
+        raise HTTPException(404, "question not found")
+
+
+@app.post("/api/summaries/{sid}/slide-chat")
+def slide_chat(sid: str, payload: dict = Body(...)):
+    s = _ready(_summary_or_404(sid))
+    q = (payload.get("question") or "").strip()
+    if not q:
+        raise HTTPException(400, "question required")
+    try:
+        return study.slide_chat(_model_for(s), s["slides"], payload.get("slide_id", ""), q, payload.get("lang", s["lang"]),
+                                study.get_llm_or_none())
+    except KeyError:
+        raise HTTPException(404, "slide not found")
+
+
+@app.post("/api/documents/{doc_id}/ask")
+def ask_document(doc_id: str, payload: dict = Body(...)):
+    d = _need(ingest.get_document(doc_id))
+    q = (payload.get("question") or "").strip()
+    if not q:
+        raise HTTPException(400, "question required")
+    return study.ask_document(doc_id, d["filename"], q, payload.get("lang", "ar"))
 
 
 # ----------------------------------------------------------------- backup

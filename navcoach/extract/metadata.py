@@ -22,7 +22,7 @@ DOC_TYPES = [
     ("narrative_review", re.compile(r"\b(narrative|scoping) review\b|\breview article\b", re.I)),
     ("book", re.compile(r"\bisbn\b|\bchapter \d+\b|all rights reserved", re.I)),
     ("guideline", re.compile(r"position stand|position statement|guideline", re.I)),
-    ("observational", re.compile(r"cross[- ]sectional|cohort study|observational study", re.I)),
+    ("observational", re.compile(r"cross[- ]sectional (study|design|survey)|cohort study|observational study", re.I)),
 ]
 
 

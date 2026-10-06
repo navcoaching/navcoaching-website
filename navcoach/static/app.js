@@ -8,7 +8,7 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const view = () => $("#view");
-  const fmtDate = (ts) => ts ? new Date(ts * 1000).toLocaleString(S.lang === "ar" ? "ar-SA-u-nu-latn" : "en-GB") : "";
+  const fmtDate = (ts) => ts ? new Date(ts * 1000).toLocaleString(S.lang === "ar" ? "ar-SA-u-ca-gregory-nu-latn" : "en-GB") : "";
 
   async function api(path, opts = {}) {
     const o = { ...opts };
@@ -42,7 +42,7 @@
   const errorBox = (e) => `<div class="notice err">${t("error")}: ${esc(e.message || e)}</div>`;
 
   // ------------------------------------------------------------------ shell
-  const NAV = [["dashboard", "📊"], ["library", "📚"], ["ask", "💬"], ["clients", "🧑‍🤝‍🧑"], ["programs", "🗓️"], ["evidence", "🔎"], ["settings", "⚙️"]];
+  const NAV = [["dashboard", "📊"], ["library", "📚"], ["summaries", "📖"], ["ask", "💬"], ["clients", "🧑‍🤝‍🧑"], ["programs", "🗓️"], ["evidence", "🔎"], ["settings", "⚙️"]];
   function shell() {
     document.documentElement.lang = S.lang;
     document.documentElement.dir = S.lang === "ar" ? "rtl" : "ltr";
@@ -61,10 +61,13 @@
 
   async function route() {
     if (S.pollTimer) { clearTimeout(S.pollTimer); S.pollTimer = null; }
+    if (S.keyHandler) { document.removeEventListener("keydown", S.keyHandler); S.keyHandler = null; }
     if (!S.settings) { try { S.settings = await api("/api/settings"); } catch (e) { /* ignore */ } }
     shell();
     const [page, id, sub] = location.hash.slice(2).split("/");
     try {
+      const ext = window.NAV_PAGES || {};
+      if (["summaries", "slides", "study"].includes(page) && ext[page]) return await ext[page](ctx(), id, sub);
       switch (page || "dashboard") {
         case "dashboard": return await Dashboard();
         case "library": return id ? await DocDetail(id) : await Library();
@@ -79,6 +82,9 @@
     } catch (e) { view().innerHTML = errorBox(e); }
   }
   window.addEventListener("hashchange", route);
+
+  const ctx = () => ({ api, esc, t, $, $$, toast, confirmModal, view, loading, errorBox, renderAnswer, wireJumps, fmtDate, S,
+    statusBadge, route });
 
   // ------------------------------------------------------------------ citations
   function citationCard(c) {
@@ -263,6 +269,7 @@
         <button class="btn secondary" id="rp">${t("reprocess")}</button>
         <label class="btn secondary">${t("replace_file")}<input type="file" id="rf" hidden></label>
         <span class="spacer"></span><button class="btn danger" id="del">${t("del")}</button></div>
+      <div id="docStudy"></div>
       <div class="grid k2">
         <div class="card"><h2>${t("doc_details")}</h2><p class="small muted">${t("meta_note")}</p>
           <label class="field"><span>${t("title")}</span><input class="wide" type="text" id="m_title" value="${esc(d.title || "")}"></label>
@@ -282,6 +289,7 @@
         ${rep.units.map((u, i) => `<tr><td>${esc(u.page ?? u.location ?? i + 1)}</td><td>${esc(u.printed_page || "")}</td>
           <td><span class="badge ${u.status === "ok" ? "ok" : u.status === "ocr" ? "warn" : u.status === "empty" ? "" : "err"}">${esc(t("unit_" + u.status))}</span></td>
           <td>${esc(u.chars)}</td><td class="small">${(u.warnings || []).map(esc).join("; ")}</td></tr>`).join("")}</tbody></table></div></div>`;
+    if (window.NAV_PAGES && window.NAV_PAGES.docPanel) window.NAV_PAGES.docPanel(ctx(), d, $("#docStudy")).catch(() => {});
     $("#del").addEventListener("click", async () => {
       if (!(await confirmModal(t("confirm_delete_doc")))) return;
       await api(`/api/documents/${id}?confirm=true`, { method: "DELETE" }); location.hash = "#/library";
