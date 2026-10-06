@@ -416,3 +416,23 @@ def test_garbled_detection_does_not_reject_contents_or_number_tables():
     assert _garbled(soup)
     assert _garbled(" " * 50)
     assert _garbled("text ���� " * 30)
+
+
+def test_colloquial_arabic_question_finds_english_evidence(env):
+    _add(F.study_a(env["files"]))
+    r = rag.ask("كم عدد الجولات الاسبوعية للعضلات؟", lang="ar")
+    assert r["status"] == "answered"
+    assert any("sets per" in c["text"] for c in r["claims"])
+    assert "untranslated_terms" not in r
+    r = rag.ask("ما علاج الكتف المتجمد؟", lang="ar")
+    assert r["status"] == "insufficient"
+    assert "علاج" in r["untranslated_terms"] and "frozen shoulder" in r["untranslated_hint"]
+
+
+def test_arabic_frame_words_are_not_concepts():
+    from navcoach.textutil import query_concepts
+    groups = query_concepts("كم عدد الجولات الاسبوعية للعضلات؟")
+    assert len(groups) == 3
+    groups = query_concepts("ماذا تقول الدراسة عن أفضل مدة راحة؟")
+    flat = set().union(*groups)
+    assert "rest" in flat and not any(w in flat for w in ("دراسه", "افضل", "تقول"))

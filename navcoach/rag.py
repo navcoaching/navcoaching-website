@@ -9,7 +9,8 @@ from . import db, netguard
 from .config import Settings, get_settings
 from .index import Hit, passes_gate, search
 from .llm import LLM, LLMUnavailable, PrivacyBlocked, get_llm
-from .textutil import concept_coverage, is_statement, looks_like_injection, query_concepts, sentences, tokens
+from .textutil import (concept_coverage, is_statement, looks_like_injection, query_concepts, sentences, tokens,
+                       untranslated_terms)
 from .verify import check_claim, detect_conflicts, locate_quote
 
 log = logging.getLogger("navcoach.rag")
@@ -226,6 +227,15 @@ def ask(question: str, lang: str = "ar", doc_ids: list[str] | None = None, colle
                                   "warning": diag.get("warning")}}
     if diag.get("warning"):
         result["warnings"].append(diag["warning"])
+    unknown = untranslated_terms(question)
+    if unknown:
+        result["untranslated_terms"] = unknown
+        result["untranslated_hint"] = (
+            "لم أجد مقابلًا إنجليزيًا لهذه الكلمات، فبُحث عنها حرفيًا فقط: " + "، ".join(unknown)
+            + ". إن كانت ملفاتك إنجليزية، أضيفي المصطلح الإنجليزي في سؤالك (مثال: الكتف المتجمد frozen shoulder)."
+            if lang == "ar" else
+            "No English equivalent is known for these words, so they were matched literally only: " + ", ".join(unknown)
+            + ". If your files are in English, add the English term to your question.")
     mode = "extractive"
     if not concepts or not evidence:
         result.update(status="insufficient", message=INSUFFICIENT[lang], next_steps=INSUFFICIENT_NEXT[lang],

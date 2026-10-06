@@ -29,7 +29,9 @@ AR_STOP = set(
 )
 AR_QUESTION_FRAME = set(
     """تقول يقول ملفاتي ملفات ملف مكتبتي المكتبة الدراسات دراسات دراسة الدراسة الأبحاث ابحاث بحث الأدلة ادلة دليل
-    أفضل افضل الأفضل الامثل الأمثل العلاقة علاقة قارن مقارنة لخص اشرح المتاحة متاحة موجودة الموجودة التي رفعتها""".split()
+    أفضل افضل الأفضل الامثل الأمثل العلاقة علاقة قارن مقارنة لخص اشرح المتاحة متاحة موجودة الموجودة التي رفعتها
+    كم عدد مقدار كمية الكمية انسب الأنسب المناسب مناسب المناسبة المفترض ينبغي يجب أحتاج احتاج يحتاج تحتاج تنصح تنصحين
+    توصي توصية التوصية نصيحة حتى مفيد مفيدة فائدة فوائد أثر اثر تأثير تاثير وش ايش إيش شنو شو وشو يعني معلومات أعرف اعرف أريد اريد ابغى أبغى ودي ممكن""".split()
 )
 
 # Arabic → English concept glossary for cross-lingual retrieval (query expansion
@@ -112,7 +114,54 @@ AR_EN_GLOSSARY: dict[str, list[str]] = {
     "سكوات": ["squat"],
     "اطاله": ["stretching"],
     "اطالات": ["stretching"],
+    # sets / reps (incl. colloquial)
+    "جوله": ["set", "sets", "round"], "جولات": ["sets", "rounds"], "جول": ["sets", "rounds"],
+    "سيت": ["set", "sets"], "سيتات": ["sets"], "مجاميع": ["sets"], "مجموعه": ["set", "sets"],
+    "عده": ["repetitions", "reps"], "عدات": ["repetitions", "reps"], "ريب": ["reps", "repetitions"],
+    "ريبس": ["reps", "repetitions"], "عدات": ["repetitions", "reps"],
+    # training types
+    "حديد": ["resistance", "weights", "iron"], "مقاومه": ["resistance"], "كارديو": ["cardio", "aerobic"],
+    "هوائيه": ["aerobic"], "لاهوائي": ["anaerobic"], "ستريتش": ["stretching"], "تمطيط": ["stretching"],
+    "احماء": ["warm-up", "warm"], "تبريد": ["cool-down"], "تضخيم": ["bulking", "hypertrophy"],
+    "تنشيف": ["cutting", "fat loss"], "حرق": ["burn", "fat"], "بناء": ["building", "gain"],
+    "كتله": ["mass"], "عضليه": ["muscle", "muscular"], "جسم": ["body"], "جسمي": ["body"],
+    "رشاقه": ["agility"], "توازن": ["balance"], "انفجاريه": ["explosive", "power"], "ثبات": ["stability"],
+    "فشل": ["failure"], "الفشل": ["failure"], "حجم": ["volume"],
+    # time / frequency
+    "دقيقه": ["minute", "minutes"], "دقائق": ["minutes"], "ثانيه": ["second", "seconds"], "ثواني": ["seconds"],
+    "فتره": ["interval", "period"], "فترات": ["intervals"], "اسبوعيا": ["weekly", "week"], "اسبوعيه": ["weekly", "week"],
+    "يوميا": ["daily"], "شهر": ["month"], "اشهر": ["months"], "مرات": ["times", "frequency"], "مره": ["time", "frequency"],
+    "تكراريه": ["frequency"],
+    # nutrition
+    "ماكروز": ["macronutrients"], "كرب": ["carbohydrate"], "كاربوهيدرات": ["carbohydrate"], "مكمل": ["supplement"],
+    "مكملات": ["supplements", "supplementation"], "فيتامين": ["vitamin"], "ماء": ["water", "hydration"],
+    "مياه": ["water", "hydration"], "ترطيب": ["hydration"], "وجبه": ["meal"], "وجبات": ["meals"],
+    "صيام": ["fasting"], "عجز": ["deficit"], "فائض": ["surplus"],
+    # body parts
+    "ركبه": ["knee"], "كتف": ["shoulder"], "اكتاف": ["shoulders", "shoulder"], "ظهر": ["back"], "اسفل": ["lower"],
+    "ورك": ["hip"], "حوض": ["hip", "pelvis"], "كاحل": ["ankle"], "رقبه": ["neck"], "صدر": ["chest"],
+    "ارجل": ["legs", "leg"], "رجل": ["leg"], "ساق": ["leg", "calf"], "فخذ": ["thigh", "quadriceps"],
+    "ذراع": ["arm"], "بطن": ["abdominal", "core"], "جذع": ["trunk", "core"], "مؤخره": ["glute", "gluteal"],
+    "ارداف": ["glute", "gluteal"], "مفصل": ["joint"], "مفاصل": ["joints", "joint"], "وتر": ["tendon"],
+    "اوتار": ["tendons", "tendon"], "اربطه": ["ligaments", "ligament"], "عظام": ["bone"],
+    # health / physiology
+    "تمزق": ["tear", "strain"], "التهاب": ["inflammation"], "ضعف": ["weakness"], "اداء": ["performance"],
+    "تحسن": ["improvement"], "تحسين": ["improvement", "improve"], "نبض": ["heart rate"], "اكسجين": ["oxygen"],
+    "هرمون": ["hormone"], "هرمونات": ["hormones"], "ارهاق": ["fatigue", "overtraining"], "مدي": ["range"],
+    "حركي": ["motion", "movement"], "وضعيه": ["posture"], "ميكانيكا": ["biomechanics"], "فسيولوجيا": ["physiology"],
+    "تشريح": ["anatomy"], "دهني": ["fat"], "سمنه": ["obesity"], "وزنه": ["weight"],
+    # populations
+    "مبتدئه": ["untrained", "novice"], "سيدات": ["women"], "امراه": ["women", "female"], "بنات": ["women", "female"],
+    "حامل": ["pregnant", "pregnancy"], "حوامل": ["pregnant", "pregnancy"], "مراهقين": ["adolescents", "youth"],
+    "اطفال": ["children"], "رياضيين": ["athletes"], "لاعبين": ["athletes", "players"], "متدربين": ["trained", "participants"],
 }
+
+
+def _strip_ar_prefix(w: str) -> str:
+    for pre in ("وال", "بال", "كال", "فال", "لل", "ال", "و", "ب", "ل"):
+        if w.startswith(pre) and len(w) - len(pre) >= 3:
+            return w[len(pre):]
+    return w
 
 
 def normalize_arabic(text: str) -> str:
@@ -120,6 +169,11 @@ def normalize_arabic(text: str) -> str:
     text = re.sub("[إأآٱ]", "ا", text)
     text = text.replace("ى", "ي").replace("ة", "ه").replace("ؤ", "و").replace("ئ", "ي")
     return text
+
+
+AR_STOP = {normalize_arabic(w) for w in AR_STOP}
+AR_QUESTION_FRAME = {normalize_arabic(w) for w in AR_QUESTION_FRAME}
+AR_EN_GLOSSARY = {normalize_arabic(k): v for k, v in AR_EN_GLOSSARY.items()}
 
 
 def clean_text(text: str) -> str:
@@ -231,12 +285,12 @@ def query_concepts(question: str) -> list[set[str]]:
         seen.add(s)
         group = {s}
         if is_arabic(t):
-            base = stem_ar(t)
-            for key in (t, base, base.removeprefix("ال")):
-                for en in AR_EN_GLOSSARY.get(key, []):
-                    group.update(stem_en(x) for x in en.split())
-            # Arabic words without a glossary entry are usually framing words
-            # when the library is English; keep them anyway (exact match).
+            if _strip_ar_prefix(t) in AR_QUESTION_FRAME or _strip_ar_prefix(t) in AR_STOP:
+                continue
+            for en in glossary_lookup(t):
+                group.update(stem_en(x) for x in en.split())
+            # Arabic words without a glossary entry stay as an exact-match concept;
+            # untranslated_terms() reports them so the user can rephrase.
         else:
             if s in ("rir",):
                 group.update({"reserve", "rir"})
@@ -244,6 +298,35 @@ def query_concepts(question: str) -> list[set[str]]:
                 group.update({"rpe", "exertion"})
         groups.append(group)
     return groups
+
+
+_GLOSSARY_BY_STEM: dict[str, list[str]] = {}
+
+
+def glossary_lookup(token: str) -> list[str]:
+    """English equivalents for an (already folded) Arabic token, tolerant of prefixes/suffixes."""
+    if not _GLOSSARY_BY_STEM:
+        for k, v in AR_EN_GLOSSARY.items():
+            _GLOSSARY_BY_STEM.setdefault(stem_ar(k), []).extend(v)
+    out: list[str] = []
+    for key in (token, _strip_ar_prefix(token)):
+        out += AR_EN_GLOSSARY.get(key, [])
+    out += _GLOSSARY_BY_STEM.get(stem_ar(token), [])
+    return list(dict.fromkeys(out))
+
+
+def untranslated_terms(question: str) -> list[str]:
+    """Arabic content words of the question that have no English equivalent in the glossary."""
+    out = []
+    for t in raw_tokens(question):
+        if not is_arabic(t) or t in AR_STOP or t in AR_QUESTION_FRAME or len(t) < 3:
+            continue
+        p = _strip_ar_prefix(t)
+        if p in AR_QUESTION_FRAME or p in AR_STOP:
+            continue
+        if not glossary_lookup(t):
+            out.append(t)
+    return out
 
 
 def concept_coverage(concepts: list[set[str]], text_tokens: set[str]) -> float:

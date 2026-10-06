@@ -112,6 +112,7 @@
     const parts = [];
     parts.push(`<div class="notice">${esc(r.notice)}</div>`);
     if (r.mode_note) parts.push(`<div class="notice">${esc(r.mode_note)}</div>`);
+    if (r.untranslated_hint) parts.push(`<div class="notice warn small">🔤 ${esc(r.untranslated_hint)}</div>`);
     if (r.status !== "answered") {
       parts.push(`<div class="notice warn"><b>${esc(r.message)}</b><br>${esc(r.next_steps || "")}</div>`);
       if (r.near_misses && r.near_misses.length) {
