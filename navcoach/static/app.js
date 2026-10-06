@@ -611,7 +611,8 @@
     $("#rb").addEventListener("click", async () => {
       if (!(await confirmModal(t("confirm_rebuild"), { danger: false }))) return;
       $("#rbOut").innerHTML = `<p><span class="spinner"></span></p>`;
-      try { const r = await api("/api/index/rebuild?confirm=true", { method: "POST" }); $("#rbOut").innerHTML = `<div class="notice">${esc(JSON.stringify(r))}</div>`; } catch (e) { $("#rbOut").innerHTML = errorBox(e); }
+      try { const r = await api("/api/index/rebuild?confirm=true", { method: "POST" }); $("#rbOut").innerHTML = `<div class="notice">${esc(JSON.stringify(r))}</div>`; }
+      catch (e) { $("#rbOut").innerHTML = String(e.message).startsWith("embedder_not_ready") ? `<div class="notice err">${t("embedder_not_ready")}<div class="small mono">${esc(e.message)}</div></div>` : errorBox(e); }
     });
     $("#mb").addEventListener("click", async () => { await api("/api/backup", { method: "POST", json: { include_clients: $("#ic").checked } }); route(); });
     $("#rs").addEventListener("change", async (e) => {

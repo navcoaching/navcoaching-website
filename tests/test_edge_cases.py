@@ -436,3 +436,22 @@ def test_arabic_frame_words_are_not_concepts():
     groups = query_concepts("ماذا تقول الدراسة عن أفضل مدة راحة؟")
     flat = set().union(*groups)
     assert "rest" in flat and not any(w in flat for w in ("دراسه", "افضل", "تقول"))
+
+
+def test_rebuild_refuses_when_embedder_unreachable_and_keeps_index(env):
+    from fastapi.testclient import TestClient
+    from navcoach import embeddings
+    from navcoach.main import app
+    d = _add(F.study_a(env["files"]))
+    before = ingest.get_document(d["id"])["chunk_count"]
+    update_settings({"embedding_provider": "ollama", "ollama_url": "http://127.0.0.1:9"})
+    embeddings._cache.clear()
+    try:
+        r = TestClient(app).post("/api/index/rebuild?confirm=true")
+        assert r.status_code == 400 and r.json()["detail"].startswith("embedder_not_ready")
+        doc = ingest.get_document(d["id"])
+        assert doc["status"] == "processed" and doc["chunk_count"] == before
+    finally:
+        update_settings({"embedding_provider": "hash"})
+        embeddings._cache.clear()
+    assert rag.ask("How many sets per week did the high-volume group perform?", lang="en")["status"] == "answered"

@@ -299,8 +299,28 @@ def import_folder(folder: str, on_name_conflict: str = "replace", sync: bool = F
     return report
 
 
+class EmbedderNotReady(RuntimeError):
+    pass
+
+
+def check_embedder() -> None:
+    """Make sure the configured embedding provider answers before touching the index."""
+    from .embeddings import get_embedder
+    settings = get_settings()
+    try:
+        get_embedder(settings).embed(["embedding provider check"])
+    except Exception as exc:
+        raise EmbedderNotReady(
+            f"embedding provider '{settings.embedding_provider}' is not ready ({type(exc).__name__}); nothing was changed") from exc
+
+
 def rebuild_index(sync: bool = True) -> dict:
-    """Drop all chunks/vectors and re-extract every stored original file."""
+    """Drop all chunks/vectors and re-extract every stored original file.
+
+    The embedding provider is checked first, so an unreachable provider (e.g. Ollama
+    not running or the model not downloaded) never wipes a working index.
+    """
+    check_embedder()
     with db.session() as conn:
         index.clear_all(conn)
         ids = [r["id"] for r in conn.execute("SELECT id FROM documents ORDER BY created_at")]

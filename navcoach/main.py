@@ -278,7 +278,10 @@ def idx_status():
 def rebuild(confirm: bool = False):
     if not confirm:
         raise HTTPException(400, "confirmation required (confirm=true)")
-    return ingest.rebuild_index(sync=True)
+    try:
+        return ingest.rebuild_index(sync=True)
+    except ingest.EmbedderNotReady as exc:
+        raise HTTPException(400, f"embedder_not_ready: {exc}")
 
 
 @app.get("/api/collections")
