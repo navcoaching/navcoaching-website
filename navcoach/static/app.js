@@ -600,7 +600,7 @@
         toast(t("saved")); shell();
       } catch (e) { toast(e.message === "external_model_requires_consent" ? t("external_warning") : e.message, 6000); }
     });
-    $("#testM").addEventListener("click", async () => { $("#testOut").textContent = "…"; const r = await api("/api/llm/test", { method: "POST" }); $("#testOut").textContent = r.ok ? `✓ ${r.provider}` : `✗ ${r.error}`; });
+    $("#testM").addEventListener("click", async () => { $("#testOut").textContent = "…"; const r = await api("/api/llm/test", { method: "POST" }); $("#testOut").textContent = r.provider === "none" ? t("test_none") : r.ok ? `✓ ${r.provider}` : `✗ ${r.error}`; });
     $("#saveE").addEventListener("click", async () => {
       try {
         S.settings = await api("/api/settings", { method: "POST", json: { embedding_provider: $("#emb").value, ollama_embedding_model: $("#oem").value, fastembed_model: $("#fem").value,
