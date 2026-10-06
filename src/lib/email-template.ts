@@ -16,16 +16,36 @@ export type EmailInput = {
   cta?: { label: string; url: string };
   brand: EmailBrand;
   kicker?: string;               // نص الترويسة بجانب الشعار (الافتراضي: شكراً لاختيارك)
+  sections?: EmailSection[];     // قوائم منظّمة (مثل الإيميل اليومي للمدربة): عنوان + أسماء بروابط
+  footnote?: string;             // سطر صغير تحت الزر
 };
+export type EmailSection = { title: string; items: { name: string; note: string; url: string }[] };
+
+/** قسم: عنوان بعدد البنود، ثم صف لكل اسم (الاسم + التفاصيل + زر «فتح») */
+function sectionsHtml(list: EmailSection[]) {
+  return list.filter((x) => x.items.length).map((x) => `
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:22px 0 0;border:1px solid ${C.line};border-radius:14px;border-collapse:separate">
+        <tr><td colspan="2" style="padding:12px 16px;background:${C.soft};border-radius:14px 14px 0 0;font:700 16px ${FONT};color:${C.text}">
+          ${esc(x.title)} <span style="display:inline-block;margin-right:6px;background:${C.navy};color:#fff;border-radius:999px;padding:1px 10px;font-size:13px">${x.items.length}</span></td></tr>
+        ${x.items.map((it, i) => `<tr>
+          <td style="padding:12px 16px;${i ? `border-top:1px solid ${C.line};` : ""}font:400 14px/1.7 ${FONT};color:${C.muted}">
+            <div style="font:700 15px ${FONT};color:${C.text}">${esc(it.name)}</div>${esc(it.note)}</td>
+          <td align="left" style="padding:12px 16px;${i ? `border-top:1px solid ${C.line};` : ""}white-space:nowrap">
+            <a href="${esc(it.url)}" style="display:inline-block;padding:7px 16px;border-radius:999px;border:1px solid ${C.navy};color:${C.navy};font:700 13px ${FONT};text-decoration:none">فتح ←</a></td>
+        </tr>`).join("")}
+      </table>`).join("");
+}
 
 const C = { ink: "#07142a", navy: "#284da0", cyan: "#4cc5ed", cyanInk: "#0a6a8f", paper: "#f3f6fa", soft: "#eef3f8", line: "#d8e1ea", text: "#15233a", muted: "#56667a" };
 const FONT = "'IBM Plex Sans Arabic', Tahoma, Arial, sans-serif";
 
 export const esc = (s: unknown) =>
   String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+// رابط واحد ورقم الطلب في تمريرة واحدة: رقم الطلب داخل رابط لا يُلفّ بـ span (كان يكسر الرابط ← صفحة 404)
 const nl2br = (s: string) => esc(s).replace(/\n/g, "<br>")
-  .replace(/https?:\/\/[^\s<]+/g, (u) => `<a href="${u}" style="color:${C.cyanInk};word-break:break-all" dir="ltr">${u}</a>`)
-  .replace(/NAV-\d{6}-[A-Z0-9]{5}/g, (n) => `<span dir="ltr" style="white-space:nowrap">${n}</span>`);
+  .replace(/https?:\/\/[^\s<]+|NAV-\d{6}-[A-Z0-9]{5}/g, (m) => m.startsWith("http")
+    ? `<a href="${m}" style="color:${C.cyanInk};word-break:break-all" dir="ltr">${m}</a>`
+    : `<span dir="ltr" style="white-space:nowrap">${m}</span>`);
 
 export const sar = (h: number | null) => (h == null ? "بانتظار تأكيد المبلغ" : `${(h / 100).toLocaleString("en-US", { maximumFractionDigits: 2 })} ر.س`);
 
@@ -168,10 +188,12 @@ export function renderEmail(input: EmailInput): string {
       ${greeting}
       <h1 style="margin:24px 0 0;font:800 30px/1.45 ${FONT};color:${C.text};text-align:center">${esc(input.headline)}</h1>
       ${input.message ? `<p style="margin:12px auto 0;max-width:420px;font:400 16px/2 ${FONT};color:${C.muted};text-align:center">${nl2br(input.message)}</p>` : ""}
+      ${input.sections ? sectionsHtml(input.sections) : ""}
       ${code}
       ${statusLine}
       ${o ? stepper(o) : ""}
       ${button}
+      ${input.footnote ? `<p style="margin:14px auto 0;max-width:420px;font:400 13px/1.8 ${FONT};color:${C.muted};text-align:center">${esc(input.footnote)}</p>` : ""}
       ${o ? summary(o, link) : ""}
       ${footer(b)}
     </td></tr>

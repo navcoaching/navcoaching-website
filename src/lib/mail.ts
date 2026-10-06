@@ -1,7 +1,7 @@
 import "server-only";
 import { Resend } from "resend";
 import { pool } from "./db";
-import { renderEmail } from "./email-template";
+import { renderEmail, type EmailInput } from "./email-template";
 import { pushToCoaches } from "./push";
 
 /**
@@ -40,10 +40,10 @@ export async function sendMail(to: string, subject: string, text: string, html?:
  * تنبيهات الطلبات: رقم الطلب والحالة فقط، بدون أي بيانات صحية أو إجابات الاستبيان.
  * لا تُفشل العملية الأساسية إذا تعذر الإرسال.
  */
-export async function notifySafe(to: string | undefined | null, subject: string, text: string) {
+export async function notifySafe(to: string | undefined | null, subject: string, text: string, html?: Partial<EmailInput>) {
   if (!to) return;
   try {
-    await sendMail(to, subject, text, await coachHtml(subject, text));
+    await sendMail(to, subject, text, await coachHtml(subject, text, html));
   } catch (err) {
     console.error("[notify] skipped:", (err as Error).message);
   }
@@ -70,7 +70,7 @@ export async function mailBrand(q: { query: (sql: string) => Promise<{ rows: { k
 }
 
 /** تنبيه المدربة بنفس تصميم بريد المتدرب، مع زر لصفحة الطلب في لوحة الإدارة إن وُجد رقم طلب */
-async function coachHtml(subject: string, text: string) {
+async function coachHtml(subject: string, text: string, extra?: Partial<EmailInput>) {
   try {
     const brand = await mailBrand(pool);
     const no = `${subject}\n${text}`.match(/NAV-\d{6}-[A-Z0-9]{5}/)?.[0];
@@ -79,6 +79,7 @@ async function coachHtml(subject: string, text: string) {
       kicker: "تنبيه للمدربة", name: "الكوتش ساره", brand, message: body,
       headline: subject.replace(/\s*[—-]?\s*NAV-\d{6}-[A-Z0-9]{5}/, "").trim() || subject,
       cta: { label: no ? "فتح الطلب في لوحة الإدارة" : "فتح لوحة الإدارة", url: `${brand.site}/admin${no ? `/orders/${no}` : ""}` },
+      ...extra,
     });
   } catch {
     return undefined; // يُرسل النص العادي فقط

@@ -51,6 +51,24 @@ export function digestText(d: Digest, today: string, site: string): string {
   ].join("\n");
 }
 
+/** نسخة HTML منظّمة: قسم لكل نوع، وصف لكل متدرب بزر يفتح صفحته في لوحة الإدارة */
+export function digestEmail(d: Digest, today: string, site: string) {
+  const items = (list: DigestLine[], path = "") => list.map((l) => ({ name: l.name, note: l.note, url: `${site}/admin/orders/${l.order_no}${path}` }));
+  const n = digestCount(d);
+  return {
+    headline: "مراجعات اليوم",
+    message: `${fmtYMD(today)}\nعندك ${n} ${n === 1 ? "بند" : n === 2 ? "بندان" : n <= 10 ? "بنود" : "بنداً"} اليوم.`,
+    sections: [
+      { title: "📅 مراجعات تبدأ اليوم", items: items(d.startsToday) },
+      { title: "⏳ مراجعات مفتوحة ولم تصل بعد", items: items(d.open) },
+      { title: "💬 مراجعات وصلت وتنتظر ردك", items: items(d.awaitingReply) },
+      { title: "🔥 سعرات مقترحة جديدة", items: items(d.calories, "/nutrition") },
+    ],
+    cta: { label: "فتح لوحة الإدارة", url: `${site}/admin` },
+    footnote: "تقدرين توقفين هذا الإيميل من لوحة الإدارة ← المحتوى والإعدادات ← التنبيهات.",
+  };
+}
+
 /**
  * يرسل الإيميل اليومي مرة واحدة فقط في اليوم (أول تشغيل للتذكيرات بعد 9 صباحاً)، وفقط إذا فيه أسماء.
  * يرجع عدد البنود المرسلة، أو null إذا لم يُرسل.
@@ -64,6 +82,7 @@ export async function sendCoachDigest(tx: Tx, r: Reminders, today: string): Prom
   if (!n) return null;
   const { rowCount } = await tx.query(`INSERT INTO coach_digests (day, items) VALUES ($1, $2) ON CONFLICT (day) DO NOTHING`, [today, n]);
   if (!rowCount) return null; // تشغيل آخر أرسله في نفس اللحظة
-  await notifySafe(to, `مراجعات اليوم (${n}) — ${fmtYMD(today)}`, digestText(d, today, process.env.NEXT_PUBLIC_SITE_URL ?? ""));
+  const site = (process.env.NEXT_PUBLIC_SITE_URL || "https://navcoaching.com").replace(/\/$/, "");
+  await notifySafe(to, `مراجعات اليوم (${n}) — ${fmtYMD(today)}`, digestText(d, today, site), digestEmail(d, today, site));
   return n;
 }
