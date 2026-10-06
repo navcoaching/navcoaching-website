@@ -30,12 +30,31 @@ def _ocr_available() -> bool:
     return shutil.which("tesseract") is not None
 
 
+_WORDLIKE = re.compile(r"[^\W\d_]{2,}")
+_NUM_OR_PUNCT = re.compile(r"[\d\W_]+")
+
+
 def _garbled(text: str) -> bool:
+    """True when the text layer is unusable (broken font encoding).
+
+    Pages made mostly of numbers, dot leaders or table cells (contents pages,
+    data tables) are NOT garbled: only tokens that contain something other than
+    digits/punctuation are judged, and those must mostly look like words.
+    """
     if not text:
         return False
-    bad = sum(1 for c in text if c == "�" or (ord(c) < 32 and c not in "\n\t"))
-    letters = sum(1 for c in text if c.isalpha())
-    return bad / max(len(text), 1) > 0.05 or (len(text) > 200 and letters / len(text) < 0.3)
+    bad = sum(1 for c in text if c == "\ufffd" or "\ue000" <= c <= "\uf8ff" or (ord(c) < 32 and c not in "\n\t"))
+    if bad / len(text) > 0.05:
+        return True
+    # Symbol soup (no letters or digits): ignore dot leaders / rules first.
+    core = re.sub(r"[.\u00b7\u2026_\-\u2013\u2014=|]{3,}|\s+", "", text)
+    if len(core) > 200 and sum(c.isalnum() for c in core) / len(core) < 0.4:
+        return True
+    judged = [t for t in text.split() if not _NUM_OR_PUNCT.fullmatch(t)]
+    if len(judged) < 20:
+        return False
+    wordlike = sum(1 for t in judged if _WORDLIKE.search(t))
+    return wordlike / len(judged) < 0.5
 
 
 def _order_blocks(blocks: list[dict], page_width: float) -> list[dict]:

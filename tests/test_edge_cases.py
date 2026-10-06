@@ -403,3 +403,16 @@ def test_backup_and_restore(env):
     assert rag.ask("How many sets per week did the high-volume group perform?", lang="en")["status"] == "answered"
     with pytest.raises(ValueError):
         backup.restore_backup(b"not a zip")
+
+
+def test_garbled_detection_does_not_reject_contents_or_number_tables():
+    from navcoach.extract.formats import _garbled
+    toc = "\n".join(f"{i}. Chapter title number {i} {'.' * 40} {i * 7}" for i in range(1, 30))
+    table = "\n".join(" | ".join(str(i * j + 0.5) for j in range(8)) for i in range(40))
+    assert not _garbled(toc)
+    assert not _garbled(table)
+    assert not _garbled("[Table 1 on this page]\n" + table)
+    soup = " ".join(["!#%&", "$(*)", "+/<>", "@^~`", "Ý#Ð", "ÆÞ!"] * 10)
+    assert _garbled(soup)
+    assert _garbled(" " * 50)
+    assert _garbled("text ���� " * 30)
