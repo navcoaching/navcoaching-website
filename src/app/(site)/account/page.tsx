@@ -39,7 +39,8 @@ export default async function Account({ searchParams }: { searchParams: Promise<
         <div className="stack" style={{ ["--space" as string]: "18px" }}>
           <div>
             <span className="eyebrow">حسابي</span>
-            <h1 style={{ fontSize: "clamp(26px,4vw,36px)", marginTop: 8 }}>أهلاً {user.name.includes("@") ? "" : user.name.split(" ")[0]}</h1>
+            <h1 style={{ fontSize: "clamp(26px,4vw,36px)", marginTop: 8 }}>أهلاً {user.name.includes("@") ? "" : user.name.split(" ")[0]} 👋</h1>
+            <p className="muted" style={{ marginTop: 4 }}>{inProgram.length ? "برنامجك وتقدمك وكل ما تحتاجه في مكان واحد." : "من هنا تتابع طلباتك وتجهّز حسابك."}</p>
           </div>
           {prefsCard}
           <InstallPrompt />

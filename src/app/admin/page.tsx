@@ -185,10 +185,15 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
         <div className="grid g3">
           {([["orders", "عدد الطلبات", "", "var(--navy)"], ["members", "عدد الأعضاء الجدد", "", "var(--cyan)"], ["revenue", "مجموع المبالغ المدفوعة", " ريال", "#c77d00"]] as const).map(([k, title, unit, color]) => {
             const total = data.monthly.reduce((a, m) => a + m[k], 0);
+            // هذا الشهر مقابل الشهر الماضي (آخر عنصرين في السلسلة)
+            const cur = data.monthly.at(-1)?.[k] ?? 0, prev = data.monthly.at(-2)?.[k] ?? 0, diff = cur - prev;
             return (
               <div key={k} className="card stack" style={{ ["--space" as string]: "6px" }}>
                 <span className="muted">{title}</span>
                 <b className="num" style={{ fontSize: 24 }}>{total.toLocaleString("en-US")}{unit}</b>
+                <span className={`small trend ${diff > 0 ? "up" : diff < 0 ? "down" : ""}`} data-testid={`trend-${k}`}>
+                  هذا الشهر {cur.toLocaleString("en-US")}{unit} · {diff === 0 ? "مثل الشهر الماضي" : `${diff > 0 ? "↑" : "↓"} ${Math.abs(diff).toLocaleString("en-US")} عن الشهر الماضي`}
+                </span>
                 <LineChart title={title} unit={unit} height={160} series={[{ label: title, color, points: data.monthly.map((m) => ({ x: m.ym.slice(2), y: m[k] })) }]} />
               </div>
             );

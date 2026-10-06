@@ -17,7 +17,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
     { href: "/account/guide", label: "دليل الاستخدام", icon: "📖" },
   ];
   return (
-    <div className="account-shell">
+    <div className="account-shell app">
       <AccountNav links={links} />
       <div className="account-content">{children}</div>
     </div>

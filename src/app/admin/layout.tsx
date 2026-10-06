@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { requireCoach } from "@/lib/session";
+import AdminNav from "@/components/admin/AdminNav";
 
 export const metadata: Metadata = { title: { default: "لوحة الإدارة", template: "%s — لوحة الإدارة" }, robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -19,15 +20,13 @@ const NAV: { title?: string; links: [string, string][] }[] = [
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await requireCoach();
   return (
-    <div className="admin">
+    <div className="admin app">
       <nav className="admin-side" aria-label="لوحة الإدارة">
-        <Link href="/admin" className="brand"><Image src="/brand/logo-white.webp" alt="Nav Coaching" width={130} height={28} /></Link>
-        {NAV.map((g, i) => (
-          <div key={i} className="nav-group" role={g.title ? "group" : undefined} aria-labelledby={g.title ? `nav-g${i}` : undefined}>
-            {g.title && <span className="nav-title" id={`nav-g${i}`}>{g.title}</span>}
-            {g.links.map(([href, label]) => <Link key={href} href={href}>{label}</Link>)}
-          </div>
-        ))}
+        <Link href="/admin" className="brand">
+          <Image className="l-light" src="/brand/logo-color.webp" alt="Nav Coaching" width={130} height={28} />
+          <Image className="l-dark" src="/brand/logo-white.webp" alt="Nav Coaching" width={130} height={28} />
+        </Link>
+        <AdminNav groups={NAV} />
       </nav>
       <main className="admin-main" id="main">{children}</main>
     </div>
