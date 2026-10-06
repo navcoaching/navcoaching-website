@@ -7,6 +7,7 @@ import io
 import logging
 import mimetypes
 import os
+import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -18,6 +19,18 @@ from . import __version__, backup, clients, compare, db, index, ingest, netguard
 from .config import data_dir, get_settings, update_settings
 from .llm import LLMUnavailable, PrivacyBlocked, get_llm
 
+def _redirect_output_if_headless() -> None:
+    """pythonw (Windows background start) has no console: write logs to a file in the data directory."""
+    if sys.stdout is not None and not os.environ.get("NAV_LOG_FILE"):
+        return
+    path = Path(os.environ.get("NAV_LOG_FILE") or data_dir() / "navcoach.log")
+    if path.exists() and path.stat().st_size > 5 * 1024 * 1024:
+        path.replace(path.with_name(path.name + ".1"))
+    stream = open(path, "a", encoding="utf-8", buffering=1)
+    sys.stdout = sys.stderr = stream
+
+
+_redirect_output_if_headless()
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("navcoach")
 netguard.install()
