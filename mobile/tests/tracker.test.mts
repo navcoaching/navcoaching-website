@@ -135,3 +135,19 @@ test("workout: free workout, add exercise, discard", async () => {
   await tr.discardWorkout(id);
   assert.equal(await tr.activeWorkoutId(), null);
 });
+
+test("import coach program", async () => {
+  const tr = setup();
+  await tr.migrate();
+  const id = await tr.importProgram({
+    sourceId: "tpl-1", name: "تمرين 3 أيام",
+    days: [{ title: "علوي", items: [{ exercise_id: "bench-press", sets: 3, reps: "8-12" }, { exercise_id: "row", sets: 99, reps: "bad" }] }],
+  });
+  const p = (await tr.getProgram(id))!;
+  assert.equal(p.days[0].title, "علوي");
+  assert.deepEqual(p.days[0].items.map((i) => [i.exercise_id, i.sets, i.reps]), [["bench-press", 3, "8-12"], ["row", 10, "10"]]);
+  assert.deepEqual([...(await tr.importedSources())], ["tpl-1"]);
+  await tr.archiveProgram(id);
+  assert.equal((await tr.importedSources()).size, 0);
+  await assert.rejects(tr.importProgram({ sourceId: "x", name: "x", days: [] }), TrackerError);
+});

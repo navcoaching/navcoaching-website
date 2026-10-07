@@ -53,4 +53,6 @@ export const MIGRATIONS: string[] = [
   CREATE INDEX workout_sets_workout ON workout_sets (workout_id, position, set_no);
   CREATE INDEX workout_sets_exercise ON workout_sets (exercise_id, done);
   `,
+  // 2: البرنامج المنسوخ من برامج المدربة المجانية يحفظ معرّف مصدره (لمعرفة أنه أُضيف من قبل)
+  `ALTER TABLE programs ADD COLUMN source_id TEXT;`,
 ];

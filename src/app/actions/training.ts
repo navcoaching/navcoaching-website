@@ -176,19 +176,22 @@ const templateSchema = z.object({
   weeks: z.coerce.number().int().min(1).max(12, "عدد الأسابيع من 1 إلى 12."),
   instructions: opt(4000),
   archived: z.boolean(),
+  public: z.boolean(),
+  public_summary: opt(300),
 });
 
 export async function saveTemplateAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const g = (k: string) => String(fd.get(k) ?? "");
-  const p = templateSchema.safeParse({ id: g("id"), name: g("name"), weeks: g("weeks") || "5", instructions: g("instructions"), archived: fd.get("archived") === "on" });
+  const p = templateSchema.safeParse({ id: g("id"), name: g("name"), weeks: g("weeks") || "5", instructions: g("instructions"), archived: fd.get("archived") === "on",
+    public: fd.get("public") === "on", public_summary: g("public_summary") });
   if (!p.success) return { error: p.error.issues[0].message };
   const v = p.data;
   let id = v.id;
   try {
     await asCoach(async (tx) => {
       if (id) {
-        const r = await tx.query(`UPDATE program_templates SET name=$2, weeks=$3, instructions=$4, archived=$5, updated_at=now() WHERE id=$1`,
-          [id, v.name, v.weeks, v.instructions, v.archived]);
+        const r = await tx.query(`UPDATE program_templates SET name=$2, weeks=$3, instructions=$4, archived=$5, public=$6, public_summary=$7, updated_at=now() WHERE id=$1`,
+          [id, v.name, v.weeks, v.instructions, v.archived, v.public, v.public_summary]);
         if (!r.rowCount) throw new Error("gone");
       } else {
         id = (await tx.query(`INSERT INTO program_templates (name, weeks, instructions) VALUES ($1,$2,$3) RETURNING id`, [v.name, v.weeks, v.instructions])).rows[0].id;

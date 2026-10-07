@@ -1,5 +1,6 @@
 import { router } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { CoachPrograms } from "@/components/CoachPrograms";
 import { Body, Button, Card, Empty, Title } from "@/components/ui";
 import { attempt, useScreenData, useTracker } from "@/lib/tracker/context";
 import { useTheme } from "@/lib/theme";
@@ -8,7 +9,7 @@ import { useTheme } from "@/lib/theme";
 export default function Home() {
   const t = useTheme();
   const tracker = useTracker();
-  const { data } = useScreenData(async (tr) => ({ programs: await tr.listPrograms(), active: await tr.activeWorkoutId() }));
+  const { data } = useScreenData(async (tr) => ({ programs: await tr.listPrograms(), active: await tr.activeWorkoutId(), imported: await tr.importedSources() }));
 
   async function start(from: { dayId: string } | { title: string }) {
     let id = "";
@@ -25,9 +26,11 @@ export default function Home() {
         </Pressable>
       )}
 
+      {data.programs.length === 0 && <CoachPrograms imported={data.imported} />}
+
       {data.programs.length === 0 ? (
         <Card>
-          <Title>ابدأ جدولك</Title>
+          <Title>أو ابنِ جدولك بنفسك</Title>
           <Body muted>ابنِ برنامجك: الأيام، التمارين، الجولات والتكرارات والوزن المستهدف. وسجّل أوزانك في كل تمرين وتابع تقدّمك.</Body>
           <Body muted>مجاني، ويُحفظ على جوالك بدون حساب.</Body>
           <Button title="برنامج جديد" onPress={() => router.push("/program/new")} />
@@ -56,6 +59,7 @@ export default function Home() {
         ))
       )}
 
+      {data.programs.length > 0 && <CoachPrograms imported={data.imported} />}
       {data.programs.length > 0 && <Button title="برنامج جديد" variant="ghost" onPress={() => router.push("/program/new")} />}
       <Button title="تمرين حر بدون برنامج" variant="ghost" disabled={!!data.active} onPress={() => start({ title: "تمرين حر" })} />
       {data.programs.length === 0 && <Empty>التمارين من مكتبة الكوتش ساره، ولكل تمرين شرح وفيديو.</Empty>}

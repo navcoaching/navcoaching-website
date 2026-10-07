@@ -101,6 +101,39 @@ export function makeTracker(db: Db, newId: () => string, now: () => number = Dat
       return id;
     },
 
+    /** ينسخ برنامجاً جاهزاً (من برامج المدربة المجانية) إلى الجهاز كبرنامج قابل للتعديل */
+    async importProgram(src: {
+      sourceId: string; name: string;
+      days: { title: string; items: { exercise_id: string; sets: number; reps: string }[] }[];
+    }): Promise<string> {
+      if (src.days.length === 0 || src.days.length > 14) throw new TrackerError("البرنامج غير صالح.");
+      const id = newId();
+      await tx(async () => {
+        await db.runAsync("INSERT INTO programs (id, name, source_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+          [id, src.name.trim().slice(0, 80) || "برنامج", src.sourceId, now(), now()]);
+        for (const [dPos, d] of src.days.entries()) {
+          const dayId = newId();
+          await db.runAsync("INSERT INTO program_days (id, program_id, position, title) VALUES (?, ?, ?, ?)",
+            [dayId, id, dPos, d.title.trim().slice(0, 60) || `اليوم ${dPos + 1}`]);
+          for (const [iPos, it] of d.items.slice(0, 20).entries()) {
+            const sets = Math.min(10, Math.max(1, Math.round(it.sets) || 3));
+            const reps = parseReps(it.reps) ? it.reps : "10";
+            await db.runAsync(
+              "INSERT INTO program_items (id, day_id, position, exercise_id, sets, reps, rest_sec) VALUES (?, ?, ?, ?, ?, ?, ?)",
+              [newId(), dayId, iPos, it.exercise_id, sets, reps, DEFAULT_REST]);
+          }
+        }
+      });
+      return id;
+    },
+
+    /** معرّفات برامج المدربة المنسوخة على الجهاز (غير المحذوفة) */
+    async importedSources(): Promise<Set<string>> {
+      const rows = await db.getAllAsync<{ source_id: string }>(
+        "SELECT source_id FROM programs WHERE source_id IS NOT NULL AND archived = 0", []);
+      return new Set(rows.map((r) => r.source_id));
+    },
+
     async getProgram(id: string): Promise<Program | null> {
       const p = await db.getFirstAsync<{ id: string; name: string }>("SELECT id, name FROM programs WHERE id = ? AND archived = 0", [id]);
       if (!p) return null;
