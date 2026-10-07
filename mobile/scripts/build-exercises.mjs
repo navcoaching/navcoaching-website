@@ -1,5 +1,6 @@
 // يولّد مكتبة التمارين المضمّنة في التطبيق من بيانات الموقع (db/seed/exercises.json): المعتمد فقط.
-// التطبيق يعمل بدون إنترنت وبدون حساب، فالمكتبة جزء من التطبيق نفسه. شغّله بعد تحديث المكتبة:
+// التطبيق يعمل بدون إنترنت وبدون حساب، فالمكتبة جزء من التطبيق نفسه. بدائل الكوتش لا تُضمَّن:
+// ميزة «ناف برو» تُجلب من الموقع للمشترك (/api/mobile/v1/coach-alts). شغّله بعد تحديث المكتبة:
 //   node scripts/build-exercises.mjs
 import { readFileSync, writeFileSync } from "node:fs";
 
@@ -23,7 +24,6 @@ const out = approved
     level: x.level ?? null,
     video: x.video_url ?? null,
     instructions: x.instructions ?? null,
-    alts: (x.alternatives ?? []).map((n) => ids.get(n.trim().toLowerCase())).filter(Boolean),
   }))
   .sort((a, b) => a.muscle.localeCompare(b.muscle, "ar") || a.name.localeCompare(b.name));
 

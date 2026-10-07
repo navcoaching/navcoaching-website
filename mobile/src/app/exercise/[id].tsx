@@ -3,6 +3,7 @@ import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-na
 import { LineChart } from "@/components/Charts";
 import { Body, Button, Card, Title } from "@/components/ui";
 import { exercise } from "@/lib/exercises";
+import { useCoachAlts } from "@/lib/pro";
 import { useScreenData } from "@/lib/tracker/context";
 import { formatKg } from "@/lib/tracker/logic";
 import { useTheme } from "@/lib/theme";
@@ -14,6 +15,8 @@ export default function ExerciseDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const t = useTheme();
   const ex = exercise(id);
+  const { pro, altsFor } = useCoachAlts();
+  const alts = altsFor(id).filter((a) => exercise(a).muscle); // المعروفة في مكتبة التطبيق فقط
   const { data: hist } = useScreenData((tr) => tr.exerciseHistory(id), [id]);
   const best = hist?.reduce((m, h) => Math.max(m, h.best_e1rm), 0) ?? 0;
   const recent = hist?.slice(-20) ?? [];
@@ -53,10 +56,17 @@ export default function ExerciseDetail() {
         )}
       </Card>
 
-      {ex.alts.length > 0 && (
+      {!pro && (
         <Card>
-          <Title>بدائل</Title>
-          {ex.alts.map((a) => (
+          <Title>⭐ بدائل الكوتش</Title>
+          <Body muted>البدائل اللي اختارتها الكوتش ساره لهذا التمرين، ضمن «ناف برو».</Body>
+          <Button title="اعرف أكثر" variant="ghost" onPress={() => router.push("/pro")} />
+        </Card>
+      )}
+      {pro && alts.length > 0 && (
+        <Card>
+          <Title>⭐ بدائل الكوتش</Title>
+          {alts.map((a) => (
             <Pressable key={a} onPress={() => router.push(`/exercise/${a}`)} accessibilityRole="link" style={{ minHeight: 40, justifyContent: "center" }}>
               <Text style={{ color: t.navy, fontSize: 16, textAlign: "left" }}>{exercise(a).name}</Text>
             </Pressable>

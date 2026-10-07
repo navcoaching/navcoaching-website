@@ -320,3 +320,39 @@ test("التطبيق: محتوى الموقع العام والجداول الم
   }
   await db.query(`UPDATE free_plans SET status = 'hidden' WHERE slug = $1`, [`e2e-plan-${tag}`]);
 });
+
+test("التطبيق: «ناف برو» بدائل الكوتش للمشترك فقط", async ({}, info) => {
+  test.skip(info.project.name !== "desktop", "اختبار واجهات فقط: مرة واحدة يكفي");
+  const H = { "expo-origin": "navcoaching://", "x-forwarded-for": `10.8.${Date.now() % 250}.8` };
+  const email = `pro-${Date.now()}@example.com`;
+  const hdr = { ...H, "content-type": "application/json" };
+  await fetch(`${B}/api/auth/email-otp/send-verification-otp`, { method: "POST", headers: hdr, body: JSON.stringify({ email, type: "sign-in" }) });
+  const otp = (await db.query("SELECT substring(body from 'رمز الدخول: ([0-9]{6})') AS o FROM dev_mailbox WHERE recipient=$1 ORDER BY id DESC LIMIT 1", [email])).rows[0].o;
+  const r = await fetch(`${B}/api/auth/sign-in/email-otp`, { method: "POST", headers: hdr, body: JSON.stringify({ email, otp }) });
+  const cookie = r.headers.getSetCookie().map((c) => c.split(";")[0]).join("; ");
+  const alts = async () => (await fetch(`${B}/api/mobile/v1/coach-alts`, { headers: { ...H, Cookie: cookie } })).json();
+
+  assert.equal((await fetch(`${B}/api/mobile/v1/coach-alts`, { headers: H })).status, 401);
+  // بدائل تحددها المدربة من لوحة الإدارة
+  const { rows: [sq] } = await db.query(`SELECT id FROM exercises WHERE name='Back Squat'`);
+  const { rows: [fs] } = await db.query(`SELECT id FROM exercises WHERE name='Front Squat'`);
+  await db.query(`INSERT INTO exercise_alternatives (exercise_id, alt_id, position) VALUES ($1,$2,-1) ON CONFLICT DO NOTHING`, [sq.id, fs.id]);
+
+  // مستخدم مجاني: لا بيانات
+  assert.deepEqual(await alts(), { pro: false, alts: {} });
+
+  // اشتراك متابعة جارٍ: مفعّل
+  const { rows: [u] } = await db.query(`SELECT id FROM "user" WHERE email=$1`, [email]);
+  const { rows: [p] } = await db.query(`SELECT p.id, p.name, o.id AS offer_id, o.label, o.price_halalas FROM products p JOIN product_offers o ON o.product_id=p.id WHERE p.slug='intensive' AND o.months=3`);
+  const no = (await db.query("SELECT app.new_order_no() AS no")).rows[0].no;
+  await db.query(`INSERT INTO orders (order_no,user_id,product_id,offer_id,category,product_name,offer_label,months,list_price_halalas,amount_due_halalas,status,contact_name,contact_phone,idempotency_key,paid_at)
+    VALUES ($1,$2,$3,$4,'follow',$5,$6,3,$7,$7,'active','متدرب','+966512345678',$8,now())`, [no, u.id, p.id, p.offer_id, p.name, p.label, p.price_halalas, `k-${no}`]);
+  const on = await alts();
+  assert.equal(on.pro, true);
+  assert.ok(on.alts["back-squat"].includes("front-squat"));
+
+  // انتهى الاشتراك: يتوقف
+  await db.query(`UPDATE orders SET status = 'completed' WHERE order_no = $1`, [no]);
+  assert.equal((await alts()).pro, false);
+  await db.query(`DELETE FROM orders WHERE order_no = $1`, [no]);
+});

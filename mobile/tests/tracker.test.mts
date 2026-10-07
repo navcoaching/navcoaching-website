@@ -205,22 +205,24 @@ test("review snapshot for coach", async () => {
   assert.equal(await tr.reviewSnapshot("nope", 0), null);
 });
 
-test("similar: coach alternatives first, same muscle only, no self", async () => {
+test("similar: coach alternatives first in coach order, same muscle only, no self", async () => {
   const { rankSimilar } = await import("../src/lib/similar.ts");
   const all = JSON.parse(readFileSync(new URL("../src/data/exercises.json", import.meta.url), "utf8"));
   const bench = all.find((e: { id: string }) => e.id === "bench-press");
-  const r = rankSimilar(bench, all, 12);
-  assert.equal(r.length, 12);
-  assert.ok(!r.some((x) => x.id === "bench-press"));
-  // بدائل الكوتش في المكتبة تتصدّر القائمة
-  assert.deepEqual(new Set(r.slice(0, bench.alts.length).map((x) => x.id)), new Set(bench.alts));
-  assert.ok(r.slice(0, bench.alts.length).every((x) => x.coach));
-  // الباقي من نفس العضلة أو عضلة متداخلة، لا تمارين بعيدة مثل السكوات
-  assert.ok(!r.some((x) => x.id === "back-squat"));
-  for (const x of r.filter((x) => !x.coach)) {
+  assert.equal("alts" in bench, false); // بدائل الكوتش لا تُضمَّن في التطبيق (ميزة مدفوعة)
+  // بدون اشتراك: بدائل عامة من نفس العضلة أو عضلة متداخلة، لا تمارين بعيدة مثل السكوات
+  const free = rankSimilar(bench, all, [], 12);
+  assert.equal(free.length, 12);
+  assert.ok(!free.some((x) => x.id === "bench-press" || x.coach));
+  for (const x of free) {
     const e = all.find((y: { id: string }) => y.id === x.id);
     assert.ok(e.muscle === bench.muscle || (e.secondary.includes(bench.muscle) && bench.secondary.includes(e.muscle)), x.id);
   }
+  // مع «ناف برو»: بدائل الكوتش أولاً بترتيبها حتى لو من عضلة أخرى أو أقل تشابهاً
+  const coach = ["back-squat", "machine-chest-press", "flat-db-chest-press"];
+  const pro = rankSimilar(bench, all, coach, 12);
+  assert.deepEqual(pro.slice(0, 3).map((x) => x.id), coach);
+  assert.ok(pro.slice(0, 3).every((x) => x.coach));
 });
 
 test("swap exercise: in program and in a running workout", async () => {
