@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Nav Coaching",
+    "slug": "navcoaching",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.navcoaching.app",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleDevelopmentRegion": "ar"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.navcoaching.app"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      [
+        "expo-localization",
+        {
+          "forcesRTL": true
+        }
+      ],
+      "expo-secure-store"
+    ],
+    "scheme": "navcoaching",
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
