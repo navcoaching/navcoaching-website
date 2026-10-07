@@ -33,7 +33,9 @@
           "forcesRTL": true
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-sqlite",
+      "expo-font"
     ],
     "scheme": "navcoaching",
     "experiments": {

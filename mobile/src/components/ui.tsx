@@ -1,4 +1,6 @@
+import type React from "react";
 import type { ReactNode } from "react";
+import { Ionicons } from "@expo/vector-icons";
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View, type TextInputProps } from "react-native";
 import { useTheme } from "@/lib/theme";
 
@@ -72,4 +74,31 @@ const s = StyleSheet.create({
   input: { minHeight: 50, borderWidth: 1, borderRadius: 12, paddingHorizontal: 14, fontSize: 17, textAlign: "right" },
   button: { minHeight: 50, borderRadius: 12, alignItems: "center", justifyContent: "center", paddingHorizontal: 16 },
   buttonText: { fontSize: 17, fontWeight: "700" },
+  chip: { borderWidth: 1, borderRadius: 999, paddingHorizontal: 14, minHeight: 36, justifyContent: "center" },
 });
+
+/** زر أيقونة بمساحة لمس 44×44 على الأقل */
+export function IconButton({ name, label, onPress, color }: { name: React.ComponentProps<typeof Ionicons>["name"]; label: string; onPress: () => void; color?: string }) {
+  const t = useTheme();
+  return (
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={label} hitSlop={6}
+      style={({ pressed }) => [{ minWidth: 44, minHeight: 44, alignItems: "center", justifyContent: "center" }, pressed && { opacity: 0.5 }]}>
+      <Ionicons name={name} size={22} color={color ?? t.muted} />
+    </Pressable>
+  );
+}
+
+export function Chip({ label, active, onPress }: { label: string; active?: boolean; onPress: () => void }) {
+  const t = useTheme();
+  return (
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityState={{ selected: !!active }}
+      style={[s.chip, { borderColor: active ? t.navy : t.line, backgroundColor: active ? t.navy : t.surface }]}>
+      <Text style={{ color: active ? t.onAccent : t.text, fontSize: 14, fontWeight: "600" }}>{label}</Text>
+    </Pressable>
+  );
+}
+
+export function Empty({ children }: { children: ReactNode }) {
+  const t = useTheme();
+  return <Text style={{ color: t.muted, fontSize: 15, textAlign: "center", paddingVertical: 24, lineHeight: 22 }}>{children}</Text>;
+}

@@ -1,24 +1,41 @@
+import * as Notifications from "expo-notifications";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { Suspense } from "react";
+import { ActivityIndicator, View } from "react-native";
+import { TrackerProvider } from "@/lib/tracker/context";
 import { useTheme } from "@/lib/theme";
+
+// تنبيه انتهاء الراحة يظهر حتى لو التطبيق مفتوح
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: true, shouldSetBadge: false }),
+});
 
 export default function RootLayout() {
   const t = useTheme();
   return (
-    <>
-      <StatusBar style="auto" />
-      <Stack
-        screenOptions={{
-          headerStyle: { backgroundColor: t.surface },
-          headerTintColor: t.heading,
-          contentStyle: { backgroundColor: t.paper },
-          headerBackButtonDisplayMode: "minimal",
-        }}
-      >
-        <Stack.Screen name="index" options={{ title: "Nav Coaching" }} />
-        <Stack.Screen name="login" options={{ title: "الدخول", presentation: "modal" }} />
-        <Stack.Screen name="account" options={{ title: "حسابي" }} />
-      </Stack>
-    </>
+    <Suspense fallback={<View style={{ flex: 1, justifyContent: "center", backgroundColor: t.paper }}><ActivityIndicator /></View>}>
+      <TrackerProvider>
+        <StatusBar style="auto" />
+        <Stack
+          screenOptions={{
+            headerStyle: { backgroundColor: t.surface },
+            headerTintColor: t.heading,
+            contentStyle: { backgroundColor: t.paper },
+            headerBackButtonDisplayMode: "minimal",
+          }}
+        >
+          <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "الرئيسية" }} />
+          <Stack.Screen name="login" options={{ title: "الدخول", presentation: "modal" }} />
+          <Stack.Screen name="program/new" options={{ title: "برنامج جديد", presentation: "modal" }} />
+          <Stack.Screen name="program/[id]" options={{ title: "تعديل البرنامج" }} />
+          <Stack.Screen name="exercise-picker" options={{ title: "اختر تمريناً", presentation: "modal" }} />
+          <Stack.Screen name="exercise/[id]" options={{ title: "التمرين" }} />
+          <Stack.Screen name="workout/[id]" options={{ title: "التمرين", gestureEnabled: false }} />
+          <Stack.Screen name="workout/summary/[id]" options={{ title: "أحسنت 💪", headerBackVisible: false, gestureEnabled: false }} />
+          <Stack.Screen name="history/[id]" options={{ title: "تفاصيل التمرين" }} />
+        </Stack>
+      </TrackerProvider>
+    </Suspense>
   );
 }

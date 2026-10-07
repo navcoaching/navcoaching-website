@@ -4,16 +4,23 @@
   "main": "expo-router/entry",
   "dependencies": {
     "@better-auth/expo": "^1.7.7",
+    "@expo/vector-icons": "^15.0.2",
     "better-auth": "^1.7.7",
     "expo": "~57.0.27",
     "expo-constants": "~57.0.21",
+    "expo-crypto": "~57.0.3",
+    "expo-font": "~57.0.4",
+    "expo-haptics": "~57.0.3",
     "expo-linking": "~57.0.12",
     "expo-localization": "~57.0.2",
     "expo-network": "~57.0.2",
+    "expo-notifications": "~57.0.22",
     "expo-router": "~57.0.25",
     "expo-secure-store": "~57.0.4",
+    "expo-sqlite": "~57.0.4",
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
+    "react-dom": "^19.2.3",
     "react-native": "0.86.3",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0"
@@ -26,7 +33,8 @@
     "start": "expo start",
     "ios": "expo start --ios",
     "typecheck": "tsc --noEmit",
-    "doctor": "expo-doctor"
+    "doctor": "expo-doctor",
+    "test": "node --test --no-warnings tests/*.test.mts"
   },
   "private": true
 }
