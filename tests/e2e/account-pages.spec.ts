@@ -181,3 +181,26 @@ test("التمارين التأهيلية: التصفية حسب التصنيف�
   await expect(page.getByTestId("rehab-table")).toContainText("معتمد من مختص");
   await db.query(`UPDATE exercises SET rehab_review = $2 WHERE id = $1`, [ex.id, ex.rehab_review]);
 });
+
+test("تفضيلات التواصل: أعلى «حسابي» أول مرة فقط، وبعد الحفظ مطوية في آخر الصفحة", async ({ browser }, info) => {
+  const page = await newPage(browser, info.project.name + "-prefs");
+  await login(page, `prefs-${info.project.name}-${Date.now()}@e2e.test`);
+  await page.goto("/account");
+  const first = page.getByTestId("prefs-first");
+  await expect(first).toBeVisible();
+  await expect(page.getByTestId("prefs-fold")).toHaveCount(0);
+  await first.getByLabel("إشعارات واتساب").uncheck();
+  await first.getByRole("button", { name: "حفظ التفضيلات" }).click();
+  // رسالة الحفظ تبقى ظاهرة (البطاقة لا تقفز من مكانها)
+  await expect(first.getByText("تم حفظ تفضيلات التواصل.")).toBeVisible();
+  await page.reload();
+  await expect(page.getByTestId("prefs-first")).toHaveCount(0);
+  const fold = page.getByTestId("prefs-fold");
+  await expect(fold).not.toHaveAttribute("open", "");
+  // آخر عنصر في إعدادات الحساب
+  expect(await fold.evaluate((el) => el.nextElementSibling === null)).toBe(true);
+  await fold.locator("summary").click();
+  await expect(fold.getByLabel("إشعارات واتساب")).not.toBeChecked();
+  await expect(fold.getByLabel("إشعارات البريد الإلكتروني")).toBeChecked();
+  await noHorizontalScroll(page);
+});

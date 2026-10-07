@@ -1482,3 +1482,10 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 .app .meter.good > span { background: var(--leaf); }
 .app .meter.mid > span { background: var(--sun); }
 .app .meter.low > span { background: var(--coral); }
+/* تفضيلات التواصل بعد أول حفظ: مطوية في آخر «حسابي» */
+.prefs-fold { grid-column: 1 / -1; }
+.prefs-fold > summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; font: 600 17px var(--f-display); }
+.prefs-fold > summary::-webkit-details-marker { display: none; }
+.prefs-fold > summary::after { content: "+"; font-size: 22px; color: var(--accent-text); }
+.prefs-fold[open] > summary::after { content: "−"; }
+.prefs-fold[open] > summary { margin-bottom: 12px; }
