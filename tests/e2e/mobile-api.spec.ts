@@ -356,3 +356,58 @@ test("التطبيق: «ناف برو» بدائل الكوتش للمشترك �
   assert.equal((await alts()).pro, false);
   await db.query(`DELETE FROM orders WHERE order_no = $1`, [no]);
 });
+
+test("التطبيق: طلب الباقة بالاستبيان كاملاً", async ({}, info) => {
+  test.skip(info.project.name !== "desktop", "اختبار واجهات فقط: مرة واحدة يكفي");
+  const H = { "expo-origin": "navcoaching://", "x-forwarded-for": `10.7.${Date.now() % 250}.7` };
+  const email = `co-${Date.now()}@example.com`;
+  const hdr = { ...H, "content-type": "application/json" };
+  await fetch(`${B}/api/auth/email-otp/send-verification-otp`, { method: "POST", headers: hdr, body: JSON.stringify({ email, type: "sign-in" }) });
+  const otp = (await db.query("SELECT substring(body from 'رمز الدخول: ([0-9]{6})') AS o FROM dev_mailbox WHERE recipient=$1 ORDER BY id DESC LIMIT 1", [email])).rows[0].o;
+  const r = await fetch(`${B}/api/auth/sign-in/email-otp`, { method: "POST", headers: hdr, body: JSON.stringify({ email, otp }) });
+  const cookie = r.headers.getSetCookie().map((c) => c.split(";")[0]).join("; ");
+  const { rows: [o] } = await db.query(`SELECT o.sku, o.price_halalas FROM products p JOIN product_offers o ON o.product_id=p.id WHERE p.slug='intensive' AND o.months=3`);
+
+  assert.equal((await fetch(`${B}/api/mobile/v1/checkout?sku=${o.sku}`, { headers: H })).status, 401);
+  assert.equal((await fetch(`${B}/api/mobile/v1/checkout?sku=nope`, { headers: { ...H, Cookie: cookie } })).status, 404);
+  const c = await (await fetch(`${B}/api/mobile/v1/checkout?sku=${o.sku}`, { headers: { ...H, Cookie: cookie } })).json();
+  assert.equal(c.sku, o.sku);
+  assert.ok(c.offers.some((x: { sku: string; price_halalas: number }) => x.sku === o.sku && x.price_halalas === o.price_halalas));
+  assert.ok(c.opt.goal.length > 0 && c.questions.goal.label && c.startRange.min);
+
+  const send = (fields: Record<string, string | string[]>) => {
+    const fd = new FormData();
+    for (const [k, v] of Object.entries(fields)) for (const x of [v].flat()) fd.append(k, x);
+    return fetch(`${B}/api/mobile/v1/actions/create-order`, { method: "POST", headers: { ...H, Cookie: cookie }, body: fd });
+  };
+  const key = `app-${Date.now()}-idempotency`;
+  const full = {
+    idempotency_key: key, sku: o.sku, name: "متدربة التطبيق", cc: "+966", phone: "512345678", gender: "أنثى", age: "28",
+    goal: c.opt.goal[0], level: c.opt.level[0], place: "البيت", equip: [c.opt.equip[0], c.opt.equip[1]], days: c.opt.days[1], duration: c.opt.duration[1],
+    injury: "لا", condition: "لا", health_ack: "on", weight: "70.5", height: "165", calories: c.opt.calories[0],
+    expectations: "متابعة أسبوعية", media: c.opt.media[2], start_mode: "date", start_date: c.startRange.min,
+    consent_terms: "on", consent_wa: "on",
+  };
+  // أخطاء الحقول ترجع بأسمائها
+  const bad = await send({ ...full, phone: "123", weight: "10" });
+  assert.equal(bad.status, 422);
+  const bj = await bad.json();
+  assert.ok(bj.fieldErrors.phone && bj.fieldErrors.weight);
+
+  const ok = await (await send(full)).json();
+  assert.ok(ok.ok && ok.message);
+  // نفس المفتاح لا ينشئ طلباً ثانياً
+  const again = await (await send(full)).json();
+  assert.equal(again.message, ok.message);
+  const { rows: [row] } = await db.query(
+    `SELECT o.status, o.amount_due_halalas, o.preferred_start::text, i.answers, i.health FROM orders o JOIN intakes i ON i.order_id = o.id WHERE o.order_no = $1`, [ok.message]);
+  assert.equal(row.status, "awaiting_payment");
+  assert.equal(row.amount_due_halalas, o.price_halalas);
+  assert.equal(row.preferred_start, c.startRange.min);
+  assert.deepEqual(row.answers.equip, [c.opt.equip[0], c.opt.equip[1]]);
+  assert.equal(Number(row.health.weight), 70.5);
+  // صفحة الطلب في التطبيق تعرض بيانات التحويل
+  const det = await (await fetch(`${B}/api/mobile/v1/orders`, { headers: { ...H, Cookie: cookie } })).json();
+  assert.ok(JSON.stringify(det).includes(ok.message));
+  await db.query(`UPDATE orders SET status = 'cancelled' WHERE order_no = $1`, [ok.message]);
+});

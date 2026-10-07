@@ -2,6 +2,7 @@ import { logItemAction, logMeasurementsAction, logStepsAction, logWeightAction, 
 import { deleteFoodLogAction, logFoodAction, logFoodGramsAction } from "@/app/actions/nutrition";
 import { cancelOrderAction, requestFreePlanAction, savePrefsAction, setStartPrefAction, submitCheckinAction, submitExitSurveyAction, submitReviewAction, updateProfileAction, uploadProofAction, type ActionState } from "@/app/actions/client";
 import { createRenewal } from "@/lib/renew";
+import { createOrder } from "@/lib/create-order";
 import { getCurrentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +28,13 @@ const ACTIONS: Record<string, (s: ActionState, fd: FormData) => Promise<ActionSt
   "save-prefs": savePrefsAction,
   "swap-exercise": swapExerciseAction,
   "request-free-plan": requestFreePlanAction,
+  // الطلب بالاستبيان: الموقع ينتهي بتحويل لصفحة الطلب؛ التطبيق يأخذ رقم الطلب في الرسالة وأخطاء الحقول
+  "create-order": async (_, fd) => {
+    const user = await getCurrentUser();
+    if (!user) return { error: "سجّل الدخول أولاً." };
+    const r = await createOrder(user.id, fd);
+    return "error" in r ? r : { ok: true, message: r.orderNo };
+  },
   // التجديد في الموقع ينتهي بتحويل لصفحة الطلب؛ التطبيق يأخذ رقم الطلب الجديد في الرسالة
   renew: async (_, fd) => {
     const user = await getCurrentUser();

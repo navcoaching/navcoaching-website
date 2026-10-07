@@ -1,9 +1,8 @@
-import { Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Body, Button, Card, Chip, Empty, Title } from "@/components/ui";
 import { riyals, useContent } from "@/lib/content";
-import { openSite } from "@/lib/links";
 import { useTheme } from "@/lib/theme";
 
 // تفاصيل الباقة: المشمول وغير المشمول، المدد والأسعار، والطلب
@@ -37,7 +36,7 @@ export default function PackageDetail() {
             {p.offers.map((o) => <Chip key={o.sku} label={`${o.label} · ${riyals(o.price_halalas)}`} active={o.sku === offer.sku} onPress={() => setSku(o.sku)} />)}
           </View>
           {!!data.prices_note && <Body muted>{data.prices_note}</Body>}
-          <Button title={`اطلب ${offer.label}`} onPress={() => openSite(`/checkout/${offer.sku}`)} />
+          <Button title={`اطلب ${offer.label}`} onPress={() => router.push(`/checkout/${offer.sku}`)} />
           <Body muted>الطلب يتضمن استبياناً قصيراً عن هدفك ومستواك، والدفع بالتحويل البنكي.</Body>
         </Card>
       )}

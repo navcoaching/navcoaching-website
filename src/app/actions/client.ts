@@ -6,16 +6,13 @@ import { z } from "zod";
 import { dbErrorMessage, withUser } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { profileSchema, splitProfile } from "@/lib/profile";
-import { intakeSchema, normalizedPhone, splitIntake } from "@/lib/intake";
-import { parseConfig, validateCustomAnswers } from "@/lib/intake-config";
-import { getSettings } from "@/lib/data";
-import { allow, clientIp } from "@/lib/rate";
+import { allow } from "@/lib/rate";
 import { cleanUpload, newKey, UploadError } from "@/lib/uploads";
 import { storage } from "@/lib/storage";
 import { notifySafe } from "@/lib/mail";
-import { riyals } from "@/lib/format";
-import { startPrefLabel, validStartPref } from "@/lib/schedule";
+import { validStartPref } from "@/lib/schedule";
 import { createRenewal } from "@/lib/renew";
+import { createOrder } from "@/lib/create-order";
 
 export type ActionState = { ok?: boolean; message?: string; error?: string; fieldErrors?: Record<string, string> };
 
@@ -35,45 +32,9 @@ function formToObject(fd: FormData) {
 export async function createOrderAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const user = await getCurrentUser();
   if (!user) return { error: "انتهت الجلسة. سجّل الدخول مرة أخرى ثم أعد الإرسال (إجاباتك محفوظة على جهازك)." };
-
-  // الأسئلة الإضافية من إعدادات لوحة الإدارة (تُتحقق في الخادم مثل باقي الحقول)
-  const custom = validateCustomAnswers(parseConfig((await getSettings()).intake_questions), (k) => String(fd.get(k) ?? ""));
-  const parsed = intakeSchema.safeParse(formToObject(fd));
-  if (!parsed.success || Object.keys(custom.errors).length) {
-    const fieldErrors: Record<string, string> = {};
-    if (!parsed.success) for (const issue of parsed.error.issues) fieldErrors[String(issue.path[0])] ??= issue.message;
-    if (fieldErrors.website) return { error: GENERIC };
-    return { error: "راجع الحقول المحددة.", fieldErrors: { ...fieldErrors, ...custom.errors } };
-  }
-  const v = parsed.data;
-
-  if (!(await allow(`order:u:${user.id}`, 6, 3600)) || !(await allow(`order:ip:${await clientIp()}`, 20, 3600))) return { error: LIMITED };
-
-  const { answers: baseAnswers, health, healthFlag } = splitIntake(v);
-  const answers = custom.answers.length ? { ...baseAnswers, custom: custom.answers } : baseAnswers;
-  let orderNo: string;
-  try {
-    orderNo = await withUser(user.id, async (tx) => {
-      const { rows } = await tx.query(
-        "SELECT app.create_order($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) AS no",
-        [v.sku, v.idempotency_key, v.student === "نعم", v.name, normalizedPhone(v.cc, v.phone),
-         JSON.stringify(answers), JSON.stringify(health), healthFlag, v.media, v.notes],
-      );
-      if (v.start_mode === "date") await tx.query("SELECT app.set_my_start_pref($1, $2::date)", [rows[0].no, v.start_date]);
-      return rows[0].no as string;
-    });
-  } catch (err) {
-    return { error: dbErrorMessage(err) ?? GENERIC };
-  }
-
-  const summary = await withUser(user.id, async (tx) =>
-    (await tx.query("SELECT product_name, offer_label, amount_due_halalas, preferred_start::text FROM orders WHERE order_no = $1", [orderNo])).rows[0]);
-  await notifySafe(
-    process.env.COACH_NOTIFY_EMAIL,
-    `طلب جديد ${orderNo}`,
-    `طلب جديد في Nav Coaching\nرقم الطلب: ${orderNo}\nالبرنامج: ${summary.product_name} — ${summary.offer_label}\nالمبلغ: ${summary.amount_due_halalas == null ? "بانتظار تأكيد خصم الطالب" : riyals(summary.amount_due_halalas)}\nموعد البداية: ${startPrefLabel(summary.preferred_start).text}\n\nالتفاصيل في لوحة الإدارة.`,
-  );
-  redirect(`/account/orders/${orderNo}?new=1`);
+  const r = await createOrder(user.id, fd);
+  if ("error" in r) return r;
+  redirect(`/account/orders/${r.orderNo}?new=1`);
 }
 
 // ---------- رفع إيصال التحويل ----------

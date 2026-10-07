@@ -29,7 +29,7 @@ export type Me = {
   coaching: { orderNo: string; training: boolean; nutrition: boolean } | null;
 };
 
-export type ActionResult = { ok?: boolean; message?: string; error?: string };
+export type ActionResult = { ok?: boolean; message?: string; error?: string; fieldErrors?: Record<string, string> };
 
 /** يستدعي عملية من عمليات الموقع (نفس التحقق والصلاحيات) ويرجع نتيجتها بدل رمي الأخطاء المتوقعة */
 export async function apiAction(name: string, fd: FormData): Promise<ActionResult> {
@@ -41,7 +41,7 @@ export async function apiAction(name: string, fd: FormData): Promise<ActionResul
     });
     const body = (await res.json().catch(() => ({}))) as ActionResult;
     if (res.status === 401) return { error: "انتهت جلستك. سجّل الدخول مرة ثانية." };
-    return res.ok ? body : { error: body.error ?? "تعذّر الحفظ. حاول مرة ثانية." };
+    return res.ok ? body : { error: body.error ?? "تعذّر الحفظ. حاول مرة ثانية.", fieldErrors: body.fieldErrors };
   } catch {
     return { error: "تحتاج اتصالاً بالإنترنت لهذه العملية." };
   }
