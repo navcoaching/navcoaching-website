@@ -1,6 +1,6 @@
 import { logItemAction, logMeasurementsAction, logStepsAction, logWeightAction, rateDayAction, swapExerciseAction } from "@/app/actions/training";
 import { deleteFoodLogAction, logFoodAction, logFoodGramsAction } from "@/app/actions/nutrition";
-import { cancelOrderAction, savePrefsAction, setStartPrefAction, submitCheckinAction, submitExitSurveyAction, submitReviewAction, updateProfileAction, uploadProofAction, type ActionState } from "@/app/actions/client";
+import { cancelOrderAction, requestFreePlanAction, savePrefsAction, setStartPrefAction, submitCheckinAction, submitExitSurveyAction, submitReviewAction, updateProfileAction, uploadProofAction, type ActionState } from "@/app/actions/client";
 import { createRenewal } from "@/lib/renew";
 import { getCurrentUser } from "@/lib/session";
 
@@ -26,6 +26,7 @@ const ACTIONS: Record<string, (s: ActionState, fd: FormData) => Promise<ActionSt
   "update-profile": updateProfileAction,
   "save-prefs": savePrefsAction,
   "swap-exercise": swapExerciseAction,
+  "request-free-plan": requestFreePlanAction,
   // التجديد في الموقع ينتهي بتحويل لصفحة الطلب؛ التطبيق يأخذ رقم الطلب الجديد في الرسالة
   renew: async (_, fd) => {
     const user = await getCurrentUser();

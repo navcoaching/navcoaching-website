@@ -17,6 +17,7 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="index" options={{ title: "تمريني", tabBarIcon: ({ color, size }) => <Ionicons name="barbell" color={color} size={size} /> }} />
       <Tabs.Screen name="history" options={{ title: "السجل", tabBarIcon: ({ color, size }) => <Ionicons name="time" color={color} size={size} /> }} />
+      <Tabs.Screen name="explore" options={{ title: "اكتشف", tabBarIcon: ({ color, size }) => <Ionicons name="compass" color={color} size={size} /> }} />
       <Tabs.Screen name="account" options={{ title: "حسابي", tabBarIcon: ({ color, size }) => <Ionicons name="person-circle" color={color} size={size} /> }} />
     </Tabs>
   );

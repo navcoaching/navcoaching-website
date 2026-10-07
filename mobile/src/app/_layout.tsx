@@ -45,6 +45,14 @@ export default function RootLayout() {
           <Stack.Screen name="services/form-check" options={{ title: "تصحيح أداء تمرين" }} />
           <Stack.Screen name="meals" options={{ title: "وجباتي" }} />
           <Stack.Screen name="order/[no]" options={{ title: "الطلب" }} />
+          <Stack.Screen name="packages/index" options={{ title: "برامج المتابعة" }} />
+          <Stack.Screen name="packages/[slug]" options={{ title: "البرنامج" }} />
+          <Stack.Screen name="about" options={{ title: "عن المدربة" }} />
+          <Stack.Screen name="reviews" options={{ title: "تقييمات المتدربين" }} />
+          <Stack.Screen name="faq" options={{ title: "الأسئلة الشائعة" }} />
+          <Stack.Screen name="policies" options={{ title: "السياسات" }} />
+          <Stack.Screen name="calculator" options={{ title: "حاسبة السعرات" }} />
+          <Stack.Screen name="free-plans" options={{ title: "الجداول المجانية" }} />
           <Stack.Screen name="profile" options={{ title: "بياناتي" }} />
           <Stack.Screen name="orders" options={{ title: "طلباتي" }} />
           <Stack.Screen name="delete-account" options={{ title: "حذف الحساب", presentation: "modal" }} />

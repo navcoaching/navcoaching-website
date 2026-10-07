@@ -277,3 +277,46 @@ test("التطبيق: الخدمات الإضافية (راجعي جدولي، �
   assert.equal((await post(base("form_check"), "")).status, 401);
   await db.query(`UPDATE products SET status = 'archived' WHERE slug LIKE $1`, [`addon-%-${tag}`]);
 });
+
+test("التطبيق: محتوى الموقع العام والجداول المجانية", async ({}, info) => {
+  test.skip(info.project.name !== "desktop", "اختبار واجهات فقط: مرة واحدة يكفي");
+  // جدول مجاني منشور بملف PDF حقيقي في التخزين المحلي لبيئة الاختبار
+  const tag = Date.now();
+  const key = `free-plans/e2e-${tag}.pdf`;
+  const { mkdirSync, writeFileSync } = await import("node:fs");
+  mkdirSync(".data/e2e-uploads/free-plans", { recursive: true });
+  writeFileSync(`.data/e2e-uploads/${key}`, Buffer.from("%PDF-1.4\n%e2e\n"));
+  await db.query(`INSERT INTO free_plans (slug, title, summary, status, file_key, file_mime, sort) VALUES ($1, 'جدول اختبار', 'جدول تجريبي لاختبار التطبيق', 'published', $2, 'application/pdf', -1)`, [`e2e-plan-${tag}`, key]);
+  const c = await (await fetch(`${B}/api/mobile/v1/content`)).json();
+  assert.ok(c.products.length > 0, "البرامج المنشورة");
+  assert.ok(c.products.every((p: { offers: unknown[] }) => Array.isArray(p.offers)));
+  assert.equal(c.bank, undefined, "بيانات البنك لا تُرسل في المحتوى العام");
+  assert.equal(c.analytics, undefined);
+  assert.ok(c.about.name && Array.isArray(c.faqs) && Array.isArray(c.policies) && Array.isArray(c.reviews));
+  assert.equal((await fetch(`${B}/api/mobile/v1/library`)).status, 401);
+
+  const H = { "expo-origin": "navcoaching://", "x-forwarded-for": `10.9.${Date.now() % 250}.11` };
+  const email = `freeplan-${Date.now()}@e2e.test`;
+  const hdr = { ...H, "content-type": "application/json" };
+  await fetch(`${B}/api/auth/email-otp/send-verification-otp`, { method: "POST", headers: hdr, body: JSON.stringify({ email, type: "sign-in" }) });
+  const otp = (await db.query("SELECT substring(body from 'رمز الدخول: ([0-9]{6})') AS o FROM dev_mailbox WHERE recipient=$1 ORDER BY id DESC LIMIT 1", [email])).rows[0].o;
+  const r = await fetch(`${B}/api/auth/sign-in/email-otp`, { method: "POST", headers: hdr, body: JSON.stringify({ email, otp }) });
+  const cookie = r.headers.getSetCookie().map((x) => x.split(";")[0]).join("; ");
+  const lib0 = await (await fetch(`${B}/api/mobile/v1/library`, { headers: { Cookie: cookie } })).json();
+  assert.deepEqual(lib0.free_plans, []);
+  assert.equal(c.free_plans[0].slug, `e2e-plan-${tag}`);
+  {
+    const fd = new FormData(); fd.set("slug", c.free_plans[0].slug);
+    assert.equal((await fetch(`${B}/api/mobile/v1/actions/request-free-plan`, { method: "POST", headers: { Cookie: cookie }, body: fd })).status, 200);
+    const lib1 = await (await fetch(`${B}/api/mobile/v1/library`, { headers: { Cookie: cookie } })).json();
+    assert.equal(lib1.free_plans.length, 1);
+    // التحميل: ملف PDF إذا كان مرفوعاً، وإلا تحويل (التطبيق يعتبر التحويل فشلاً ولا يحفظ صفحة HTML)
+    const dl = await fetch(`${B}${lib1.free_plans[0].url}`, { headers: { Cookie: cookie }, redirect: "manual" });
+    assert.equal(lib1.free_plans[0].has_file, true);
+    assert.equal(dl.status, 200);
+    assert.equal(dl.headers.get("content-type"), "application/pdf");
+    // مستخدم آخر لا يقدر يحمّل طلب غيره
+    assert.equal((await fetch(`${B}${lib1.free_plans[0].url}`, { redirect: "manual" })).status, 303);
+  }
+  await db.query(`UPDATE free_plans SET status = 'hidden' WHERE slug = $1`, [`e2e-plan-${tag}`]);
+});

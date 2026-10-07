@@ -1,13 +1,10 @@
-import { File, Paths } from "expo-file-system";
 import * as Haptics from "expo-haptics";
 import { Redirect, router, Stack, useLocalSearchParams } from "expo-router";
-import * as Sharing from "expo-sharing";
 import { useState } from "react";
 import { Alert, Linking, Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import { Body, Button, Card, Chip, ErrorText, Field, Title } from "@/components/ui";
 import { apiAction } from "@/lib/api";
-import { authClient } from "@/lib/auth-client";
-import { API_URL } from "@/lib/config";
+import { downloadAndOpen } from "@/lib/download";
 import { useApi } from "@/lib/use-api";
 import { useTheme } from "@/lib/theme";
 
@@ -160,18 +157,9 @@ function FileRow({ f }: { f: Detail["files"][number] }) {
   async function open() {
     if (f.kind === "link") return Linking.openURL(f.url);
     setBusy(true);
-    try {
-      // الملف محمي بالجلسة: نحمّله بكوكي الجلسة ثم نفتحه بعارض الجوال (حفظ، طباعة، مشاركة)
-      const ext = f.mime === "application/pdf" ? "pdf" : f.mime?.includes("spreadsheet") ? "xlsx" : f.mime?.includes("word") ? "docx" : "bin";
-      const dest = new File(Paths.cache, `nav-${f.id.slice(0, 8)}.${ext}`);
-      const cookie = await authClient.getCookie();
-      const out = await File.downloadFileAsync(`${API_URL}${f.url}`, dest, { headers: cookie ? { Cookie: cookie } : {}, idempotent: true });
-      await Sharing.shareAsync(out.uri, { dialogTitle: f.title, mimeType: f.mime ?? undefined });
-    } catch {
-      Alert.alert("تعذّر فتح الملف", "تأكد من الاتصال وحاول مرة ثانية.");
-    } finally {
-      setBusy(false);
-    }
+    const ext = f.mime === "application/pdf" ? "pdf" : f.mime?.includes("spreadsheet") ? "xlsx" : f.mime?.includes("word") ? "docx" : "bin";
+    await downloadAndOpen(f.url, `nav-${f.id.slice(0, 8)}.${ext}`, f.mime ?? undefined).catch(() => Alert.alert("تعذّر فتح الملف", "تأكد من الاتصال وحاول مرة ثانية."));
+    setBusy(false);
   }
   return (
     <Pressable onPress={open} disabled={busy} accessibilityRole="button" style={[s.row, { borderColor: t.line }]}>
