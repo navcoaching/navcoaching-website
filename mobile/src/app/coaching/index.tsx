@@ -4,13 +4,15 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Body, Button, Card, Chip, Empty, ErrorText, Title } from "@/components/ui";
 import { openSite } from "@/lib/links";
 import { planText, useCoaching } from "@/lib/coaching";
+import { apiAction } from "@/lib/api";
+import { Alert } from "react-native";
 import { formatKg } from "@/lib/tracker/logic";
 import { useTheme } from "@/lib/theme";
 
 // برنامج المدربة للمتدرب: الأسبوع، ملاحظات المدربة، أيام البرنامج، والتسجيل
 export default function CoachingScreen() {
   const t = useTheme();
-  const { data, error } = useCoaching();
+  const { data, error, reload } = useCoaching();
   const [week, setWeek] = useState<number | null>(null);
   const [dayId, setDayId] = useState<string | null>(null);
   const block = data?.block;
@@ -83,11 +85,33 @@ export default function CoachingScreen() {
               </Pressable>
             );
           })}
+          {!block.read_only && day.items.length > 0 && (
+            <View style={{ gap: 6, paddingTop: 6 }}>
+              <Text style={{ color: t.muted, fontSize: 14, textAlign: "left" }}>كيف كان تمرين اليوم؟</Text>
+              <View style={{ flexDirection: "row", gap: 6 }}>
+                {[1, 2, 3, 4, 5].map((n) => {
+                  const cur = data.ratings?.find((r) => r.day === day.id && r.week === w)?.rating ?? 0;
+                  return (
+                    <Pressable key={n} accessibilityRole="button" accessibilityLabel={`تقييم ${n} من 5`} hitSlop={4}
+                      style={{ minWidth: 44, minHeight: 44, alignItems: "center", justifyContent: "center" }}
+                      onPress={async () => {
+                        const fd = new FormData();
+                        fd.append("day", day.id); fd.append("week", String(w)); fd.append("rating", String(n)); fd.append("order_no", data.order.order_no);
+                        const r = await apiAction("rate-day", fd);
+                        if (r.error) Alert.alert("تنبيه", r.error); else reload();
+                      }}>
+                      <Text style={{ fontSize: 26, opacity: n <= cur ? 1 : 0.3 }}>⭐</Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+          )}
         </Card>
       )}
 
       <Card>
-        <Body muted>التغذية والمراجعة الأسبوعية متاحة حالياً في الموقع (تحتاج الدخول هناك ببريدك).</Body>
+        <Body muted>المراجعة الأسبوعية متاحة حالياً في الموقع (تحتاج الدخول هناك ببريدك).</Body>
         <Button title="افتح طلبي في الموقع" variant="ghost" onPress={() => openSite(`/account/orders/${encodeURIComponent(data.order.order_no)}`)} />
       </Card>
     </ScrollView>

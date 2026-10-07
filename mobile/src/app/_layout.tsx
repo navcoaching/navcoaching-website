@@ -37,6 +37,9 @@ export default function RootLayout() {
           <Stack.Screen name="reminders" options={{ title: "تذكير التمرين", presentation: "modal" }} />
           <Stack.Screen name="coaching/index" options={{ title: "برنامجي مع الكوتش" }} />
           <Stack.Screen name="coaching/log" options={{ title: "تسجيل التمرين", presentation: "modal" }} />
+          <Stack.Screen name="nutrition/index" options={{ title: "التغذية والمكملات" }} />
+          <Stack.Screen name="nutrition/add" options={{ title: "أضف أكلاً", presentation: "modal" }} />
+          <Stack.Screen name="progress" options={{ title: "تقدمي" }} />
           <Stack.Screen name="orders" options={{ title: "طلباتي" }} />
           <Stack.Screen name="delete-account" options={{ title: "حذف الحساب", presentation: "modal" }} />
           <Stack.Screen name="history/[id]" options={{ title: "تفاصيل التمرين" }} />

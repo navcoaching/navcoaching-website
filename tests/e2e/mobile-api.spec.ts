@@ -67,6 +67,43 @@ test("التطبيق: برنامج المتدرب، التسجيل، الطلب�
   assert.equal(lr.status, 200, JSON.stringify(await lr.clone().json()));
   const c2 = (await j(await call("/api/mobile/v1/coaching"))).coaching;
   assert.deepEqual(c2.logs[0], { item: item.id, week: 1, weights: [60, 60, 62.5], reps: [10, 9, 10], rir: 2 });
+  // تقييم اليوم
+  const rd = new FormData(); rd.set("day", day.id); rd.set("week", "1"); rd.set("rating", "4"); rd.set("order_no", no);
+  assert.equal((await call("/api/mobile/v1/actions/rate-day", { method: "POST", body: rd })).status, 200);
+  assert.deepEqual((await j(await call("/api/mobile/v1/coaching"))).coaching.ratings, [{ day: day.id, week: 1, rating: 4 }]);
+
+  // التقدم: الوزن والقياسات والخطوات والأرقام القياسية
+  const pr0 = (await j(await call("/api/mobile/v1/progress"))).progress;
+  const send = (name: string, fields: Record<string, string>) => {
+    const f = new FormData(); for (const [k, v] of Object.entries(fields)) f.set(k, v);
+    return call(`/api/mobile/v1/actions/${name}`, { method: "POST", body: f });
+  };
+  assert.equal((await send("log-weight", { date: pr0.today, kg: "72.4" })).status, 200);
+  assert.equal((await send("log-weight", { date: pr0.today, kg: "900" })).status, 422);
+  assert.equal((await send("log-measurements", { date: pr0.today, waist: "80" })).status, 200);
+  assert.equal((await send("log-steps", { block: pr0.steps.block, week: "1", total: "42000" })).status, 200);
+  const pr1 = (await j(await call("/api/mobile/v1/progress"))).progress;
+  assert.equal(pr1.body.weights.at(-1).kg, 72.4);
+  assert.equal(pr1.body.measurements.at(-1).waist, 80);
+  assert.deepEqual(pr1.steps.logs, [{ week_no: 1, total: 42000 }]);
+  assert.equal(pr1.records[0].name, "Back Squat");
+
+  // التغذية: الأهداف، إضافة أكل حر ومن قاعدة الأكل بالغرام، والحذف
+  await db.query(`INSERT INTO nutrition_targets (order_id, kcal, protein, carbs, fat) VALUES ($1, 2000, 150, 200, 60)`, [ord.id]);
+  const n0 = (await j(await call("/api/mobile/v1/nutrition"))).nutrition;
+  assert.equal(n0.target.kcal, 2000);
+  assert.equal((await send("log-food", { order_no: no, date: n0.date, kind: "lunch", name: "رز ودجاج", protein: "40", carbs: "60", fat: "10" })).status, 200);
+  const { rows: [food] } = await db.query(`SELECT id FROM foods WHERE active LIMIT 1`);
+  assert.equal((await send("log-food-grams", { order_no: no, date: n0.date, kind: "snack", source: "local", food: food.id, grams: "150" })).status, 200);
+  assert.equal((await send("log-food", { order_no: no, date: n0.date, kind: "lunch", name: "" })).status, 422);
+  const n1 = (await j(await call("/api/mobile/v1/nutrition"))).nutrition;
+  assert.equal(n1.logs.length, 2);
+  assert.equal(n1.logs[0].kcal, 40 * 4 + 60 * 4 + 10 * 9);
+  assert.equal((await send("delete-food-log", { id: String(n1.logs[0].id), order_no: no })).status, 200);
+  assert.equal((await j(await call("/api/mobile/v1/nutrition"))).nutrition.logs.length, 1);
+  const fs = await call(`/api/foods/search?q=${encodeURIComponent("دجاج")}`);
+  assert.equal(fs.status, 200);
+
   const bad = new FormData(); bad.set("item", item.id); bad.set("week", "1"); bad.append("set_weight", "abc"); bad.append("reps", "10");
   assert.equal((await call("/api/mobile/v1/actions/log-item", { method: "POST", body: bad })).status, 422);
   assert.equal((await call("/api/mobile/v1/actions/not-allowed", { method: "POST", body: new FormData() })).status, 404);

@@ -38,8 +38,10 @@ export default function Home() {
       {me?.coaching && (
         <Card>
           <Title>برنامجك مع الكوتش ساره</Title>
-          <Body muted>برنامجك المخصص وملاحظات المدربة وتسجيل أسبوعك.</Body>
-          <Button title="افتح برنامجي" onPress={() => router.push("/coaching")} />
+          <Body muted>برنامجك المخصص، وتغذيتك، وتقدمك، وملاحظات المدربة.</Body>
+          <Button title="برنامج التمرين" onPress={() => router.push("/coaching")} />
+          {me.coaching.nutrition && <Button title="التغذية والمكملات" variant="ghost" onPress={() => router.push("/nutrition")} />}
+          <Button title="تقدمي (الوزن والقياسات)" variant="ghost" onPress={() => router.push("/progress")} />
         </Card>
       )}
 

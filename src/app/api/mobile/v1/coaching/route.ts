@@ -42,6 +42,7 @@ export async function GET() {
       })),
       logs: data.logs.map((l) => ({ item: l.block_item_id, week: l.week_no, weights: l.weights ?? l.reps.map(() => l.weight), reps: l.reps, rir: l.rir })),
       notes: data.notes.map((n) => ({ id: n.id, week: n.week_no, body: n.body })),
+      ratings: data.ratings.map((r) => ({ day: r.block_day_id, week: r.week_no, rating: r.rating })),
     };
   });
   return Response.json({ coaching: body }, { headers: { "Cache-Control": "private, no-store" } });

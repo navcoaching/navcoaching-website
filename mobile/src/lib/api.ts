@@ -8,9 +8,14 @@ export class ApiError extends Error {
 }
 
 /** طلب لواجهات /api/mobile/v1 مع كوكي الجلسة (التطبيق لا يملك كوكيز متصفح، فنرسلها يدوياً). */
-export async function api<T>(path: string, init: Omit<RequestInit, "headers"> & { headers?: Record<string, string> } = {}): Promise<T> {
+export function api<T>(path: string, init: Omit<RequestInit, "headers"> & { headers?: Record<string, string> } = {}): Promise<T> {
+  return siteApi<T>(`/api/mobile/v1${path}`, init);
+}
+
+/** طلب لأي واجهة في الموقع (مثل /api/foods/search) بنفس الجلسة */
+export async function siteApi<T>(path: string, init: Omit<RequestInit, "headers"> & { headers?: Record<string, string> } = {}): Promise<T> {
   const cookie = await authClient.getCookie();
-  const res = await fetch(`${API_URL}/api/mobile/v1${path}`, {
+  const res = await fetch(`${API_URL}${path}`, {
     ...init,
     credentials: "omit",
     headers: { Accept: "application/json", ...(cookie ? { Cookie: cookie } : {}), ...init.headers },
@@ -53,7 +58,33 @@ export type Coaching = {
   days?: { id: string; title: string; items: CoachingItem[] }[];
   logs?: { item: string; week: number; weights: number[]; reps: number[]; rir: number | null }[];
   notes?: { id: number; week: number | null; body: string }[];
+  ratings?: { day: string; week: number; rating: number }[];
 };
 
 export type Order = { order_no: string; product_name: string; status: string; status_label: string; amount: string | null; created_at: string };
 export type Orders = { orders: Order[]; bank: { accountName: string; bankName: string; iban: string } | null };
+
+export type Macros = { protein: number; carbs: number; fat: number };
+export type MealKind = "breakfast" | "lunch" | "dinner" | "snack";
+export const MEAL_KINDS: Record<MealKind, string> = { breakfast: "الفطور", lunch: "الغداء", dinner: "العشاء", snack: "سناك" };
+export const MEAL_ICON: Record<MealKind, string> = { breakfast: "🌅", lunch: "☀️", dinner: "🌙", snack: "🍎" };
+export type ReadyMeal = Macros & { id: string; kind: MealKind; label: string; kcal: number; own: boolean };
+export type Nutrition = {
+  order_no: string; date: string; today: string;
+  target: { kcal: number | null; protein: number | null; carbs: number | null; fat: number | null; rules: string | null } | null;
+  total: Macros & { kcal: number };
+  logs: (Macros & { id: number; kind: MealKind; name: string; meal_id: string | null; kcal: number })[];
+  plans: { id: string; name: string; notes: string | null; total: Macros & { kcal: number };
+    meals: { id: string; kind: MealKind; title: string; method: string | null; items: (Macros & { id: string; food: string; portion: string | null })[]; total: Macros & { kcal: number } }[] }[];
+  routine: null | { id: string; name: string; intro: string | null;
+    sections: { id: string; title: string; routine: string | null; items: { id: string; name: string; dose: string | null; timing: string | null; importance: string | null; benefit: string | null; link: string | null }[] }[] };
+  ready: ReadyMeal[];
+  details: { id: string; method: string | null; items: (Macros & { food: string; portion: string | null })[] }[];
+};
+
+export type Progress = {
+  today: string; order_no: string | null;
+  body: { weights: { logged_on: string; kg: number }[]; measurements: { measured_on: string; chest: number | null; waist: number | null; hips: number | null; thigh: number | null }[] };
+  records: { exercise_id: string; name: string; best: number; best_at: string; previous: number | null; status: "first" | "new" | "same"; oneRm: number }[];
+  steps: null | { block: string; goal_week: number; weeks: number; read_only: boolean; current_week: number; logs: { week_no: number; total: number }[] };
+};
