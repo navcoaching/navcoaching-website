@@ -35,6 +35,10 @@ export default function RootLayout() {
           <Stack.Screen name="workout/summary/[id]" options={{ title: "أحسنت 💪", headerBackVisible: false, gestureEnabled: false }} />
           <Stack.Screen name="coach-program/[id]" options={{ title: "برنامج مجاني" }} />
           <Stack.Screen name="reminders" options={{ title: "تذكير التمرين", presentation: "modal" }} />
+          <Stack.Screen name="coaching/index" options={{ title: "برنامجي مع الكوتش" }} />
+          <Stack.Screen name="coaching/log" options={{ title: "تسجيل التمرين", presentation: "modal" }} />
+          <Stack.Screen name="orders" options={{ title: "طلباتي" }} />
+          <Stack.Screen name="delete-account" options={{ title: "حذف الحساب", presentation: "modal" }} />
           <Stack.Screen name="history/[id]" options={{ title: "تفاصيل التمرين" }} />
         </Stack>
       </TrackerProvider>

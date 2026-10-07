@@ -6,6 +6,7 @@ import { api, ApiError, type Me } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 import { loadPrefs, timeLabel, WEEKDAYS, type ReminderPrefs } from "@/lib/reminders";
 import { useTracker } from "@/lib/tracker/context";
+import { openSite } from "@/lib/links";
 
 // حسابي: التذكيرات للجميع، والحساب والمتابعة مع المدربة لمن سجّل دخوله (الدخول اختياري)
 export default function Account() {
@@ -61,12 +62,20 @@ export default function Account() {
           <Card>
             <Title>المتابعة مع المدربة</Title>
             {me?.coaching ? (
-              <Body>اشتراكك فعّال (طلب {me.coaching.orderNo}). برنامجك يظهر هنا في المرحلة 3.</Body>
+              <>
+                <Body>اشتراكك فعّال (طلب {me.coaching.orderNo}).</Body>
+                <Button title="برنامجي مع الكوتش" onPress={() => router.push("/coaching")} />
+              </>
             ) : (
-              <Body muted>ما عندك اشتراك متابعة حالياً. المتتبّع المجاني متاح لك كاملاً.</Body>
+              <>
+                <Body muted>ما عندك اشتراك متابعة حالياً. المتتبّع المجاني متاح لك كاملاً.</Body>
+                <Button title="شوف برامج المتابعة" variant="ghost" onPress={() => openSite("/programs")} />
+              </>
             )}
+            <Button title="طلباتي والدفع" variant="ghost" onPress={() => router.push("/orders")} />
           </Card>
           <Button title="تسجيل الخروج" variant="ghost" busy={busy} onPress={signOut} />
+          <Button title="حذف الحساب" variant="ghost" onPress={() => router.push("/delete-account")} />
         </>
       )}
     </ScrollView>

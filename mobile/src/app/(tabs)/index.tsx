@@ -4,12 +4,21 @@ import { CoachPrograms } from "@/components/CoachPrograms";
 import { Body, Button, Card, Empty, Title } from "@/components/ui";
 import { attempt, useScreenData, useTracker } from "@/lib/tracker/context";
 import { useTheme } from "@/lib/theme";
+import { useMe } from "@/lib/me";
+import { openSite } from "@/lib/links";
+
+// بعد كم تمرين مكتمل يظهر اقتراح المتابعة مع المدربة (جسر المجاني للمدفوع)
+const BRIDGE_AFTER = 8;
 
 // الشاشة الرئيسية: برامجي وأيامها، وبدء التمرين. تعمل بدون حساب وبدون إنترنت.
 export default function Home() {
   const t = useTheme();
   const tracker = useTracker();
-  const { data } = useScreenData(async (tr) => ({ programs: await tr.listPrograms(), active: await tr.activeWorkoutId(), imported: await tr.importedSources() }));
+  const me = useMe();
+  const { data, reload } = useScreenData(async (tr) => ({
+    programs: await tr.listPrograms(), active: await tr.activeWorkoutId(), imported: await tr.importedSources(),
+    done: (await tr.history(BRIDGE_AFTER)).length, bridgeHidden: (await tr.getSetting("bridge_hidden")) === "1",
+  }));
 
   async function start(from: { dayId: string } | { title: string }) {
     let id = "";
@@ -24,6 +33,23 @@ export default function Home() {
           style={[s.banner, { backgroundColor: t.navy }]}>
           <Text style={[s.bannerText, { color: t.onAccent }]}>عندك تمرين جارٍ — اضغط للمتابعة</Text>
         </Pressable>
+      )}
+
+      {me?.coaching && (
+        <Card>
+          <Title>برنامجك مع الكوتش ساره</Title>
+          <Body muted>برنامجك المخصص وملاحظات المدربة وتسجيل أسبوعك.</Body>
+          <Button title="افتح برنامجي" onPress={() => router.push("/coaching")} />
+        </Card>
+      )}
+
+      {!me?.coaching && !data.bridgeHidden && data.done >= BRIDGE_AFTER && (
+        <Card>
+          <Title>خلّ الكوتش ساره تراجع تقدمك</Title>
+          <Body muted>سجّلت {data.done} تمارين أو أكثر. مع المتابعة: برنامج مصمم لك، وتعديلات أسبوعية حسب أرقامك، ومراجعة بالفيديو أو الصوت.</Body>
+          <Button title="شوف برامج المتابعة" onPress={() => openSite("/programs")} />
+          <Button title="ليس الآن" variant="ghost" onPress={() => tracker.setSetting("bridge_hidden", "1").then(reload)} />
+        </Card>
       )}
 
       {data.programs.length === 0 && <CoachPrograms imported={data.imported} />}

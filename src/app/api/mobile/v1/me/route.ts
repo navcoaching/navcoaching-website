@@ -1,12 +1,13 @@
-import { getCurrentUser } from "@/lib/session";
+import { getFreshUser } from "@/lib/session";
 import { loadCurrentOrder } from "@/lib/current-order";
 
 export const dynamic = "force-dynamic";
 
 // تطبيق الجوال: هوية المستخدم واشتراكه الحالي (إن وُجد). الجلسة تصل من التطبيق في ترويسة Cookie مثل المتصفح.
 // coaching = null يعني مستخدم مجاني: المتتبّع يعمل له، ومنطقة المتدرب مخفية.
+// هوية محدّثة من قاعدة البيانات (بدون كاش الكوكي 5 دقائق) حتى ينعكس حذف الحساب أو إلغاء الجلسة فوراً
 export async function GET() {
-  const user = await getCurrentUser().catch(() => null);
+  const user = await getFreshUser().catch(() => null);
   if (!user) return Response.json({ error: "login" }, { status: 401 });
   const order = await loadCurrentOrder(user.id);
   return Response.json(
