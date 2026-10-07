@@ -44,6 +44,7 @@ export default function RootLayout() {
           <Stack.Screen name="services/review" options={{ title: "راجعي جدولي" }} />
           <Stack.Screen name="services/form-check" options={{ title: "تصحيح أداء تمرين" }} />
           <Stack.Screen name="meals" options={{ title: "وجباتي" }} />
+          <Stack.Screen name="order/[no]" options={{ title: "الطلب" }} />
           <Stack.Screen name="orders" options={{ title: "طلباتي" }} />
           <Stack.Screen name="delete-account" options={{ title: "حذف الحساب", presentation: "modal" }} />
           <Stack.Screen name="history/[id]" options={{ title: "تفاصيل التمرين" }} />

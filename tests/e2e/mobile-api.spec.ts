@@ -108,6 +108,23 @@ test("التطبيق: برنامج المتدرب، التسجيل، الطلب�
   assert.equal((await call("/api/mobile/v1/actions/log-item", { method: "POST", body: bad })).status, 422);
   assert.equal((await call("/api/mobile/v1/actions/not-allowed", { method: "POST", body: new FormData() })).status, 404);
 
+  // تفاصيل الطلب: الملفات (رابط من المدربة)، المراجعة الأسبوعية، والتقييم
+  await db.query(`INSERT INTO deliverables (order_id, title, kind, url) VALUES ($1, 'دليل التمارين', 'link', 'https://example.com/guide')`, [ord.id]);
+  const d0 = await j(await call(`/api/mobile/v1/orders/${no}`));
+  assert.equal(d0.entitled, true);
+  assert.deepEqual(d0.files.map((f: { title: string; kind: string }) => [f.title, f.kind]), [["دليل التمارين", "link"]]);
+  assert.equal(d0.review.status, "none");
+  if (d0.checkin?.can_submit) {
+    const cf = new FormData(); cf.set("order_no", no);
+    for (const q of d0.checkin.questions) { cf.append("topic", q.topic); cf.append("q", q.q); cf.append("a", "أسبوع ممتاز"); }
+    assert.equal((await call("/api/mobile/v1/actions/submit-checkin", { method: "POST", body: cf })).status, 200);
+    assert.equal((await j(await call(`/api/mobile/v1/orders/${no}`))).checkin.history.length, 1);
+  }
+  const rv = new FormData(); rv.set("order_no", no); rv.set("rating", "5"); rv.set("body", "تجربة رائعة ومتابعة ممتازة"); rv.set("display_mode", "first"); rv.set("consent", "on");
+  assert.equal((await call("/api/mobile/v1/actions/submit-review", { method: "POST", body: rv })).status, 200);
+  assert.equal((await j(await call(`/api/mobile/v1/orders/${no}`))).review.status, "pending");
+  assert.equal((await call(`/api/mobile/v1/orders/NOPE-000`)).status, 404);
+
   // طلب ينتظر الدفع + رفع إيصال
   const no2 = (await db.query("SELECT app.new_order_no() AS no")).rows[0].no;
   await db.query(`INSERT INTO orders (order_no,user_id,product_id,offer_id,category,product_name,offer_label,months,list_price_halalas,amount_due_halalas,status,contact_name,contact_phone,idempotency_key)

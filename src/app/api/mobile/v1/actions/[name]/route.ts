@@ -1,6 +1,6 @@
 import { logItemAction, logMeasurementsAction, logStepsAction, logWeightAction, rateDayAction } from "@/app/actions/training";
 import { deleteFoodLogAction, logFoodAction, logFoodGramsAction } from "@/app/actions/nutrition";
-import { cancelOrderAction, uploadProofAction, type ActionState } from "@/app/actions/client";
+import { cancelOrderAction, submitCheckinAction, submitReviewAction, uploadProofAction, type ActionState } from "@/app/actions/client";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +17,8 @@ const ACTIONS: Record<string, (s: ActionState, fd: FormData) => Promise<ActionSt
   "delete-food-log": deleteFoodLogAction,
   "upload-proof": uploadProofAction,
   "cancel-order": cancelOrderAction,
+  "submit-checkin": submitCheckinAction,
+  "submit-review": submitReviewAction,
 };
 
 export async function POST(req: Request, { params }: { params: Promise<{ name: string }> }) {

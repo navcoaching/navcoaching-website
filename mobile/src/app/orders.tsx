@@ -1,6 +1,6 @@
 import * as Clipboard from "expo-clipboard";
 import * as ImagePicker from "expo-image-picker";
-import { Redirect, useFocusEffect } from "expo-router";
+import { Redirect, router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Body, Button, Card, Empty, ErrorText, Title } from "@/components/ui";
@@ -89,6 +89,7 @@ function OrderCard({ o, bank, onChange }: { o: Order; bank: Orders["bank"]; onCh
         </>
       )}
       {o.status === "payment_review" && <Body muted>نراجع التحويل ونحدّث حالة طلبك بعد التأكد من وصول المبلغ.</Body>}
+      {!waiting && <Button title="التفاصيل والملفات" variant="ghost" onPress={() => router.push(`/order/${o.order_no}`)} />}
     </Card>
   );
 }

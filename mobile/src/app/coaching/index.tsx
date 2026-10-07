@@ -2,7 +2,6 @@ import { Redirect, router, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Body, Button, Card, Chip, Empty, ErrorText, Title } from "@/components/ui";
-import { openSite } from "@/lib/links";
 import { planText, useCoaching } from "@/lib/coaching";
 import { apiAction } from "@/lib/api";
 import { Alert } from "react-native";
@@ -111,8 +110,8 @@ export default function CoachingScreen() {
       )}
 
       <Card>
-        <Body muted>المراجعة الأسبوعية متاحة حالياً في الموقع (تحتاج الدخول هناك ببريدك).</Body>
-        <Button title="افتح طلبي في الموقع" variant="ghost" onPress={() => openSite(`/account/orders/${encodeURIComponent(data.order.order_no)}`)} />
+        <Body muted>المراجعة الأسبوعية، وملفات برنامجك، وتقييم التجربة.</Body>
+        <Button title="المراجعة الأسبوعية والملفات" variant="ghost" onPress={() => router.push(`/order/${data.order.order_no}`)} />
       </Card>
     </ScrollView>
   );
