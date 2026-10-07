@@ -30,6 +30,7 @@ export default function RootLayout() {
           <Stack.Screen name="program/new" options={{ title: "برنامج جديد", presentation: "modal" }} />
           <Stack.Screen name="program/[id]" options={{ title: "تعديل البرنامج" }} />
           <Stack.Screen name="exercise-picker" options={{ title: "اختر تمريناً", presentation: "modal" }} />
+          <Stack.Screen name="swap" options={{ title: "بدّل التمرين", presentation: "modal" }} />
           <Stack.Screen name="exercise/[id]" options={{ title: "التمرين" }} />
           <Stack.Screen name="workout/[id]" options={{ title: "التمرين", gestureEnabled: false }} />
           <Stack.Screen name="workout/summary/[id]" options={{ title: "أحسنت 💪", headerBackVisible: false, gestureEnabled: false }} />

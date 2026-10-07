@@ -51,7 +51,8 @@ export default function EditProgram() {
             <ItemRow key={it.id} item={it} first={i === 0} last={i === d.items.length - 1}
               onChange={(patch) => run(() => tracker.updateItem(it.id, patch))}
               onMove={(dir) => run(() => tracker.moveItem(it.id, dir))}
-              onDelete={() => run(() => tracker.deleteItem(it.id))} />
+              onDelete={() => run(() => tracker.deleteItem(it.id))}
+              onSwap={() => router.push({ pathname: "/swap", params: { target: "item", id: it.id, exercise: it.exercise_id } })} />
           ))}
           <Button title="+ أضف تمريناً" variant="ghost" onPress={() => router.push({ pathname: "/exercise-picker", params: { target: "day", id: d.id } })} />
         </Card>
@@ -74,10 +75,10 @@ function DayTitle({ title, onSave }: { title: string; onSave: (v: string) => voi
   );
 }
 
-function ItemRow({ item, first, last, onChange, onMove, onDelete }: {
+function ItemRow({ item, first, last, onChange, onMove, onDelete, onSwap }: {
   item: ProgramItem; first: boolean; last: boolean;
   onChange: (patch: { sets?: number; reps?: string; target_weight?: number | null; rest_sec?: number }) => void;
-  onMove: (dir: -1 | 1) => void; onDelete: () => void;
+  onMove: (dir: -1 | 1) => void; onDelete: () => void; onSwap: () => void;
 }) {
   const t = useTheme();
   const ex = exercise(item.exercise_id);
@@ -88,6 +89,7 @@ function ItemRow({ item, first, last, onChange, onMove, onDelete }: {
           <Text style={[s.exName, { color: t.text }]}>{ex.name}</Text>
           {!!ex.muscle && <Text style={{ color: t.muted, fontSize: 13, textAlign: "left" }}>{ex.muscle}</Text>}
         </Pressable>
+        <IconButton name="swap-horizontal" label={`بدّل ${ex.name} بتمرين مشابه`} onPress={onSwap} />
         {!first && <IconButton name="arrow-up" label="تحريك للأعلى" onPress={() => onMove(-1)} />}
         {!last && <IconButton name="arrow-down" label="تحريك للأسفل" onPress={() => onMove(1)} />}
         <IconButton name="close" label={`حذف ${ex.name}`} color={t.err} onPress={onDelete} />

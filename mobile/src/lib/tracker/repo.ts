@@ -233,6 +233,16 @@ export function makeTracker(db: Db, newId: () => string, now: () => number = Dat
       });
     },
 
+    /** تبديل تمرين في البرنامج بمشابه: يبقى عدد الجولات والتكرارات والراحة، والوزن المستهدف يُمسح لأنه يخص التمرين القديم */
+    async swapItem(itemId: string, exerciseId: string) {
+      await tx(async () => {
+        const it = await db.getFirstAsync<{ day_id: string }>("SELECT day_id FROM program_items WHERE id = ?", [itemId]);
+        if (!it) throw new TrackerError("التمرين غير موجود.");
+        await db.runAsync("UPDATE program_items SET exercise_id = ?, target_weight = NULL WHERE id = ?", [exerciseId, itemId]);
+        await touchProgram(await dayProgram(it.day_id));
+      });
+    },
+
     // ---------- التمرين الجاري ----------
     async activeWorkoutId(): Promise<string | null> {
       const r = await db.getFirstAsync<{ id: string }>("SELECT id FROM workouts WHERE finished_at IS NULL ORDER BY started_at DESC LIMIT 1", []);
@@ -283,9 +293,10 @@ export function makeTracker(db: Db, newId: () => string, now: () => number = Dat
       const exercises = [...groups.values()];
       for (const g of exercises) {
         if (g.item_id) {
-          const t = await db.getFirstAsync<{ reps: string; target_weight: number | null; rest_sec: number }>(
-            "SELECT reps, target_weight, rest_sec FROM program_items WHERE id = ?", [g.item_id]);
-          if (t) g.target = { reps: t.reps, weight: t.target_weight, rest_sec: t.rest_sec };
+          const t = await db.getFirstAsync<{ exercise_id: string; reps: string; target_weight: number | null; rest_sec: number }>(
+            "SELECT exercise_id, reps, target_weight, rest_sec FROM program_items WHERE id = ?", [g.item_id]);
+          // بعد التبديل لهذه الجلسة فقط: التكرارات والراحة تبقى، والوزن المستهدف يخص التمرين القديم فلا يُعرض
+          if (t) g.target = { reps: t.reps, weight: t.exercise_id === g.exercise_id ? t.target_weight : null, rest_sec: t.rest_sec };
         }
         const last = await db.getFirstAsync<{ workout_id: string; position: number }>(
           `SELECT s.workout_id, s.position FROM workout_sets s JOIN workouts w ON w.id = s.workout_id
@@ -307,6 +318,26 @@ export function makeTracker(db: Db, newId: () => string, now: () => number = Dat
         for (let n = 1; n <= sets; n++) {
           await db.runAsync("INSERT INTO workout_sets (id, workout_id, exercise_id, position, set_no) VALUES (?, ?, ?, ?, ?)",
             [newId(), workoutId, exerciseId, pos, n]);
+        }
+      });
+    },
+
+    /**
+     * تبديل تمرين في التمرين الجاري بمشابه. الجولات المكتملة تبقى للتمرين القديم (سجلها صحيح)،
+     * فالتبديل مسموح فقط قبل إكمال أي جولة منه. inProgram: يبدّله في البرنامج للمرات القادمة أيضاً.
+     */
+    async swapWorkoutExercise(workoutId: string, position: number, exerciseId: string, inProgram: boolean) {
+      await tx(async () => {
+        const r = await db.getFirstAsync<{ item_id: string | null; done: number; n: number; finished_at: number | null }>(
+          `SELECT max(s.item_id) AS item_id, sum(s.done) AS done, count(*) AS n, w.finished_at FROM workout_sets s
+            JOIN workouts w ON w.id = s.workout_id WHERE s.workout_id = ? AND s.position = ? GROUP BY w.finished_at`, [workoutId, position]);
+        if (!r || r.n === 0) throw new TrackerError("التمرين غير موجود.");
+        if (r.finished_at != null) throw new TrackerError("هذا التمرين منتهٍ.");
+        if (r.done > 0) throw new TrackerError("أكملت جولات من هذا التمرين. أضف البديل كتمرين جديد حتى يبقى سجلك صحيحاً.");
+        await db.runAsync("UPDATE workout_sets SET exercise_id = ?, weight = NULL, reps = NULL WHERE workout_id = ? AND position = ?",
+          [exerciseId, workoutId, position]);
+        if (inProgram && r.item_id) {
+          await db.runAsync("UPDATE program_items SET exercise_id = ?, target_weight = NULL WHERE id = ?", [exerciseId, r.item_id]);
         }
       });
     },

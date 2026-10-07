@@ -1,4 +1,5 @@
 import { test } from "node:test";
+import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 import { e1rm, formatDuration, formatKg, newRecords, parseNumber, parseReps, volume } from "../src/lib/tracker/logic.ts";
 import { makeTracker, TrackerError } from "../src/lib/tracker/repo.ts";
@@ -202,4 +203,64 @@ test("review snapshot for coach", async () => {
   assert.deepEqual(snap.sessions[0].exercises[0].sets, [{ kind: "normal", weight: 50, reps: 8 }]);
   assert.equal((await tr.reviewSnapshot(pid, Date.now() + 1e12))!.sessions.length, 0);
   assert.equal(await tr.reviewSnapshot("nope", 0), null);
+});
+
+test("similar: coach alternatives first, same muscle only, no self", async () => {
+  const { rankSimilar } = await import("../src/lib/similar.ts");
+  const all = JSON.parse(readFileSync(new URL("../src/data/exercises.json", import.meta.url), "utf8"));
+  const bench = all.find((e: { id: string }) => e.id === "bench-press");
+  const r = rankSimilar(bench, all, 12);
+  assert.equal(r.length, 12);
+  assert.ok(!r.some((x) => x.id === "bench-press"));
+  // بدائل الكوتش في المكتبة تتصدّر القائمة
+  assert.deepEqual(new Set(r.slice(0, bench.alts.length).map((x) => x.id)), new Set(bench.alts));
+  assert.ok(r.slice(0, bench.alts.length).every((x) => x.coach));
+  // الباقي من نفس العضلة أو عضلة متداخلة، لا تمارين بعيدة مثل السكوات
+  assert.ok(!r.some((x) => x.id === "back-squat"));
+  for (const x of r.filter((x) => !x.coach)) {
+    const e = all.find((y: { id: string }) => y.id === x.id);
+    assert.ok(e.muscle === bench.muscle || (e.secondary.includes(bench.muscle) && bench.secondary.includes(e.muscle)), x.id);
+  }
+});
+
+test("swap exercise: in program and in a running workout", async () => {
+  const tr = setup();
+  await tr.migrate();
+  const pid = await tr.createProgram("برنامجي");
+  const day = (await tr.getProgram(pid))!.days[0].id;
+  const item = await tr.addItem(day, "back-squat");
+  await tr.updateItem(item, { sets: 2, reps: "8-12", target_weight: 60, rest_sec: 120 });
+
+  // في البرنامج: يتغير التمرين وتبقى الجولات والتكرارات والراحة، والوزن المستهدف يُمسح
+  await tr.swapItem(item, "front-squat");
+  let it = (await tr.getProgram(pid))!.days[0].items[0];
+  assert.deepEqual([it.exercise_id, it.sets, it.reps, it.rest_sec, it.target_weight], ["front-squat", 2, "8-12", 120, null]);
+  await assert.rejects(tr.swapItem("nope", "box-squat"), /غير موجود/);
+  await tr.updateItem(item, { target_weight: 50 });
+
+  // في التمرين الجاري، لهذه الجلسة فقط: البرنامج ما يتغير، والوزن المستهدف للتمرين القديم ما يظهر
+  const w1 = await tr.startWorkout({ dayId: day });
+  let w = (await tr.getWorkout(w1))!;
+  await tr.updateSet(w.exercises[0].sets[0].id, { weight: 40 });
+  await tr.swapWorkoutExercise(w1, 0, "box-squat", false);
+  w = (await tr.getWorkout(w1))!;
+  assert.equal(w.exercises[0].exercise_id, "box-squat");
+  assert.equal(w.exercises[0].sets.length, 2);
+  assert.equal(w.exercises[0].sets[0].weight, null);
+  assert.deepEqual(w.exercises[0].target, { reps: "8-12", weight: null, rest_sec: 120 });
+  assert.equal((await tr.getProgram(pid))!.days[0].items[0].exercise_id, "front-squat");
+
+  // ومع «بدّله في البرنامج»
+  await tr.swapWorkoutExercise(w1, 0, "goblet-squat", true);
+  it = (await tr.getProgram(pid))!.days[0].items[0];
+  assert.equal(it.exercise_id, "goblet-squat");
+  assert.equal(it.target_weight, null);
+
+  // بعد إكمال جولة لا يُسمح بالتبديل حتى يبقى السجل صحيحاً
+  w = (await tr.getWorkout(w1))!;
+  await tr.updateSet(w.exercises[0].sets[0].id, { weight: 20, reps: 10, done: true });
+  await assert.rejects(tr.swapWorkoutExercise(w1, 0, "box-squat", false), /أكملت جولات/);
+  await assert.rejects(tr.swapWorkoutExercise(w1, 5, "box-squat", false), /غير موجود/);
+  await tr.finishWorkout(w1);
+  await assert.rejects(tr.swapWorkoutExercise(w1, 0, "box-squat", false), /منتهٍ|أكملت/);
 });

@@ -64,6 +64,7 @@ export default function WorkoutScreen() {
         {w.exercises.length === 0 && <Empty>أضف أول تمرين.</Empty>}
         {w.exercises.map((ex) => (
           <ExerciseBlock key={ex.position} ex={ex}
+            onSwap={() => router.push({ pathname: "/swap", params: { target: "workout", id, position: String(ex.position), exercise: ex.exercise_id, inProgram: ex.item_id ? "1" : "0" } })}
             onComplete={(set, wt, rp) => complete(ex, set, wt, rp)}
             onUndo={(set) => run(() => tracker.updateSet(set.id, { done: false }))}
             onSave={(set, patch) => run(() => tracker.updateSet(set.id, patch))}
@@ -105,8 +106,9 @@ function Elapsed({ since }: { since: number }) {
   return <Text style={{ color: t.muted, fontSize: 15, fontVariant: ["tabular-nums"] }}>{formatDuration((now - since) / 1000)}</Text>;
 }
 
-function ExerciseBlock({ ex, onComplete, onUndo, onSave, onAddSet, onDeleteSet }: {
+function ExerciseBlock({ ex, onSwap, onComplete, onUndo, onSave, onAddSet, onDeleteSet }: {
   ex: WorkoutExercise;
+  onSwap: () => void;
   onComplete: (set: WorkoutSet, weight: number | null, reps: number | null) => void;
   onUndo: (set: WorkoutSet) => void;
   onSave: (set: WorkoutSet, patch: { weight?: number | null; reps?: number | null; kind?: SetKind }) => void;
@@ -121,9 +123,13 @@ function ExerciseBlock({ ex, onComplete, onUndo, onSave, onAddSet, onDeleteSet }
   let normalNo = 0;
   return (
     <Card>
-      <Pressable onPress={() => router.push(`/exercise/${ex.exercise_id}`)} accessibilityRole="link">
-        <Text style={[s.exName, { color: t.navy }]}>{info.name}</Text>
-      </Pressable>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+        <Pressable style={{ flex: 1 }} onPress={() => router.push(`/exercise/${ex.exercise_id}`)} accessibilityRole="link">
+          <Text style={[s.exName, { color: t.navy }]}>{info.name}</Text>
+        </Pressable>
+        {/* التبديل قبل إكمال أي جولة فقط، حتى يبقى السجل صحيحاً */}
+        {!ex.sets.some((x) => x.done) && <IconButton name="swap-horizontal" label={`بدّل ${info.name} بتمرين مشابه`} onPress={onSwap} />}
+      </View>
       {target && (
         <Text style={{ color: t.muted, fontSize: 14, textAlign: "left" }}>
           الهدف: {target.reps} تكرار{target.weight != null ? ` · ${formatKg(target.weight)} كجم` : ""} · راحة {target.rest_sec} ث
