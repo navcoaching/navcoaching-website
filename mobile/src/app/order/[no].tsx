@@ -1,6 +1,6 @@
 import { File, Paths } from "expo-file-system";
 import * as Haptics from "expo-haptics";
-import { Redirect, Stack, useLocalSearchParams } from "expo-router";
+import { Redirect, router, Stack, useLocalSearchParams } from "expo-router";
 import * as Sharing from "expo-sharing";
 import { useState } from "react";
 import { Alert, Linking, Pressable, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
@@ -18,6 +18,9 @@ type Detail = {
   checkin: null | { can_submit: boolean; questions: { topic: string; q: string }[];
     history: { id: string; created_at: string; answers: { topic: string; q: string; a: string }[]; reply: string | null; video: string | null; replied_at: string | null }[] };
   review: null | { status: "none" | "pending" | "published" | "rejected" | "hidden"; body?: string; rating?: number | null; consent?: boolean; reply?: string | null };
+  start: null | { pref: string | null; range: { min: string; max: string } };
+  renewal: null | { kind: "offer"; left: number; price: string; discounted: string } | { kind: "pending" | "renewed"; order_no: string };
+  end_of_program: null | { survey_done: boolean };
 };
 const dateFmt = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", { day: "numeric", month: "long" });
 const REVIEW_STATUS: Record<string, string> = { pending: "قيد المراجعة", published: "منشور", rejected: "لم يُنشر", hidden: "مخفي" };
@@ -41,6 +44,10 @@ export default function OrderDetail() {
         <Text style={{ color: t.navy, fontSize: 16, fontWeight: "700", textAlign: "left" }}>{o.status_label}</Text>
       </Card>
 
+      {data.start && <StartPref no={o.order_no} start={data.start} onDone={reload} />}
+      {data.renewal && <Renewal no={o.order_no} r={data.renewal} />}
+      {data.end_of_program && !data.end_of_program.survey_done && <ExitSurvey no={o.order_no} onDone={reload} />}
+
       {data.entitled && (
         <Card>
           <Title>ملفاتي</Title>
@@ -52,6 +59,98 @@ export default function OrderDetail() {
       {data.checkin && <Checkin no={o.order_no} c={data.checkin} onDone={reload} />}
       {data.review && <Review no={o.order_no} r={data.review} onDone={reload} />}
     </ScrollView>
+  );
+}
+
+const ymd = (d: string) => d.slice(0, 10);
+const addDays = (d: string, n: number) => new Date(Date.parse(`${d}T00:00:00Z`) + n * 86_400_000).toISOString().slice(0, 10);
+const shortFmt = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+
+function StartPref({ no, start, onDone }: { no: string; start: NonNullable<Detail["start"]>; onDone: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const days: string[] = [];
+  for (let d = start.range.min; d <= start.range.max; d = addDays(d, 1)) days.push(d);
+  async function save(date: string | null) {
+    const fd = new FormData();
+    fd.append("order_no", no); fd.append("start_mode", date ? "date" : "asap"); if (date) fd.append("start_date", date);
+    setBusy(true);
+    const r = await apiAction("set-start-pref", fd);
+    setBusy(false);
+    if (r.error) Alert.alert("تنبيه", r.error); else onDone();
+  }
+  const cur = start.pref ? ymd(start.pref) : null;
+  return (
+    <Card>
+      <Title>موعد بداية برنامجك</Title>
+      <Body muted>الحالي: {cur ? shortFmt.format(Date.parse(`${cur}T00:00:00Z`)) : "بأقرب وقت"}</Body>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+        <Chip label="⚡ بأقرب وقت" active={!cur} onPress={() => !busy && save(null)} />
+        {days.map((d) => <Chip key={d} label={shortFmt.format(Date.parse(`${d}T00:00:00Z`))} active={cur === d} onPress={() => !busy && save(d)} />)}
+      </ScrollView>
+    </Card>
+  );
+}
+
+function Renewal({ no, r }: { no: string; r: NonNullable<Detail["renewal"]> }) {
+  const [busy, setBusy] = useState(false);
+  if (r.kind !== "offer") {
+    return (
+      <Card>
+        <Title>{r.kind === "renewed" ? "اشتراكك مستمر ✓" : "طلب التجديد"}</Title>
+        <Button title={`افتح طلب ${r.order_no}`} variant="ghost" onPress={() => router.push(r.kind === "pending" ? "/orders" : `/order/${r.order_no}`)} />
+      </Card>
+    );
+  }
+  async function renew() {
+    const fd = new FormData();
+    fd.append("order_no", no);
+    setBusy(true);
+    const res = await apiAction("renew", fd);
+    setBusy(false);
+    if (res.error) return Alert.alert("تنبيه", res.error);
+    Alert.alert("تم طلب التجديد", `رقم الطلب ${res.message}. حوّل المبلغ وارفع الإيصال من «طلباتي».`);
+    router.replace("/orders");
+  }
+  return (
+    <Card>
+      <Title>🔁 جدّد بخصم 10%</Title>
+      <Body>باقي {r.left} {r.left === 1 ? "يوم" : "أيام"} على نهاية اشتراكك. جدّد الآن بـ {r.discounted} بدل {r.price}.</Body>
+      <Button title="جدّد بالخصم" busy={busy} onPress={renew} />
+    </Card>
+  );
+}
+
+function ExitSurvey({ no, onDone }: { no: string; onDone: () => void }) {
+  const t = useTheme();
+  const [wants, setWants] = useState<"yes" | "no" | null>(null);
+  const [reason, setReason] = useState("");
+  const [experience, setExperience] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  async function send() {
+    const fd = new FormData();
+    fd.append("order_no", no); fd.append("wants_renewal", wants ?? ""); fd.append("reason", reason); fd.append("experience", experience);
+    setBusy(true); setError(null);
+    const r = await apiAction("submit-exit-survey", fd);
+    setBusy(false);
+    if (r.error) return setError(r.error);
+    Alert.alert("شكراً لك", r.message ?? "وصلني ردك 🤍");
+    onDone();
+  }
+  return (
+    <Card>
+      <Title>انتهى برنامجك 🎉</Title>
+      <Body muted>سؤالان سريعان للمدربة فقط (لا يُنشران).</Body>
+      <Text style={{ color: t.text, fontWeight: "600", textAlign: "left" }}>تبي تكمل معنا؟</Text>
+      <View style={{ flexDirection: "row", gap: 8 }}>
+        <Chip label="نعم" active={wants === "yes"} onPress={() => setWants("yes")} />
+        <Chip label="لا" active={wants === "no"} onPress={() => setWants("no")} />
+      </View>
+      <Field label="ليش؟ (باختصار)" value={reason} onChangeText={setReason} multiline maxLength={1000} style={{ minHeight: 60, textAlignVertical: "top" }} />
+      <Field label="كيف كانت تجربتك؟" value={experience} onChangeText={setExperience} multiline maxLength={2000} style={{ minHeight: 80, textAlignVertical: "top" }} />
+      {error && <ErrorText>{error}</ErrorText>}
+      <Button title="أرسل" busy={busy} disabled={!wants} onPress={send} />
+    </Card>
   );
 }
 

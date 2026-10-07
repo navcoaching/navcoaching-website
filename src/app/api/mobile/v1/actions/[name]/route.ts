@@ -1,6 +1,8 @@
-import { logItemAction, logMeasurementsAction, logStepsAction, logWeightAction, rateDayAction } from "@/app/actions/training";
+import { logItemAction, logMeasurementsAction, logStepsAction, logWeightAction, rateDayAction, swapExerciseAction } from "@/app/actions/training";
 import { deleteFoodLogAction, logFoodAction, logFoodGramsAction } from "@/app/actions/nutrition";
-import { cancelOrderAction, submitCheckinAction, submitReviewAction, uploadProofAction, type ActionState } from "@/app/actions/client";
+import { cancelOrderAction, savePrefsAction, setStartPrefAction, submitCheckinAction, submitExitSurveyAction, submitReviewAction, updateProfileAction, uploadProofAction, type ActionState } from "@/app/actions/client";
+import { createRenewal } from "@/lib/renew";
+import { getCurrentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +21,18 @@ const ACTIONS: Record<string, (s: ActionState, fd: FormData) => Promise<ActionSt
   "cancel-order": cancelOrderAction,
   "submit-checkin": submitCheckinAction,
   "submit-review": submitReviewAction,
+  "submit-exit-survey": submitExitSurveyAction,
+  "set-start-pref": setStartPrefAction,
+  "update-profile": updateProfileAction,
+  "save-prefs": savePrefsAction,
+  "swap-exercise": swapExerciseAction,
+  // التجديد في الموقع ينتهي بتحويل لصفحة الطلب؛ التطبيق يأخذ رقم الطلب الجديد في الرسالة
+  renew: async (_, fd) => {
+    const user = await getCurrentUser();
+    if (!user) return { error: "سجّل الدخول أولاً." };
+    const r = await createRenewal(user.id, String(fd.get("order_no") ?? ""));
+    return "error" in r ? { error: r.error } : { ok: true, message: r.no };
+  },
 };
 
 export async function POST(req: Request, { params }: { params: Promise<{ name: string }> }) {

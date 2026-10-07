@@ -64,6 +64,7 @@ export default function Account() {
           <Card>
             <Title>{me?.user.name || "حسابي"}</Title>
             <Body muted>{session.user.email}</Body>
+            <Button title="بياناتي وتفضيلات التواصل" variant="ghost" onPress={() => router.push("/profile")} />
           </Card>
           <Card>
             <Title>المتابعة مع المدربة</Title>

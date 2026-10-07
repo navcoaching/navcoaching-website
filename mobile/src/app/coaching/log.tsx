@@ -3,7 +3,7 @@ import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Alert, Linking, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Body, Button, Card, Empty, ErrorText, Title } from "@/components/ui";
-import { apiAction } from "@/lib/api";
+import { api, apiAction } from "@/lib/api";
 import { planText, useCoaching } from "@/lib/coaching";
 import { formatKg, parseNumber } from "@/lib/tracker/logic";
 import { useTheme } from "@/lib/theme";
@@ -96,6 +96,7 @@ export default function LogItem() {
       </Card>
       {error && <ErrorText>{error}</ErrorText>}
       {!readOnly && <Button title="حفظ" busy={busy} onPress={() => submit()} />}
+      {!readOnly && <Swap item={itemId} orderNo={data.order.order_no} onDone={reload} />}
       {!readOnly && log && (
         <Button title="حذف التسجيل" variant="ghost" onPress={() => Alert.alert("حذف تسجيل هذا الأسبوع؟", undefined, [
           { text: "إلغاء", style: "cancel" }, { text: "حذف", style: "destructive", onPress: () => submit(true) },
@@ -113,3 +114,43 @@ const s = StyleSheet.create({
   col: { flex: 1 },
   input: { minHeight: 46, borderWidth: 1, borderRadius: 10, textAlign: "center", fontSize: 17, writingDirection: "ltr" },
 });
+
+type SwapOpt = { id: string; name: string; is_coach_choice: boolean; is_current: boolean };
+
+/** تبديل التمرين ببديل من قائمة المدربة (يصل إشعار للمدربة، ويبقى السجل السابق كما هو) */
+function Swap({ item, orderNo, onDone }: { item: string; orderNo: string; onDone: () => Promise<void> | void }) {
+  const t = useTheme();
+  const [opts, setOpts] = useState<SwapOpt[] | null>(null);
+  const [busy, setBusy] = useState(false);
+  async function load() {
+    setBusy(true);
+    const r = await api<{ options: SwapOpt[] }>(`/coaching/swaps?item=${item}`).catch(() => ({ options: [] }));
+    setBusy(false);
+    setOpts(r.options);
+  }
+  function pick(o: SwapOpt) {
+    Alert.alert(`التبديل إلى ${o.name}؟`, "يصل إشعار للمدربة بالتبديل.", [
+      { text: "إلغاء", style: "cancel" },
+      { text: "بدّل", onPress: async () => {
+        const fd = new FormData();
+        fd.append("item", item); fd.append("exercise", o.id); fd.append("order_no", orderNo);
+        const r = await apiAction("swap-exercise", fd);
+        if (r.error) return Alert.alert("تنبيه", r.error);
+        Alert.alert("تم", r.message ?? "تم التبديل.");
+        setOpts(null);
+        await onDone();
+      } },
+    ]);
+  }
+  if (!opts) return <Button title="بدّل التمرين ببديل" variant="ghost" busy={busy} onPress={load} />;
+  return (
+    <Card>
+      <Title>البدائل</Title>
+      {opts.length === 0 && <Body muted>لا توجد بدائل لهذا التمرين.</Body>}
+      {opts.filter((o) => !o.is_current).map((o) => (
+        <Button key={o.id} title={`${o.name}${o.is_coach_choice ? " (اختيار المدربة)" : ""}`} variant="ghost" onPress={() => pick(o)} />
+      ))}
+      <Text style={{ color: t.muted, fontSize: 13, textAlign: "left" }}>تسجيلاتك السابقة لهذا التمرين تبقى كما هي.</Text>
+    </Card>
+  );
+}

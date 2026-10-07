@@ -142,6 +142,49 @@ test("التطبيق: برنامج المتدرب، التسجيل، الطلب�
   assert.equal(ur.status, 200, JSON.stringify(urj));
   assert.equal((await db.query("SELECT status FROM orders WHERE order_no=$1", [no2])).rows[0].status, "payment_review");
 
+  // الملف الشخصي وتفضيلات التواصل
+  const send2 = (name: string, fields: Record<string, string>) => {
+    const f = new FormData(); for (const [k, v] of Object.entries(fields)) f.set(k, v);
+    return call(`/api/mobile/v1/actions/${name}`, { method: "POST", body: f });
+  };
+  assert.equal((await send2("update-profile", { name: "نورة" })).status, 200);
+  assert.equal((await send2("save-prefs", { email_enabled: "on" })).status, 200);
+  const prof = await j(await call("/api/mobile/v1/profile"));
+  assert.equal(prof.name, "نورة");
+  assert.deepEqual(prof.prefs, { email: true, whatsapp: false });
+
+  // تبديل التمرين ببديل من قائمة المدربة
+  const sw = (await j(await call(`/api/mobile/v1/coaching/swaps?item=${item.id}`))).options;
+  const alt = sw.find((o: { is_current: boolean }) => !o.is_current);
+  assert.ok(alt, "Back Squat له بدائل في المكتبة");
+  assert.equal((await send2("swap-exercise", { item: item.id, exercise: alt.id, order_no: no })).status, 200);
+  assert.equal((await j(await call("/api/mobile/v1/coaching"))).coaching.days[0].items[0].exercise.name, alt.name);
+
+  // موعد البداية لطلب لم يبدأ
+  const dS = await j(await call(`/api/mobile/v1/orders/${no2}`));
+  assert.ok(dS.start, "الطلب قبل التفعيل يعرض موعد البداية");
+  assert.equal((await send2("set-start-pref", { order_no: no2, start_mode: "date", start_date: dS.start.range.min })).status, 200);
+  assert.equal((await j(await call(`/api/mobile/v1/orders/${no2}`))).start.pref.slice(0, 10), dS.start.range.min);
+  assert.equal((await send2("set-start-pref", { order_no: no2, start_mode: "date", start_date: "2000-01-01" })).status, 422);
+
+  // التجديد بخصم في آخر أيام الاشتراك
+  await db.query(`UPDATE orders SET sub_start_at = now() - interval '85 days', sub_end_at = now() + interval '3 days' WHERE order_no = $1`, [no]);
+  const dR = await j(await call(`/api/mobile/v1/orders/${no}`));
+  assert.equal(dR.renewal.kind, "offer");
+  const rn = await send2("renew", { order_no: no });
+  const rnj = await rn.json();
+  assert.equal(rn.status, 200, JSON.stringify(rnj));
+  assert.equal((await j(await call(`/api/mobile/v1/orders/${no}`))).renewal.kind, "pending");
+  assert.equal((await db.query(`SELECT renewal_kind, status FROM orders WHERE order_no = $1`, [rnj.message])).rows[0].renewal_kind, "renewal");
+
+  // استبيان نهاية البرنامج (اشتراك منتهٍ بدون تجديد)
+  const no4 = (await db.query("SELECT app.new_order_no() AS no")).rows[0].no;
+  await db.query(`INSERT INTO orders (order_no,user_id,product_id,offer_id,category,product_name,offer_label,months,list_price_halalas,amount_due_halalas,status,contact_name,contact_phone,idempotency_key,paid_at,sub_start_at,sub_end_at)
+    VALUES ($1,$2,$3,$4,'follow',$5,$6,3,$7,$7,'completed','متدرب','+966512345678',$8,now(), now() - interval '100 days', now() - interval '10 days')`, [no4, u.id, p.id, p.offer_id, p.name, p.label, p.price_halalas, `k-${no4}`]);
+  assert.deepEqual((await j(await call(`/api/mobile/v1/orders/${no4}`))).end_of_program, { survey_done: false });
+  assert.equal((await send2("submit-exit-survey", { order_no: no4, wants_renewal: "yes", reason: "النتائج", experience: "ممتازة" })).status, 200);
+  assert.deepEqual((await j(await call(`/api/mobile/v1/orders/${no4}`))).end_of_program, { survey_done: true });
+
   // غير المسجّل
   const saved = cookie; cookie = "";
   assert.equal((await call("/api/mobile/v1/coaching")).status, 401);
@@ -153,9 +196,9 @@ test("التطبيق: برنامج المتدرب، التسجيل، الطلب�
   const dr = await call("/api/mobile/v1/account/delete", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ confirm: "حذف" }) });
   assert.equal(dr.status, 200, JSON.stringify(await dr.clone().json()));
   assert.equal((await db.query(`SELECT count(*)::int n FROM "user" WHERE email=$1`, [email])).rows[0].n, 0);
-  assert.equal((await db.query(`SELECT count(*)::int n FROM orders WHERE order_no = ANY($1)`, [[no, no2]])).rows[0].n, 0);
+  assert.equal((await db.query(`SELECT count(*)::int n FROM orders WHERE order_no = ANY($1)`, [[no, no2, no4]])).rows[0].n, 0);
   const log = (await db.query(`SELECT details FROM admin_log WHERE action='member.self_delete' AND target=$1`, [email])).rows[0];
-  assert.deepEqual(log.details.orders.sort(), [no, no2].sort());
+  assert.ok([no, no2, no4].every((x) => log.details.orders.includes(x)));
   assert.equal((await call("/api/mobile/v1/me")).status, 401, "session gone");
 
   // المدربة لا تحذف نفسها
