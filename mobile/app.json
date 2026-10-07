@@ -16,10 +16,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#07142a",
+        "foregroundImage": "./assets/android-icon-foreground.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.navcoaching.app"
@@ -44,6 +42,15 @@
           "photosPermission": "نحتاج الوصول للصور حتى ترفع صورة إيصال التحويل.",
           "cameraPermission": "نحتاج الكاميرا حتى تصوّر إيصال التحويل.",
           "microphonePermission": false
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "backgroundColor": "#07142a",
+          "imageWidth": 220,
+          "resizeMode": "contain"
         }
       ]
     ],
