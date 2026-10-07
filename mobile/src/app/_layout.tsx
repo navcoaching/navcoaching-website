@@ -34,6 +34,7 @@ export default function RootLayout() {
           <Stack.Screen name="workout/[id]" options={{ title: "التمرين", gestureEnabled: false }} />
           <Stack.Screen name="workout/summary/[id]" options={{ title: "أحسنت 💪", headerBackVisible: false, gestureEnabled: false }} />
           <Stack.Screen name="coach-program/[id]" options={{ title: "برنامج مجاني" }} />
+          <Stack.Screen name="reminders" options={{ title: "تذكير التمرين", presentation: "modal" }} />
           <Stack.Screen name="history/[id]" options={{ title: "تفاصيل التمرين" }} />
         </Stack>
       </TrackerProvider>

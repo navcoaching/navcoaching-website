@@ -38,6 +38,7 @@ export type Workout = {
   id: string; title: string; program_id: string | null; day_id: string | null;
   started_at: number; finished_at: number | null; exercises: WorkoutExercise[];
 };
+export type ExercisePoint = { workout_id: string; finished_at: number; max_weight: number; best_reps: number; best_e1rm: number; sets: number };
 export type WorkoutSummary = {
   id: string; title: string; started_at: number; finished_at: number;
   duration_sec: number; sets: number; volume: number; exercises: number; records: Record[];
@@ -413,18 +414,32 @@ export function makeTracker(db: Db, newId: () => string, now: () => number = Dat
       return out;
     },
 
-    /** أفضل أداء لتمرين في كل تمرين مكتمل (للرسوم البيانية في المرحلة 2) */
-    async exerciseHistory(exerciseId: string) {
-      return db.getAllAsync<{ workout_id: string; finished_at: number; max_weight: number; best_reps: number; sets: number }>(
-        `SELECT w.id AS workout_id, w.finished_at, max(s.weight) AS max_weight,
-                (SELECT s2.reps FROM workout_sets s2 WHERE s2.workout_id = w.id AND s2.exercise_id = ? AND s2.done = 1 AND s2.kind <> 'warmup'
-                  ORDER BY s2.weight DESC, s2.reps DESC LIMIT 1) AS best_reps,
-                count(*) AS sets
+    /** أفضل أداء لتمرين في كل تمرين مكتمل، الأقدم أولاً (للرسوم البيانية وسجل التمرين) */
+    async exerciseHistory(exerciseId: string): Promise<ExercisePoint[]> {
+      const rows = await db.getAllAsync<{ workout_id: string; finished_at: number; weight: number; reps: number }>(
+        `SELECT w.id AS workout_id, w.finished_at, s.weight, s.reps
            FROM workout_sets s JOIN workouts w ON w.id = s.workout_id
           WHERE s.exercise_id = ? AND s.done = 1 AND s.kind <> 'warmup' AND w.finished_at IS NOT NULL
-          GROUP BY w.id ORDER BY w.finished_at`, [exerciseId, exerciseId]);
+          ORDER BY w.finished_at`, [exerciseId]);
+      const out: ExercisePoint[] = [];
+      for (const r of rows) {
+        let p = out[out.length - 1];
+        if (!p || p.workout_id !== r.workout_id) out.push((p = { workout_id: r.workout_id, finished_at: r.finished_at, max_weight: 0, best_reps: 0, best_e1rm: 0, sets: 0 }));
+        p.sets++;
+        if (r.weight > p.max_weight || (r.weight === p.max_weight && r.reps > p.best_reps)) { p.max_weight = r.weight; p.best_reps = r.reps; }
+        p.best_e1rm = Math.max(p.best_e1rm, e1rm(r.weight, r.reps));
+      }
+      return out;
     },
 
+    /** إعدادات بسيطة على الجهاز (مثل التذكيرات) */
+    async getSetting(key: string): Promise<string | null> {
+      const r = await db.getFirstAsync<{ value: string }>("SELECT value FROM settings WHERE key = ?", [key]);
+      return r?.value ?? null;
+    },
+    async setSetting(key: string, value: string) {
+      await db.runAsync("INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value", [key, value]);
+    },
   };
 }
 

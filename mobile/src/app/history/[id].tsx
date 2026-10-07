@@ -1,6 +1,7 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Button, Card, Empty, Title } from "@/components/ui";
+import { ShareCard } from "@/components/ShareCard";
 import { RecordsList, StatsRow } from "@/components/WorkoutStats";
 import { exercise } from "@/lib/exercises";
 import { attempt, useScreenData, useTracker } from "@/lib/tracker/context";
@@ -34,6 +35,7 @@ export default function WorkoutDetail() {
           ))}
         </Card>
       ))}
+      <ShareCard s={sum} />
       <Button title="حذف من السجل" variant="ghost" onPress={() => Alert.alert("حذف التمرين من السجل؟", "لا يمكن التراجع.", [
         { text: "إلغاء", style: "cancel" },
         { text: "حذف", style: "destructive", onPress: () => attempt(() => tracker.deleteWorkout(id)).then((ok) => ok && router.back()) },

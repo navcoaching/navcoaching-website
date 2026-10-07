@@ -6,7 +6,7 @@ import { Button, Card, Empty, IconButton } from "@/components/ui";
 import { exercise } from "@/lib/exercises";
 import { useRestTimer } from "@/lib/rest-timer";
 import { attempt, useScreenData, useTracker } from "@/lib/tracker/context";
-import { formatDuration, formatKg, parseNumber, parseReps, type SetKind } from "@/lib/tracker/logic";
+import { formatDuration, formatKg, parseNumber, parseReps, suggestNext, type SetKind, type Suggestion } from "@/lib/tracker/logic";
 import type { PrevSet, WorkoutExercise, WorkoutSet } from "@/lib/tracker/repo";
 import { useTheme } from "@/lib/theme";
 
@@ -117,6 +117,7 @@ function ExerciseBlock({ ex, onComplete, onUndo, onSave, onAddSet, onDeleteSet }
   const info = exercise(ex.exercise_id);
   const target = ex.target;
   const targetReps = parseReps(target?.reps);
+  const tip = suggestNext(ex.previous, targetReps);
   let normalNo = 0;
   return (
     <Card>
@@ -128,6 +129,7 @@ function ExerciseBlock({ ex, onComplete, onUndo, onSave, onAddSet, onDeleteSet }
           الهدف: {target.reps} تكرار{target.weight != null ? ` · ${formatKg(target.weight)} كجم` : ""} · راحة {target.rest_sec} ث
         </Text>
       )}
+      {tip && <Text style={{ color: t.navy, fontSize: 14, textAlign: "left" }}>💡 {tipText(tip)}</Text>}
       <View style={s.headRow}>
         <Text style={[s.colSet, s.head, { color: t.muted }]}>#</Text>
         <Text style={[s.colPrev, s.head, { color: t.muted }]}>السابق</Text>
@@ -141,8 +143,8 @@ function ExerciseBlock({ ex, onComplete, onUndo, onSave, onAddSet, onDeleteSet }
         return (
           <SetRow key={set.id} set={set} label={set.kind === "normal" ? String(normalNo) : set.kind === "warmup" ? "إ" : "د"}
             prev={prev}
-            placeholderWeight={prev?.weight ?? target?.weight ?? null}
-            placeholderReps={prev?.reps ?? targetReps?.min ?? null}
+            placeholderWeight={set.kind !== "warmup" && tip ? tip.weight : prev?.weight ?? target?.weight ?? null}
+            placeholderReps={set.kind !== "warmup" && tip && tip.reason !== "same" && tip.reason !== "reps" ? tip.reps.min : prev?.reps ?? targetReps?.min ?? null}
             onComplete={(wt, rp) => onComplete(set, wt, rp)} onUndo={() => onUndo(set)}
             onSave={(patch) => onSave(set, patch)} onDelete={() => onDeleteSet(set)} />
         );
@@ -150,6 +152,17 @@ function ExerciseBlock({ ex, onComplete, onUndo, onSave, onAddSet, onDeleteSet }
       <Button title="+ جولة" variant="ghost" onPress={onAddSet} />
     </Card>
   );
+}
+
+/** نص اقتراح اليوم المبني على آخر جلسة (التدرج المزدوج) */
+function tipText(s: Suggestion): string {
+  const range = s.reps.min === s.reps.max ? `${s.reps.min}` : `${s.reps.min}-${s.reps.max}`;
+  switch (s.reason) {
+    case "up": return `وصلت أعلى المدى المرة السابقة: جرّب ${formatKg(s.weight)} كجم × ${range}`;
+    case "down": return `التكرارات كانت أقل من المدى: جرّب ${formatKg(s.weight)} كجم × ${range}`;
+    case "reps": return `زد تكراراً واحداً على الأقل عن المرة السابقة`;
+    default: return `نفس الوزن ${formatKg(s.weight)} كجم، وحاول تزيد تكراراً حتى ${s.reps.max}`;
+  }
 }
 
 function SetRow({ set, label, prev, placeholderWeight, placeholderReps, onComplete, onUndo, onSave, onDelete }: {

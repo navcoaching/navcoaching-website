@@ -55,4 +55,6 @@ export const MIGRATIONS: string[] = [
   `,
   // 2: البرنامج المنسوخ من برامج المدربة المجانية يحفظ معرّف مصدره (لمعرفة أنه أُضيف من قبل)
   `ALTER TABLE programs ADD COLUMN source_id TEXT;`,
+  // 3: إعدادات على الجهاز
+  `CREATE TABLE settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);`,
 ];

@@ -1,22 +1,32 @@
 import { router } from "expo-router";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { Empty } from "@/components/ui";
+import { WeekBars } from "@/components/Charts";
 import { StatsRow } from "@/components/WorkoutStats";
 import { useScreenData } from "@/lib/tracker/context";
+import { weeklyCounts } from "@/lib/tracker/logic";
 import { useTheme } from "@/lib/theme";
 
 const dateFmt = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", { weekday: "long", day: "numeric", month: "long" });
+const weekFmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "numeric" });
 
 export default function History() {
   const t = useTheme();
   const { data } = useScreenData((tr) => tr.history(100));
   if (!data) return null;
+  const weeks = weeklyCounts(data.map((w) => w.finished_at), 8, Date.now()).map((w) => ({ label: weekFmt.format(w.start), count: w.count }));
   return (
     <FlatList
       data={data}
       keyExtractor={(w) => w.id}
       contentContainerStyle={{ padding: 16, gap: 12 }}
       contentInsetAdjustmentBehavior="automatic"
+      ListHeaderComponent={data.length > 0 ? (
+        <View style={[s.card, { backgroundColor: t.surface, borderColor: t.line }]}>
+          <Text style={[s.title, { color: t.heading }]}>تمارينك آخر 8 أسابيع</Text>
+          <WeekBars weeks={weeks} />
+        </View>
+      ) : null}
       ListEmptyComponent={<Empty>تمارينك المكتملة تظهر هنا.</Empty>}
       renderItem={({ item }) => (
         <Pressable onPress={() => router.push(`/history/${item.id}`)} accessibilityRole="button"

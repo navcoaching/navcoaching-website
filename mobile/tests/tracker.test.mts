@@ -115,7 +115,7 @@ test("workout: start from day, previous values, finish, records", async () => {
   const hist = await tr.history();
   assert.deepEqual(hist.map((h) => h.id), [w2, w1]);
   const ex = await tr.exerciseHistory("back-squat");
-  assert.deepEqual(ex.map((r) => [r.max_weight, r.best_reps]), [[60, 10], [65, 8]]);
+  assert.deepEqual(ex.map((r) => [r.max_weight, r.best_reps, r.best_e1rm]), [[60, 10, 80], [65, 8, 82.3]]);
 
   // حذف البرنامج لا يحذف السجل
   await tr.archiveProgram(pid);
@@ -150,4 +150,36 @@ test("import coach program", async () => {
   await tr.archiveProgram(id);
   assert.equal((await tr.importedSources()).size, 0);
   await assert.rejects(tr.importProgram({ sourceId: "x", name: "x", days: [] }), TrackerError);
+});
+
+test("logic: suggestNext double progression", async () => {
+  const { suggestNext } = await import("../src/lib/tracker/logic.ts");
+  const n = (weight: number, reps: number) => ({ kind: "normal" as const, weight, reps });
+  const range = { min: 8, max: 12 };
+  assert.equal(suggestNext([], range), null);
+  assert.deepEqual(suggestNext([n(60, 12), n(60, 12), n(60, 13)], range), { weight: 62.5, reps: range, reason: "up" });
+  assert.equal(suggestNext([n(60, 12), n(60, 10)], range)!.reason, "same");
+  assert.deepEqual(suggestNext([n(60, 6), n(60, 7)], range), { weight: 57.5, reps: range, reason: "down" });
+  assert.equal(suggestNext([n(10, 12), n(10, 12)], range)!.weight, 11, "أوزان خفيفة: زيادة 1 كجم");
+  assert.equal(suggestNext([n(0, 15)], range)!.reason, "reps");
+  assert.equal(suggestNext([{ kind: "warmup", weight: 40, reps: 12 }, n(60, 9)], null)!.weight, 60, "الإحماء لا يُحسب");
+});
+
+test("logic: weeklyCounts", async () => {
+  const { weeklyCounts } = await import("../src/lib/tracker/logic.ts");
+  const now = new Date(2026, 9, 8, 12).getTime(); // الخميس
+  const day = 86_400_000;
+  const w = weeklyCounts([now, now - day, now - 8 * day, now - 60 * day], 4, now);
+  assert.equal(w.length, 4);
+  assert.deepEqual(w.map((x) => x.count), [0, 0, 1, 2]);
+  assert.equal(new Date(w[3].start).getDay(), 0);
+});
+
+test("settings", async () => {
+  const tr = setup();
+  await tr.migrate();
+  assert.equal(await tr.getSetting("x"), null);
+  await tr.setSetting("x", "1");
+  await tr.setSetting("x", "2");
+  assert.equal(await tr.getSetting("x"), "2");
 });

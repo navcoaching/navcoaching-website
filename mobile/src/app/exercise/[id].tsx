@@ -1,19 +1,22 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { LineChart } from "@/components/Charts";
 import { Body, Button, Card, Title } from "@/components/ui";
 import { exercise } from "@/lib/exercises";
 import { useScreenData } from "@/lib/tracker/context";
-import { e1rm, formatKg } from "@/lib/tracker/logic";
+import { formatKg } from "@/lib/tracker/logic";
 import { useTheme } from "@/lib/theme";
 
 const dateFmt = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", { day: "numeric", month: "short" });
+const axisFmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "numeric" });
 
 export default function ExerciseDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const t = useTheme();
   const ex = exercise(id);
   const { data: hist } = useScreenData((tr) => tr.exerciseHistory(id), [id]);
-  const best = hist?.reduce((m, h) => Math.max(m, e1rm(h.max_weight, h.best_reps)), 0) ?? 0;
+  const best = hist?.reduce((m, h) => Math.max(m, h.best_e1rm), 0) ?? 0;
+  const recent = hist?.slice(-20) ?? [];
 
   return (
     <ScrollView contentContainerStyle={s.page}>
@@ -33,6 +36,13 @@ export default function ExerciseDetail() {
         ) : (
           <>
             <Body>أفضل 1RM تقديري: {formatKg(best)} كجم</Body>
+            {recent.length >= 2 && recent[recent.length - 1].max_weight > 0 && (
+              <>
+                <LineChart label="1RM تقديري" unit="كجم" points={recent.map((h) => ({ x: axisFmt.format(h.finished_at), y: h.best_e1rm }))} />
+                <LineChart label="أثقل وزن" unit="كجم" height={150} points={recent.map((h) => ({ x: axisFmt.format(h.finished_at), y: h.max_weight }))} />
+              </>
+            )}
+            {recent.length === 1 && <Body muted>الرسم البياني يظهر من ثاني تمرين.</Body>}
             {[...hist].reverse().slice(0, 10).map((h) => (
               <View key={h.workout_id} style={[s.row, { borderColor: t.line }]}>
                 <Text style={{ color: t.muted, fontSize: 15 }}>{dateFmt.format(h.finished_at)}</Text>

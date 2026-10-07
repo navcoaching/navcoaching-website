@@ -77,3 +77,43 @@ export function formatDuration(totalSec: number): string {
   const sec = String(s % 60).padStart(2, "0");
   return h > 0 ? `${h}:${String(m).padStart(2, "0")}:${sec}` : `${m}:${sec}`;
 }
+
+export type Suggestion = { weight: number; reps: { min: number; max: number }; reason: "up" | "same" | "down" | "reps" };
+
+/**
+ * اقتراح الجلسة القادمة بالتدرج المزدوج (double progression): نفس الوزن حتى تصل كل الجولات لأعلى المدى،
+ * ثم زيادة صغيرة. إذا كانت كل الجولات تحت أدنى المدى، تخفيف بسيط. تمارين وزن الجسم: زيادة التكرارات.
+ * الإحماء لا يُحسب. بدون مدى من البرنامج يُفترض 8-12.
+ */
+export function suggestNext(
+  prev: { kind: SetKind; weight: number | null; reps: number | null }[],
+  range: { min: number; max: number } | null,
+): Suggestion | null {
+  const r = range ?? { min: 8, max: 12 };
+  const work = prev.filter((s) => s.kind !== "warmup" && s.weight != null && s.reps != null && s.reps > 0) as { weight: number; reps: number }[];
+  if (work.length === 0) return null;
+  const top = Math.max(...work.map((s) => s.weight));
+  if (top === 0) return { weight: 0, reps: r, reason: "reps" };
+  const atTop = work.filter((s) => s.weight === top);
+  const step = top < 20 ? 1 : 2.5;
+  if (atTop.every((s) => s.reps >= r.max)) return { weight: Math.round((top + step) * 100) / 100, reps: r, reason: "up" };
+  if (atTop.every((s) => s.reps < r.min)) return { weight: Math.max(0, Math.round((top - step) * 100) / 100), reps: r, reason: "down" };
+  return { weight: top, reps: r, reason: "same" };
+}
+
+/** عدد التمارين في كل أسبوع (الأسبوع يبدأ الأحد)، لآخر عدد أسابيع، الأقدم أولاً */
+export function weeklyCounts(finishedAt: number[], weeks: number, now: number): { start: number; count: number }[] {
+  const d = new Date(now);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - d.getDay());
+  const thisWeek = d.getTime();
+  const out: { start: number; count: number }[] = [];
+  for (let i = weeks - 1; i >= 0; i--) {
+    const s = new Date(thisWeek);
+    s.setDate(s.getDate() - 7 * i);
+    const e = new Date(s);
+    e.setDate(e.getDate() + 7);
+    out.push({ start: s.getTime(), count: finishedAt.filter((t) => t >= s.getTime() && t < e.getTime()).length });
+  }
+  return out;
+}
