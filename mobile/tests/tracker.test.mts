@@ -183,3 +183,23 @@ test("settings", async () => {
   await tr.setSetting("x", "2");
   assert.equal(await tr.getSetting("x"), "2");
 });
+
+test("review snapshot for coach", async () => {
+  const tr = setup();
+  await tr.migrate();
+  const pid = await tr.createProgram("برنامجي");
+  const day = (await tr.getProgram(pid))!.days[0].id;
+  const item = await tr.addItem(day, "back-squat");
+  await tr.updateItem(item, { sets: 1, target_weight: 50 });
+  const w = await tr.startWorkout({ dayId: day });
+  const ws = (await tr.getWorkout(w))!;
+  await tr.updateSet(ws.exercises[0].sets[0].id, { weight: 50, reps: 8, done: true });
+  await tr.finishWorkout(w);
+  const snap = (await tr.reviewSnapshot(pid, 0))!;
+  assert.equal(snap.program.name, "برنامجي");
+  assert.deepEqual(snap.program.days[0].items[0], { exercise_id: "back-squat", sets: 1, reps: "10", target_weight: 50 });
+  assert.equal(snap.sessions.length, 1);
+  assert.deepEqual(snap.sessions[0].exercises[0].sets, [{ kind: "normal", weight: 50, reps: 8 }]);
+  assert.equal((await tr.reviewSnapshot(pid, Date.now() + 1e12))!.sessions.length, 0);
+  assert.equal(await tr.reviewSnapshot("nope", 0), null);
+});

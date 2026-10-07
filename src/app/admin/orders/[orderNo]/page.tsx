@@ -11,6 +11,7 @@ import ActionForm from "@/components/admin/ActionForm";
 import PackageTag from "@/components/admin/PackageTag";
 import Details from "@/components/admin/Details";
 import { AdminNotes, NotifLog, ReviewWeeks, SendReview, SubscriptionCard, loadSubscription } from "./FollowUp";
+import AddonRequest from "./AddonRequest";
 import StatusBar from "./StatusBar";
 import { riyadhDate } from "@/lib/schedule";
 import StartTag from "@/components/admin/StartTag";
@@ -140,6 +141,8 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
           )}
 
           <ReviewWeeks o={o} d={sub} />
+
+          <AddonRequest coachId={coach.id} orderId={o.id} />
 
           {/* ---------- الاستبيان (الجدول الداخلي intakes) ---------- */}
           {intake && (

@@ -38,6 +38,10 @@ export type Workout = {
   id: string; title: string; program_id: string | null; day_id: string | null;
   started_at: number; finished_at: number | null; exercises: WorkoutExercise[];
 };
+export type ReviewSnapshot = {
+  program: { name: string; days: { title: string; items: { exercise_id: string; sets: number; reps: string; target_weight: number | null }[] }[] };
+  sessions: { finished_at: number; title: string; exercises: { position: number; exercise_id: string; sets: { kind: SetKind; weight: number; reps: number }[] }[] }[];
+};
 export type ExercisePoint = { workout_id: string; finished_at: number; max_weight: number; best_reps: number; best_e1rm: number; sets: number };
 export type WorkoutSummary = {
   id: string; title: string; started_at: number; finished_at: number;
@@ -430,6 +434,30 @@ export function makeTracker(db: Db, newId: () => string, now: () => number = Dat
         p.best_e1rm = Math.max(p.best_e1rm, e1rm(r.weight, r.reps));
       }
       return out;
+    },
+
+    /** نسخة من البرنامج وسجل التمارين منذ تاريخ معيّن، لإرسالها للمدربة («راجعي جدولي») */
+    async reviewSnapshot(programId: string, since: number): Promise<ReviewSnapshot | null> {
+      const p = await this.getProgram(programId);
+      if (!p) return null;
+      const ws = await db.getAllAsync<{ id: string; title: string; finished_at: number }>(
+        "SELECT id, title, finished_at FROM workouts WHERE finished_at IS NOT NULL AND finished_at >= ? ORDER BY finished_at", [since]);
+      const sessions: ReviewSnapshot["sessions"] = [];
+      for (const w of ws) {
+        const sets = await db.getAllAsync<{ exercise_id: string; position: number; kind: SetKind; weight: number; reps: number }>(
+          "SELECT exercise_id, position, kind, weight, reps FROM workout_sets WHERE workout_id = ? AND done = 1 ORDER BY position, set_no", [w.id]);
+        const ex: ReviewSnapshot["sessions"][number]["exercises"] = [];
+        for (const st of sets) {
+          let e = ex[ex.length - 1];
+          if (!e || e.position !== st.position) ex.push((e = { position: st.position, exercise_id: st.exercise_id, sets: [] }));
+          e.sets.push({ kind: st.kind, weight: st.weight, reps: st.reps });
+        }
+        sessions.push({ finished_at: w.finished_at, title: w.title, exercises: ex });
+      }
+      return {
+        program: { name: p.name, days: p.days.map((d) => ({ title: d.title, items: d.items.map((i) => ({ exercise_id: i.exercise_id, sets: i.sets, reps: i.reps, target_weight: i.target_weight })) })) },
+        sessions,
+      };
     },
 
     /** إعدادات بسيطة على الجهاز (مثل التذكيرات) */

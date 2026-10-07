@@ -57,6 +57,14 @@ export default async function EditProduct({ params, searchParams }: { params: Pr
           </div>
           <label className="check"><input type="checkbox" name="recommended" defaultChecked={p?.recommended} /><span>شارة «الأكثر طلباً»</span></label>
           <label className="check"><input type="checkbox" name="video_review" defaultChecked={p?.video_review} /><span>🎥 مراجعة أسبوعية بالفيديو (تظهر لكِ خانة رابط فيديو عند الرد على مراجعات مشتركي الباقة)</span></label>
+          <div className="field"><label htmlFor="app-addon">خدمة إضافية في تطبيق الجوال</label>
+            <select id="app-addon" name="app_addon" defaultValue={p?.app_addon ?? ""}>
+              <option value="">لا (منتج عادي)</option>
+              <option value="program_review">«راجعي جدولي»: يرسل برنامجه وسجل 4 أسابيع من التطبيق</option>
+              <option value="form_check">«تصحيح أداء تمرين»: يرسل مقطع فيديو قصير</option>
+              <option value="meal_library">«وجباتي»: يفتح وجبات قوالب التغذية في التطبيق</option>
+            </select>
+            <span className="hint">تظهر في التطبيق ضمن «خدمات الكوتش» إذا كان المنتج منشوراً. خدمة واحدة منشورة لكل نوع. اختاري التصنيف «استشارة».</span></div>
         </div>
         <div className="card stack">
           <h2 style={{ fontSize: 18 }}>المدد والأسعار</h2>

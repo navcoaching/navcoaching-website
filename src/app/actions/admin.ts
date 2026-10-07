@@ -358,6 +358,7 @@ const productSchema = z.object({
   policy_note: z.string().trim().max(600),
   recommended: z.boolean(),
   video_review: z.boolean(),
+  app_addon: z.enum(["", "program_review", "form_check", "meal_library"]),
   status: z.enum(["draft", "published", "archived"]),
   sort: z.coerce.number().int().min(0).max(999),
   image_id: z.string().optional().default(""),
@@ -368,7 +369,7 @@ export async function saveProductAction(_: ActionState, fd: FormData): Promise<A
   const parsed = productSchema.safeParse({
     id: get("id"), slug: get("slug"), category: get("category"), name: get("name"), audience: get("audience"),
     items: get("items"), note: get("note"), delivery: get("delivery"), requirements: get("requirements"),
-    policy_note: get("policy_note"), recommended: fd.get("recommended") === "on", video_review: fd.get("video_review") === "on", status: get("status"), sort: get("sort"),
+    policy_note: get("policy_note"), recommended: fd.get("recommended") === "on", video_review: fd.get("video_review") === "on", app_addon: get("app_addon"), status: get("status"), sort: get("sort"),
     image_id: get("image_id"),
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
@@ -395,15 +396,15 @@ export async function saveProductAction(_: ActionState, fd: FormData): Promise<A
   try {
     await asCoach(async (tx, uid) => {
       const vals = [p.slug, p.category, p.name, p.audience, JSON.stringify(items), p.note || null, p.delivery || null,
-        p.requirements || null, p.policy_note || null, p.recommended, p.status, p.sort, p.image_id || null, p.video_review];
+        p.requirements || null, p.policy_note || null, p.recommended, p.status, p.sort, p.image_id || null, p.video_review, p.app_addon || null];
       if (id) {
         await tx.query(
           `UPDATE products SET slug=$1, category=$2, name=$3, audience=$4, items=$5, note=$6, delivery=$7, requirements=$8,
-             policy_note=$9, recommended=$10, status=$11, sort=$12, image_id=$13, video_review=$14, updated_at=now() WHERE id=$15`, [...vals, id]);
+             policy_note=$9, recommended=$10, status=$11, sort=$12, image_id=$13, video_review=$14, app_addon=$15, updated_at=now() WHERE id=$16`, [...vals, id]);
       } else {
         id = (await tx.query(
-          `INSERT INTO products (slug, category, name, audience, items, note, delivery, requirements, policy_note, recommended, status, sort, image_id, video_review)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING id`, vals)).rows[0].id;
+          `INSERT INTO products (slug, category, name, audience, items, note, delivery, requirements, policy_note, recommended, status, sort, image_id, video_review, app_addon)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id`, vals)).rows[0].id;
       }
       for (const [i, o] of offers.entries()) {
         await tx.query(

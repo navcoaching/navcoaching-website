@@ -88,3 +88,21 @@ export type Progress = {
   records: { exercise_id: string; name: string; best: number; best_at: string; previous: number | null; status: "first" | "new" | "same"; oneRm: number }[];
   steps: null | { block: string; goal_week: number; weeks: number; read_only: boolean; current_week: number; logs: { week_no: number; total: number }[] };
 };
+
+export type Addon = { kind: "program_review" | "form_check" | "meal_library"; name: string; about: string | null; sku: string; label: string; price: string };
+
+/** طلب خدمة إضافية (ينشئ طلباً ينتظر التحويل). يرجع رقم الطلب أو رسالة الخطأ. */
+export async function orderAddon(fd: FormData): Promise<{ orderNo?: string; error?: string }> {
+  const cookie = await authClient.getCookie();
+  try {
+    const res = await fetch(`${API_URL}/api/mobile/v1/addons`, {
+      method: "POST", body: fd, credentials: "omit",
+      headers: { Accept: "application/json", ...(cookie ? { Cookie: cookie } : {}) },
+    });
+    const body = (await res.json().catch(() => ({}))) as { orderNo?: string; error?: string };
+    if (res.status === 401) return { error: "login" };
+    return res.ok ? { orderNo: body.orderNo } : { error: body.error ?? "تعذّر إرسال الطلب." };
+  } catch {
+    return { error: "تحتاج اتصالاً بالإنترنت لإرسال الطلب." };
+  }
+}

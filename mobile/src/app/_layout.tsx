@@ -40,6 +40,10 @@ export default function RootLayout() {
           <Stack.Screen name="nutrition/index" options={{ title: "التغذية والمكملات" }} />
           <Stack.Screen name="nutrition/add" options={{ title: "أضف أكلاً", presentation: "modal" }} />
           <Stack.Screen name="progress" options={{ title: "تقدمي" }} />
+          <Stack.Screen name="services/index" options={{ title: "خدمات الكوتش" }} />
+          <Stack.Screen name="services/review" options={{ title: "راجعي جدولي" }} />
+          <Stack.Screen name="services/form-check" options={{ title: "تصحيح أداء تمرين" }} />
+          <Stack.Screen name="meals" options={{ title: "وجباتي" }} />
           <Stack.Screen name="orders" options={{ title: "طلباتي" }} />
           <Stack.Screen name="delete-account" options={{ title: "حذف الحساب", presentation: "modal" }} />
           <Stack.Screen name="history/[id]" options={{ title: "تفاصيل التمرين" }} />

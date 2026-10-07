@@ -46,6 +46,12 @@ export default function Account() {
         <Button title="تعديل التذكير" variant="ghost" onPress={() => router.push("/reminders")} />
       </Card>
 
+      <Card>
+        <Title>خدمات الكوتش ساره</Title>
+        <Body muted>مراجعة جدولك، تصحيح أداء تمرين بالفيديو، ووجباتي، بأسعار رمزية.</Body>
+        <Button title="شوف الخدمات" variant="ghost" onPress={() => router.push("/services")} />
+      </Card>
+
       {!session ? (
         <Card>
           <Title>المتابعة مع الكوتش ساره</Title>

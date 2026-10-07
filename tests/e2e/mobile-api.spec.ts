@@ -143,3 +143,77 @@ test("التطبيق: برنامج المتدرب، التسجيل، الطلب�
 
   // المدربة لا تحذف نفسها
 });
+
+test("التطبيق: الخدمات الإضافية (راجعي جدولي، تصحيح الأداء بالفيديو، وجباتي)", async ({}, info) => {
+  test.skip(info.project.name !== "desktop", "اختبار واجهات فقط: مرة واحدة يكفي");
+  const H = { "expo-origin": "navcoaching://", "x-forwarded-for": `10.9.${Date.now() % 250}.9` };
+  async function login(email: string) {
+    const hdr = { ...H, "content-type": "application/json" };
+    await fetch(`${B}/api/auth/email-otp/send-verification-otp`, { method: "POST", headers: hdr, body: JSON.stringify({ email, type: "sign-in" }) });
+    const otp = (await db.query("SELECT substring(body from 'رمز الدخول: ([0-9]{6})') AS o FROM dev_mailbox WHERE recipient=$1 ORDER BY id DESC LIMIT 1", [email])).rows[0].o;
+    const r = await fetch(`${B}/api/auth/sign-in/email-otp`, { method: "POST", headers: hdr, body: JSON.stringify({ email, otp }) });
+    return r.headers.getSetCookie().map((c) => c.split(";")[0]).join("; ");
+  }
+  const tag = Date.now();
+  // منتجات الخدمات (كما تنشئها المدربة من لوحة الإدارة)
+  for (const [kind, price] of [["program_review", 7900], ["form_check", 2900], ["meal_library", 4900]] as const) {
+    await db.query(`UPDATE products SET app_addon = NULL WHERE app_addon = $1`, [kind]);
+    const { rows: [p] } = await db.query(
+      `INSERT INTO products (slug, category, name, audience, items, status, app_addon) VALUES ($1,'consult',$2,'وصف','[]','published',$3) RETURNING id`,
+      [`addon-${kind.replace("_", "-")}-${tag}`, `خدمة ${kind}`, kind]);
+    await db.query(`INSERT INTO product_offers (product_id, sku, label, months, price_halalas) VALUES ($1,$2,'مرة واحدة',0,$3)`, [p.id, `${kind.replace("_", "")}${tag}`.slice(0, 40), price]);
+  }
+  const list = (await (await fetch(`${B}/api/mobile/v1/addons`)).json()).addons;
+  const sku = (k: string) => list.find((a: { kind: string }) => a.kind === k).sku;
+  assert.equal(list.length, 3);
+  assert.ok(list.find((a: { kind: string; price: string }) => a.kind === "form_check").price.includes("29"));
+
+  const email = `addon-${tag}@e2e.test`;
+  const cookie = await login(email);
+  const post = (fd: FormData, c = cookie) => fetch(`${B}/api/mobile/v1/addons`, { method: "POST", headers: { ...H, Cookie: c }, body: fd });
+  const base = (k: string) => { const f = new FormData(); f.set("sku", sku(k)); f.set("idempotency_key", `idem-${k}-${tag}-xxxxxxxx`); f.set("cc", "+966"); f.set("phone", "0512345678"); return f; };
+
+  // راجعي جدولي: بدون برنامج مرفوض، ومع البرنامج ينشئ طلباً ينتظر التحويل
+  assert.equal((await post(base("program_review"))).status, 422);
+  const pr = base("program_review");
+  pr.set("payload", JSON.stringify({ program: { name: "برنامجي", days: [{ title: "اليوم 1", items: [{ name: "Back Squat", sets: 3, reps: "8-12", target_weight: 60 }] }] }, sessions: [] }));
+  pr.set("note", "أبي أركز على الأرجل");
+  const prr = await post(pr);
+  const prj = await prr.json();
+  assert.equal(prr.status, 200, JSON.stringify(prj));
+  const { rows: [o1] } = await db.query(`SELECT o.id, o.status, a.kind, a.payload, a.note FROM orders o JOIN addon_requests a ON a.order_id = o.id WHERE o.order_no = $1`, [prj.orderNo]);
+  assert.equal(o1.status, "awaiting_payment");
+  assert.equal(o1.kind, "program_review");
+  assert.equal(o1.payload.program.name, "برنامجي");
+  // نفس الطلب مرتين (نفس مفتاح التكرار) لا ينشئ طلباً ثانياً
+  assert.equal((await (await post(pr)).json()).orderNo, prj.orderNo);
+
+  // تصحيح الأداء: فيديو MP4 (يُتحقق من محتواه لا من امتداده)، ونص بامتداد mp4 مرفوض
+  const mp4 = Buffer.concat([Buffer.from("000000186674797069736f6d0000020069736f6d69736f32", "hex"), Buffer.alloc(2048)]);
+  const fc = base("form_check"); fc.set("payload", JSON.stringify({ exercise: "Back Squat" }));
+  fc.set("video", new Blob([mp4], { type: "video/mp4" }), "form.mp4");
+  const fcr = await post(fc); const fcj = await fcr.json();
+  assert.equal(fcr.status, 200, JSON.stringify(fcj));
+  const fake = base("form_check"); fake.set("idempotency_key", `idem-fake-${tag}-xxxxxxxxxx`);
+  fake.set("video", new Blob([Buffer.from("not a video")], { type: "video/mp4" }), "x.mp4");
+  assert.equal((await post(fake)).status, 422);
+  const { rows: [o2] } = await db.query(`SELECT o.id FROM orders o WHERE o.order_no = $1`, [fcj.orderNo]);
+  const v = await fetch(`${B}/api/files/addon/${o2.id}`, { headers: { Cookie: cookie } });
+  assert.equal(v.status, 200);
+  assert.equal(v.headers.get("content-type"), "video/mp4");
+  const other = await login(`addon-other-${tag}@e2e.test`);
+  assert.equal((await fetch(`${B}/api/files/addon/${o2.id}`, { headers: { Cookie: other } })).status, 404, "فيديو متدرب آخر");
+
+  // وجباتي: خدمات المراجعة لا تفتحها حتى بعد التسليم، واشتراك «وجباتي» يفتحها
+  const meals = async () => (await (await fetch(`${B}/api/mobile/v1/meals`, { headers: { ...H, Cookie: cookie } })).json()).access;
+  await db.query(`UPDATE orders SET status = 'delivered' WHERE order_no = ANY($1)`, [[prj.orderNo, fcj.orderNo]]);
+  assert.equal(await meals(), false);
+  const ml = await (await post(base("meal_library"))).json();
+  assert.ok(ml.orderNo);
+  await db.query(`UPDATE orders SET status = 'active' WHERE order_no = $1`, [ml.orderNo]);
+  assert.equal(await meals(), true);
+
+  // بدون دخول
+  assert.equal((await post(base("form_check"), "")).status, 401);
+  await db.query(`UPDATE products SET status = 'archived' WHERE slug LIKE $1`, [`addon-%-${tag}`]);
+});

@@ -9,6 +9,8 @@ const QUERIES: Record<string, string> = {
   proof: "SELECT storage_key, mime FROM payment_proofs WHERE id = $1",
   deliverable: "SELECT storage_key, mime, title FROM deliverables WHERE id = $1 AND kind = 'file'",
   media: "SELECT storage_key, mime, approved FROM media_assets WHERE id = $1",
+  // فيديو «تصحيح أداء تمرين»: المعرّف رقم الطلب الداخلي (RLS: صاحب الطلب والمدربة فقط)
+  addon: "SELECT video_key AS storage_key, video_mime AS mime FROM addon_requests WHERE order_id = $1 AND video_key IS NOT NULL",
 };
 
 export async function GET(_: Request, { params }: { params: Promise<{ kind: string; id: string }> }) {
@@ -25,8 +27,9 @@ export async function GET(_: Request, { params }: { params: Promise<{ kind: stri
   const data = await (await storage()).get(row.storage_key);
   if (!data) return new Response("Not found", { status: 404 });
 
-  const inline = row.mime.startsWith("image/");
-  const ext = row.mime === "application/pdf" ? "pdf" : row.mime.includes("spreadsheet") ? "xlsx" : row.mime.includes("word") ? "docx" : "webp";
+  const inline = row.mime.startsWith("image/") || row.mime.startsWith("video/");
+  const ext = row.mime === "application/pdf" ? "pdf" : row.mime.includes("spreadsheet") ? "xlsx" : row.mime.includes("word") ? "docx"
+    : row.mime === "video/mp4" ? "mp4" : row.mime === "video/quicktime" ? "mov" : "webp";
   return new Response(new Uint8Array(data), {
     headers: {
       "Content-Type": row.mime,
@@ -34,7 +37,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ kind: stri
       "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="nav-${kind}-${id.slice(0, 8)}.${ext}"`,
       "Cache-Control": kind === "media" && row.approved ? "public, max-age=86400" : "private, no-store",
       "X-Content-Type-Options": "nosniff",
-      "Content-Security-Policy": "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; sandbox",
+      "Content-Security-Policy": "default-src 'none'; img-src 'self'; media-src 'self'; style-src 'unsafe-inline'; sandbox",
     },
   });
 }

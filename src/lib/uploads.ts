@@ -7,12 +7,14 @@ export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 
 export type CleanFile = { data: Buffer; mime: string; ext: string; size: number; sha256: string; width?: number; height?: number };
 
-type Kind = "proof" | "image" | "deliverable" | "pdf";
+type Kind = "proof" | "image" | "deliverable" | "pdf" | "video";
 
 const ALLOWED: Record<Kind, string[]> = {
   proof: ["image/jpeg", "image/png", "image/webp", "application/pdf"],
   image: ["image/jpeg", "image/png", "image/webp"],
   pdf: ["application/pdf"],
+  // مقطع قصير من الجوال لـ«تصحيح أداء تمرين» (يُضغط في التطبيق قبل الرفع حتى يكون تحت الحد)
+  video: ["video/mp4", "video/quicktime"],
   deliverable: [
     "application/pdf",
     "image/jpeg", "image/png", "image/webp",
@@ -37,7 +39,10 @@ export async function cleanUpload(file: File | null, kind: Kind): Promise<CleanF
     if (file.name.toLowerCase().endsWith(".xlsx")) mime = ALLOWED.deliverable[4];
     if (file.name.toLowerCase().endsWith(".docx")) mime = ALLOWED.deliverable[5];
   }
-  if (!ALLOWED[kind].includes(mime)) throw new UploadError(kind === "pdf" ? "الملف لازم يكون PDF." : "نوع الملف غير مسموح. المسموح: صور JPG/PNG/WebP أو PDF.");
+  if (!ALLOWED[kind].includes(mime)) {
+    throw new UploadError(kind === "pdf" ? "الملف لازم يكون PDF." : kind === "video" ? "الملف لازم يكون مقطع فيديو (MP4 أو MOV)." : "نوع الملف غير مسموح. المسموح: صور JPG/PNG/WebP أو PDF.");
+  }
+  if (kind === "video") return { data: raw, mime, ext: mime === "video/mp4" ? "mp4" : "mov", size: raw.length, sha256: sha(raw) };
 
   if (mime.startsWith("image/")) {
     try {

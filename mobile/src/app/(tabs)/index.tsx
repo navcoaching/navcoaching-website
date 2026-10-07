@@ -49,7 +49,8 @@ export default function Home() {
         <Card>
           <Title>خلّ الكوتش ساره تراجع تقدمك</Title>
           <Body muted>سجّلت {data.done} تمارين أو أكثر. مع المتابعة: برنامج مصمم لك، وتعديلات أسبوعية حسب أرقامك، ومراجعة بالفيديو أو الصوت.</Body>
-          <Button title="شوف برامج المتابعة" onPress={() => openSite("/programs")} />
+          <Button title="«راجعي جدولي» بسعر رمزي" onPress={() => router.push("/services/review")} />
+          <Button title="شوف برامج المتابعة" variant="ghost" onPress={() => openSite("/programs")} />
           <Button title="ليس الآن" variant="ghost" onPress={() => tracker.setSetting("bridge_hidden", "1").then(reload)} />
         </Card>
       )}
