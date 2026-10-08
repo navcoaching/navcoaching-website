@@ -4,6 +4,7 @@ import { nextCookies } from "better-auth/next-js";
 import { pool } from "./db";
 import { mailBrand, notifySafe, sendMail } from "./mail";
 import { renderEmail } from "./email-template";
+import { allow } from "./rate";
 
 /**
  * الدخول برمز مؤقت يصل للبريد (بدون كلمة مرور): أبسط على الجوال ولا يوجد كلمات مرور تتسرب.
@@ -65,6 +66,12 @@ export const auth = betterAuth({
       allowedAttempts: 5,
       storeOTP: "hashed",
       async sendVerificationOTP({ email, otp }) {
+        // حدود إضافية على رموز الدخول (كل رمز = إيميل مدفوع من حصة الإرسال):
+        // لكل بريد 8 بالساعة (يمنع إغراق بريد شخص من أجهزة كثيرة)، وللموقع كله 300 بالساعة.
+        const key = email.trim().toLowerCase();
+        if (!(await allow(`otp:email:${key}`, 8, 3600)) || !(await allow("otp:site:hour", 300, 3600))) {
+          throw new Error("otp rate limited");
+        }
         const brand = await mailBrand(pool).catch(() => ({ site: (process.env.NEXT_PUBLIC_SITE_URL || "https://navcoaching.com").replace(/\/$/, "") }));
         await sendMail(
           email,

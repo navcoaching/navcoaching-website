@@ -4,11 +4,12 @@ import { storage } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
 
-// كل ملف يُقرأ من التخزين الخاص فقط بعد أن تسمح به قاعدة البيانات (RLS) لهذا المستخدم.
+// كل ملف يُقرأ من التخزين الخاص فقط بعد أن تسمح به قاعدة البيانات (RLS) لهذا المستخدم،
+// ومع شرط الملكية مكتوباً في الاستعلام نفسه (حماية ثانية لو تعطّلت RLS بإعداد اتصال خاطئ).
 const QUERIES: Record<string, string> = {
-  proof: "SELECT storage_key, mime FROM payment_proofs WHERE id = $1",
-  deliverable: "SELECT storage_key, mime, title FROM deliverables WHERE id = $1 AND kind = 'file'",
-  media: "SELECT storage_key, mime, approved FROM media_assets WHERE id = $1",
+  proof: "SELECT storage_key, mime FROM payment_proofs WHERE id = $1 AND (user_id = app.uid() OR app.is_coach())",
+  deliverable: "SELECT storage_key, mime, title FROM deliverables WHERE id = $1 AND kind = 'file' AND (app.is_coach() OR app.order_entitled(order_id))",
+  media: "SELECT storage_key, mime, approved FROM media_assets WHERE id = $1 AND (approved OR app.is_coach())",
 };
 
 export async function GET(_: Request, { params }: { params: Promise<{ kind: string; id: string }> }) {

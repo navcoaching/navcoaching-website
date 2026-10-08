@@ -995,6 +995,26 @@ describe("حذف برنامج أُضيف بالخطأ وحذف عضو", () => {
     await as(COACH, "SELECT app.coach_rename_member($1,$2)", [wrong, "سارة"]);
     assert.equal((await owner.query(`SELECT name FROM "user" WHERE id = $1`, [wrong])).rows[0].name, "سارة");
   });
+  test("جداول الدخول: المتدرب يشوف صفّه فقط، والدور ما يتغير من التطبيق، والاتصال يطبّق RLS", async () => {
+    await owner.query(`INSERT INTO session (id, "expiresAt", token, "createdAt", "updatedAt", "userId") VALUES ('s-a', now() + interval '1 day', 'tok-a', now(), now(), $1), ('s-b', now() + interval '1 day', 'tok-b', now(), now(), $2) ON CONFLICT DO NOTHING`, [A, B]);
+    // داخل طلب المتدرب: صفه فقط من user وsession، ولا شيء من رموز الدخول
+    assert.deepEqual((await as(A, `SELECT id FROM "user"`)).rows.map((r) => r.id), [A]);
+    assert.deepEqual((await as(A, `SELECT id FROM session`)).rows.map((r) => r.id), ["s-a"]);
+    assert.equal((await as(A, `SELECT count(*)::int n FROM verification`)).rows[0].n, 0);
+    // المدربة تشوف الكل
+    assert.ok((await as(COACH, `SELECT count(*)::int n FROM "user"`)).rows[0].n >= 3);
+    assert.ok((await as(COACH, `SELECT count(*)::int n FROM session WHERE id IN ('s-a','s-b')`)).rows[0].n === 2);
+    // مكتبة الدخول (بدون هوية متدرب) تعمل كالعادة
+    assert.ok((await as(null, `SELECT count(*)::int n FROM "user"`)).rows[0].n >= 3);
+    // تعديل اسم الحساب لصاحبه فقط، وما يقدر يعدّل غيره
+    await as(A, `UPDATE "user" SET name = 'اسم جديد' WHERE id = $1`, [A]);
+    assert.equal((await as(A, `UPDATE "user" SET name = 'اختراق' WHERE id = $1`, [B])).rowCount, 0);
+    // الدور ما يتغير من اتصال التطبيق، حتى لو بدون هوية
+    await assert.rejects(as(A, `UPDATE "user" SET role = 'coach' WHERE id = $1`, [A]), /لا يمكن تغيير الدور/);
+    await assert.rejects(as(null, `UPDATE "user" SET role = 'coach' WHERE id = $1`, [A]), /لا يمكن تغيير الدور/);
+    await assert.rejects(as(null, `INSERT INTO "user" (id, name, email, "emailVerified", role) VALUES ('evil', 'x', 'evil@test.local', true, 'coach')`), /بدور غير متدرب/);
+    assert.equal((await as(null, "SELECT app.connection_enforces_rls() AS ok")).rows[0].ok, true);
+  });
   test("استبيان العضو: يحفظه صاحبه ويقرؤه هو والمدربة فقط", async () => {
     const m = "user_prof1", o = "user_prof2";
     for (const id of [m, o]) await owner.query(`INSERT INTO "user" (id, name, email, "emailVerified", role) VALUES ($1, $1, $1 || '@test.local', true, 'client')`, [id]);

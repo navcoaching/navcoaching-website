@@ -2,7 +2,7 @@ import Link from "next/link";
 import { differentPerson } from "@/lib/names";
 import LineChart from "@/components/LineChart";
 import StartTag from "@/components/admin/StartTag";
-import { batch, litList, withUser } from "@/lib/db";
+import { batch, litList, pool, withUser } from "@/lib/db";
 import { requireCoach } from "@/lib/session";
 import { mailConfigured } from "@/lib/mail";
 import { riyals } from "@/lib/format";
@@ -172,7 +172,13 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
     getSettings(),
   ]);
   const c = (st: string) => data.counts.find((x) => x.status === st)?.n ?? 0;
+  // اتصال الموقع بقاعدة البيانات لازم يكون بحساب يطبّق RLS (مو حساب المالك)، وإلا تتعطل الحماية بين الحسابات
+  const rlsOk = await pool.query(
+    `SELECT NOT (r.rolsuper OR r.rolbypassrls)
+            AND NOT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'orders' AND tableowner = current_user) AS ok
+       FROM pg_roles r WHERE r.rolname = current_user`).then((r) => Boolean(r.rows[0]?.ok)).catch(() => false);
   const setup = [
+    { ok: rlsOk, label: "حماية البيانات بين الحسابات (RLS)", hint: rlsOk ? "اتصال الموقع بقاعدة البيانات بحساب التطبيق، وكل متدرب يشوف بياناته فقط." : "⚠️ الموقع متصل بقاعدة البيانات بحساب المالك، فالحماية على مستوى قاعدة البيانات معطّلة. غيّري DATABASE_URL في Netlify لحساب التطبيق (nav_app)." },
     { ok: mailConfigured(), label: "البريد (رمز الدخول والتنبيهات)", hint: "يحتاج RESEND_API_KEY و MAIL_FROM. بدونه لا يستطيع العملاء الدخول في الإنتاج." },
     { ok: process.env.STORAGE_DRIVER === "netlify", label: "التخزين الخاص للملفات (Netlify Blobs)", hint: "على جهاز التطوير يُستخدم مجلد محلي." },
     { ok: Boolean(process.env.COACH_NOTIFY_EMAIL), label: "بريد تنبيهات الطلبات للمدربة", hint: "COACH_NOTIFY_EMAIL" },
