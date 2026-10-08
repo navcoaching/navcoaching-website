@@ -147,3 +147,22 @@ test("الاستبيان باسم شخص غير صاحب الحساب: يوقف 
   await expect(page).toHaveURL(/\/account\/orders\/NAV-\d{6}-[A-Z0-9]{5}\?new=1/);
   await noHorizontalScroll(page);
 });
+
+test("لوحة الإدارة: زر المظهر الليلي يعمل ويبقى بعد إعادة التحميل", async ({ browser }, info) => {
+  const p = info.project.name;
+  const email = `coach-theme-${p}@e2e.test`;
+  const coach = await newPage(browser, p + "th");
+  await login(coach, email, "/admin");
+  await db.query(`UPDATE "user" SET role = 'coach' WHERE email = $1`, [email]);
+  await coach.goto("/admin");
+  const btn = coach.getByTestId("admin-theme").locator("button");
+  await expect(btn).toBeVisible();
+  await btn.click(); // تلقائي ← فاتح
+  await btn.click(); // فاتح ← داكن
+  await expect(coach.locator("html")).toHaveAttribute("data-theme", "dark");
+  await coach.goto("/admin/orders");
+  await expect(coach.locator("html")).toHaveAttribute("data-theme", "dark");
+  expect(await coach.locator(".admin-side").evaluate((e) => getComputedStyle(e).backgroundColor)).toBe("rgb(22, 33, 58)");
+  if (process.env.SHOT_DIR) await coach.screenshot({ path: `${process.env.SHOT_DIR}/admin-dark-${p}.png` });
+  await noHorizontalScroll(coach);
+});

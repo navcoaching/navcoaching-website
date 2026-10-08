@@ -1493,3 +1493,11 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 .checkin-answers dt { font-weight: 600; color: var(--text); }
 .checkin-answers dd { font-weight: 400; white-space: pre-wrap; }
 @media (max-width: 640px) { .checkin-answers { grid-template-columns: minmax(0, 1fr); } .checkin-answers dd { margin-bottom: 8px; } }
+/* زر المظهر (فاتح/داكن/تلقائي) في قائمة الإدارة */
+.admin-theme .theme-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 12px 12px; font-size: 14px; color: var(--app-muted, var(--on-dark)); }
+@media (max-width: 900px) {
+  .admin-theme { flex: none; display: flex; align-items: center; }
+  .admin-theme .theme-row { padding: 0; }
+  .admin-theme .theme-row > span { display: none; }
+  .admin-theme .theme-btn { width: 44px; height: 44px; }
+}

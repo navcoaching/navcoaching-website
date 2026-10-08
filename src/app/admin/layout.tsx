@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { requireCoach } from "@/lib/session";
 import AdminNav from "@/components/admin/AdminNav";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export const metadata: Metadata = { title: { default: "لوحة الإدارة", template: "%s — لوحة الإدارة" }, robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -26,6 +27,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Image className="l-light" src="/brand/logo-color.webp" alt="Nav Coaching" width={130} height={28} />
           <Image className="l-dark" src="/brand/logo-white.webp" alt="Nav Coaching" width={130} height={28} />
         </Link>
+        <div className="admin-theme" data-testid="admin-theme"><ThemeToggle withLabel /></div>
         <AdminNav groups={NAV} />
       </nav>
       <main className="admin-main" id="main">{children}</main>
