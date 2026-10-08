@@ -43,7 +43,12 @@ export type Settings = {
   bank: { accountName: string; bankName: string; iban: string };
   program_shots: { src: string; w: number; h: number; title: string; caption: string; alt: string }[];
   hero_image?: { media_id: string | null };
+  /** الطلب من تطبيق الجوال (الباقات والخدمات الإضافية). غير موجود = مفعّل. مفتاح احتياطي لمراجعة Apple */
+  app_ordering?: { enabled: boolean };
 };
+
+export const appOrderingOn = (s: Settings) => s.app_ordering?.enabled !== false;
+export const APP_ORDERING_OFF = "الطلب من التطبيق متوقف حالياً.";
 
 const PRODUCT_SQL = `
   SELECT p.*, coalesce(json_agg(o ORDER BY o.sort) FILTER (WHERE o.id IS NOT NULL), '[]') AS offers

@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/session";
-import { getProducts, getSettings } from "@/lib/data";
+import { APP_ORDERING_OFF, appOrderingOn, getProducts, getSettings } from "@/lib/data";
 import { CATEGORY_LABEL } from "@/lib/format";
 import { AGE_MAX, AGE_MIN, NUTRITION_SKUS, OPT } from "@/lib/intake";
 import { activeCustom, BUILTIN_QUESTIONS, hintOf, isHidden, labelOf, parseConfig } from "@/lib/intake-config";
@@ -14,6 +14,7 @@ export async function GET(req: Request) {
   if (!user) return Response.json({ error: "login" }, { status: 401 });
   const sku = new URL(req.url).searchParams.get("sku") ?? "";
   const [products, s] = await Promise.all([getProducts(), getSettings()]);
+  if (!appOrderingOn(s)) return Response.json({ error: APP_ORDERING_OFF }, { status: 403 });
   // الباقات فقط: لا الخدمات الإضافية (لها مسارها) ولا التجريبية
   const list = products.filter((p) => !p.is_demo && !(p as { app_addon?: string | null }).app_addon);
   const offers = list.flatMap((p) => p.offers.filter((o) => o.active).map((o) => ({

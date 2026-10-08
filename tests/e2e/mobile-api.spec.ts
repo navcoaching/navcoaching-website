@@ -411,3 +411,34 @@ test("التطبيق: طلب الباقة بالاستبيان كاملاً", as
   assert.ok(JSON.stringify(det).includes(ok.message));
   await db.query(`UPDATE orders SET status = 'cancelled' WHERE order_no = $1`, [ok.message]);
 });
+
+test("التطبيق: مفتاح إيقاف الطلب من التطبيق", async ({}, info) => {
+  test.skip(info.project.name !== "desktop", "اختبار واجهات فقط: مرة واحدة يكفي");
+  const H = { "expo-origin": "navcoaching://", "x-forwarded-for": `10.6.${Date.now() % 250}.6` };
+  const email = `off-${Date.now()}@example.com`;
+  const hdr = { ...H, "content-type": "application/json" };
+  await fetch(`${B}/api/auth/email-otp/send-verification-otp`, { method: "POST", headers: hdr, body: JSON.stringify({ email, type: "sign-in" }) });
+  const otp = (await db.query("SELECT substring(body from 'رمز الدخول: ([0-9]{6})') AS o FROM dev_mailbox WHERE recipient=$1 ORDER BY id DESC LIMIT 1", [email])).rows[0].o;
+  const r = await fetch(`${B}/api/auth/sign-in/email-otp`, { method: "POST", headers: hdr, body: JSON.stringify({ email, otp }) });
+  const cookie = r.headers.getSetCookie().map((c) => c.split(";")[0]).join("; ");
+  const { rows: [o] } = await db.query(`SELECT o.sku FROM products p JOIN product_offers o ON o.product_id=p.id WHERE p.slug='intensive' AND o.months=3`);
+  const content = async () => (await (await fetch(`${B}/api/mobile/v1/content`, { headers: H })).json()).ordering;
+  const auth = { headers: { ...H, Cookie: cookie } };
+
+  assert.equal(await content(), true);
+  await db.query(`INSERT INTO site_settings (key, value) VALUES ('app_ordering', '{"enabled": false}') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`);
+  try {
+    assert.equal(await content(), false);
+    assert.equal((await fetch(`${B}/api/mobile/v1/checkout?sku=${o.sku}`, auth)).status, 403);
+    const fd = new FormData(); fd.append("sku", o.sku);
+    const co = await fetch(`${B}/api/mobile/v1/actions/create-order`, { method: "POST", body: fd, ...auth });
+    assert.equal((await co.json()).error, "الطلب من التطبيق متوقف حالياً.");
+    assert.deepEqual((await (await fetch(`${B}/api/mobile/v1/addons`, { headers: H })).json()).addons, []);
+    assert.equal((await fetch(`${B}/api/mobile/v1/addons`, { method: "POST", body: new FormData(), ...auth })).status, 403);
+    // الموقع لا يتأثر
+    assert.equal((await fetch(`${B}/checkout/${o.sku}`, { headers: { Cookie: cookie }, redirect: "manual" })).status, 200);
+  } finally {
+    await db.query(`DELETE FROM site_settings WHERE key = 'app_ordering'`);
+  }
+  assert.equal(await content(), true);
+});

@@ -13,7 +13,7 @@ export default function Packages() {
   if (!data) return null;
   return (
     <ScrollView contentContainerStyle={s.page}>
-      {!!data.prices_note && <Body muted>{data.prices_note}</Body>}
+      {data.ordering !== false && !!data.prices_note && <Body muted>{data.prices_note}</Body>}
       {data.products.length === 0 && <Empty>لا توجد برامج منشورة حالياً.</Empty>}
       {data.products.map((p) => {
         const min = Math.min(...p.offers.map((o) => o.price_halalas));
@@ -25,7 +25,7 @@ export default function Packages() {
               {p.recommended && <Text style={{ color: t.navy, fontWeight: "800", fontSize: 13, textAlign: "left" }}>الأكثر طلباً</Text>}
               <Text style={{ color: t.heading, fontSize: 19, fontWeight: "800", textAlign: "left" }}>{p.name}</Text>
               <Body muted>{p.audience}</Body>
-              {p.offers.length > 0 && <Text style={{ color: t.text, fontSize: 16, fontWeight: "700", textAlign: "left" }}>تبدأ من {riyals(min)}</Text>}
+              {data.ordering !== false && p.offers.length > 0 && <Text style={{ color: t.text, fontSize: 16, fontWeight: "700", textAlign: "left" }}>تبدأ من {riyals(min)}</Text>}
             </View>
           </Pressable>
         );

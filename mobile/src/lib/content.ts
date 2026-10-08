@@ -13,6 +13,8 @@ export type Content = {
   about: { name: string; bio: string; points: string[]; certs: string[]; story_title?: string; story?: string[];
     pillars_title?: string; pillars?: { title: string; body: string }[]; experience_title?: string; experience?: string[] };
   about_photos: { id: string; alt: string }[];
+  /** الطلب من التطبيق (مفتاح لوحة الإدارة). false = الباقات تعريفية بدون أسعار ولا طلب */
+  ordering: boolean;
   prices_note: string; testimonials_disclaimer: string; contact: { whatsapp: string; instagram: string }; response_time: string;
   legal: { name: string; cr: string }; intro_video?: { url: string; title: string; body: string };
   products: Product[];

@@ -3,6 +3,7 @@ import { deleteFoodLogAction, logFoodAction, logFoodGramsAction } from "@/app/ac
 import { cancelOrderAction, requestFreePlanAction, savePrefsAction, setStartPrefAction, submitCheckinAction, submitExitSurveyAction, submitReviewAction, updateProfileAction, uploadProofAction, type ActionState } from "@/app/actions/client";
 import { createRenewal } from "@/lib/renew";
 import { createOrder } from "@/lib/create-order";
+import { APP_ORDERING_OFF, appOrderingOn, getSettings } from "@/lib/data";
 import { getCurrentUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
@@ -32,6 +33,7 @@ const ACTIONS: Record<string, (s: ActionState, fd: FormData) => Promise<ActionSt
   "create-order": async (_, fd) => {
     const user = await getCurrentUser();
     if (!user) return { error: "سجّل الدخول أولاً." };
+    if (!appOrderingOn(await getSettings())) return { error: APP_ORDERING_OFF };
     const r = await createOrder(user.id, fd);
     return "error" in r ? r : { ok: true, message: r.orderNo };
   },

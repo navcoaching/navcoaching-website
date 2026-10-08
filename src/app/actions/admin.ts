@@ -507,6 +507,9 @@ export async function saveSettingAction(_: ActionState, fd: FormData): Promise<A
       };
       break;
     }
+    case "app_ordering":
+      value = { enabled: fd.get("enabled") === "on" };
+      break;
     case "hero_image":
       value = { media_id: g("media_id") || null };
       break;

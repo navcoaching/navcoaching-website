@@ -29,7 +29,7 @@ export default function PackageDetail() {
         ))}
         {!!p.note && <Body muted>{p.note}</Body>}
       </Card>
-      {p.offers.length > 0 && (
+      {data.ordering !== false && p.offers.length > 0 && (
         <Card>
           <Title>المدة والسعر</Title>
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>

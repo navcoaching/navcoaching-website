@@ -1,4 +1,4 @@
-import { getApprovedMedia, getFaqs, getFreePlans, getPolicies, getProducts, getPublicReviews, getSettings } from "@/lib/data";
+import { appOrderingOn, getApprovedMedia, getFaqs, getFreePlans, getPolicies, getProducts, getPublicReviews, getSettings } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +10,8 @@ export async function GET() {
   ]);
   return Response.json({
     hero: s.hero, badges: s.badges, why: s.why, how_steps: s.how_steps, about: s.about,
+    // الطلب من التطبيق (مفتاح في لوحة الإدارة): متوقف = الباقات تعريفية بدون أسعار ولا طلب
+    ordering: appOrderingOn(s),
     prices_note: s.prices_note, testimonials_disclaimer: s.testimonials_disclaimer,
     contact: s.contact, response_time: s.response_time, legal: s.legal, intro_video: s.intro_video,
     // صور المدربة المعتمدة (تُعرض من /api/files/media/<id>)
