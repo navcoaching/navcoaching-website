@@ -6,7 +6,6 @@ import { api, ApiError, type Me } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 import { loadPrefs, timeLabel, WEEKDAYS, type ReminderPrefs } from "@/lib/reminders";
 import { useTracker } from "@/lib/tracker/context";
-import { openSite } from "@/lib/links";
 
 // حسابي: التذكيرات للجميع، والحساب والمتابعة مع المدربة لمن سجّل دخوله (الدخول اختياري)
 export default function Account() {
@@ -76,7 +75,7 @@ export default function Account() {
             ) : (
               <>
                 <Body muted>ما عندك اشتراك متابعة حالياً. المتتبّع المجاني متاح لك كاملاً.</Body>
-                <Button title="شوف برامج المتابعة" variant="ghost" onPress={() => openSite("/programs")} />
+                <Button title="شوف برامج المتابعة" variant="ghost" onPress={() => router.push("/packages")} />
               </>
             )}
             <Button title="طلباتي والدفع" variant="ghost" onPress={() => router.push("/orders")} />

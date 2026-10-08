@@ -1,7 +1,7 @@
+import { router } from "expo-router";
 import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Body, Button, Card, Chip, ErrorText, Field, Title } from "@/components/ui";
-import { openSite } from "@/lib/links";
 import {
   EB_GOALS, MACRO_DEFAULTS, PAF_LEVELS, PROTEIN_LEVELS, calculateEnergyBalance, calculateIntake, macrosFor, proteinPerKg,
   validate, validateIntake, validateMacroSettings, type BmrMethod, type EnergyInput, type EnergyResult, type IntakeInput, type IntakeResult,
@@ -30,7 +30,7 @@ export default function Calculator() {
       {tab === "intake" ? <Intake /> : <Balance />}
       <Card>
         <Body>تبي خطة تدريب وتغذية مبنية على أرقامك مع متابعة أسبوعية؟</Body>
-        <Button title="شوف البرامج" variant="ghost" onPress={() => openSite("/programs")} />
+        <Button title="شوف البرامج" variant="ghost" onPress={() => router.push("/packages")} />
       </Card>
     </ScrollView>
   );

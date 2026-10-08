@@ -4,7 +4,7 @@ import { Body, Button, Card, Title } from "@/components/ui";
 import { authClient } from "@/lib/auth-client";
 import { useCoachAlts } from "@/lib/pro";
 
-// «ناف برو». الاشتراك من داخل التطبيق يكون عبر Apple فقط (البند 3.1.1)؛ لا روابط أو أسعار دفع خارجية هنا.
+// «ناف برو»: بدائل الكوتش + «وجباتي». الاشتراك من داخل التطبيق يكون عبر Apple فقط (البند 3.1.1)؛ لا روابط أو أسعار دفع خارجية هنا.
 export default function Pro() {
   const { data: session } = authClient.useSession();
   const { pro } = useCoachAlts();
@@ -14,6 +14,11 @@ export default function Pro() {
         <Title>⭐ بدائل الكوتش ساره</Title>
         <Body>الجهاز مشغول؟ التمرين ما يناسبك أو يضايقك؟ بدل ما تختار أي تمرين لنفس العضلة، تشوف البدائل اللي اختارتها الكوتش بنفسها لكل تمرين، وتبدّل بضغطة في برنامجك أو وسط التمرين.</Body>
         <Body muted>القائمة تتحدّث كل ما أضافت الكوتش بدائل جديدة.</Body>
+      </Card>
+      <Card>
+        <Title>🥗 وجباتي</Title>
+        <Body>وجبات تصممها الكوتش ساره بمقاديرها وسعراتها وطريقة تحضيرها: فطور وغداء وعشاء وسناك، وتنضاف وجبات جديدة باستمرار.</Body>
+        {pro && <Button title="افتح وجباتي" variant="ghost" onPress={() => router.push("/meals")} />}
       </Card>
       {pro ? (
         <Card><Title>✓ «ناف برو» مفعّل لك</Title></Card>

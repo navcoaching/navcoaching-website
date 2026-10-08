@@ -41,7 +41,7 @@ export default function ReviewRequest() {
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
             {data.programs.map((p) => <Chip key={p.id} label={p.name} active={p.id === chosen} onPress={() => setProgramId(p.id)} />)}
           </View>
-          <Body muted>يُرسل مع البرنامج سجل تمارينك لآخر 4 أسابيع ({data.sessions} تمرين). المدربة ترجع لك بتعديلات عملية.</Body>
+          <Body muted>يُرسل مع البرنامج سجل تمارينك لآخر 4 أسابيع ({data.sessions} تمرين). المدربة ترد عليك بالتعديلات على واتساب.</Body>
         </Card>
       </AddonForm>
     </View>

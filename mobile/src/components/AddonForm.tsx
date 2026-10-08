@@ -50,7 +50,7 @@ export function AddonForm({ addon, children, build }: {
         <Body>السعر: {addon.price}</Body>
       </Card>
       {children}
-      <Field label="جوال واتساب (للتواصل)" value={phone} onChangeText={setPhone} keyboardType="phone-pad" textContentType="telephoneNumber"
+      <Field label="جوال واتساب (رد المدربة يوصلك عليه)" value={phone} onChangeText={setPhone} keyboardType="phone-pad" textContentType="telephoneNumber"
         placeholder="05xxxxxxxx" style={{ textAlign: "left", writingDirection: "ltr" }} />
       <Field label="ملاحظة للمدربة (اختياري)" value={note} onChangeText={setNote} maxLength={1000} multiline style={{ minHeight: 80, textAlignVertical: "top" }} />
       {error && <ErrorText>{error}</ErrorText>}

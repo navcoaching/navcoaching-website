@@ -5,7 +5,6 @@ import { Body, Button, Card, Empty, Title } from "@/components/ui";
 import { attempt, useScreenData, useTracker } from "@/lib/tracker/context";
 import { useTheme } from "@/lib/theme";
 import { useMe } from "@/lib/me";
-import { openSite } from "@/lib/links";
 
 // بعد كم تمرين مكتمل يظهر اقتراح المتابعة مع المدربة (جسر المجاني للمدفوع)
 const BRIDGE_AFTER = 8;
@@ -50,7 +49,7 @@ export default function Home() {
           <Title>خلّ الكوتش ساره تراجع تقدمك</Title>
           <Body muted>سجّلت {data.done} تمارين أو أكثر. مع المتابعة: برنامج مصمم لك، وتعديلات أسبوعية حسب أرقامك، ومراجعة بالفيديو أو الصوت.</Body>
           <Button title="«راجعي جدولي» بسعر رمزي" onPress={() => router.push("/services/review")} />
-          <Button title="شوف برامج المتابعة" variant="ghost" onPress={() => openSite("/programs")} />
+          <Button title="شوف برامج المتابعة" variant="ghost" onPress={() => router.push("/packages")} />
           <Button title="ليس الآن" variant="ghost" onPress={() => tracker.setSetting("bridge_hidden", "1").then(reload)} />
         </Card>
       )}

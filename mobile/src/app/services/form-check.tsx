@@ -69,7 +69,7 @@ export default function FormCheck() {
         </Card>
         <Card>
           <Title>المقطع</Title>
-          <Body muted>صوّر جولة واحدة من الجنب، والجسم كامل ظاهر. حتى {MAX_SECONDS} ثانية.</Body>
+          <Body muted>صوّر جولة واحدة من الجنب، والجسم كامل ظاهر. حتى {MAX_SECONDS} ثانية. المدربة ترد عليك بالتصحيح على واتساب.</Body>
           {video && <Body>✓ مقطع جاهز ({Math.round((video.duration ?? 0) / 1000)} ثانية{video.fileSize ? ` · ${(video.fileSize / 1048576).toFixed(1)} ميجا` : ""})</Body>}
           <Button title="صوّر الآن" variant={video ? "ghost" : "primary"} onPress={() => pick("camera")} />
           <Button title="اختر من الألبوم" variant="ghost" onPress={() => pick("library")} />

@@ -3,15 +3,13 @@ import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { Body, Button, Card, Chip, Empty, ErrorText, Title } from "@/components/ui";
 import { MEAL_ICON, MEAL_KINDS, type MealKind } from "@/lib/api";
-import { useAddons } from "@/lib/addons";
 import { authClient } from "@/lib/auth-client";
 import { useApi } from "@/lib/use-api";
 import { useTheme } from "@/lib/theme";
-import { openSite } from "@/lib/links";
 
 type Meal = { id: string; plan_name: string; kind: MealKind; title: string; protein: number; carbs: number; fat: number; kcal: number; method: string | null; items: { food: string; portion: string | null }[] };
 
-// «وجباتي»: وجبات قوالب التغذية التي تصممها المدربة (للمشتركين، أو لمن اشترك في «وجباتي»)
+// «وجباتي»: وجبات قوالب التغذية التي تصممها المدربة (ضمن «ناف برو»، ولمن عنده برنامج أو اشتراها من الموقع)
 export default function Meals() {
   const { data: session } = authClient.useSession();
   if (!session) return <Locked />;
@@ -46,16 +44,15 @@ function MealsList() {
   );
 }
 
+// محتوى رقمي: لا سعر ولا رابط شراء خارجي هنا (Apple 3.1.1)، الاشتراك عبر «ناف برو»
 function Locked() {
-  const { addons } = useAddons();
-  const a = addons?.find((x) => x.kind === "meal_library");
   return (
     <ScrollView contentContainerStyle={s.page}>
       <Card>
         <Title>🥗 وجباتي</Title>
         <Body>وجبات تصممها الكوتش ساره بمقاديرها وسعراتها وطريقة تحضيرها، فطور وغداء وعشاء وسناك.</Body>
-        <Body muted>متاحة لمشتركي المتابعة.{a ? ` والاشتراك المنفصل فيها (${a.price}) يتوفر داخل التطبيق قريباً.` : ""}</Body>
-        <Button title="شوف برامج المتابعة" variant="ghost" onPress={() => openSite("/programs")} />
+        <Body muted>ضمن «ناف برو» مع بدائل الكوتش لكل تمرين.</Body>
+        <Button title="اعرف عن ناف برو" variant="ghost" onPress={() => router.push("/pro")} />
       </Card>
     </ScrollView>
   );
