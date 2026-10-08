@@ -1489,3 +1489,7 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 .prefs-fold > summary::after { content: "+"; font-size: 22px; color: var(--accent-text); }
 .prefs-fold[open] > summary::after { content: "−"; }
 .prefs-fold[open] > summary { margin-bottom: 12px; }
+/* إجابات المراجعة الأسبوعية في الإدارة: السؤال فوق الجواب على الجوال */
+.checkin-answers dt { font-weight: 600; color: var(--text); }
+.checkin-answers dd { font-weight: 400; white-space: pre-wrap; }
+@media (max-width: 640px) { .checkin-answers { grid-template-columns: minmax(0, 1fr); } .checkin-answers dd { margin-bottom: 8px; } }

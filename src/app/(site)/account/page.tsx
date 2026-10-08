@@ -43,6 +43,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
             <span className="eyebrow">حسابي</span>
             <h1 style={{ fontSize: "clamp(26px,4vw,36px)", marginTop: 8 }}>أهلاً {user.name.includes("@") ? "" : user.name.split(" ")[0]} 👋</h1>
             <p className="muted" style={{ marginTop: 4 }}>{inProgram.length ? "برنامجك وتقدمك وكل ما تحتاجه في مكان واحد." : "من هنا تتابع طلباتك وتجهّز حسابك."}</p>
+            <p className="small muted account-who" data-testid="account-who">داخل بـ <bdi dir="ltr">{user.email}</bdi> · <SignOut label="لست أنت؟ تسجيل الخروج" className="link-btn" /></p>
           </div>
           {prefsCard}
           <InstallPrompt />

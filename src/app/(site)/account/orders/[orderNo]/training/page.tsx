@@ -127,7 +127,7 @@ export default async function TrainingPage({ params, searchParams }: { params: P
                 {!readOnly && day.items.length > 0 && (
                   <details className="card flat more-tools">
                     <summary>قيّم تمرين اليوم</summary>
-                    <RateDayForm orderNo={o.order_no} day={day.id} week={week} rating={rating} />
+                    <RateDayForm key={`${day.id}-${week}-${rating ?? "none"}`} orderNo={o.order_no} day={day.id} week={week} rating={rating} />
                   </details>
                 )}
               </div>

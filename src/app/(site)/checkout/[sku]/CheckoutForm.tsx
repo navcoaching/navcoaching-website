@@ -10,7 +10,7 @@ import StartPrefFields from "@/components/StartPrefFields";
 import { validStartPref } from "@/lib/schedule";
 
 type OfferOpt = { sku: string; label: string; group: string; price: string };
-type Props = { sku: string; offers: OfferOpt[]; defaultName: string; responseTime: string; intake: IntakeConfig };
+type Props = { sku: string; offers: OfferOpt[]; defaultName: string; responseTime: string; intake: IntakeConfig; accountEmail: string };
 
 const DRAFT_KEY = "nav_checkout_draft_v2";
 // البيانات الصحية والقياسات لا تُحفظ على الجهاز أثناء التعبئة (كما في الموقع الحالي)
@@ -27,7 +27,7 @@ const TITLES = ["الباقة والتواصل", "الهدف والتمرين", 
 type Draft = Record<string, string | string[]>;
 const readDraft = (): Draft => { try { return JSON.parse(localStorage.getItem(DRAFT_KEY) ?? "{}"); } catch { return {}; } };
 
-export default function CheckoutForm({ sku, offers, defaultName, responseTime, intake }: Props) {
+export default function CheckoutForm({ sku, offers, defaultName, responseTime, intake, accountEmail }: Props) {
   const formRef = useRef<HTMLFormElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const { state, onSubmit, pending } = useFormAction(createOrderAction, () => step === 5 && validateStep(5));
@@ -242,6 +242,15 @@ export default function CheckoutForm({ sku, offers, defaultName, responseTime, i
             <span>أوافق على التواصل معي عبر واتساب بخصوص طلبي. <span className="req">*</span></span>
           </label>
           <ErrText n="consent_wa" errors={errors} />
+          <div className="alert info" data-testid="order-account">
+            <span>الطلب يُضاف لحسابك المسجّل بـ <bdi dir="ltr"><b>{accountEmail}</b></bdi>، وصاحب هذا البريد فقط يشوف البرنامج. إذا الطلب لشخص آخر، خلّه يسجّل ويطلب من حسابه وبريده.</span>
+          </div>
+          {state.fieldErrors?.for_me && (
+            <label className="check" data-testid="for-me">
+              <input type="checkbox" name="for_me" />
+              <span>{state.fieldErrors.for_me} <b>الطلب لي أنا صاحب هذا الحساب.</b></span>
+            </label>
+          )}
           <div className="card flat">
             <p><b>بعد الإرسال:</b> يظهر لك رقم طلبك والمبلغ وبيانات التحويل في حسابك. حوّل وارفع صورة الإيصال من صفحة الطلب، ويتأكد اشتراكك بعد التحقق من وصول المبلغ. نتواصل معك خلال {responseTime}.</p>
           </div>

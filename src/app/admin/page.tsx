@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { differentPerson } from "@/lib/names";
 import LineChart from "@/components/LineChart";
 import StartTag from "@/components/admin/StartTag";
 import { batch, litList, withUser } from "@/lib/db";
@@ -71,7 +72,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
       const alerts: Alert[] = [];
       const todos: Todo[] = [];
       const ending: Ending[] = [];
-      const [subsR, checkInsR, surveysR, swapTodoR, noProgramR, noMeasureR] = await batch(tx, [
+      const [subsR, checkInsR, surveysR, swapTodoR, noProgramR, noMeasureR, ownersR] = await batch(tx, [
         `SELECT id, order_no, user_id, contact_name, product_name, status, category, months, offer_id, list_price_halalas, renewal_kind,
                 sub_start_at, sub_end_at, review_weekday
            FROM orders WHERE status = 'active' AND category = 'follow' AND sub_start_at IS NOT NULL AND NOT is_demo AND archived_at IS NULL
@@ -92,15 +93,21 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           WHERE NOT o.is_demo AND o.archived_at IS NULL AND o.status NOT IN ('cancelled','completed')
             AND (coalesce(i.health->>'weight','') = '' OR coalesce(i.health->>'height','') = '')
           ORDER BY o.created_at DESC LIMIT 20`,
+        // طلبات باسم يختلف عن اسم صاحب الحساب (قد تكون لشخص آخر فيشوفها صاحب البريد)
+        `SELECT o.order_no, o.contact_name, u.name AS user_name, u.email FROM orders o JOIN "user" u ON u.id = o.user_id
+          WHERE NOT o.is_demo AND o.status <> 'cancelled' AND u.role = 'client' ORDER BY o.created_at DESC LIMIT 500`,
       ]);
       const subs = subsR.rows, noMeasure = noMeasureR.rows;
+      for (const r of ownersR.rows) if (differentPerson(r.user_name, r.contact_name, r.email)) {
+        alerts.push({ order_no: r.order_no, name: r.contact_name, tone: "bad", text: `الطلب في حساب «${r.user_name}» (${r.email}). إذا الطلب لشخص آخر انقليه لحسابه من صفحة الطلب ← «صاحب الحساب»` });
+      }
       const renewals = await loadRenewals(tx, subs, (o) => daysBetween(today, riyadhDate(o.sub_end_at)));
       // بيانات الالتزام والمراجعات لكل المشتركين دفعة واحدة (بدل 6 استعلامات لكل متدرب)
       await prefetchOrders(tx, subs.map((o) => o.id as string));
 
       // (ب) ما يحتاج تعديلاً منكِ
       for (const x of checkInsR.rows) {
-        todos.push({ order_no: x.order_no, name: x.contact_name, tone: "warn", href: `/admin/orders/${x.order_no}`,
+        todos.push({ order_no: x.order_no, name: x.contact_name, tone: "warn", href: `/admin/orders/${x.order_no}#checkins`,
           text: x.n === 1 ? "مراجعة أسبوعية بدون رد" : `${x.n} مراجعات أسبوعية بدون رد` });
       }
       for (const x of surveysR.rows) {

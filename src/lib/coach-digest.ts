@@ -61,7 +61,7 @@ export function digestEmail(d: Digest, today: string, site: string) {
     sections: [
       { title: "📅 مراجعات تبدأ اليوم", items: items(d.startsToday) },
       { title: "⏳ مراجعات مفتوحة ولم تصل بعد", items: items(d.open) },
-      { title: "💬 مراجعات وصلت وتنتظر ردك", items: items(d.awaitingReply) },
+      { title: "💬 مراجعات وصلت وتنتظر ردك", items: items(d.awaitingReply, "#checkins") },
       { title: "🔥 سعرات مقترحة جديدة", items: items(d.calories, "/nutrition") },
     ],
     cta: { label: "فتح لوحة الإدارة", url: `${site}/admin` },

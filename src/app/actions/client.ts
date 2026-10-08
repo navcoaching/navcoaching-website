@@ -1,10 +1,11 @@
 "use server";
 
+import { differentPerson } from "@/lib/names";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { dbErrorMessage, withUser } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
+import { getCurrentUser, getFreshUser } from "@/lib/session";
 import { profileSchema, splitProfile } from "@/lib/profile";
 import { intakeSchema, normalizedPhone, splitIntake } from "@/lib/intake";
 import { parseConfig, validateCustomAnswers } from "@/lib/intake-config";
@@ -45,6 +46,15 @@ export async function createOrderAction(_: ActionState, fd: FormData): Promise<A
     return { error: "راجع الحقول المحددة.", fieldErrors: { ...fieldErrors, ...custom.errors } };
   }
   const v = parsed.data;
+  // طلب باسم شخص غير صاحب الحساب: يُضاف لهذا الحساب ويشوفه صاحب البريد، فنطلب تأكيداً صريحاً
+  // الاسم من قاعدة البيانات مباشرة (كوكي الجلسة قد يحمل اسماً قديماً حتى 5 دقائق)
+  const owner = fd.get("for_me") === "on" ? null : await getFreshUser();
+  if (owner && differentPerson(owner.name, v.name, owner.email)) {
+    return {
+      error: `أنت مسجّل بحساب «${owner.name}» (${owner.email})، والطلب باسم «${v.name}». الطلب يُضاف لهذا الحساب فقط.`,
+      fieldErrors: { for_me: "إذا الطلب لشخص آخر سجّل خروج وخلّه يطلب من حسابه. وإذا الطلب لك فعّل التأكيد:" },
+    };
+  }
 
   if (!(await allow(`order:u:${user.id}`, 6, 3600)) || !(await allow(`order:ip:${await clientIp()}`, 20, 3600))) return { error: LIMITED };
 

@@ -22,7 +22,9 @@ import { pct } from "@/lib/adherence";
 import FilePicker from "@/components/FilePicker";
 import {
   addDeliverableAction, grantRewardAction, markSurveySeenAction, archiveOrderAction, deleteOrderAction, removeDeliverableAction, replyCheckinAction, coachMessageAction, requestMeasurementsAction, setAmountAction, transitionAction,
+  moveOrderAction, renameMemberAction,
 } from "@/app/actions/admin";
+import { differentPerson } from "@/lib/names";
 
 const show = (v: unknown) => (Array.isArray(v) ? v.join("، ") : v == null || v === "" ? "—" : String(v));
 
@@ -81,6 +83,16 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
         amount={o.amount_due_halalas == null ? "—" : riyals(o.amount_due_halalas)} />
       {granted && <GrantedAlert no={granted} sent={sent === "1"} />}
       {o.is_demo && <p className="alert warn">طلب تجريبي — ليس طلباً حقيقياً.</p>}
+      {checkins.some((c) => !c.replied_at) && (
+        <p className="alert warn" data-testid="pending-checkin">
+          📝 عند المتدرب مراجعة أسبوعية بانتظار ردك. <a href="#checkins">اقرئي إجاباته وردّي ←</a>
+        </p>
+      )}
+      {differentPerson(o.user_name, o.contact_name, o.user_email) && (
+        <p className="alert warn" data-testid="owner-mismatch">
+          الطلب باسم «{o.contact_name}» لكنه في حساب «{o.user_name}» (<bdi dir="ltr">{o.user_email}</bdi>). إذا الطلب لشخص آخر انقليه لحسابه من «صاحب الحساب» أسفل الصفحة، وإلا يشوف صاحب هذا البريد برنامجه.
+        </p>
+      )}
       {created && <p className="alert ok" role="status">تم إنشاء الطلب يدوياً. أضيفي ملف البرنامج أو الرابط من «ملفات العميل». المتدرب يدخل ببريده <bdi dir="ltr">{o.user_email}</bdi> ويشوفه في حسابه.</p>}
       {o.source === "manual" && !intake && <p className="alert info">طلب يدوي أضافته المدربة — بدون استبيان من الموقع.</p>}
 
@@ -251,7 +263,7 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
 
           {/* ---------- المراجعات الأسبوعية ---------- */}
           {checkins.length > 0 && (
-            <div className="card stack">
+            <div className="card stack" id="checkins" style={{ scrollMarginTop: 90 }}>
               <h2 style={{ fontSize: 19 }}>المراجعات الأسبوعية</h2>
               {checkins.map((c) => (
                 <Details key={c.id} className="card flat" defaultOpen={!c.replied_at}>
@@ -305,6 +317,28 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
               ))}
             </div>
           )}
+          <div className="card stack" id="owner" data-testid="owner-card">
+            <h2 style={{ fontSize: 17 }}>صاحب الحساب</h2>
+            <p className="small">الطلب في حساب: <b>{o.user_name || "—"}</b> · <bdi dir="ltr">{o.user_email}</bdi></p>
+            <p className="small muted">من يدخل بهذا البريد يشوف هذا الطلب وبرنامجه. إذا الطلب لشخص آخر انقليه لبريده الصحيح.</p>
+            <details data-testid="move-order">
+              <summary className="small" style={{ cursor: "pointer", minHeight: 44 }}>نقل الطلب لحساب صاحبه الصحيح</summary>
+              <ActionForm action={moveOrderAction} submit="نقل الطلب" submitClass="btn btn-sm" confirm="نقل الطلب وبرنامجه وسجلاته لهذا البريد؟ الحساب الحالي ما يعود يشوفه.">
+                <input type="hidden" name="order_no" value={o.order_no} />
+                <div className="field"><label htmlFor="mv-email">بريد صاحب الطلب الصحيح</label><input id="mv-email" name="email" type="email" dir="ltr" required autoComplete="off" /></div>
+                <div className="field"><label htmlFor="mv-name">اسمه (لإنشاء حسابه إذا ما عنده حساب)</label><input id="mv-name" name="name" type="text" defaultValue={o.contact_name} /></div>
+                <label className="check"><input type="checkbox" name="confirm" required /><span>تأكدت أن هذا البريد لصاحب الطلب</span></label>
+                <p className="small muted">ينتقل الطلب مع البرنامج والسجلات والمراجعات والاستبيان. الوزن والقياسات المسجّلة في الحساب الحالي تبقى فيه.</p>
+              </ActionForm>
+            </details>
+            <details data-testid="rename-member">
+              <summary className="small" style={{ cursor: "pointer", minHeight: 44 }}>تعديل اسم صاحب الحساب</summary>
+              <ActionForm action={renameMemberAction} submit="حفظ الاسم" submitClass="btn btn-ghost btn-sm">
+                <input type="hidden" name="user_id" value={o.user_id} />
+                <div className="field"><label htmlFor="rn-name">الاسم</label><input id="rn-name" name="name" type="text" defaultValue={o.user_name} required /></div>
+              </ActionForm>
+            </details>
+          </div>
           <div className="card stack">
             <h2 style={{ fontSize: 17 }}>إدارة الطلب</h2>
             {o.archived_at && <p className="small muted">هذا الطلب مخفي من قائمة الطلبات.</p>}

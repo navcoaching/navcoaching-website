@@ -70,7 +70,7 @@ export default async function ExercisePage({ params, searchParams }: { params: P
           {eff && <p className="small muted" style={{ margin: 0 }}>{eff.oneRm > 0 && <>أعلى وزن تقديري (1RM): <b className="num">{eff.oneRm}</b> كغ · </>}<bdi dir="ltr">VLU {Math.round(eff.vlu).toLocaleString("en-US")}</bdi></p>}
           {readOnly ? (log && eff ? <p className="small">سجّلت: <bdi dir="ltr">{formatSets(eff.weights, eff.reps)}</bdi></p> : <p className="small muted">برنامج منتهي (للقراءة فقط).</p>) : (
             <>
-              <ItemLogForm orderNo={o.order_no} item={it.id} week={week} target={plan?.reps ?? []} targetRir={plan?.rir ?? null}
+              <ItemLogForm key={`${it.id}-${week}-${log?.logged_at ?? "new"}`} orderNo={o.order_no} item={it.id} week={week} target={plan?.reps ?? []} targetRir={plan?.rir ?? null}
                 log={log ? { weight: log.weight, weights: log.weights, reps: log.reps, rir: log.rir } : null} />
               <SwapForm orderNo={o.order_no} item={it.id} current={it.exercise_id} options={swaps.map((x) => ({ id: x.id, name: x.name, is_coach_choice: x.is_coach_choice }))} />
             </>

@@ -241,6 +241,15 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   await trainee.locator('textarea[name="a"]').first().fill("التزمت بالتمارين هذا الأسبوع");
   await trainee.getByRole("button", { name: "أرسل المراجعة" }).click();
   await expect(trainee.getByText("وصلت مراجعتك")).toBeVisible();
+  // صفحة «المراجعات الأسبوعية» تجمع إجابات المتدربين اللي تنتظر الرد، وصفحة الطلب تنبّه لها
+  const coachUrl = coach.url();
+  await coach.goto("/admin/checkins");
+  const pendingItem = coach.getByTestId("checkin").filter({ hasText: orderNo });
+  await expect(pendingItem).toContainText("التزمت بالتمارين هذا الأسبوع");
+  await expect(pendingItem).toContainText("بانتظار ردك");
+  await noHorizontalScroll(coach);
+  await coach.goto(coachUrl);
+  await expect(coach.getByTestId("pending-checkin")).toBeVisible();
   // الباقة مفعّل فيها «مراجعة بالفيديو» ← تظهر خانة رابط الفيديو مع الرد
   await db.query(`UPDATE products SET video_review = true WHERE slug = 'intensive'`);
   await coach.reload();

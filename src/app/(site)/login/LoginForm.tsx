@@ -33,8 +33,18 @@ export default function LoginForm({ next }: { next: string }) {
     setError("");
     if (!/^\d{6}$/.test(otp)) { setError("الرمز 6 أرقام."); return; }
     setBusy(true);
+    // أي جلسة سابقة على هذا الجهاز (حساب شخص آخر) تُغلق أولاً، حتى لا يبقى منها شيء بعد الدخول بالحساب الجديد
+    await authClient.signOut().catch(() => {});
     const { error } = await authClient.signIn.emailOtp({ email, otp });
     if (error) { setBusy(false); setError(ERR[error.code ?? ""] ?? (error.status === 429 ? "محاولات كثيرة. انتظر دقائق." : "تعذّر الدخول. حاول مرة أخرى.")); return; }
+    // تحقق نهائي: الحساب اللي انفتح لازم يكون نفس البريد اللي وصله الرمز، وإلا نغلق الجلسة فوراً
+    const { data } = await authClient.getSession({ query: { disableCookieCache: true } });
+    if (data?.user?.email?.toLowerCase() !== email.toLowerCase()) {
+      await authClient.signOut().catch(() => {});
+      setBusy(false);
+      setError("تعذّر فتح حسابك بأمان. حدّث الصفحة وادخل مرة ثانية ببريدك.");
+      return;
+    }
     window.location.assign(next);
   }
 
@@ -65,5 +75,20 @@ export default function LoginForm({ next }: { next: string }) {
         <button type="button" className="link-btn" onClick={() => send()} disabled={busy}>إعادة إرسال الرمز</button>
       </div>
     </form>
+  );
+}
+
+/** الجهاز داخل بحساب: نعرض صاحبه بوضوح بدل الدخول التلقائي، مع خيار الدخول بحساب آخر */
+export function SignedInAs({ name, email, next }: { name: string; email: string; next: string }) {
+  const [busy, setBusy] = useState(false);
+  return (
+    <div className="stack" style={{ ["--space" as string]: "14px" }} data-testid="signed-in-as">
+      <p className="alert info">هذا الجهاز داخل بحساب <b>{name}</b> (<bdi dir="ltr">{email}</bdi>).</p>
+      <a className="btn btn-block" href={next}>متابعة بهذا الحساب</a>
+      <button type="button" className="btn btn-ghost btn-block" disabled={busy}
+        onClick={async () => { setBusy(true); await authClient.signOut().catch(() => {}); window.location.reload(); }}>
+        {busy ? "جارٍ الخروج…" : "لست أنا: تسجيل الخروج والدخول بحساب آخر"}
+      </button>
+    </div>
   );
 }

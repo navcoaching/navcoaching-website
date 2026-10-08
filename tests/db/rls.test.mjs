@@ -969,6 +969,32 @@ describe("حذف برنامج أُضيف بالخطأ وحذف عضو", () => {
     const { rows: [log] } = await owner.query("SELECT details FROM admin_log WHERE action = 'member.delete' AND target = $1", [`${U2}@test.local`]);
     assert.ok(log.details.orders.includes(no));
   });
+  test("نقل طلب لحساب صاحبته الصحيح: للمدربة فقط، وينقل البرنامج والسجلات، والحساب السابق ما يشوفه", async () => {
+    const wrong = "user_mv_wrong", right = "user_mv_right";
+    for (const id of [wrong, right]) await owner.query(`INSERT INTO "user" (id, name, email, "emailVerified", role) VALUES ($1, $1, $1 || '@test.local', true, 'client') ON CONFLICT DO NOTHING`, [id]);
+    const { no, block, item } = await programFor(wrong, "k-moveorder-0000000001");
+    await owner.query("INSERT INTO item_logs (block_item_id, week_no, exercise_id, weight, reps) SELECT $1, 1, exercise_id, 40, '{10}' FROM block_items WHERE id = $1", [item]);
+    // الحساب الخطأ يشوف الطلب قبل النقل
+    assert.equal((await as(wrong, "SELECT count(*)::int n FROM orders WHERE order_no = $1", [no])).rows[0].n, 1);
+    await assert.rejects(as(wrong, "SELECT app.coach_move_order($1,$2,$3)", [no, `${right}@test.local`, "x"]), /للمدربة فقط/);
+    await assert.rejects(as(COACH, "SELECT app.coach_move_order($1,$2,$3)", [no, `${wrong}@test.local`, ""]), /أصلاً في حساب/);
+    await assert.rejects(as(COACH, "SELECT app.coach_move_order($1,$2,$3)", [no, "new-person@test.local", ""]), /اكتبي اسم/);
+    assert.equal((await as(COACH, "SELECT app.coach_move_order($1,$2,$3) AS e", [no, `  ${right.toUpperCase()}@TEST.local `, "غيداء"])).rows[0].e, `${right}@test.local`);
+    // بعد النقل: الحساب الخطأ ما يشوف شيئاً، والصحيح يشوف الطلب والبرنامج والسجل
+    assert.equal((await as(wrong, "SELECT count(*)::int n FROM orders WHERE order_no = $1", [no])).rows[0].n, 0);
+    assert.equal((await as(wrong, "SELECT count(*)::int n FROM blocks WHERE id = $1", [block])).rows[0].n, 0);
+    assert.equal((await as(right, "SELECT count(*)::int n FROM orders WHERE order_no = $1", [no])).rows[0].n, 1);
+    assert.equal((await as(right, "SELECT count(*)::int n FROM blocks WHERE id = $1", [block])).rows[0].n, 1);
+    assert.equal((await as(right, "SELECT count(*)::int n FROM item_logs WHERE block_item_id = $1", [item])).rows[0].n, 1);
+    assert.equal((await owner.query("SELECT count(*)::int n FROM admin_log WHERE action = 'order.move' AND target = $1", [no])).rows[0].n, 1);
+    // بريد غير مسجّل: يُنشأ حساب جديد بالاسم
+    assert.equal((await as(COACH, "SELECT app.coach_move_order($1,$2,$3) AS e", [no, "brand-new@test.local", "سارة"])).rows[0].e, "brand-new@test.local");
+    assert.equal((await owner.query(`SELECT name FROM "user" WHERE email = 'brand-new@test.local'`)).rows[0].name, "سارة");
+    // تعديل اسم الحساب: للمدربة فقط
+    await assert.rejects(as(wrong, "SELECT app.coach_rename_member($1,$2)", [wrong, "سارة"]), /للمدربة فقط/);
+    await as(COACH, "SELECT app.coach_rename_member($1,$2)", [wrong, "سارة"]);
+    assert.equal((await owner.query(`SELECT name FROM "user" WHERE id = $1`, [wrong])).rows[0].name, "سارة");
+  });
   test("استبيان العضو: يحفظه صاحبه ويقرؤه هو والمدربة فقط", async () => {
     const m = "user_prof1", o = "user_prof2";
     for (const id of [m, o]) await owner.query(`INSERT INTO "user" (id, name, email, "emailVerified", role) VALUES ($1, $1, $1 || '@test.local', true, 'client')`, [id]);

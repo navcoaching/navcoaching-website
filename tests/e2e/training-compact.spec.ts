@@ -93,3 +93,46 @@ test("قائمة التمرين مختصرة: اليوم الافتراضي، ا
   await login(other, `trainee-cmp2-${info.project.name}@e2e.test`);
   expect((await other.goto(`/account/orders/${orderNo}/training/${items[0][0]}`))?.status()).toBe(404);
 });
+
+test("تسجيل أسبوع سابق: يُحفظ ويظهر عند الرجوع له، ولا تختلط قيمه مع الأسبوع الحالي", async ({ browser }, info) => {
+  const email = `trainee-prev-${info.project.name}@e2e.test`;
+  const page = await newPage(browser, info.project.name + "prev");
+  await login(page, email);
+  const { rows: [u] } = await db.query(`SELECT id FROM "user" WHERE email = $1`, [email]);
+  const { rows: [p] } = await db.query(`SELECT p.id, p.name, o.id AS offer_id, o.label, o.price_halalas FROM products p JOIN product_offers o ON o.product_id = p.id WHERE p.slug = 'intensive' AND o.months = 3`);
+  const orderNo = (await db.query("SELECT app.new_order_no() AS no")).rows[0].no as string;
+  const { rows: [o] } = await db.query(
+    `INSERT INTO orders (order_no, user_id, product_id, offer_id, category, product_name, offer_label, months, list_price_halalas, amount_due_halalas, status, contact_name, contact_phone, idempotency_key, paid_at)
+     VALUES ($1,$2,$3,$4,'follow',$5,$6,3,$7,$7,'active','متدربة','+966500000000',$1, now()) RETURNING id`,
+    [orderNo, u.id, p.id, p.offer_id, p.name, p.label, p.price_halalas]);
+  // البلوك بدأ قبل 9 أيام ← الأسبوع الحالي 2
+  const { rows: [b] } = await db.query(`INSERT INTO blocks (order_id, user_id, name, start_date, weeks) VALUES ($1,$2,'بلوك',current_date - 9,4) RETURNING id`, [o.id, u.id]);
+  const plan = JSON.stringify(Array(4).fill({ sets: 2, reps: [10, 10], rir: 2 }));
+  const { rows: [d] } = await db.query(`INSERT INTO block_days (block_id, day_no, title) VALUES ($1,1,'DAY 1') RETURNING id`, [b.id]);
+  const { rows: [it] } = await db.query(`INSERT INTO block_items (day_id, position, exercise_id, coach_exercise_id, plan) SELECT $1, 1, id, id, $2 FROM exercises WHERE name = 'Back Squat' RETURNING id`, [d.id, plan]);
+  const base = `/account/orders/${orderNo}/training`;
+
+  // الأسبوع الحالي (2): نسجّل 50
+  await page.goto(`${base}/${it.id}?week=2&day=${d.id}`);
+  await page.getByLabel("وزن الجولة 1").fill("50");
+  await page.getByTestId(`log-${it.id}`).getByRole("button", { name: /حفظ/ }).click();
+  await expect.poll(async () => (await db.query(`SELECT weight::float AS w FROM item_logs WHERE block_item_id = $1 AND week_no = 2`, [it.id])).rows[0]?.w).toBe(50);
+  // الأسبوع الماضي (1) من «المزيد»
+  await page.goto(`${base}?week=2&day=${d.id}`);
+  await page.getByTestId("more-tools").locator("summary").first().click();
+  await page.getByRole("navigation", { name: "الأسبوع" }).getByRole("link", { name: /^الأسبوع 1\b/ }).click();
+  await expect(page.getByTestId("week-label")).toContainText("الأسبوع 1");
+  await page.getByTestId("exercise-card").first().click();
+  await page.waitForURL(/week=1/);
+  await expect(page.getByLabel("وزن الجولة 1")).toHaveValue("");
+  await page.getByLabel("وزن الجولة 1").fill("40");
+  await page.getByTestId(`log-${it.id}`).getByRole("button", { name: /حفظ/ }).click();
+  await expect.poll(async () => (await db.query(`SELECT weight::float AS w FROM item_logs WHERE block_item_id = $1 AND week_no = 1`, [it.id])).rows[0]?.w).toBe(40);
+  // الرجوع للأسبوع 1 بعد إعادة التحميل: القيمة محفوظة
+  await page.goto(`${base}/${it.id}?week=1&day=${d.id}`);
+  await expect(page.getByLabel("وزن الجولة 1")).toHaveValue("40");
+  // الأسبوع 2 ما تغيّر
+  await page.goto(`${base}/${it.id}?week=2&day=${d.id}`);
+  await expect(page.getByLabel("وزن الجولة 1")).toHaveValue("50");
+  expect((await db.query(`SELECT week_no, weight::float AS w FROM item_logs WHERE block_item_id = $1 ORDER BY week_no`, [it.id])).rows).toEqual([{ week_no: 1, w: 40 }, { week_no: 2, w: 50 }]);
+});
