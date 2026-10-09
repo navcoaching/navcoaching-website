@@ -11,3 +11,4 @@ playwright-report/
 *.tsbuildinfo
 next-env.d.ts
 .next-e2e/
+/undefined-*.png

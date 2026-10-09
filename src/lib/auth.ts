@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { emailOTP } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
+import { expo } from "@better-auth/expo";
 import { pool } from "./db";
 import { mailBrand, notifySafe, sendMail } from "./mail";
 import { renderEmail } from "./email-template";
@@ -17,6 +18,9 @@ export const auth = betterAuth({
   database: pool,
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
+  // تطبيق الجوال (mobile/) يدخل بنفس رمز البريد؛ يحفظ الجلسة في SecureStore ويرسلها مع كل طلب.
+  // exp:// لتطبيق Expo Go أثناء التطوير فقط.
+  trustedOrigins: ["navcoaching://", ...(process.env.NODE_ENV === "development" ? ["exp://", "exp://**"] : [])],
   user: {
     additionalFields: {
       role: { type: "string", required: false, defaultValue: "client", input: false },
@@ -82,6 +86,7 @@ export const auth = betterAuth({
         );
       },
     }),
+    expo(),
     nextCookies(),
   ],
 });

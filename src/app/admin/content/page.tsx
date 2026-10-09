@@ -74,6 +74,15 @@ export default async function AdminContent() {
         </ActionForm>
       </section>
 
+      <section className="card stack" data-testid="app-ordering-settings">
+        <H id="app-ordering">الطلب من تطبيق الجوال</H>
+        <p className="small muted">يتحكم في طلب الباقات والخدمات الإضافية من داخل تطبيق الجوال (الموقع لا يتأثر). الحالة الآن: <b>{s.app_ordering?.enabled === false ? "متوقف" : "مفعّل"}</b>. أوقفيه فقط إذا طلبت Apple ذلك. تنبيه: إذا كان متوقفاً وقت مراجعة Apple فلا تشغّليه بعد القبول، لأن إظهار ميزة لم يرها المراجع مخالف لشروط Apple.</p>
+        <ActionForm action={saveSettingAction}>
+          <input type="hidden" name="key" value="app_ordering" />
+          <label className="check"><input type="checkbox" name="enabled" defaultChecked={s.app_ordering?.enabled !== false} /><span>السماح بالطلب من التطبيق</span></label>
+        </ActionForm>
+      </section>
+
       <section className="card stack" data-testid="analytics-settings">
         <H id="analytics">Google Analytics</H>
         <p className="small muted">الصقي معرّف القياس (Measurement ID) من حسابك في Google Analytics، ويبدأ بـ G-. يُحمَّل القياس في الصفحات العامة فقط (الرئيسية، البرامج، المدونة…) وبعد موافقة الزائر، ولا يعمل أبداً داخل حساب المتدرب أو الطلب أو الدفع أو لوحة الإدارة. الحالة الآن: <b>{s.analytics?.ga_id ? "مفعّل" : "غير مفعّل"}</b>. لإيقافه امسحي المعرّف واحفظي. أضيفي ذكره في سياسة الخصوصية.</p>

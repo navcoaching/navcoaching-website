@@ -9,7 +9,7 @@ import { normalizePlan } from "@/lib/training";
 import { loadExerciseOptions, loadProgramDays, loadVolumeSetup } from "@/lib/program-data";
 import VolumeTable from "@/components/admin/VolumeTable";
 
-type Tpl = { id: string; name: string; weeks: number; instructions: string | null; archived: boolean };
+type Tpl = { id: string; name: string; weeks: number; instructions: string | null; archived: boolean; public: boolean; public_summary: string | null };
 
 export default async function TemplatePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string }> }) {
   const coach = await requireCoach();
@@ -19,7 +19,7 @@ export default async function TemplatePage({ params, searchParams }: { params: P
   if (!isNew && !/^[0-9a-f-]{36}$/.test(id)) notFound();
   const data = await withUser(coach.id, async (tx) => {
     if (isNew) return { tpl: null, days: [] as EditorDay[], exercises: [] as ExOption[], volume: { limits: {}, saved: {}, muscles: [] as string[] } };
-    const tpl = (await tx.query(`SELECT id, name, weeks, instructions, archived FROM program_templates WHERE id = $1`, [id])).rows[0] as Tpl | undefined;
+    const tpl = (await tx.query(`SELECT id, name, weeks, instructions, archived, public, public_summary FROM program_templates WHERE id = $1`, [id])).rows[0] as Tpl | undefined;
     if (!tpl) return null;
     const days = (await loadProgramDays(tx, "template", id)).map((d) => ({ ...d, items: d.items.map((i) => ({ ...i, plan: normalizePlan(i.plan, tpl.weeks) })) }));
     return { tpl, days, exercises: await loadExerciseOptions(tx), volume: await loadVolumeSetup(tx) };
@@ -46,6 +46,14 @@ export default async function TemplatePage({ params, searchParams }: { params: P
           <div className="field"><label htmlFor="tp-instr">تعليمات البلوك (تظهر للمتدرب)</label>
             <textarea id="tp-instr" name="instructions" maxLength={4000} rows={3} defaultValue={tpl?.instructions ?? ""} placeholder="الإحماء: جولتان بـ 50–60% · الراحة: 2–4 دقائق بين المجموعات…" /></div>
           {!isNew && <label className="check"><input type="checkbox" name="archived" defaultChecked={tpl?.archived} /><span>مؤرشف (لا يظهر في قائمة الإسناد)</span></label>}
+          {!isNew && (
+            <fieldset className="stack" style={{ ["--space" as string]: "8px" }}>
+              <label className="check"><input type="checkbox" name="public" defaultChecked={tpl?.public} /><span>برنامج مجاني في تطبيق الجوال (يراه أي مستخدم ويبدأه كنسخة على جواله)</span></label>
+              <span className="hint">يظهر للمستخدم الأسبوع الأول فقط: التمارين والجولات والتكرارات وRIR، مع تعليمات البلوك. لا تظهر ملاحظاتك.</span>
+              <div className="field"><label htmlFor="tp-summary">وصف قصير في التطبيق</label>
+                <input id="tp-summary" name="public_summary" type="text" maxLength={300} defaultValue={tpl?.public_summary ?? ""} placeholder="مثال: 3 أيام في النادي للمبتدئين — علوي، سفلي، شامل" /></div>
+            </fieldset>
+          )}
         </ActionForm>
       </details>
       {!isNew && (

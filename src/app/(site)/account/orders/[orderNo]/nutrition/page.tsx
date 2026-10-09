@@ -7,13 +7,12 @@ import { withUser } from "@/lib/db";
 import { fmtDate } from "@/lib/format";
 import { addDays, riyadhDate } from "@/lib/schedule";
 import { MEAL_ICON, MEAL_KINDS, kcalOf, mealName, sumMacros, type MealKind, type Target } from "@/lib/nutrition";
-import { loadPlans, loadRoutine } from "@/lib/nutrition-data";
+import { loadNutritionDay } from "@/lib/nutrition-data";
 import DaySummary from "@/components/nutrition/DaySummary";
 import { AddFoodSheet, DeleteFoodLog, type MealOption } from "./NutritionForms";
 
 export const metadata: Metadata = { title: "التغذية والمكملات", robots: { index: false } };
 type SP = { tab?: string; date?: string; plan?: string };
-type Log = { id: number; kind: MealKind; name: string; protein: number; carbs: number; fat: number; meal_id: string | null };
 
 export default async function NutritionPage({ params, searchParams }: { params: Promise<{ orderNo: string }>; searchParams: Promise<SP> }) {
   const { orderNo } = await params;
@@ -23,27 +22,7 @@ export default async function NutritionPage({ params, searchParams }: { params: 
   const date = sp.date && /^\d{4}-\d{2}-\d{2}$/.test(sp.date) && sp.date <= today && sp.date >= addDays(today, -60) ? sp.date : today;
   const tab = sp.tab === "plans" || sp.tab === "supplements" ? sp.tab : "today";
 
-  const data = await withUser(user.id, async (tx) => {
-    const { rows: [o] } = await tx.query(`SELECT id, order_no, user_id, status FROM orders WHERE order_no = $1`, [orderNo]);
-    if (!o || o.user_id !== user.id) return null;
-    // RLS: الأهداف والجداول والمكملات تظهر لصاحبها بعد تأكيد الدفع فقط
-    const target = (await tx.query(`SELECT kcal, protein::float, carbs::float, fat::float, rules FROM nutrition_targets WHERE order_id = $1`, [o.id])).rows[0] as (Target & { rules: string | null }) | undefined;
-    const plans = (await loadPlans(tx, { orderId: o.id })).filter((p) => !p.archived);
-    const routine = await loadRoutine(tx, { orderId: o.id });
-    // كل وجبات قوالب التغذية (يقدر يضيف أي وجبة منها لأكله اليومي)
-    const library = tab === "today" && ["active", "delivered", "completed"].includes(o.status)
-      ? (await tx.query(`SELECT meal_id::text AS id, plan_name, kind, title, protein::float, carbs::float, fat::float, foods FROM app.library_meals() ORDER BY title`)).rows as { id: string; plan_name: string; kind: MealKind; title: string; protein: number; carbs: number; fat: number; foods: string | null }[]
-      : [];
-    const logs = (await tx.query(
-      `SELECT id::int, kind, name, protein::float, carbs::float, fat::float, meal_id FROM food_logs WHERE user_id = $1 AND order_id = $2 AND log_date = $3 ORDER BY created_at`,
-      [user.id, o.id, date])).rows as Log[];
-    // مكونات وطريقة تحضير الوجبات المسجّلة اليوم (من جداوله أو قوالب التغذية)
-    const mealIds = [...new Set(logs.map((l) => l.meal_id).filter((x): x is string => Boolean(x)))];
-    const details = mealIds.length
-      ? (await tx.query(`SELECT meal_id::text AS id, method, items FROM app.meal_details($1::uuid[])`, [mealIds])).rows as { id: string; method: string | null; items: { food: string; portion: string | null; protein: number; carbs: number; fat: number }[] }[]
-      : [];
-    return { o, target, plans, routine, logs, library, details };
-  });
+  const data = await withUser(user.id, (tx) => loadNutritionDay(tx, user.id, orderNo, date, tab === "today"));
   if (!data) notFound();
   const { o, target, plans, routine, logs, library, details } = data;
   const detailOf = new Map(details.map((d) => [d.id, d]));
