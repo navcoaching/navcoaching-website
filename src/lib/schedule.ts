@@ -39,19 +39,27 @@ export function subscriptionState(o: { status: string; sub_start_at: string | nu
 export type Week = { no: number; due: string; windowStart: string; windowEnd: string };
 
 /**
- * أسابيع المراجعة: أول موعد = أول يوم مراجعة يقع بعد 7 أيام على الأقل من تاريخ البدء،
- * ثم كل 7 أيام حتى تاريخ الانتهاء. نافذة التسليم تبدأ يوم المراجعة وتستمر windowDays يوماً بعده.
+ * مواعيد المراجعة كل everyWeeks أسبوع (1 = أسبوعية، 2 = كل أسبوعين للباقة الأساسية):
+ * أول موعد = أول يوم مراجعة يقع بعد 7×everyWeeks يوماً على الأقل من تاريخ البدء، ثم كل 7×everyWeeks يوماً
+ * حتى تاريخ الانتهاء. نافذة التسليم تبدأ يوم المراجعة وتستمر windowDays يوماً بعده.
  */
-export function reviewWeeks(startISO: string, endISO: string, reviewWeekday: number, windowDays: number): Week[] {
+export function reviewWeeks(startISO: string, endISO: string, reviewWeekday: number, windowDays: number, everyWeeks = 1): Week[] {
   const start = riyadhDate(startISO), end = riyadhDate(endISO);
-  let due = addDays(start, 7);
+  const step = 7 * Math.min(4, Math.max(1, Math.round(everyWeeks) || 1));
+  let due = addDays(start, step);
   while (weekday(due) !== reviewWeekday) due = addDays(due, 1);
   const out: Week[] = [];
-  for (let no = 1; due <= end && no <= 200; no++, due = addDays(due, 7)) {
+  for (let no = 1; due <= end && no <= 200; no++, due = addDays(due, step)) {
     out.push({ no, due, windowStart: due, windowEnd: addDays(due, Math.max(0, windowDays)) });
   }
   return out;
 }
+
+/** «كل أسبوع» / «كل أسبوعين» / «كل 3 أسابيع» */
+export const reviewEveryLabel = (n: number | null | undefined) =>
+  !n || n <= 1 ? "كل أسبوع" : n === 2 ? "كل أسبوعين" : `كل ${n} أسابيع`;
+/** عنوان المراجعة: «المراجعة الأسبوعية» أو «المراجعة (كل أسبوعين)» */
+export const reviewTitle = (n: number | null | undefined) => (!n || n <= 1 ? "المراجعة الأسبوعية" : `المراجعة (${reviewEveryLabel(n)})`);
 
 export type WeekStatus = "done" | "current" | "missed" | "upcoming";
 export const WEEK_LABEL: Record<WeekStatus, string> = { done: "تمت المراجعة", current: "الأسبوع الحالي", missed: "لم تصل المراجعة", upcoming: "قادم" };
@@ -101,8 +109,8 @@ export const DEFAULT_REMINDERS: Reminders = {
   sub_expiry_text: "مرحباً {name}، اشتراكك في {product} ينتهي بتاريخ {end_date}. للتجديد أو الاستفسار تواصل معنا.",
   review_lead_days: 1,
   review_window_days: 2,
-  review_text: "مرحباً {name}، تذكير بمراجعتك الأسبوعية: المراجعة مفتوحة من {window_start} إلى {window_end}.",
-  missed_review_text: "مرحباً {name}، ما وصلتنا مراجعة الأسبوع المنتهي في {window_end}. متى ما تيسّر لك، حدّثها عشان نتابع تقدمك.",
+  review_text: "مرحباً {name}، تذكير بموعد مراجعتك: المراجعة مفتوحة من {window_start} إلى {window_end}.",
+  missed_review_text: "مرحباً {name}، ما وصلتنا مراجعتك اللي انتهى موعدها في {window_end}. متى ما تيسّر لك، حدّثها عشان نتابع تقدمك.",
   manual_cooldown_minutes: 10,
   coach_digest: true,
 };

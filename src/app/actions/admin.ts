@@ -272,7 +272,7 @@ export async function sendReviewNowAction(_: ActionState, fd: FormData): Promise
       const weeks = sub?.sub_start_at ? await loadWeekState(tx, { ...o, product_name: "", ...sub }, r) : [];
       const next = weeks.find((w) => w.status !== "done" && w.status !== "missed") ?? weeks.find((w) => w.status !== "done");
       const text = reviewMessage(r, o.contact_name.trim().split(/\s+/)[0], next);
-      const results = await notifyTrainee(tx, { orderId: o.id, orderNo, userId: o.user_id }, { kind: "review_manual", subject: "تذكير بالمراجعة الأسبوعية", text });
+      const results = await notifyTrainee(tx, { orderId: o.id, orderNo, userId: o.user_id }, { kind: "review_manual", subject: "تذكير بموعد مراجعتك", text });
       return { results };
     });
     if ("error" in out) return { error: out.error };
@@ -392,8 +392,11 @@ export async function saveProductAction(_: ActionState, fd: FormData): Promise<A
     offers.push(o.data);
   }
   if (p.status === "published" && !offers.some((o) => o.active)) return { error: "لا يمكن نشر منتج بدون عرض سعر مفعّل." };
+  // بدون الحقل (صفحة قديمة مفتوحة) لا يتغير تكرار المراجعة
+  const every = fd.has("review_every_weeks") ? z.coerce.number().int().min(1).max(4).catch(1).parse(fd.get("review_every_weeks")) : null;
 
   let id = p.id;
+  let moved = 0;
   try {
     await asCoach(async (tx, uid) => {
       const vals = [p.slug, p.category, p.name, p.audience, JSON.stringify(items), p.note || null, p.delivery || null,
@@ -415,6 +418,8 @@ export async function saveProductAction(_: ActionState, fd: FormData): Promise<A
              price_halalas=EXCLUDED.price_halalas, active=EXCLUDED.active, sort=EXCLUDED.sort`,
           [o.id, id, o.sku, o.label, o.months, Math.round(o.price * 100), o.active, i]);
       }
+      // تكرار المراجعة: للباقة ولطلباتها الحالية (قاعدة البيانات تنقل علامات المراجعة اليدوية للموعد المقابل)
+      if (every != null) moved = (await tx.query("SELECT app.coach_set_review_every($1::uuid, $2) AS n", [id, every])).rows[0].n as number;
       await log(tx, uid, "product.save", p.slug, { status: p.status, offers: offers.map((o) => ({ sku: o.sku, price: o.price, active: o.active })) });
     });
   } catch (err) {
@@ -424,7 +429,7 @@ export async function saveProductAction(_: ActionState, fd: FormData): Promise<A
   }
   revalidatePath("/", "layout");
   if (!p.id) redirect(`/admin/products/${id}?saved=1`);
-  return { ok: true, message: "تم حفظ المنتج. الطلبات السابقة تحتفظ بسعرها وقت الطلب." };
+  return { ok: true, message: `تم حفظ المنتج. الطلبات السابقة تحتفظ بسعرها وقت الطلب.${moved ? ` وتحدّث موعد المراجعة لـ ${moved} من طلبات الباقة.` : ""}` };
 }
 
 // ---------- الإعدادات والمحتوى ----------

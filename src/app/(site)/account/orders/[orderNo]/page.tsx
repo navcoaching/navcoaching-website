@@ -8,7 +8,7 @@ import { ExpiryAlert } from "@/components/account/MyProgram";
 import AdherenceBar from "@/components/account/AdherenceBar";
 import { EndOfProgramCard, loadEndOfProgram } from "@/components/account/EndOfProgram";
 import { getMyFollowUp, getOrderDetail, getSettings } from "@/lib/data";
-import { SUB_LABEL, WEEKDAYS, fmtYMD, riyadhDate } from "@/lib/schedule";
+import { SUB_LABEL, WEEKDAYS, fmtYMD, reviewEveryLabel, reviewTitle, riyadhDate } from "@/lib/schedule";
 import StartPrefForm from "@/components/account/StartPrefForm";
 import VideoButton from "@/components/VideoButton";
 import { fmtDate, fmtDateTime, riyals, waLink } from "@/lib/format";
@@ -46,6 +46,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
   const cancelNote = o.status === "cancelled" ? [...events].reverse().find((e) => e.to_status === "cancelled" && e.from_status !== "cancelled")?.note ?? null : null;
   const currentWeek = follow?.weeks.find((w) => w.status !== "done" && w.windowEnd >= today);
   const lastMissed = follow?.weeks.filter((w) => w.status === "missed").pop();
+  const every = Number(o.review_every_weeks) || 1; // المراجعة كل كم أسبوع (الأساسية: كل أسبوعين)
   const h = intake?.health ?? {};
   const missingMeasures = intake && o.status !== "cancelled" && (h.weight == null || h.weight === "" || h.height == null || h.height === "");
 
@@ -154,7 +155,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                 <p>{o.category === "consult" ? "تم تأكيد الدفع. بنتواصل معك لتحديد موعد الجلسة" : "تم تأكيد الدفع، ونجهّز برنامجك الآن. بنتواصل معك"} خلال {s.response_time}.</p>
               )}
               {o.status === "active" && (
-                <p>برنامجك نشط. ملفاتك متاحة بالأسفل{s.checkins?.enabled && o.category === "follow" ? "، وترسل مراجعتك الأسبوعية من هذه الصفحة" : ""}.</p>
+                <p>برنامجك نشط. ملفاتك متاحة بالأسفل{s.checkins?.enabled && o.category === "follow" ? `، وترسل ${every > 1 ? `مراجعتك (${reviewEveryLabel(every)})` : "مراجعتك الأسبوعية"} من هذه الصفحة` : ""}.</p>
               )}
               {o.status === "delivered" && <p>ملفاتك جاهزة بالأسفل، وهي لك مدى الحياة.</p>}
               {o.status === "completed" && <p>{review ? "شكراً لك! وصلنا تقييمك." : "انتهت الخدمة. يسعدنا تكتب تقييمك لتجربتك بالأسفل."}</p>}
@@ -179,19 +180,19 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
             {/* ---------- سجل المراجعات الأسبوعية ---------- */}
             {follow && follow.weeks.length > 0 && (
               <div className="card stack" aria-labelledby="weeks-h" data-testid="review-history">
-                <h2 id="weeks-h" style={{ fontSize: 20 }}>سجل المراجعات الأسبوعية</h2>
+                <h2 id="weeks-h" style={{ fontSize: 20 }}>{every > 1 ? `سجل المراجعات (${reviewEveryLabel(every)})` : "سجل المراجعات الأسبوعية"}</h2>
                 {currentWeek && o.status === "active" && (
                   <p className="alert info" data-testid="review-window">المراجعة مفتوحة من <b>{fmtYMD(currentWeek.windowStart)}</b> إلى <b>{fmtYMD(currentWeek.windowEnd)}</b>.</p>
                 )}
                 {lastMissed && o.status === "active" && (
-                  <p className="alert warn" data-testid="review-missed">ما وصلتنا مراجعة الأسبوع {lastMissed.no}. ولا يهمك، متى ما تيسّر لك أرسلها أو حدّث المدربة عشان نكمل متابعتك.</p>
+                  <p className="alert warn" data-testid="review-missed">ما وصلتنا {every > 1 ? `المراجعة ${lastMissed.no}` : `مراجعة الأسبوع ${lastMissed.no}`}. ولا يهمك، متى ما تيسّر لك أرسلها أو حدّث المدربة عشان نكمل متابعتك.</p>
                 )}
                 <ol className="weeks">
                   {follow.weeks.map((w) => (
                     <li key={w.no} className={`wk ${w.status}`}>
                       <span aria-hidden="true">{w.status === "done" ? "✅" : w.status === "current" ? "⏳" : w.status === "missed" ? "•" : "○"}</span>
-                      <span>الأسبوع {w.no} — {fmtYMD(w.due)}</span>
-                      <span className="small muted">{w.status === "done" ? "تمت" : w.status === "current" ? "الأسبوع الحالي" : w.status === "missed" ? "لم تصل" : "قادم"}</span>
+                      <span>{every > 1 ? "المراجعة" : "الأسبوع"} {w.no} — {fmtYMD(w.due)}</span>
+                      <span className="small muted">{w.status === "done" ? "تمت" : w.status === "current" ? (every > 1 ? "الحالية" : "الأسبوع الحالي") : w.status === "missed" ? "لم تصل" : "قادم"}</span>
                     </li>
                   ))}
                 </ol>
@@ -222,7 +223,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
             {/* ---------- المراجعة الأسبوعية ---------- */}
             {o.category === "follow" && s.checkins?.enabled && (o.status === "active" || checkins.length > 0) && (
               <div className="card stack" id="checkin" style={{ scrollMarginTop: 90 }}>
-                <h2 style={{ fontSize: 20 }}>المراجعة الأسبوعية</h2>
+                <h2 style={{ fontSize: 20 }}>{reviewTitle(every)}</h2>
                 {o.status === "active" && block?.status === "active" && (
                   <p className="small alert info" style={{ margin: 0 }} data-testid="checkin-training">
                     سجّلت تمرين هذا الأسبوع؟ <Link href={`/account/orders/${o.order_no}/training`}>افتح جدول التمرين ←</Link>
@@ -292,7 +293,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                 {o.sub_start_at && (<><dt>بداية الاشتراك</dt><dd data-testid="sub-start">{fmtYMD(riyadhDate(o.sub_start_at))}</dd></>)}
                 {o.sub_end_at && (<><dt>نهاية الاشتراك</dt><dd data-testid="sub-end">{fmtYMD(riyadhDate(o.sub_end_at))}</dd></>)}
                 {follow && (<><dt>حالة الاشتراك</dt><dd>{SUB_LABEL[follow.state]}</dd></>)}
-                {o.review_weekday != null && o.sub_start_at && (<><dt>يوم المراجعة</dt><dd>{WEEKDAYS[o.review_weekday]}</dd></>)}
+                {o.review_weekday != null && o.sub_start_at && (<><dt>يوم المراجعة</dt><dd data-testid="review-day">{WEEKDAYS[o.review_weekday]}{every > 1 ? ` · ${reviewEveryLabel(every)}` : ""}</dd></>)}
               </dl>
             </div>
             {PRE_ACTIVE.includes(o.status) && (

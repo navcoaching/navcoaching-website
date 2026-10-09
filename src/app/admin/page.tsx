@@ -191,6 +191,11 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
   return (
     <div className="stack" style={{ ["--space" as string]: "22px" }}>
       <h1>أهلاً {coach.name.split(" ")[0]}</h1>
+      {/* حالة الحماية ظاهرة أعلى الصفحة دائماً، والتفاصيل في «حالة الإعداد» آخر الصفحة */}
+      <p className={rlsOk ? "small" : "alert warn"} data-testid="setup-summary" style={{ margin: 0 }}>
+        {rlsOk ? "🛡️ حماية البيانات بين الحسابات: مفعّلة ✅" : "⚠️ حماية البيانات بين الحسابات غير مفعّلة."}
+        {" · "}<a href="#setup">حالة الإعداد ({setup.filter((x) => x.ok).length} من {setup.length}) ↓</a>
+      </p>
       {sp.granted && <GrantedAlert no={sp.granted} sent={sp.sent === "1"} />}
       {data.demo > 0 && <p className="alert warn">توجد بيانات تجريبية ({data.demo}) في قاعدة البيانات. لا تُنشر في الإنتاج — احذفيها قبل الإطلاق.</p>}
       <section className="stack" style={{ ["--space" as string]: "10px" }} aria-labelledby="stats-h" data-testid="monthly-stats">
@@ -293,7 +298,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
         </section>
       </div>
       <div className="grid g2" style={{ alignItems: "start" }}>
-        <div className="card">
+        <div className="card" id="setup" style={{ scrollMarginTop: 90 }}>
           <h2 style={{ fontSize: 18, marginBottom: 12 }}>حالة الإعداد</h2>
           <ul className="checklist">
             {setup.map((x) => <li key={x.label} className={x.ok ? "" : "no"}><b>{x.label}</b> — {x.ok ? "مفعّل" : "غير مفعّل"}<br /><span className="small muted">{x.hint}</span></li>)}

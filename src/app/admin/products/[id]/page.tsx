@@ -56,6 +56,12 @@ export default async function EditProduct({ params, searchParams }: { params: Pr
             </div>
           </div>
           <label className="check"><input type="checkbox" name="recommended" defaultChecked={p?.recommended} /><span>شارة «الأكثر طلباً»</span></label>
+          <div className="field"><label htmlFor="review-every">المراجعة (لباقات المتابعة)</label>
+            <select id="review-every" name="review_every_weeks" defaultValue={p?.review_every_weeks ?? 1}>
+              <option value={1}>كل أسبوع</option><option value={2}>كل أسبوعين</option><option value={3}>كل 3 أسابيع</option><option value={4}>كل 4 أسابيع</option>
+            </select>
+            <span className="hint">تحدد مواعيد المراجعة والتذكيرات للمشتركين، وتغييرها يطبَّق على المشتركين الحاليين في الباقة أيضاً.</span>
+          </div>
           <label className="check"><input type="checkbox" name="video_review" defaultChecked={p?.video_review} /><span>🎥 مراجعة أسبوعية بالفيديو (تظهر لكِ خانة رابط فيديو عند الرد على مراجعات مشتركي الباقة)</span></label>
         </div>
         <div className="card stack">

@@ -1026,3 +1026,46 @@ describe("حذف برنامج أُضيف بالخطأ وحذف عضو", () => {
     await assert.rejects(as(null, "SELECT app.save_my_profile('{}'::jsonb, '{}'::jsonb, false)", []), /سجّل الدخول|permission|denied/);
   });
 });
+
+describe("تكرار المراجعة لكل باقة (الأساسية كل أسبوعين)", () => {
+  const U = "user_rev";
+  before(async () => {
+    await owner.query(`INSERT INTO "user" (id, name, email, "emailVerified", role) VALUES ($1, $1, $1 || '@test.local', true, 'client')`, [U]);
+  });
+  const every = async (no) => (await owner.query("SELECT review_every_weeks n FROM orders WHERE order_no = $1", [no])).rows[0].n;
+  const marks = async (no) => (await owner.query(
+    "SELECT array_agg(week_no ORDER BY week_no) w FROM review_weeks WHERE order_id = (SELECT id FROM orders WHERE order_no = $1)", [no])).rows[0].w ?? [];
+
+  test("الطلب الجديد يأخذ تكرار باقته: الأساسية 2، المكثفة 1", async () => {
+    assert.equal((await owner.query("SELECT review_every_weeks n FROM products WHERE slug = 'basic'")).rows[0].n, 2);
+    assert.equal(await every(await newOrder(U, "k-rev-basic-000001", "bas1")), 2);
+    assert.equal(await every(await newOrder(U, "k-rev-int-0000001", "int1")), 1);
+  });
+
+  test("المدربة تغيّر تكرار الباقة: يتطبق على طلباتها وعلامات المراجعة اليدوية تنتقل للموعد المقابل", async () => {
+    const no = await newOrder(U, "k-rev-adv-0000001", "adv1");
+    for (const w of [1, 2, 3, 4, 5]) await as(COACH, "SELECT app.coach_mark_week($1, $2, true)", [no, w]);
+    const pid = (await owner.query("SELECT id FROM products WHERE slug = 'advanced'")).rows[0].id;
+    const n = (await as(COACH, "SELECT app.coach_set_review_every($1, 2) n", [pid])).rows[0].n;
+    assert.ok(n >= 1);
+    assert.equal(await every(no), 2);
+    assert.deepEqual(await marks(no), [1, 2, 3]); // 1,2→1 · 3,4→2 · 5→3
+    const log = (await owner.query("SELECT details FROM admin_log WHERE action = 'product.review_every' ORDER BY id DESC LIMIT 1")).rows[0].details;
+    assert.deepEqual([log.from, log.to], [1, 2]);
+    // الرجوع للأسبوعية: المراجعة n (كل أسبوعين) = الأسبوع 2n
+    await as(COACH, "SELECT app.coach_set_review_every($1, 1)", [pid]);
+    assert.equal(await every(no), 1);
+    assert.deepEqual(await marks(no), [2, 4, 6]);
+    // حفظ بنفس القيمة لا يغيّر شيئاً
+    assert.equal((await as(COACH, "SELECT app.coach_set_review_every($1, 1) n", [pid])).rows[0].n, 0);
+  });
+
+  test("غير المدربة لا تغيّر التكرار، والدالة الداخلية غير متاحة لاتصال الموقع، والقيم خارج 1–4 مرفوضة", async () => {
+    const pid = (await owner.query("SELECT id FROM products WHERE slug = 'basic'")).rows[0].id;
+    await assert.rejects(as(U, "SELECT app.coach_set_review_every($1, 1)", [pid]), /للمدربة فقط/);
+    await assert.rejects(as(COACH, "SELECT app.apply_review_every($1, 1)", [pid]), /permission denied/);
+    await assert.rejects(as(COACH, "SELECT app.coach_set_review_every($1, 5)", [pid]), /4 أسابيع/);
+    await assert.rejects(as(U, "UPDATE orders SET review_every_weeks = 1"), /permission denied/);
+    assert.equal((await owner.query("SELECT review_every_weeks n FROM products WHERE slug = 'basic'")).rows[0].n, 2);
+  });
+});
