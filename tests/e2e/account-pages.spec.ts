@@ -182,10 +182,23 @@ test("التمارين التأهيلية: التصفية حسب التصنيف�
   await db.query(`UPDATE exercises SET rehab_review = $2 WHERE id = $1`, [ex.id, ex.rehab_review]);
 });
 
-test("تفضيلات التواصل: أعلى «حسابي» أول مرة فقط، وبعد الحفظ مطوية في آخر الصفحة", async ({ browser }, info) => {
+test("تفضيلات التواصل: أول دخول فقط تظهر أعلى «حسابي» (حتى بدون حفظ)، وبعدها مطوية في آخر الصفحة", async ({ browser }, info) => {
+  const seen = await newPage(browser, info.project.name + "-prefs-seen");
+  // الدخول يفتح «حسابي»: هذي أول زيارة
+  await login(seen, `prefs-seen-${info.project.name}-${Date.now()}@e2e.test`);
+  await expect(seen).toHaveURL(/\/account$/);
+  await expect(seen.getByTestId("prefs-first")).toBeVisible();
+  // بدون حفظ: الزيارة الثانية تكون مطوية في آخر الصفحة، والقيم الافتراضية كلها مفعّلة
+  await expect(async () => {
+    await seen.reload();
+    await expect(seen.getByTestId("prefs-first")).toHaveCount(0, { timeout: 1000 });
+  }).toPass();
+  const f = seen.getByTestId("prefs-fold");
+  await f.locator("summary").click();
+  await expect(f.getByLabel("إشعارات واتساب")).toBeChecked();
+
   const page = await newPage(browser, info.project.name + "-prefs");
   await login(page, `prefs-${info.project.name}-${Date.now()}@e2e.test`);
-  await page.goto("/account");
   const first = page.getByTestId("prefs-first");
   await expect(first).toBeVisible();
   await expect(page.getByTestId("prefs-fold")).toHaveCount(0);

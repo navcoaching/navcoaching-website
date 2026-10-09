@@ -4,7 +4,7 @@ import { requireUser } from "@/lib/session";
 import { getMyBooklets, getMyFreePlans, getMyOrders, getMyPrefs, getReviewableOrder, hasIntake } from "@/lib/data";
 import { fmtDate, riyals } from "@/lib/format";
 import { statusLabel, statusTone } from "@/lib/status";
-import { PrefsForm, ProfileForm, ReviewForm, SignOut } from "./ClientForms";
+import { MarkPrefsSeen, PrefsForm, ProfileForm, ReviewForm, SignOut } from "./ClientForms";
 import PushCard from "@/components/account/PushCard";
 import InstallPrompt from "@/components/account/InstallPrompt";
 import { pushPublicKey } from "@/lib/push";
@@ -21,11 +21,12 @@ export default async function Account({ searchParams }: { searchParams: Promise<
   const [orders, prefs, freePlans, booklets, reviewable, intakeSaved, { denied, plan: planMsg, booklet: bookletMsg }] = await Promise.all([
     getMyOrders(user.id), getMyPrefs(user.id), getMyFreePlans(user.id), getMyBooklets(user.id), getReviewableOrder(user.id), hasIntake(user.id), searchParams]);
   const prefsForm = <PrefsForm email={prefs.email_enabled} whatsapp={prefs.whatsapp_enabled} push={pushPublicKey() ? prefs.push_enabled : null} />;
-  // أول مرة (قبل حفظ التفضيلات): بطاقة أعلى الصفحة. بعد الحفظ: قائمة مطوية في آخر الصفحة
+  // أول دخول للحساب فقط: بطاقة أعلى الصفحة (تُسجَّل كأنها شوهدت). بعدها: قائمة مطوية في آخر الصفحة
   const prefsCard = !prefs.saved && (
     <div className="card stack" aria-labelledby="prefs-h" data-testid="prefs-first">
       <h2 id="prefs-h" style={{ fontSize: 18 }}>تفضيلات التواصل</h2>
       {prefsForm}
+      <MarkPrefsSeen />
     </div>
   );
   // الطلبات المكتملة والملغاة تنطوي تحت «طلبات سابقة»

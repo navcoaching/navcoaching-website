@@ -220,6 +220,9 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
 
   // ---------- 11) تفضيلات التواصل تُحترم ----------
   await trainee.goto("/account");
+  // بعد أول زيارة تكون التفضيلات مطوية في آخر الصفحة
+  const fold = trainee.getByTestId("prefs-fold");
+  if (await fold.count()) await fold.locator("summary").click();
   const prefs = trainee.getByTestId("prefs-form");
   await prefs.getByLabel("إشعارات البريد الإلكتروني").uncheck();
   await prefs.getByRole("button", { name: "حفظ التفضيلات" }).click();

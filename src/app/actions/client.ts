@@ -164,6 +164,13 @@ export async function savePrefsAction(_: ActionState, fd: FormData): Promise<Act
   return { ok: true, message: "تم حفظ تفضيلات التواصل." };
 }
 
+/** أول ظهور لبطاقة التفضيلات: تُحفظ القيم الافتراضية (الكل مفعّل) فلا تظهر البطاقة أعلى «حسابي» مرة ثانية */
+export async function markPrefsSeenAction(): Promise<void> {
+  const user = await getCurrentUser();
+  if (!user) return;
+  await withUser(user.id, (tx) => tx.query(`INSERT INTO user_prefs (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING`, [user.id]));
+}
+
 // ---------- استكمال الوزن والطول للاستبيانات القديمة ----------
 export async function updateMeasurementsAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const user = await getCurrentUser();

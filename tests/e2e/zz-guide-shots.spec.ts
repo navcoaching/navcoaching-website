@@ -115,10 +115,13 @@ test("صور الدليل المصوّر", async ({ browser }) => {
         [u.id, o.id, ago, m.kind, m.id, m.title, m.p, m.c, m.f]);
     }
   }
+  // متدرب حفظ تفضيلاته وأغلق شريط التثبيت من قبل (الصورة تعرض الحساب كما يظهر عادةً)
+  await q(`INSERT INTO user_prefs (user_id) VALUES ($1) ON CONFLICT DO NOTHING`, [u.id]);
+  await ctx.addInitScript(() => { try { localStorage.setItem("nav_install_dismissed", "1"); } catch {} });
   await q(`INSERT INTO check_ins (order_id, user_id, answers, coach_reply, replied_at, created_at) VALUES ($1,$2,'[]'::jsonb,'تم',now() - interval '6 days', now() - interval '7 days')`, [o.id, u.id]);
 
   const base = `/account/orders/${orderNo}`;
-  await ctx.addInitScript(() => document.addEventListener("DOMContentLoaded", () => { const st = document.createElement("style"); st.textContent = ".wa-float{display:none!important}"; document.head.append(st); }));
+  await ctx.addInitScript(() => document.addEventListener("DOMContentLoaded", () => { const st = document.createElement("style"); st.textContent = ".wa-float,.account-who{display:none!important}"; document.head.append(st); }));
   // ---------- الصور ----------
   await page.goto("/account");
   await capture(page, "home", page.locator("body"), page.getByTestId("today-nutrition"), [
@@ -156,8 +159,9 @@ test("صور الدليل المصوّر", async ({ browser }) => {
   ], 1150);
 
   await page.goto(`${base}/nutrition`);
-  await capture(page, "nutrition", page.getByTestId("log-date"), page.getByTestId("food-log-form"), [
-    page.locator(".row", { has: page.getByTestId("log-date") }).last(), page.getByTestId("macro-summary"), page.getByTestId("food-log-form"),
+  // التصميم الجديد (مثل MyFitnessPal): اليوم، ملخص الباقي، ثم الوجبات وزر «+ إضافة أكل» تحت كل وجبة
+  await capture(page, "nutrition", page.getByTestId("log-date"), page.getByTestId("meal-breakfast"), [
+    page.locator(".row", { has: page.getByTestId("log-date") }).last(), page.getByTestId("macro-summary"), page.getByTestId("add-food-breakfast"),
   ]);
 
   await page.goto(`${base}/nutrition/log`);

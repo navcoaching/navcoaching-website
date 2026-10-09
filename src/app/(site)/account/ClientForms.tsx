@@ -1,11 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
 import {
-  cancelOrderAction, savePrefsAction, submitCheckinAction, submitExitSurveyAction, submitReviewAction, updateMeasurementsAction, updateProfileAction, uploadProofAction,
+  cancelOrderAction, markPrefsSeenAction, savePrefsAction, submitCheckinAction, submitExitSurveyAction, submitReviewAction, updateMeasurementsAction, updateProfileAction, uploadProofAction,
 } from "@/app/actions/client";
 import { FormMessage, Submit, useFormAction } from "@/components/FormBits";
 import { authClient } from "@/lib/auth-client";
 import FilePicker from "@/components/FilePicker";
+
+/** بطاقة التفضيلات تظهر أعلى «حسابي» أول مرة فقط: تُسجَّل كأنها شوهدت، وبعدها تنتقل لآخر الصفحة مطوية */
+export function MarkPrefsSeen() {
+  useEffect(() => { markPrefsSeenAction().catch(() => {}); }, []);
+  return null;
+}
 
 export function ClearDraft() {
   useEffect(() => { try { localStorage.removeItem("nav_checkout_draft_v2"); } catch { /* */ } }, []);
