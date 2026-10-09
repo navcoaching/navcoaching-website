@@ -65,6 +65,8 @@ export const auth = betterAuth({
   },
   plugins: [
     emailOTP({
+      // حساب مراجعة Apple: المراجع ما يستقبل بريدنا، فلبريد المراجعة فقط رمز ثابت من متغير بيئة سري (انظر reviewLogin)
+      generateOTP: ({ email }) => reviewLogin(email) ?? undefined,
       otpLength: 6,
       expiresIn: 60 * 10,
       allowedAttempts: 5,
@@ -76,6 +78,7 @@ export const auth = betterAuth({
         if (!(await allow(`otp:email:${key}`, 8, 3600)) || !(await allow("otp:site:hour", 300, 3600))) {
           throw new Error("otp rate limited");
         }
+        if (reviewLogin(email)) return; // حساب المراجعة: لا يُرسل بريد (الحدود أعلاه تبقى سارية)
         const brand = await mailBrand(pool).catch(() => ({ site: (process.env.NEXT_PUBLIC_SITE_URL || "https://navcoaching.com").replace(/\/$/, "") }));
         await sendMail(
           email,
@@ -92,3 +95,15 @@ export const auth = betterAuth({
 });
 
 export type Session = typeof auth.$Infer.Session;
+
+/**
+ * دخول مراجع Apple: APP_REVIEW_EMAIL وAPP_REVIEW_CODE (6 أرقام) في متغيرات بيئة الموقع فقط، وليست في الكود.
+ * يعمل لهذا البريد وحده، وبنفس حدود رموز الدخول (5 محاولات للرمز، 8 طلبات بالساعة للبريد، وحدود IP).
+ * فارغ أو غير صالح = معطّل. يرجع الرمز الثابت لبريد المراجعة، وإلا null.
+ */
+export function reviewLogin(email: string): string | null {
+  const e = (process.env.APP_REVIEW_EMAIL ?? "").trim().toLowerCase();
+  const code = (process.env.APP_REVIEW_CODE ?? "").trim();
+  if (!e || !/^\d{6}$/.test(code)) return null;
+  return email.trim().toLowerCase() === e ? code : null;
+}

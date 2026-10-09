@@ -442,3 +442,26 @@ test("التطبيق: مفتاح إيقاف الطلب من التطبيق", asy
   }
   assert.equal(await content(), true);
 });
+
+test("التطبيق: حساب مراجعة Apple يدخل برمز ثابت بدون بريد، ولبريده فقط", async ({}, info) => {
+  test.skip(info.project.name !== "desktop", "اختبار واجهات فقط: مرة واحدة يكفي");
+  const H = { "expo-origin": "navcoaching://", "x-forwarded-for": `10.5.${Date.now() % 250}.5`, "content-type": "application/json" };
+  const send = (email: string) => fetch(`${B}/api/auth/email-otp/send-verification-otp`, { method: "POST", headers: H, body: JSON.stringify({ email, type: "sign-in" }) });
+  const signIn = (email: string, otp: string) => fetch(`${B}/api/auth/sign-in/email-otp`, { method: "POST", headers: H, body: JSON.stringify({ email, otp }) });
+  const review = "app-review@e2e.test";
+
+  assert.equal((await send(review)).status, 200);
+  // لا بريد لحساب المراجعة
+  assert.equal((await db.query("SELECT count(*)::int n FROM dev_mailbox WHERE recipient=$1", [review])).rows[0].n, 0);
+  assert.notEqual((await signIn(review, "000000")).status, 200);
+  const ok = await signIn(review, "246810");
+  assert.equal(ok.status, 200);
+  const cookie = ok.headers.getSetCookie().map((c) => c.split(";")[0]).join("; ");
+  const me = await (await fetch(`${B}/api/mobile/v1/me`, { headers: { ...H, Cookie: cookie } })).json();
+  assert.equal(me.user.email, review);
+
+  // الرمز الثابت لا يفتح أي بريد آخر
+  const other = `not-review-${Date.now()}@example.com`;
+  await send(other);
+  assert.notEqual((await signIn(other, "246810")).status, 200);
+});
