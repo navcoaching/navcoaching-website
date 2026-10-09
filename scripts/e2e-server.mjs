@@ -24,6 +24,8 @@ const env = {
   STORAGE_DRIVER: "local",
   LOCAL_UPLOAD_DIR: ".data/e2e-uploads",
   COACH_NOTIFY_EMAIL: "coach-notify@e2e.test",
+  APP_REVIEW_EMAIL: "app-review@e2e.test",
+  APP_REVIEW_CODE: "246810",
   RESEND_API_KEY: "",
   MAIL_FROM: "",
   E2E_MAILBOX: "1",
