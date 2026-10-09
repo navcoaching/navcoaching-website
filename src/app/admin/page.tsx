@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { differentPerson } from "@/lib/names";
 import LineChart from "@/components/LineChart";
 import StartTag from "@/components/admin/StartTag";
-import { batch, litList, withUser } from "@/lib/db";
+import { batch, litList, pool, withUser } from "@/lib/db";
 import { requireCoach } from "@/lib/session";
 import { mailConfigured } from "@/lib/mail";
 import { riyals } from "@/lib/format";
@@ -71,7 +72,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
       const alerts: Alert[] = [];
       const todos: Todo[] = [];
       const ending: Ending[] = [];
-      const [subsR, checkInsR, surveysR, swapTodoR, noProgramR, noMeasureR] = await batch(tx, [
+      const [subsR, checkInsR, surveysR, swapTodoR, noProgramR, noMeasureR, ownersR] = await batch(tx, [
         `SELECT id, order_no, user_id, contact_name, product_name, status, category, months, offer_id, list_price_halalas, renewal_kind,
                 sub_start_at, sub_end_at, review_weekday
            FROM orders WHERE status = 'active' AND category = 'follow' AND sub_start_at IS NOT NULL AND NOT is_demo AND archived_at IS NULL
@@ -92,15 +93,21 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           WHERE NOT o.is_demo AND o.archived_at IS NULL AND o.status NOT IN ('cancelled','completed')
             AND (coalesce(i.health->>'weight','') = '' OR coalesce(i.health->>'height','') = '')
           ORDER BY o.created_at DESC LIMIT 20`,
+        // طلبات باسم يختلف عن اسم صاحب الحساب (قد تكون لشخص آخر فيشوفها صاحب البريد)
+        `SELECT o.order_no, o.contact_name, u.name AS user_name, u.email FROM orders o JOIN "user" u ON u.id = o.user_id
+          WHERE NOT o.is_demo AND o.status <> 'cancelled' AND u.role = 'client' ORDER BY o.created_at DESC LIMIT 500`,
       ]);
       const subs = subsR.rows, noMeasure = noMeasureR.rows;
+      for (const r of ownersR.rows) if (differentPerson(r.user_name, r.contact_name, r.email)) {
+        alerts.push({ order_no: r.order_no, name: r.contact_name, tone: "bad", text: `الطلب في حساب «${r.user_name}» (${r.email}). إذا الطلب لشخص آخر انقليه لحسابه من صفحة الطلب ← «صاحب الحساب»` });
+      }
       const renewals = await loadRenewals(tx, subs, (o) => daysBetween(today, riyadhDate(o.sub_end_at)));
       // بيانات الالتزام والمراجعات لكل المشتركين دفعة واحدة (بدل 6 استعلامات لكل متدرب)
       await prefetchOrders(tx, subs.map((o) => o.id as string));
 
       // (ب) ما يحتاج تعديلاً منكِ
       for (const x of checkInsR.rows) {
-        todos.push({ order_no: x.order_no, name: x.contact_name, tone: "warn", href: `/admin/orders/${x.order_no}`,
+        todos.push({ order_no: x.order_no, name: x.contact_name, tone: "warn", href: `/admin/orders/${x.order_no}#checkins`,
           text: x.n === 1 ? "مراجعة أسبوعية بدون رد" : `${x.n} مراجعات أسبوعية بدون رد` });
       }
       for (const x of surveysR.rows) {
@@ -165,7 +172,13 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
     getSettings(),
   ]);
   const c = (st: string) => data.counts.find((x) => x.status === st)?.n ?? 0;
+  // اتصال الموقع بقاعدة البيانات لازم يكون بحساب يطبّق RLS (مو حساب المالك)، وإلا تتعطل الحماية بين الحسابات
+  const rlsOk = await pool.query(
+    `SELECT NOT (r.rolsuper OR r.rolbypassrls)
+            AND NOT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'orders' AND tableowner = current_user) AS ok
+       FROM pg_roles r WHERE r.rolname = current_user`).then((r) => Boolean(r.rows[0]?.ok)).catch(() => false);
   const setup = [
+    { ok: rlsOk, label: "حماية البيانات بين الحسابات (RLS)", hint: rlsOk ? "اتصال الموقع بقاعدة البيانات بحساب التطبيق، وكل متدرب يشوف بياناته فقط." : "⚠️ الموقع متصل بقاعدة البيانات بحساب المالك، فالحماية على مستوى قاعدة البيانات معطّلة. غيّري DATABASE_URL في Netlify لحساب التطبيق (nav_app)." },
     { ok: mailConfigured(), label: "البريد (رمز الدخول والتنبيهات)", hint: "يحتاج RESEND_API_KEY و MAIL_FROM. بدونه لا يستطيع العملاء الدخول في الإنتاج." },
     { ok: process.env.STORAGE_DRIVER === "netlify", label: "التخزين الخاص للملفات (Netlify Blobs)", hint: "على جهاز التطوير يُستخدم مجلد محلي." },
     { ok: Boolean(process.env.COACH_NOTIFY_EMAIL), label: "بريد تنبيهات الطلبات للمدربة", hint: "COACH_NOTIFY_EMAIL" },
@@ -185,10 +198,15 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
         <div className="grid g3">
           {([["orders", "عدد الطلبات", "", "var(--navy)"], ["members", "عدد الأعضاء الجدد", "", "var(--cyan)"], ["revenue", "مجموع المبالغ المدفوعة", " ريال", "#c77d00"]] as const).map(([k, title, unit, color]) => {
             const total = data.monthly.reduce((a, m) => a + m[k], 0);
+            // هذا الشهر مقابل الشهر الماضي (آخر عنصرين في السلسلة)
+            const cur = data.monthly.at(-1)?.[k] ?? 0, prev = data.monthly.at(-2)?.[k] ?? 0, diff = cur - prev;
             return (
               <div key={k} className="card stack" style={{ ["--space" as string]: "6px" }}>
                 <span className="muted">{title}</span>
                 <b className="num" style={{ fontSize: 24 }}>{total.toLocaleString("en-US")}{unit}</b>
+                <span className={`small trend ${diff > 0 ? "up" : diff < 0 ? "down" : ""}`} data-testid={`trend-${k}`}>
+                  هذا الشهر {cur.toLocaleString("en-US")}{unit} · {diff === 0 ? "مثل الشهر الماضي" : `${diff > 0 ? "↑" : "↓"} ${Math.abs(diff).toLocaleString("en-US")} عن الشهر الماضي`}
+                </span>
                 <LineChart title={title} unit={unit} height={160} series={[{ label: title, color, points: data.monthly.map((m) => ({ x: m.ym.slice(2), y: m[k] })) }]} />
               </div>
             );

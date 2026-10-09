@@ -1142,8 +1142,8 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 .pub .section.white { background: var(--pub-bg); }
 .pub .section:not(.white):not(.dark) { background: var(--pub-soft); }
 .pub .btn { border-radius: 12px; }
-.pub h2 { color: var(--heading); }
-.pub .section.dark h2 { color: #fff; }
+/* لون العناوين في الأقسام الفاتحة فقط (البانرات الداكنة مثل باقة القيمرز تحتفظ بلونها الأبيض) */
+.pub .section:not(.dark) .sec-head h2 { color: var(--heading); }
 .pub .eyebrow::before { width: 16px; height: 8px; background: var(--logo-cyan); transform: skewX(var(--slant)); }
 
 /* كلمة مميزة بخط سماوي مائل تحتها (مثل ضربة الشعار) */
@@ -1328,3 +1328,176 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 }
 .pcard.fx-spin { animation-duration: 0.7s; }
 @media (prefers-reduced-motion: reduce) { .fx-spin { animation: none; } }
+
+/* ---------- ظهور تدريجي أوضح في الصفحات العامة ---------- */
+.js .pub .reveal { transform: translateY(34px) scale(0.98); transition-duration: 0.8s; }
+.js .pub .reveal.in { transform: none; }
+/* أعلى الصفحة: عناصر الهيرو ورأس الصفحات الداخلية تظهر واحداً بعد الآخر عند الفتح (CSS فقط) */
+@keyframes pub-rise { from { opacity: 0; transform: translateY(26px); } }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-v2 .hero-center > *, .pub .page-hero .wrap > * { animation: pub-rise 0.8s var(--ease) both; }
+  .hero-v2 .hero-center > :nth-child(2), .pub .page-hero .wrap > :nth-child(2) { animation-delay: 0.08s; }
+  .hero-v2 .hero-center > :nth-child(3), .pub .page-hero .wrap > :nth-child(3) { animation-delay: 0.16s; }
+  .hero-v2 .hero-center > :nth-child(4), .pub .page-hero .wrap > :nth-child(4) { animation-delay: 0.24s; }
+  .hero-v2 .hero-center > :nth-child(5), .pub .page-hero .wrap > :nth-child(5) { animation-delay: 0.32s; }
+  .hero-v2 .hero-center > :nth-child(6) { animation-delay: 0.4s; }
+  .hero-v2 .hero-center > :nth-child(n+7) { animation-delay: 0.5s; animation-duration: 1s; }
+}
+@media (prefers-reduced-motion: reduce) { .js .pub .reveal { transform: none; } }
+
+/* =====================================================================
+   واجهة المتدرب ولوحة الإدارة (.app): نظام SkyLearn بألوان الهوية
+   بطاقات 20px، أزرار 16px، أخضر للتقدم، أصفر للإنجازات، coral هادئ للأخطاء.
+   المرجع: docs/design/DESIGN.md ← قسم «الحساب ولوحة الإدارة».
+   ===================================================================== */
+.app {
+  --app-bg: #ffffff; --app-surface: #f8fafc; --app-elev: #ffffff; --app-sunken: #f1f5f9;
+  --app-line: #e2e8f0; --app-ink: #0f172a; --app-muted: #475569; --app-subtle: #94a3b8;
+  --primary: #284da0; --primary-deep: #1d3a80; --primary-soft: #e3ebfb; --primary-ink: #284da0; --on-primary: #ffffff;
+  --leaf: #22c55e; --leaf-deep: #15803d; --leaf-soft: #dcfce7;
+  --sun: #fbbf24; --sun-deep: #b45309; --sun-soft: #fef3c7;
+  --coral: #f87171; --coral-deep: #b91c1c; --coral-soft: #fee2e2;
+  --app-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  --app-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* إعادة ربط ألوان النظام العام داخل الواجهة */
+  --paper: var(--app-bg); --surface: var(--app-surface); --surface-2: var(--app-sunken); --line: var(--app-line);
+  --text: var(--app-ink); --heading: var(--app-ink); --muted: var(--app-muted);
+  --navy: var(--primary); --accent-text: var(--primary-ink); --cyan-soft: var(--primary-soft); --cyan-ink: var(--primary-ink);
+  --ok: var(--leaf-deep); --ok-bg: var(--leaf-soft); --warn: var(--sun-deep); --warn-bg: var(--sun-soft); --err: var(--coral-deep); --err-bg: var(--coral-soft);
+  --choice-bg: var(--primary-soft); --choice-fg: var(--primary-ink);
+  background: var(--app-bg); color: var(--app-ink);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .app {
+    --app-bg: #0b1220; --app-surface: #111a2e; --app-elev: #16213a; --app-sunken: #0e1627;
+    --app-line: #22304a; --app-ink: #e2e8f0; --app-muted: #a3b1c6; --app-subtle: #64748b;
+    --primary: #4cc5ed; --primary-deep: #8adaf4; --primary-soft: #12324a; --primary-ink: #8adaf4; --on-primary: #06233a;
+    --leaf-deep: #86efac; --leaf-soft: #0f2e1c; --sun-deep: #fcd34d; --sun-soft: #3a2c0a; --coral-deep: #fca5a5; --coral-soft: #3b1717;
+    --app-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+}
+:root[data-theme="dark"] .app {
+  --app-bg: #0b1220; --app-surface: #111a2e; --app-elev: #16213a; --app-sunken: #0e1627;
+  --app-line: #22304a; --app-ink: #e2e8f0; --app-muted: #a3b1c6; --app-subtle: #64748b;
+  --primary: #4cc5ed; --primary-deep: #8adaf4; --primary-soft: #12324a; --primary-ink: #8adaf4; --on-primary: #06233a;
+  --leaf-deep: #86efac; --leaf-soft: #0f2e1c; --sun-deep: #fcd34d; --sun-soft: #3a2c0a; --coral-deep: #fca5a5; --coral-soft: #3b1717;
+  --app-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+.app { letter-spacing: 0.01em; }
+
+/* القوائم الجانبية: فاتحة، والصفحة الحالية بخلفية لونية ناعمة */
+.app .account-side, .app .admin-side { background: var(--app-elev); color: var(--app-ink); border-inline-start: 1px solid var(--app-line); padding: 18px 12px; gap: 4px; }
+.app .account-side a, .app .account-side .off, .app .admin-side a {
+  min-height: 48px; padding: 10px 14px; border-radius: 16px; color: var(--app-muted); font-weight: 600; transition: background .2s, color .2s;
+}
+.app .account-side a:hover, .app .admin-side a:hover { background: var(--app-sunken); color: var(--app-ink); }
+.app .account-side a[aria-current="page"], .app .admin-side a[aria-current="page"] { background: var(--primary-soft); color: var(--primary-ink); box-shadow: none; }
+.app .account-side .off { color: var(--app-subtle); }
+.app .admin-side .nav-title { color: var(--app-subtle); opacity: 1; font-size: 12.5px; letter-spacing: .03em; }
+.app .admin-side .nav-group + .nav-group { border-top-color: var(--app-line); }
+.app .admin-side .brand img { height: 28px; }
+@media (max-width: 900px) {
+  .app .admin-side { border-inline-start: 0; border-bottom: 1px solid var(--app-line); }
+  .app .admin-side a { min-height: 44px; }
+}
+@media (max-width: 760px) { .app .account-side { border-inline-start: 0; border-bottom: 1px solid var(--app-line); } }
+.app .account-content, .app .admin-main { background: var(--app-bg); }
+
+/* العناوين والأرقام */
+.app h1 { font-weight: 700; letter-spacing: 0; }
+.app .num, .app .stat b { font-variant-numeric: tabular-nums; }
+
+/* البطاقات */
+.app .card { background: var(--app-surface); border: 1px solid var(--app-line); border-radius: 20px; box-shadow: none; }
+.app .card .card { background: var(--app-elev); border-radius: 16px; }
+.app a.card, .app .order-card { transition: transform .24s var(--app-ease), box-shadow .24s, border-color .2s; }
+.app a.card:hover, .app .order-card:hover { transform: translateY(-3px); box-shadow: var(--app-shadow); border-color: var(--app-line); }
+.app .my-program { background: var(--app-elev); border: 3px solid var(--primary); box-shadow: 0 12px 32px rgba(40, 77, 160, 0.14); }
+.app .card.stat { gap: 6px; }
+.app .card.stat b { font: 700 clamp(30px, 3.4vw, 40px)/1.1 var(--f-display); color: var(--app-ink); }
+
+/* الأزرار: ارتفاع مريح، حافة سفلية أغمق، ضغطة خفيفة */
+.app .btn { border-radius: 16px; min-height: 52px; border-bottom: 2px solid var(--primary-deep); --bg: var(--primary); --fg: var(--on-primary); }
+.app .btn:hover { box-shadow: var(--app-shadow); }
+.app .btn:active { transform: scale(0.97); transition-duration: .12s; }
+.app .btn-sm { min-height: 44px; border-radius: 14px; }
+.app .btn-ghost { --bg: var(--app-elev); --fg: var(--app-ink); --bd: var(--app-line); border-bottom-width: 1.5px; border-bottom-color: var(--app-line); }
+.app .btn-ghost:hover { --bd: var(--primary); }
+.app .btn-cyan { --bg: var(--primary); --fg: var(--on-primary); }
+.app .btn-danger { --bg: transparent; --fg: var(--coral-deep); --bd: var(--coral); border-bottom-color: var(--coral); }
+
+/* الحقول */
+.app input[type="text"], .app input[type="email"], .app input[type="tel"], .app input[type="number"], .app input[type="url"], .app input[type="search"], .app input[type="date"], .app select, .app textarea {
+  border: 1px solid var(--app-line); border-radius: 12px; background: var(--app-elev);
+}
+.app input:focus, .app select:focus, .app textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-soft); }
+.app .choice span { border-radius: 14px; border-width: 1px; background: var(--app-elev); }
+.app .choice input:checked + span { border-color: var(--primary); }
+
+/* الأشرطة: مسار ناعم وتعبئة خضراء للتقدم، وcoral عند التجاوز */
+.app .bar { height: 8px; background: var(--primary-soft); }
+.app .bar i { background: var(--leaf); transition: width .48s ease-out; }
+.app .bar.over i { background: var(--coral); }
+.app .progress span { background: var(--primary-soft); }
+.app .progress span.on { background: var(--leaf); }
+
+/* الالتزام والإنجازات بالأصفر (للإنجازات فقط) */
+.app .adherence { background: var(--app-elev); border: 1px solid var(--app-line); border-radius: 16px; }
+.app .adherence .streak { background: var(--sun-soft); color: var(--sun-deep); }
+
+/* الحالات والتاقات: حبوب 999px */
+.app .status { border-radius: 999px; font-weight: 600; }
+.app .status.ok { background: var(--leaf-soft); color: var(--leaf-deep); }
+.app .status.action { background: var(--sun-soft); color: var(--sun-deep); }
+.app .status.wait { background: var(--primary-soft); color: var(--primary-ink); }
+.app .status.err { background: var(--coral-soft); color: var(--coral-deep); }
+.app .tag { background: var(--primary-soft); color: var(--primary-ink); }
+.app h2 .count { background: var(--sun-soft); color: var(--sun-deep); }
+
+/* التنبيهات: ألوان ناعمة، والخطأ coral هادئ */
+.app .alert { border-radius: 16px; }
+.app .alert.info { background: var(--primary-soft); color: var(--primary-ink); }
+.app .alert-list li { background: var(--app-elev); border: 1px solid var(--app-line); border-inline-start-width: 4px; border-radius: 12px; }
+.app .alert-list li.warn { border-inline-start-color: var(--sun); }
+.app .alert-list li.bad { border-inline-start-color: var(--coral); }
+.app .alert-list li.info { border-inline-start-color: var(--leaf); }
+
+/* الجداول */
+.app .table-wrap { border-radius: 16px; border-color: var(--app-line); background: var(--app-elev); }
+.app table.t thead th { background: var(--app-sunken); color: var(--app-muted); font-family: var(--f-body); font-weight: 600; font-size: 13.5px; }
+.app table.t tbody tr:hover td { background: var(--app-surface); }
+
+/* التبويبات والشريط الثابت */
+.app .tabs { background: var(--app-sunken); }
+.app .tabs a[aria-current="true"] { background: var(--app-elev); color: var(--primary-ink); }
+.app .status-bar { background: var(--app-elev); border-radius: 16px; }
+
+@media (prefers-reduced-motion: reduce) { .app a.card:hover, .app .order-card:hover { transform: none; } .app .bar i { transition: none; } }
+.app .trend { color: var(--app-subtle); font-weight: 600; }
+.app .trend.up { color: var(--leaf-deep); }
+.app .trend.down { color: var(--coral-deep); }
+.app .card.stack > b, .app .trend { display: block; }
+/* شريط الالتزام: أخضر للجيد، أصفر للمتوسط، coral هادئ للمنخفض (بدون أحمر حاد) */
+.app .meter { background: var(--primary-soft); }
+.app .meter.good > span { background: var(--leaf); }
+.app .meter.mid > span { background: var(--sun); }
+.app .meter.low > span { background: var(--coral); }
+/* تفضيلات التواصل بعد أول حفظ: مطوية في آخر «حسابي» */
+.prefs-fold { grid-column: 1 / -1; }
+.prefs-fold > summary { cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; font: 600 17px var(--f-display); }
+.prefs-fold > summary::-webkit-details-marker { display: none; }
+.prefs-fold > summary::after { content: "+"; font-size: 22px; color: var(--accent-text); }
+.prefs-fold[open] > summary::after { content: "−"; }
+.prefs-fold[open] > summary { margin-bottom: 12px; }
+/* إجابات المراجعة الأسبوعية في الإدارة: السؤال فوق الجواب على الجوال */
+.checkin-answers dt { font-weight: 600; color: var(--text); }
+.checkin-answers dd { font-weight: 400; white-space: pre-wrap; }
+@media (max-width: 640px) { .checkin-answers { grid-template-columns: minmax(0, 1fr); } .checkin-answers dd { margin-bottom: 8px; } }
+/* زر المظهر (فاتح/داكن/تلقائي) في قائمة الإدارة */
+.admin-theme .theme-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 12px 12px; font-size: 14px; color: var(--app-muted, var(--on-dark)); }
+@media (max-width: 900px) {
+  .admin-theme { flex: none; display: flex; align-items: center; }
+  .admin-theme .theme-row { padding: 0; }
+  .admin-theme .theme-row > span { display: none; }
+  .admin-theme .theme-btn { width: 44px; height: 44px; }
+}

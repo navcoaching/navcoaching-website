@@ -185,6 +185,10 @@ export default function Checkout() {
           <Check label="أؤكد صحة البيانات وأوافق على الشروط وسياسة الخصوصية." value={str(a, "consent_terms")} onChange={(v) => set("consent_terms", v)} err={errors.consent_terms}
             link={{ title: "اقرأ الشروط والخصوصية", onPress: () => router.push("/policies") }} />
           <Check label="أوافق على التواصل معي عبر واتساب بخصوص طلبي." value={str(a, "consent_wa")} onChange={(v) => set("consent_wa", v)} err={errors.consent_wa} />
+          {/* الخادم يطلب تأكيداً إذا كان الاسم في الطلب غير اسم صاحب الحساب (مثل الموقع) */}
+          {(!!errors.for_me || str(a, "for_me") === "on") && (
+            <Check label={`${errors.for_me ?? ""} الطلب لي أنا صاحب هذا الحساب.`.trim()} value={str(a, "for_me")} onChange={(v) => set("for_me", v)} />
+          )}
           <Body muted>بعد الإرسال: يظهر لك رقم طلبك والمبلغ وبيانات التحويل. حوّل وارفع صورة الإيصال من صفحة الطلب، ويتأكد اشتراكك بعد التحقق من وصول المبلغ. نتواصل معك خلال {d.responseTime}.</Body>
         </Card>
       )}

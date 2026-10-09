@@ -110,7 +110,7 @@ export type OrderRow = {
   id: string; order_no: string; category: string; product_name: string; offer_label: string; months: number;
   list_price_halalas: number; amount_due_halalas: number | null; currency: string; student_discount_requested: boolean;
   status: string; contact_name: string; contact_phone: string; created_at: string; updated_at: string; paid_at: string | null;
-  product_slug?: string | null; user_email?: string; is_demo: boolean; archived_at?: string | null;
+  product_slug?: string | null; user_email?: string; user_name?: string; is_demo: boolean; archived_at?: string | null;
   product_id?: string | null; source?: string; sub_start_at?: string | null; sub_end_at?: string | null; review_weekday?: number | null;
   offer_id?: string | null; renewal_of?: string | null; renewal_kind?: string | null; preferred_start?: string | null; video_review?: boolean;
 };
@@ -126,7 +126,7 @@ export async function getMyOrders(userId: string): Promise<OrderRow[]> {
 export async function getOrderDetail(userId: string, orderNo: string) {
   return withUser(userId, async (tx) => {
     const { rows: [order] } = await tx.query(
-      `SELECT o.*, o.preferred_start::text AS preferred_start, p.slug AS product_slug, coalesce(p.video_review, false) AS video_review, u.email AS user_email
+      `SELECT o.*, o.preferred_start::text AS preferred_start, p.slug AS product_slug, coalesce(p.video_review, false) AS video_review, u.email AS user_email, u.name AS user_name
          FROM orders o LEFT JOIN products p ON p.id = o.product_id JOIN "user" u ON u.id = o.user_id
         WHERE o.order_no = $1`, [orderNo]);
     if (!order) return null;

@@ -160,7 +160,7 @@ export async function savePrefsAction(_: ActionState, fd: FormData): Promise<Act
      ON CONFLICT (user_id) DO UPDATE SET email_enabled = EXCLUDED.email_enabled, whatsapp_enabled = EXCLUDED.whatsapp_enabled,
        push_enabled = coalesce($4, user_prefs.push_enabled), updated_at = now()`,
     [user.id, email, whatsapp, push]));
-  revalidatePath("/account");
+  // بدون revalidate: البطاقة تبقى مكانها مع رسالة الحفظ، وفي الزيارة القادمة تنتقل لآخر الصفحة مطوية
   return { ok: true, message: "تم حفظ تفضيلات التواصل." };
 }
 

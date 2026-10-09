@@ -5,6 +5,7 @@ import { expo } from "@better-auth/expo";
 import { pool } from "./db";
 import { mailBrand, notifySafe, sendMail } from "./mail";
 import { renderEmail } from "./email-template";
+import { allow } from "./rate";
 
 /**
  * الدخول برمز مؤقت يصل للبريد (بدون كلمة مرور): أبسط على الجوال ولا يوجد كلمات مرور تتسرب.
@@ -69,11 +70,12 @@ export const auth = betterAuth({
       allowedAttempts: 5,
       storeOTP: "hashed",
       async sendVerificationOTP({ email, otp }) {
-        // حدود الإرسال (فوق حد Better Auth لكل IP): 5 رموز بالساعة لنفس البريد ضد إغراق بريد شخص من عناوين IP متغيرة،
-        // وسقف عام بالساعة ضد تكلفة البريد. التجاوز يُتجاهل بصمت حتى لا يكشف شيئاً عن الحسابات.
-        const ok = async (key: string, max: number) =>
-          (await pool.query("SELECT app.rate_limit($1, $2, 3600) AS ok", [key, max])).rows[0].ok as boolean;
-        if (!(await ok(`otp:e:${email.trim().toLowerCase()}`, 5)) || !(await ok("otp:all", 200))) return;
+        // حدود إضافية على رموز الدخول (كل رمز = إيميل مدفوع من حصة الإرسال):
+        // لكل بريد 8 بالساعة (يمنع إغراق بريد شخص من أجهزة كثيرة)، وللموقع كله 300 بالساعة.
+        const key = email.trim().toLowerCase();
+        if (!(await allow(`otp:email:${key}`, 8, 3600)) || !(await allow("otp:site:hour", 300, 3600))) {
+          throw new Error("otp rate limited");
+        }
         const brand = await mailBrand(pool).catch(() => ({ site: (process.env.NEXT_PUBLIC_SITE_URL || "https://navcoaching.com").replace(/\/$/, "") }));
         await sendMail(
           email,

@@ -7,6 +7,8 @@ import { allow, clientIp } from "./rate";
 import { notifySafe } from "./mail";
 import { riyals } from "./format";
 import { startPrefLabel } from "./schedule";
+import { differentPerson } from "./names";
+import { getFreshUser } from "./session";
 
 type Result = { orderNo: string } | { error: string; fieldErrors?: Record<string, string> };
 
@@ -34,6 +36,15 @@ export async function createOrder(userId: string, fd: FormData): Promise<Result>
     return { error: "راجع الحقول المحددة.", fieldErrors: { ...fieldErrors, ...custom.errors } };
   }
   const v = parsed.data;
+  // طلب باسم شخص غير صاحب الحساب: يُضاف لهذا الحساب ويشوفه صاحب البريد، فنطلب تأكيداً صريحاً
+  // الاسم من قاعدة البيانات مباشرة (كوكي الجلسة قد يحمل اسماً قديماً حتى 5 دقائق)
+  const owner = fd.get("for_me") === "on" ? null : await getFreshUser();
+  if (owner && owner.id === userId && differentPerson(owner.name, v.name, owner.email)) {
+    return {
+      error: `أنت مسجّل بحساب «${owner.name}» (${owner.email})، والطلب باسم «${v.name}». الطلب يُضاف لهذا الحساب فقط.`,
+      fieldErrors: { for_me: "إذا الطلب لشخص آخر سجّل خروج وخلّه يطلب من حسابه. وإذا الطلب لك فعّل التأكيد:" },
+    };
+  }
 
   if (!(await allow(`order:u:${userId}`, 6, 3600)) || !(await allow(`order:ip:${await clientIp()}`, 20, 3600)))
     return { error: "محاولات كثيرة خلال وقت قصير. انتظر قليلاً ثم حاول مرة أخرى." };

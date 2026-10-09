@@ -1,5 +1,6 @@
 "use server";
 
+import { differentPerson } from "@/lib/names";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -171,6 +172,7 @@ export async function replyCheckinAction(_: ActionState, fd: FormData): Promise<
     });
   } catch (err) { return fail(err); }
   revalidatePath(`/admin/orders/${orderNo}`);
+  revalidatePath("/admin/checkins");
   return { ok: true, message: "تم إرسال الرد." + summarize(results) };
 }
 
@@ -619,6 +621,7 @@ const manualSchema = z.object({
   amount: z.union([z.literal(""), z.coerce.number().min(0).max(100000)]).optional().default(""),
   note: z.string().trim().max(500).optional().default(""),
   notify: z.enum(["", "on"]).optional().default(""),
+  same_person: z.enum(["", "on"]).optional().default(""),
 });
 
 export async function createManualOrderAction(_: ActionState, fd: FormData): Promise<ActionState> {
@@ -633,6 +636,15 @@ export async function createManualOrderAction(_: ActionState, fd: FormData): Pro
   let orderNo: string;
   let results: ChannelResult[] = [];
   try {
+    const clash = await asCoach(async (tx) => {
+      // البريد مسجّل باسم شخص آخر؟ (أكثر سبب يخلّي متدربة تشوف برنامج غيرها)
+      const { rows: [u] } = await tx.query(`SELECT name, email FROM "user" WHERE lower(email) = $1`, [v.email]);
+      return u && v.same_person !== "on" && differentPerson(u.name, v.name, u.email) ? (u.name as string) : null;
+    });
+    if (clash) return {
+      error: `هذا البريد مسجّل باسم «${clash}»، والطلب باسم «${v.name}». إذا البريد غلط صححيه؛ وإذا هو نفس الشخص فعّلي «نفس الشخص» وأرسلي مرة ثانية.`,
+      fieldErrors: { email: "البريد مسجّل باسم شخص آخر" },
+    };
     ({ orderNo, results } = await asCoach(async (tx) => {
       const { rows: [r] } = await tx.query("SELECT app.coach_create_manual_order($1,$2,$3,$4,$5,$6,$7) AS no",
         [v.email, v.name, phone, v.sku, v.status, v.amount === "" ? null : Math.round(v.amount * 100), v.note]);
@@ -715,6 +727,34 @@ export async function deleteMemberAction(_: ActionState, fd: FormData): Promise<
   revalidatePath("/admin/members");
   revalidatePath("/admin");
   return { ok: true, message: `تم حذف العضو ${email}.` };
+}
+
+// ---------- نقل طلب لحساب صاحبته الصحيح (طلب بُني على بريد شخص آخر بالخطأ) ----------
+export async function moveOrderAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const orderNo = String(fd.get("order_no") ?? "");
+  const email = String(fd.get("email") ?? "").trim();
+  const name = String(fd.get("name") ?? "").trim();
+  if (!orderNo || !email || email.length > 200 || name.length > 80) return { error: "اكتبي البريد الصحيح." };
+  if (String(fd.get("confirm") ?? "") !== "on") return { error: "أكّدي أن هذا البريد لصاحبة الطلب." };
+  let to: string;
+  try {
+    to = await asCoach(async (tx) => (await tx.query("SELECT app.coach_move_order($1,$2,$3) AS e", [orderNo, email, name])).rows[0].e as string);
+  } catch (err) { return fail(err); }
+  revalidatePath(`/admin/orders/${orderNo}`);
+  revalidatePath("/admin/members");
+  revalidatePath("/admin");
+  return { ok: true, message: `تم نقل الطلب لحساب ${to}. تدخل صاحبته ببريدها وتشوفه، والحساب السابق ما يشوفه.` };
+}
+
+export async function renameMemberAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const user = String(fd.get("user_id") ?? "");
+  const name = String(fd.get("name") ?? "").trim();
+  if (!user || user.length > 100) return { error: GENERIC };
+  try {
+    await asCoach((tx) => tx.query("SELECT app.coach_rename_member($1,$2)", [user, name]));
+  } catch (err) { return fail(err); }
+  revalidatePath("/admin/members");
+  return { ok: true, message: "تم تعديل اسم الحساب." };
 }
 
 // ---------- مكافأة الالتزام: 3 أشهر مجاناً (يُعاد حساب الاستحقاق هنا قبل المنح) ----------

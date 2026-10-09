@@ -696,6 +696,8 @@ export async function readWorkoutImageAction(_: ImportPreview, fd: FormData): Pr
   if (!ORDER_NO.test(orderNo) || !day) return { error: T_GENERIC };
   if (!visionEnabled()) return { error: "قراءة الصور غير مفعّلة حالياً." };
   if (!(await allow(`vision:u:${u.id}`, 10, 3600))) return { error: "وصلت الحد (10 صور في الساعة). حاول لاحقاً أو سجّل يدوياً." };
+  // سقف يومي للموقع كله (خدمة مدفوعة لكل صورة): يمنع أي ارتفاع مفاجئ في التكلفة حتى من حسابات كثيرة
+  if (!(await allow("vision:site:day", Number(process.env.VISION_DAILY_CAP ?? 150), 86400))) return { error: "قراءة الصور متوقفة مؤقتاً لليوم. سجّل يدوياً، وترجع الخدمة بكرة." };
 
   const ctx = await withUser(u.id, async (tx) => {
     const { rows: [b] } = await tx.query(

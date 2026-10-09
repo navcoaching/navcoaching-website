@@ -33,3 +33,21 @@ test("بريد رمز الدخول بدون ملخص طلب", () => {
   assert.ok(html.includes("123456"));
   assert.ok(!html.includes("ملخص طلبك"));
 });
+test("رابط فيه رقم طلب يبقى سليماً (كان يُكسر ← صفحة 404)", () => {
+  const url = "https://navcoaching.com/admin/orders/NAV-260927-6K64X/nutrition";
+  const html = renderEmail({ headline: "x", message: `سعرات مقترحة\n${url}\nالطلب NAV-260927-6K64X`, brand });
+  assert.ok(html.includes(`<a href="${url}"`), "href كامل بدون span");
+  assert.ok(!/href="[^"]*<span/.test(html));
+  assert.ok(html.includes('<span dir="ltr" style="white-space:nowrap">NAV-260927-6K64X</span>'), "رقم الطلب خارج الرابط يُلفّ");
+});
+test("أقسام الإيميل اليومي: عنوان بعدد، واسم، وزر فتح لكل بند، وتهريب النصوص", () => {
+  const html = renderEmail({ headline: "مراجعات اليوم", message: "", brand, footnote: "إيقاف من الإعدادات",
+    sections: [{ title: "🔥 سعرات مقترحة جديدة", items: [{ name: "Sarah <b>", note: "1,535 سعرة (+70)", url: "https://navcoaching.com/admin/orders/NAV-260927-6K64X/nutrition" }] },
+      { title: "فارغ", items: [] }] });
+  assert.ok(html.includes("🔥 سعرات مقترحة جديدة"));
+  assert.ok(html.includes("Sarah &lt;b&gt;"));
+  assert.ok(html.includes('href="https://navcoaching.com/admin/orders/NAV-260927-6K64X/nutrition"'));
+  assert.ok(html.includes("فتح ←"));
+  assert.ok(!html.includes("فارغ"), "القسم الفارغ لا يظهر");
+  assert.ok(html.includes("إيقاف من الإعدادات"));
+});

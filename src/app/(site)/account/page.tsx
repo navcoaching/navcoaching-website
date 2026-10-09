@@ -20,10 +20,12 @@ export default async function Account({ searchParams }: { searchParams: Promise<
   const user = await requireUser("/account");
   const [orders, prefs, freePlans, booklets, reviewable, intakeSaved, { denied, plan: planMsg, booklet: bookletMsg }] = await Promise.all([
     getMyOrders(user.id), getMyPrefs(user.id), getMyFreePlans(user.id), getMyBooklets(user.id), getReviewableOrder(user.id), hasIntake(user.id), searchParams]);
-  const prefsCard = (
-    <div className="card stack" aria-labelledby="prefs-h">
+  const prefsForm = <PrefsForm email={prefs.email_enabled} whatsapp={prefs.whatsapp_enabled} push={pushPublicKey() ? prefs.push_enabled : null} />;
+  // أول مرة (قبل حفظ التفضيلات): بطاقة أعلى الصفحة. بعد الحفظ: قائمة مطوية في آخر الصفحة
+  const prefsCard = !prefs.saved && (
+    <div className="card stack" aria-labelledby="prefs-h" data-testid="prefs-first">
       <h2 id="prefs-h" style={{ fontSize: 18 }}>تفضيلات التواصل</h2>
-      <PrefsForm email={prefs.email_enabled} whatsapp={prefs.whatsapp_enabled} push={pushPublicKey() ? prefs.push_enabled : null} />
+      {prefsForm}
     </div>
   );
   // الطلبات المكتملة والملغاة تنطوي تحت «طلبات سابقة»
@@ -39,7 +41,9 @@ export default async function Account({ searchParams }: { searchParams: Promise<
         <div className="stack" style={{ ["--space" as string]: "18px" }}>
           <div>
             <span className="eyebrow">حسابي</span>
-            <h1 style={{ fontSize: "clamp(26px,4vw,36px)", marginTop: 8 }}>أهلاً {user.name.includes("@") ? "" : user.name.split(" ")[0]}</h1>
+            <h1 style={{ fontSize: "clamp(26px,4vw,36px)", marginTop: 8 }}>أهلاً {user.name.includes("@") ? "" : user.name.split(" ")[0]} 👋</h1>
+            <p className="muted" style={{ marginTop: 4 }}>{inProgram.length ? "برنامجك وتقدمك وكل ما تحتاجه في مكان واحد." : "من هنا تتابع طلباتك وتجهّز حسابك."}</p>
+            <p className="small muted account-who" data-testid="account-who">داخل بـ <bdi dir="ltr">{user.email}</bdi> · <SignOut label="لست أنت؟ تسجيل الخروج" className="link-btn" /></p>
           </div>
           {prefsCard}
           <InstallPrompt />
@@ -131,6 +135,12 @@ export default async function Account({ searchParams }: { searchParams: Promise<
             <p className="small">تحتاج مساعدة؟ راسلنا على واتساب واذكر رقم طلبك.</p>
             <SignOut />
           </div>
+          {prefs.saved && (
+            <details className="card prefs-fold" data-testid="prefs-fold">
+              <summary>تفضيلات التواصل <span className="small muted">(البريد، واتساب، الجوال)</span></summary>
+              {prefsForm}
+            </details>
+          )}
         </aside>
       </div>
     </section>

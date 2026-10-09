@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   cancelOrderAction, savePrefsAction, submitCheckinAction, submitExitSurveyAction, submitReviewAction, updateMeasurementsAction, updateProfileAction, uploadProofAction,
 } from "@/app/actions/client";
@@ -13,9 +12,9 @@ export function ClearDraft() {
   return null;
 }
 
-export function SignOut() {
-  const router = useRouter();
-  return <button className="btn btn-ghost btn-sm" onClick={async () => { await authClient.signOut(); router.push("/"); router.refresh(); }}>تسجيل الخروج</button>;
+export function SignOut({ label = "تسجيل الخروج", className = "btn btn-ghost btn-sm" }: { label?: string; className?: string } = {}) {
+  // تحميل كامل بعد الخروج: يمسح أي صفحات محفوظة في ذاكرة المتصفح للحساب السابق
+  return <button type="button" className={className} onClick={async () => { await authClient.signOut(); window.location.assign("/"); }}>{label}</button>;
 }
 
 export function ProfileForm({ name }: { name: string }) {

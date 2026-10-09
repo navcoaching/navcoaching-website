@@ -61,6 +61,7 @@ export default async function NewManualOrder({ searchParams }: { searchParams: P
               <input id="m-note" name="note" type="text" maxLength={500} /></div>
           </div>
           <label className="check"><input type="checkbox" name="notify" defaultChecked /><span>أرسلي له بريداً بأن برنامجه أُضيف لحسابه</span></label>
+          <label className="check"><input type="checkbox" name="same_person" /><span>نفس الشخص (فعّليها فقط إذا البريد مسجّل باسم مختلف وأنتِ متأكدة أنه لنفس المتدرب)</span></label>
         </ActionForm>
       </div>
     </div>
