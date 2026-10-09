@@ -13,7 +13,7 @@ import RenewalPopup, { RenewButton, RenewPrice } from "./RenewalPopup";
 
 type O = {
   id: string; order_no: string; status: string; category: string; months: number; product_name: string; offer_label: string;
-  offer_id?: string | null; list_price_halalas: number; review_weekday?: number | null; renewal_kind?: string | null;
+  offer_id?: string | null; list_price_halalas: number; review_weekday?: number | null; review_every_weeks?: number; renewal_kind?: string | null;
   product_slug?: string | null; contact_name?: string | null; sub_start_at?: string | null; sub_end_at?: string | null;
 };
 

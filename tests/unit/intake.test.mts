@@ -2,7 +2,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { intakeSchema, splitIntake, OPT, EXPECTATIONS_Q } from "../../src/lib/intake.ts";
-import { reviewWeeks, weekStatuses, subscriptionState, addDays, fillTemplate, riyadhDate, startPrefLabel, validStartPref } from "../../src/lib/schedule.ts";
+import { reviewWeeks, weekStatuses, subscriptionState, addDays, fillTemplate, riyadhDate, startPrefLabel, validStartPref, reviewEveryLabel, reviewTitle } from "../../src/lib/schedule.ts";
 
 const valid = {
   idempotency_key: "k".repeat(20), sku: "int1", name: "سارة", cc: "+966", phone: "512345678", gender: OPT.gender[0], age: "29",
@@ -58,6 +58,21 @@ describe("الاشتراك والمراجعات الأسبوعية", () => {
     const w = reviewWeeks("2026-09-01T09:00:00Z", "2026-10-01T09:00:00Z", 2 /* الثلاثاء */, 2);
     assert.deepEqual(w.map((x) => x.due), ["2026-09-08", "2026-09-15", "2026-09-22", "2026-09-29"]);
     assert.equal(w[0].windowEnd, "2026-09-10");
+  });
+  test("الباقة الأساسية: المراجعة كل أسبوعين (أول موعد بعد أسبوعين من البدء)", () => {
+    const w = reviewWeeks("2026-09-01T09:00:00Z", "2026-11-01T09:00:00Z", 2, 2, 2);
+    assert.deepEqual(w.map((x) => x.due), ["2026-09-15", "2026-09-29", "2026-10-13", "2026-10-27"]);
+    assert.deepEqual(w.map((x) => x.no), [1, 2, 3, 4]);
+    // الأسبوعية بدون المعامل كما هي، والقيم غير الصالحة ترجع أسبوعية
+    assert.deepEqual(reviewWeeks("2026-09-01T09:00:00Z", "2026-10-01T09:00:00Z", 2, 2, 0).map((x) => x.due), ["2026-09-08", "2026-09-15", "2026-09-22", "2026-09-29"]);
+    // مراجعة فائتة في الأسبوع اللي بين موعدين ما تُحسب (لا يوجد موعد فيه)
+    const st = weekStatuses(w, new Set(), ["2026-09-21T10:00:00Z"], "2026-10-01");
+    assert.deepEqual(st.map((x) => x.status), ["missed", "current", "upcoming", "upcoming"]);
+    // مراجعة قرب الموعد الثاني تُحسب له
+    assert.equal(weekStatuses(w, new Set(), ["2026-09-28T10:00:00Z"], "2026-10-01")[1].status, "done");
+    assert.equal(reviewEveryLabel(2), "كل أسبوعين");
+    assert.equal(reviewTitle(1), "المراجعة الأسبوعية");
+    assert.equal(reviewTitle(2), "المراجعة (كل أسبوعين)");
   });
   test("حالة كل أسبوع: يدوي، من الموقع، فائت، حالي", () => {
     const w = reviewWeeks("2026-09-01T09:00:00Z", "2026-10-01T09:00:00Z", 2, 2);

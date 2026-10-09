@@ -22,14 +22,14 @@ type ActiveOrder = {
 
 export async function loadWeekState(tx: Tx, o: ActiveOrder, r: Reminders, today = riyadhDate()) {
   if (o.review_weekday == null) return [];
-  const weeks = reviewWeeks(o.sub_start_at, o.sub_end_at, o.review_weekday, r.review_window_days);
-  const { manual, checkins } = await loadOrderProgress(tx, o.id, { reviews: true });
+  const { manual, checkins, reviewEvery } = await loadOrderProgress(tx, o.id, { reviews: true });
+  const weeks = reviewWeeks(o.sub_start_at, o.sub_end_at, o.review_weekday, r.review_window_days, reviewEvery);
   return weekStatuses(weeks, manual, checkins, today);
 }
 
 /** نص تذكير المراجعة الذي يُعرض ويُرسل (نفسه في المعاينة والإرسال) */
 export function reviewMessage(r: Reminders, name: string, w: { windowStart: string; windowEnd: string } | undefined) {
-  if (!w) return fillTemplate("مرحباً {name}، تذكير بتحديث مراجعتك الأسبوعية من حسابك.", { name });
+  if (!w) return fillTemplate("مرحباً {name}، تذكير بتحديث مراجعتك من حسابك.", { name });
   return fillTemplate(r.review_text, { name, window_start: fmtYMD(w.windowStart), window_end: fmtYMD(w.windowEnd) });
 }
 
@@ -75,7 +75,7 @@ export async function runReminders(now = new Date(), opts: { ignoreQuietHours?: 
       const upcoming = weeks.find((w) => w.status !== "done" && w.windowEnd >= today);
       if (upcoming && daysBetween(today, upcoming.windowStart) <= r.review_lead_days && daysBetween(today, upcoming.windowStart) >= 0) {
         sent.push({ order: o.order_no, kind: "review_upcoming", results: await notifyTrainee(tx, target, {
-          kind: "review_upcoming", subject: "تذكير بالمراجعة الأسبوعية", text: reviewMessage(r, name, upcoming),
+          kind: "review_upcoming", subject: "تذكير بموعد مراجعتك", text: reviewMessage(r, name, upcoming),
           occasion: `review_upcoming:${upcoming.due}` }) });
       }
       // تذكير واحد لطيف بعد فوات موعد المراجعة (خلال 3 أيام من نهاية النافذة فقط)
@@ -83,7 +83,7 @@ export async function runReminders(now = new Date(), opts: { ignoreQuietHours?: 
       if (missed && daysBetween(missed.windowEnd, today) >= 1 && daysBetween(missed.windowEnd, today) <= 3) {
         const text = fillTemplate(r.missed_review_text, { name, window_end: fmtYMD(missed.windowEnd) });
         sent.push({ order: o.order_no, kind: "review_missed", results: await notifyTrainee(tx, target, {
-          kind: "review_missed", subject: "مراجعتك الأسبوعية", text, occasion: `review_missed:${missed.due}` }) });
+          kind: "review_missed", subject: "ما وصلتنا مراجعتك", text, occasion: `review_missed:${missed.due}` }) });
       }
     }
     return { today, expired, checked: orders.length, sent, digest };

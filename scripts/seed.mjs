@@ -61,14 +61,16 @@ try {
     const slug = SLUGS[p.id] ?? p.id.toLowerCase();
     const d = DETAILS[p.group];
     const { rows: [prod] } = await db.query(
-      `INSERT INTO products (slug, category, name, audience, items, note, delivery, requirements, policy_note, recommended, status, sort)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'published',$11)
+      `INSERT INTO products (slug, category, name, audience, items, note, delivery, requirements, policy_note, recommended, status, sort, review_every_weeks)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'published',$11,$12)
        ON CONFLICT (slug) DO UPDATE SET category=EXCLUDED.category, name=EXCLUDED.name, audience=EXCLUDED.audience,
          items=EXCLUDED.items, note=EXCLUDED.note, recommended=EXCLUDED.recommended, sort=EXCLUDED.sort, updated_at=now()
          ${force ? ", delivery=EXCLUDED.delivery, requirements=EXCLUDED.requirements, policy_note=EXCLUDED.policy_note" : ""}
        RETURNING id`,
       [slug, p.group, p.name, AUDIENCE_OVERRIDE[p.id] ?? p.for, JSON.stringify(p.items.map(([text, ok]) => ({ text, included: Boolean(ok) }))),
-       p.note || null, d.delivery, REQ, POLICY_OVERRIDE[p.id] ?? d.policy, Boolean(p.recommended), sort++],
+       p.note || null, d.delivery, REQ, POLICY_OVERRIDE[p.id] ?? d.policy, Boolean(p.recommended), sort++,
+       // الأساسية: متابعة كل أسبوعين (عند الإنشاء فقط؛ بعدها تغيّره المدربة من صفحة المنتج)
+       p.id === "bas" ? 2 : 1],
     );
     let os = 0;
     for (const o of p.offers) {

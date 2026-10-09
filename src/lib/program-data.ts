@@ -2,7 +2,7 @@ import type { Tx } from "@/lib/db";
 import type { EditorDay, ExOption } from "@/components/admin/ProgramEditor";
 import { normalizePlan, type LiftLog, type PlanWeek } from "@/lib/training";
 import { computeAdherence, type Adherence, type TrainingWeek } from "@/lib/adherence";
-import { addDays, reviewWeeks, riyadhDate, weekStatuses } from "@/lib/schedule";
+import { addDays, daysBetween, reviewWeeks, riyadhDate, weekStatuses } from "@/lib/schedule";
 import { DEFAULT_VOLUME_LIMIT, SHOULDER_HEAD_LIST, isShoulders } from "@/lib/volume";
 import { loadOrderProgress } from "@/lib/order-prefetch";
 
@@ -108,8 +108,11 @@ export async function loadAdherence(tx: Tx, o: AdherenceOrder, reviewWindowDays:
   }
   let reviews: { no: number; status: "done" | "current" | "missed" | "upcoming" }[] = [];
   if (o.review_weekday != null) {
-    const weeks = reviewWeeks(o.sub_start_at, o.sub_end_at, o.review_weekday, reviewWindowDays);
-    reviews = weekStatuses(weeks, d.manual, d.checkins, today);
+    const weeks = reviewWeeks(o.sub_start_at, o.sub_end_at, o.review_weekday, reviewWindowDays, d.reviewEvery);
+    // المراجعة تُحسب لأسبوع الاشتراك الذي تنتهي فيه فترتها (الأسبوعية: المراجعة n ← الأسبوع n؛
+    // كل أسبوعين: المراجعة n ← الأسبوع 2n، والأسبوع الذي بينهما يُحسب بالتمرين فقط)
+    const start = riyadhDate(o.sub_start_at);
+    reviews = weekStatuses(weeks, d.manual, d.checkins, today).map((w) => ({ ...w, no: Math.floor(daysBetween(start, w.due) / 7) }));
   }
   const rewarded = d.rewarded;
   return {

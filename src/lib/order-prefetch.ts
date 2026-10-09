@@ -1,7 +1,7 @@
 import "server-only";
 import { batch, litList, txScope, type Tx } from "./db";
 
-// تحميل مجمّع لبيانات الالتزام والمراجعات لعدة طلبات في رحلة واحدة (6 استعلامات مهما كان عدد المتدربين).
+// تحميل مجمّع لبيانات الالتزام والمراجعات لعدة طلبات في رحلة واحدة (7 استعلامات مهما كان عدد المتدربين).
 // لوحة الإدارة كانت تسأل قاعدة البيانات 6 مرات عن كل متدرب نشط، وكل سؤال رحلة شبكة إلى Neon.
 // النتيجة تُحفظ مع المعاملة نفسها (txScope، تُمسح عند انتهائها)، فتستفيد منها loadAdherence وloadWeekState بدون تغيير استدعائها.
 
@@ -10,7 +10,8 @@ export type BlockData = {
   items: { id: string; plan: unknown }[];
   logs: { week_no: number; n: number }[];
 };
-export type OrderProgressData = { blocks: BlockData[]; manual: Set<number>; checkins: string[]; rewarded: boolean };
+// reviewEvery: المراجعة كل كم أسبوع (orders.review_every_weeks؛ 2 للباقة الأساسية)
+export type OrderProgressData = { blocks: BlockData[]; manual: Set<number>; checkins: string[]; rewarded: boolean; reviewEvery: number };
 
 const KEY = "order-progress";
 const store = (tx: Tx) => {
@@ -25,7 +26,7 @@ export async function prefetchOrders(tx: Tx, orderIds: string[]): Promise<void> 
   const ids = orderIds.filter((id) => !map.has(id));
   if (!ids.length) return;
   const idList = litList(tx, ids, "uuid");
-  const [blocksR, itemsR, logsR, weeksR, checkinsR, rewardR] = await batch(tx, [
+  const [blocksR, itemsR, logsR, weeksR, checkinsR, rewardR, everyR] = await batch(tx, [
     `SELECT id, order_id, start_date::text AS start_date, weeks FROM blocks WHERE order_id = ANY(${idList})`,
     `SELECT d.block_id, i.id, i.plan FROM block_items i JOIN block_days d ON d.id = i.day_id JOIN blocks b ON b.id = d.block_id WHERE b.order_id = ANY(${idList})`,
     `SELECT d.block_id, l.week_no, count(DISTINCT l.block_item_id)::int AS n FROM item_logs l JOIN block_items i ON i.id = l.block_item_id
@@ -33,9 +34,11 @@ export async function prefetchOrders(tx: Tx, orderIds: string[]): Promise<void> 
     `SELECT order_id, week_no FROM review_weeks WHERE order_id = ANY(${idList})`,
     `SELECT order_id, created_at FROM check_ins WHERE order_id = ANY(${idList})`,
     `SELECT order_id FROM loyalty_rewards WHERE order_id = ANY(${idList})`,
+    `SELECT id, review_every_weeks FROM orders WHERE id = ANY(${idList})`,
   ]);
   const blocks = blocksR.rows, items = itemsR.rows, logs = logsR.rows, weeks = weeksR.rows, checkins = checkinsR.rows;
   const rewarded = new Set(rewardR.rows.map((r) => r.order_id as string));
+  const every = new Map(everyR.rows.map((r) => [r.id as string, Number(r.review_every_weeks) || 1]));
   for (const id of ids) {
     map.set(id, {
       blocks: blocks.filter((b) => b.order_id === id).map((b) => ({
@@ -46,6 +49,7 @@ export async function prefetchOrders(tx: Tx, orderIds: string[]): Promise<void> 
       manual: new Set<number>(weeks.filter((w) => w.order_id === id).map((w) => w.week_no)),
       checkins: checkins.filter((c) => c.order_id === id).map((c) => c.created_at),
       rewarded: rewarded.has(id),
+      reviewEvery: every.get(id) ?? 1,
     });
   }
 }
@@ -54,7 +58,7 @@ export async function prefetchOrders(tx: Tx, orderIds: string[]): Promise<void> 
 export async function loadOrderProgress(tx: Tx, orderId: string, want: { training?: boolean; reviews?: boolean; reward?: boolean } = { training: true, reviews: true, reward: true }): Promise<OrderProgressData> {
   const hit = store(tx).get(orderId);
   if (hit) return hit;
-  const out: OrderProgressData = { blocks: [], manual: new Set(), checkins: [], rewarded: false };
+  const out: OrderProgressData = { blocks: [], manual: new Set(), checkins: [], rewarded: false, reviewEvery: 1 };
   if (want.training) {
     const blocks = (await tx.query(`SELECT id, start_date::text AS start_date, weeks FROM blocks WHERE order_id = $1`, [orderId])).rows;
     for (const b of blocks) {
@@ -66,7 +70,10 @@ export async function loadOrderProgress(tx: Tx, orderId: string, want: { trainin
     }
   }
   if (want.reviews) {
-    out.manual = new Set<number>((await tx.query("SELECT week_no FROM review_weeks WHERE order_id = $1", [orderId])).rows.map((x) => x.week_no));
+    const { rows: [rv] } = await tx.query(
+      `SELECT review_every_weeks, ARRAY(SELECT week_no FROM review_weeks WHERE order_id = $1) AS manual FROM orders WHERE id = $1`, [orderId]);
+    out.manual = new Set<number>(rv?.manual ?? []);
+    out.reviewEvery = Number(rv?.review_every_weeks) || 1;
     out.checkins = (await tx.query("SELECT created_at FROM check_ins WHERE order_id = $1", [orderId])).rows.map((x) => x.created_at);
   }
   if (want.reward) out.rewarded = (await tx.query("SELECT EXISTS (SELECT 1 FROM loyalty_rewards WHERE order_id = $1) AS x", [orderId])).rows[0].x as boolean;

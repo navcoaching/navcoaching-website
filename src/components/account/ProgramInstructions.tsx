@@ -1,9 +1,9 @@
-import { WEEKDAYS, fmtYMD, riyadhDate } from "@/lib/schedule";
+import { WEEKDAYS, fmtYMD, reviewEveryLabel, riyadhDate } from "@/lib/schedule";
 import { DEFAULT_RULES } from "@/lib/nutrition";
 import { CONTACT_RULES, RIR_VIDEO, trainingRules, type Rule } from "@/lib/instructions";
 import type { ProgramToday } from "./ProgramToday";
 
-type O = { contact_name?: string | null; product_name: string; offer_label: string; review_weekday?: number | null; sub_start_at?: string | null; sub_end_at?: string | null };
+type O = { contact_name?: string | null; product_name: string; offer_label: string; review_weekday?: number | null; review_every_weeks?: number; sub_start_at?: string | null; sub_end_at?: string | null };
 
 const n0 = (v: number) => Math.round(v).toLocaleString("en-US");
 
@@ -27,7 +27,7 @@ export default function ProgramInstructions({ o, p }: { o: O; p: ProgramToday | 
   const info: [string, string][] = [
     ["الاسم", o.contact_name || "—"],
     ["الباقة", `${o.product_name} · ${o.offer_label}`],
-    ["يوم المراجعة", o.review_weekday != null ? WEEKDAYS[o.review_weekday] : "تحدده المدربة"],
+    ["يوم المراجعة", o.review_weekday != null ? `${WEEKDAYS[o.review_weekday]}${(o.review_every_weeks ?? 1) > 1 ? ` · ${reviewEveryLabel(o.review_every_weeks)}` : ""}` : "تحدده المدربة"],
     ["تاريخ البداية", start ? fmtYMD(start) : "—"],
     ["تاريخ التجديد", end ? fmtYMD(end) : "—"],
     ["أسبوع البرنامج الحالي", p?.block ? `الأسبوع ${p.block.week} من ${p.block.weeks}` : "—"],

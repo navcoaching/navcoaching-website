@@ -1,7 +1,7 @@
 import { withUser } from "@/lib/db";
 import { fmtDateTime } from "@/lib/format";
 import { loadReminders, loadWeekState, reviewMessage } from "@/lib/reminders";
-import { SUB_LABEL, WEEKDAYS, WEEK_LABEL, fmtYMD, riyadhDate, subscriptionState } from "@/lib/schedule";
+import { SUB_LABEL, WEEKDAYS, WEEK_LABEL, fmtYMD, reviewEveryLabel, riyadhDate, subscriptionState } from "@/lib/schedule";
 import { CHANNEL_LABEL, RESULT_LABEL } from "@/lib/notify";
 import ActionForm from "@/components/admin/ActionForm";
 import { addNoteAction, deleteNoteAction, markWeekAction, sendReviewNowAction, setSubscriptionAction } from "@/app/actions/admin";
@@ -76,9 +76,9 @@ export function SubscriptionCard({ o, d }: { o: O; d: SubData }) {
         <dl className="kv small">
           <dt>تاريخ البدء</dt><dd>{fmtYMD(riyadhDate(o.sub_start_at))}</dd>
           <dt>تاريخ الانتهاء</dt><dd>{fmtYMD(riyadhDate(o.sub_end_at))}</dd>
-          <dt>يوم المراجعة</dt><dd>{o.review_weekday != null ? WEEKDAYS[o.review_weekday] : "—"}</dd>
+          <dt>يوم المراجعة</dt><dd data-testid="review-day">{o.review_weekday != null ? `${WEEKDAYS[o.review_weekday]} · ${reviewEveryLabel(o.review_every_weeks)}` : "—"}</dd>
         </dl>
-      ) : <p className="small muted">يبدأ الاشتراك تلقائياً عند «تفعيل البرنامج»، وتُحسب النهاية = البدء + {o.months * 4} أسابيع، والمراجعة كل 7 أيام من أول يوم.</p>}
+      ) : <p className="small muted">يبدأ الاشتراك تلقائياً عند «تفعيل البرنامج»، وتُحسب النهاية = البدء + {o.months * 4} أسابيع، والمراجعة {reviewEveryLabel(o.review_every_weeks)} من أول يوم.</p>}
       <details>
         <summary className="small" style={{ cursor: "pointer", minHeight: 44 }}>تعديل التواريخ ويوم المراجعة</summary>
         <ActionForm action={setSubscriptionAction} submit="حفظ">
@@ -86,7 +86,7 @@ export function SubscriptionCard({ o, d }: { o: O; d: SubData }) {
           <div className="field"><label>تاريخ البدء</label><input type="date" name="start" required defaultValue={o.sub_start_at ? riyadhDate(o.sub_start_at) : today} /></div>
           <label className="check"><input type="checkbox" name="auto" defaultChecked={!o.sub_start_at} /><span>احسبي تلقائياً من تاريخ البدء: الانتهاء بعد {o.months * 4} أسابيع، ويوم المراجعة نفس يوم البدء</span></label>
           <div className="field"><label>تاريخ الانتهاء (إذا ما اخترتي التلقائي)</label><input type="date" name="end" defaultValue={o.sub_end_at ? riyadhDate(o.sub_end_at) : ""} /></div>
-          <div className="field"><label>يوم المراجعة الأسبوعية</label>
+          <div className="field"><label>يوم المراجعة ({reviewEveryLabel(o.review_every_weeks)}، حسب الباقة)</label>
             <select name="weekday" defaultValue={o.review_weekday ?? ""}><option value="">بدون</option>{WEEKDAYS.map((d, i) => <option key={d} value={i}>{d}</option>)}</select>
           </div>
         </ActionForm>
@@ -100,11 +100,11 @@ export function ReviewWeeks({ o, d }: { o: O; d: SubData }) {
   if (o.months === 0 || d.weeks.length === 0) return null;
   return (
     <div className="card stack">
-      <h2 style={{ fontSize: 18 }}>المراجعات الأسبوعية</h2>
+      <h2 style={{ fontSize: 18 }}>{(o.review_every_weeks ?? 1) > 1 ? `المراجعات (${reviewEveryLabel(o.review_every_weeks)})` : "المراجعات الأسبوعية"}</h2>
       <p className="small muted">تُحتسب منجزة إذا أرسلها المتدرب من الموقع قرب موعدها، أو علّمتِها يدوياً. (مزامنة Google Sheets غير مفعّلة بعد.)</p>
       <div className="table-wrap">
         <table className="t" style={{ minWidth: 0 }}>
-          <thead><tr><th>الأسبوع</th><th>الموعد والنافذة</th><th>الحالة</th><th><span className="sr-only">إجراء</span></th></tr></thead>
+          <thead><tr><th>{(o.review_every_weeks ?? 1) > 1 ? "المراجعة" : "الأسبوع"}</th><th>الموعد والنافذة</th><th>الحالة</th><th><span className="sr-only">إجراء</span></th></tr></thead>
           <tbody>
             {d.weeks.map((w) => (
               <tr key={w.no}>
