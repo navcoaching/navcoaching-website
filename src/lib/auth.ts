@@ -69,6 +69,11 @@ export const auth = betterAuth({
       allowedAttempts: 5,
       storeOTP: "hashed",
       async sendVerificationOTP({ email, otp }) {
+        // حدود الإرسال (فوق حد Better Auth لكل IP): 5 رموز بالساعة لنفس البريد ضد إغراق بريد شخص من عناوين IP متغيرة،
+        // وسقف عام بالساعة ضد تكلفة البريد. التجاوز يُتجاهل بصمت حتى لا يكشف شيئاً عن الحسابات.
+        const ok = async (key: string, max: number) =>
+          (await pool.query("SELECT app.rate_limit($1, $2, 3600) AS ok", [key, max])).rows[0].ok as boolean;
+        if (!(await ok(`otp:e:${email.trim().toLowerCase()}`, 5)) || !(await ok("otp:all", 200))) return;
         const brand = await mailBrand(pool).catch(() => ({ site: (process.env.NEXT_PUBLIC_SITE_URL || "https://navcoaching.com").replace(/\/$/, "") }));
         await sendMail(
           email,
