@@ -1,0 +1,5428 @@
+[
+ {
+  "name": "Back Squat",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Squat (Knee-dominant) / سكوات (هيمنة الركبة)",
+  "kind": "قوة",
+  "equipment": "بار",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Box Squat",
+   "Deficit Goblet Squat",
+   "Front Squat",
+   "Resistance Band Squat",
+   "Bodyweight Squat"
+  ],
+  "video_url": "https://youtu.be/bEv6CCg2BC8",
+  "instructions": "ثبت البار على الترابس او الاكتاف الخلفية وشد البار وكأنك بتكسره من النص، ادفع ركبك للامام وانزل.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Free / Bodyweight Squat / سكوات حر أو بوزن الجسم",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Box Squat",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Squat (Knee-dominant) / سكوات (هيمنة الركبة)",
+  "kind": "قوة",
+  "equipment": "بار",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Back Squat",
+   "Deficit Goblet Squat",
+   "Front Squat",
+   "Resistance Band Squat",
+   "Bodyweight Squat"
+  ],
+  "video_url": "https://youtube.com/shorts/9uhEh9gpwUU?si=xaTY7AJiCeQfa3by",
+  "instructions": "ثبت البار على الترابس او الاكتاف الخلفية وشد البار وكأنك بتكسره من النص، ادفع ركبك للامام وانزل.",
+  "notes": "تعليمات بديلة في المصدر (صف 13): ثبت البار على الترابس او الاكتاف الخلفية وشد البار وكأنك بتكسره من النص، ادفع ركبك للامام وانزل، انزل واثبت على البوكس ثانية وارفع.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Free / Bodyweight Squat / سكوات حر أو بوزن الجسم",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Hack Squat",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Squat (Knee-dominant) / سكوات (هيمنة الركبة)",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "V Squat",
+   "Squat Smith Machine",
+   "Back Squat",
+   "Box Squat",
+   "Mid Leg Press"
+  ],
+  "video_url": "https://youtu.be/0tn5K9NlCfo",
+  "instructions": "تمسك بالمقابض لزيادة الثبات، ثبت موخرتك وظهرك السفلي كويس، انزل قد ما تقدر لكن لا تبالغ بالنزول لدرجة يتقوس ظهرك السفلي.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Machine Squat / سكوات بالجهاز",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Mid Leg Press",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Squat (Knee-dominant) / سكوات (هيمنة الركبة)",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Quads Leg Press",
+   "Back Squat",
+   "Box Squat",
+   "Hack Squat",
+   "Deficit Goblet Squat"
+  ],
+  "video_url": "https://youtu.be/s9-zeWzPUmA",
+  "instructions": "تمسك بالمقابض لزيادة الثبات، ثبت موخرتك وظهرك السفلي كويس، انزل قد ما تقدر لكن لا تبالغ بالنزول لدرجة يتقوس ظهرك السفلي.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Press / ضغط الأرجل",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Quads Leg Press",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Squat (Knee-dominant) / سكوات (هيمنة الركبة)",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Mid Leg Press",
+   "Back Squat",
+   "Box Squat",
+   "Hack Squat",
+   "Deficit Goblet Squat"
+  ],
+  "video_url": "https://youtu.be/A218isnErfM",
+  "instructions": "تمسك بالمقابض لزيادة الثبات، ثبت موخرتك وظهرك السفلي كويس، انزل قد ما تقدر لكن لا تبالغ بالنزول لدرجة يتقوس ظهرك السفلي، ثبت القدمين أسفل اللوح لاستهداف أكبر للكوادز.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Press / ضغط الأرجل",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Deficit Goblet Squat",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Squat (Knee-dominant) / سكوات (هيمنة الركبة)",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "متوسط",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Back Squat",
+   "Box Squat",
+   "Front Squat",
+   "Resistance Band Squat",
+   "Bodyweight Squat"
+  ],
+  "video_url": "https://youtube.com/shorts/9719SO5zvpU?si=whohbunAsXkH3j6f",
+  "instructions": "وقف باتساع اكتافك تقريبًا، ادفع ركبك للامام وانزل، انزل لأقصى حد تقدر عليه بدون ما يتقوس ظهرك السفلي.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Free / Bodyweight Squat / سكوات حر أو بوزن الجسم",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Front Squat",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Squat (Knee-dominant) / سكوات (هيمنة الركبة)",
+  "kind": "قوة",
+  "equipment": "بار",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Back Squat",
+   "Box Squat",
+   "Deficit Goblet Squat",
+   "Resistance Band Squat",
+   "Bodyweight Squat"
+  ],
+  "instructions": "ثبت البار على الأكتاف، ادفع ركبك للامام وانزل.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Free / Bodyweight Squat / سكوات حر أو بوزن الجسم",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "V Squat",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Squat (Knee-dominant) / سكوات (هيمنة الركبة)",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Hack Squat",
+   "Squat Smith Machine",
+   "Back Squat",
+   "Box Squat",
+   "Mid Leg Press"
+  ],
+  "video_url": "https://www.youtube.com/watch?v=u_GSjH58s0g",
+  "instructions": "تمسك بالمقابض لزيادة الثبات، ثبت موخرتك وظهرك السفلي كويس، انزل قد ما تقدر لكن لا تبالغ بالنزول لدرجة يتقوس ظهرك السفلي.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Machine Squat / سكوات بالجهاز",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Resistance Band Squat",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Squat (Knee-dominant) / سكوات (هيمنة الركبة)",
+  "kind": "قوة",
+  "equipment": "مطاط",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Back Squat",
+   "Box Squat",
+   "Deficit Goblet Squat",
+   "Front Squat",
+   "Bodyweight Squat"
+  ],
+  "video_url": "https://youtube.com/shorts/6rE0IYlMPZA?si=goqtRTlR_W4HSGBN",
+  "instructions": "ثبت الباند علي جوانب اكتافك، ادفع ركبك للأمام وإنزل.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Free / Bodyweight Squat / سكوات حر أو بوزن الجسم",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Squat Smith Machine",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Squat (Knee-dominant) / سكوات (هيمنة الركبة)",
+  "kind": "قوة",
+  "equipment": "سميث",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Hack Squat",
+   "V Squat",
+   "Back Squat",
+   "Box Squat",
+   "Mid Leg Press"
+  ],
+  "video_url": "https://youtu.be/oBwhrRcNWyM",
+  "instructions": "ثبت البار على الترابس او الاكتاف الخلفية وشد البار وكأنك بتكسره من النص، ادفع ركبك للامام وانزل.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Machine Squat / سكوات بالجهاز",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Single Leg Press",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Lunge / Single-leg / لانج وحركات الرجل الواحدة",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Drop Lunges",
+   "Beginner Lunges",
+   "Forward Lunges",
+   "Supported BSS",
+   "Supported Reverse Lunge"
+  ],
+  "video_url": "https://youtu.be/ZYDTJaAM-gE",
+  "instructions": "تمسك بالمقابض لزيادة الثبات، ثبت موخرتك وظهرك السفلي كويس، انزل قد ما تقدر لكن لا تبالغ بالنزول لدرجة يتقوس ظهرك السفلي.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Single-leg Press / ضغط رجل واحدة",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Drop Lunges",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Lunge / Single-leg / لانج وحركات الرجل الواحدة",
+  "kind": "قوة",
+  "level": "متوسط",
+  "status": "approved",
+  "alternatives": [
+   "Beginner Lunges",
+   "Forward Lunges",
+   "Supported Reverse Lunge",
+   "Smith Machine Reverse Lunge",
+   "Single Leg Press"
+  ],
+  "video_url": "https://youtu.be/WH8lteLrMIs?si=61QSVA7iw_Z6Zr3p",
+  "instructions": "تمسك بالبنش أو الجدار بيدك الثانية لزيادة الثبات.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lunge / لانج",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Beginner Lunges",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Lunge / Single-leg / لانج وحركات الرجل الواحدة",
+  "kind": "قوة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Drop Lunges",
+   "Forward Lunges",
+   "Supported Reverse Lunge",
+   "Smith Machine Reverse Lunge",
+   "Single Leg Press"
+  ],
+  "video_url": "https://youtu.be/QOVaHwm-Q6U",
+  "instructions": "تمسك بالبنش أو الجدار بيدك الثانية لزيادة الثبات.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lunge / لانج",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Forward Lunges",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Lunge / Single-leg / لانج وحركات الرجل الواحدة",
+  "kind": "قوة",
+  "level": "متوسط",
+  "status": "approved",
+  "alternatives": [
+   "Drop Lunges",
+   "Beginner Lunges",
+   "Supported Reverse Lunge",
+   "Smith Machine Reverse Lunge",
+   "Single Leg Press"
+  ],
+  "video_url": "https://youtu.be/_DLAdo2Pvjs",
+  "instructions": "تمسك بالبنش أو الجدار بيدك الثانية لزيادة الثبات.",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "ضعف الألوية الكبرى / Gluteus Maximus Weakness | ضعف الألوية المتوسطة / Gluteus Medius Weakness",
+  "sub_pattern": "Lunge / لانج",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك",
+  "rehab_goal": "تقوية الورك ضمن نمط حركي وظيفي",
+  "rehab_phase": "متوسطة",
+  "rehab_load": "متوسط",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "Distefano et al. 2009 — JOSPT (EMG) | Moore et al. 2020 — IJSPT (Systematic review, GMed/GMin)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/19574661/ | https://pubmed.ncbi.nlm.nih.gov/33344003/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Supported BSS",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Lunge / Single-leg / لانج وحركات الرجل الواحدة",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Single Leg Press",
+   "Drop Lunges",
+   "Beginner Lunges",
+   "Forward Lunges",
+   "Supported Reverse Lunge"
+  ],
+  "video_url": "https://youtube.com/shorts/poBie3TTeGE?si=QSiMUYtcHhrmg8mx",
+  "instructions": "وقف عند البنش او الستيب، ارفع رجلك وثبت اصابع قدمك على البنش، خذ خطوة وحدة للأمام برجلك الثانية ثم ابدأ التمرين، تمسك بالبنش أو الجدار بيدك الثانية لزيادة الثبات.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Split Squat / سبليت سكوات",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Supported Reverse Lunge",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Lunge / Single-leg / لانج وحركات الرجل الواحدة",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Drop Lunges",
+   "Beginner Lunges",
+   "Forward Lunges",
+   "Smith Machine Reverse Lunge",
+   "Single Leg Press"
+  ],
+  "video_url": "https://youtu.be/WH8lteLrMIs?si=M9s9a7qOVvvyDm82",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lunge / لانج",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Smith Machine Reverse Lunge",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Lunge / Single-leg / لانج وحركات الرجل الواحدة",
+  "kind": "قوة",
+  "equipment": "سميث",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Drop Lunges",
+   "Beginner Lunges",
+   "Forward Lunges",
+   "Supported Reverse Lunge",
+   "Single Leg Press"
+  ],
+  "video_url": "https://youtu.be/zAVYcwnlxrQ?si=M5HL4sG-bsYBFyDQ",
+  "instructions": "استخدم ارتفاع بسيط مثل الستيب ، ارفع نفسك بالضغط علي الرجل المرفوعة بتحكم بدون قفز.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lunge / لانج",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Leg Extension",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "pattern": "Knee Extension / مد الركبة",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Single Leg Extension",
+   "Band Leg Extension",
+   "Cable Leg Extension",
+   "Standing Leg Extension",
+   "Sissy Squat"
+  ],
+  "video_url": "https://youtu.be/gtZ4AwZVtMI",
+  "instructions": "اجلس وثبت ظهرك السفلي كويس، تأكد ان مسمار الارتفاع يكون بمستوى ركبتك، امسك المقابض لزيادة الثبات، إرفع الوزن اثبت ثانية فوق ثم انزل نزول كامل بتحكم.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Extension / مد الركبة",
+  "anatomical_action": "Knee Extension / مد الركبة"
+ },
+ {
+  "name": "Single Leg Extension",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "pattern": "Knee Extension / مد الركبة",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Leg Extension",
+   "Band Leg Extension",
+   "Cable Leg Extension",
+   "Standing Leg Extension",
+   "Sissy Squat"
+  ],
+  "video_url": "https://youtu.be/82IuSLk5zNc?si=FTMqZrmawQFRr8dN",
+  "instructions": "اجلس وثبت ظهرك السفلي كويس، تأكد ان مسمار الارتفاع يكون بمستوى ركبتك، امسك المقابض لزيادة الثبات، إرفع الوزن اثبت ثانية فوق ثم انزل نزول كامل بتحكم.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Extension / مد الركبة",
+  "anatomical_action": "Knee Extension / مد الركبة"
+ },
+ {
+  "name": "Band Leg Extension",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "pattern": "Knee Extension / مد الركبة",
+  "kind": "قوة",
+  "equipment": "مطاط",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Leg Extension",
+   "Single Leg Extension",
+   "Cable Leg Extension",
+   "Standing Leg Extension",
+   "Sissy Squat"
+  ],
+  "video_url": "https://youtu.be/hs7D3gDw3UM",
+  "instructions": "اجلس وثبت ظهرك السفلي كويس وامسك الكرسي للثبات، اثبت ثانية فوق ثم انزل نزول كامل بتحكم.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Extension / مد الركبة",
+  "anatomical_action": "Knee Extension / مد الركبة"
+ },
+ {
+  "name": "Sissy Squat",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Knee Extension / مد الركبة",
+  "kind": "قوة",
+  "equipment": "وزن الجسم",
+  "level": "متوسط",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Leg Extension",
+   "Single Leg Extension",
+   "Band Leg Extension",
+   "Cable Leg Extension",
+   "Standing Leg Extension"
+  ],
+  "video_url": "https://youtu.be/yONKTprKCDA",
+  "instructions": "الورك ثابت طول الجولة والحركة كلها من مفصل الركبة، اذا توازنك يخرب عليك ادبل الوزن بيد واليد الثانية امسك فيها جدار او عصى",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Sissy Squat / سيسي سكوات",
+  "anatomical_action": "Knee Extension / مد الركبة"
+ },
+ {
+  "name": "Cable Leg Extension",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "pattern": "Knee Extension / مد الركبة",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Leg Extension",
+   "Single Leg Extension",
+   "Band Leg Extension",
+   "Standing Leg Extension",
+   "Sissy Squat"
+  ],
+  "video_url": "https://youtu.be/ebjD98gZd8E",
+  "instructions": "اجلس وثبت ظهرك السفلي كويس وامسك الكرسي للثبات، اثبت ثانية فوق ثم انزل نزول كامل بتحكم.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Extension / مد الركبة",
+  "anatomical_action": "Knee Extension / مد الركبة"
+ },
+ {
+  "name": "Standing Leg Extension",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Core / البطن والكور"
+  ],
+  "pattern": "Knee Extension / مد الركبة",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Leg Extension",
+   "Single Leg Extension",
+   "Band Leg Extension",
+   "Cable Leg Extension",
+   "Sissy Squat"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/133/standing-leg-extension/",
+  "sub_pattern": "Leg Extension / مد الركبة",
+  "anatomical_action": "Knee Extension / مد الركبة"
+ },
+ {
+  "name": "Bodyweight Squat",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Hamstrings / الخلفية",
+   "Lower back / أسفل الظهر"
+  ],
+  "pattern": "Squat (Knee-dominant) / سكوات (هيمنة الركبة)",
+  "kind": "قوة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Back Squat",
+   "Box Squat",
+   "Deficit Goblet Squat",
+   "Front Squat",
+   "Resistance Band Squat"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/135/bodyweight-squat/",
+  "sub_pattern": "Free / Bodyweight Squat / سكوات حر أو بوزن الجسم",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Single Leg Squat",
+  "primary_muscle": "Quadriceps / الأمامية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Hamstrings / الخلفية",
+   "Abductors / مبعدات الفخذ"
+  ],
+  "pattern": "Lunge / Single-leg / لانج وحركات الرجل الواحدة",
+  "kind": "قوة",
+  "equipment": "وزن الجسم",
+  "level": "متقدم",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Single Leg Press",
+   "Drop Lunges",
+   "Beginner Lunges",
+   "Forward Lunges",
+   "Supported BSS"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/136/single-leg-squat/",
+  "rehab_category": "ضعف الألوية الكبرى / Gluteus Maximus Weakness | ضعف الألوية المتوسطة / Gluteus Medius Weakness",
+  "sub_pattern": "Single-leg Squat / سكوات رجل واحدة",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك",
+  "rehab_goal": "تقوية باسطات ومبعدات الورك وتحكم أحادي الطرف",
+  "rehab_phase": "متقدمة",
+  "rehab_load": "متوسط",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة؛ يتطلب تحكماً جيداً بالركبة والحوض",
+  "rehab_evidence": "Distefano et al. 2009 — JOSPT (EMG) | Moore et al. 2020 — IJSPT (Systematic review, GMed/GMin)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/19574661/ | https://pubmed.ncbi.nlm.nih.gov/33344003/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "DB Glutes Step Ups",
+  "primary_muscle": "Glutes / المؤخرة",
+  "secondary_muscles": [
+   "Quadriceps / الأمامية",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Lunge / Single-leg / لانج وحركات الرجل الواحدة",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "متوسط",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Supported Glutes Step Ups",
+   "Cable Glutes Step Ups",
+   "Glute Pushdown"
+  ],
+  "video_url": "https://youtube.com/shorts/GCnJiYJfboA?feature=share",
+  "instructions": "استخدم ارتفاع يكون بحدود ارتفاع ركبتك أو أقل، ارفع نفسك بالضغط علي الرجل المرفوعة بتحكم بدون قفز.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Step-up / صعود",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Supported Glutes Step Ups",
+  "primary_muscle": "Glutes / المؤخرة",
+  "secondary_muscles": [
+   "Quadriceps / الأمامية",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Lunge / Single-leg / لانج وحركات الرجل الواحدة",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "DB Glutes Step Ups",
+   "Cable Glutes Step Ups",
+   "Glute Pushdown"
+  ],
+  "video_url": "https://youtube.com/shorts/ZKzoOkQALaY?si=-56txwBlxSSCQYJd",
+  "instructions": "استخدم ارتفاع يكون بحدود ارتفاع ركبتك أو أقل، ارفع نفسك بالضغط علي الرجل المرفوعة بتحكم بدون قفز.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Step-up / صعود",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Cable Glutes Step Ups",
+  "primary_muscle": "Glutes / المؤخرة",
+  "secondary_muscles": [
+   "Quadriceps / الأمامية",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Lunge / Single-leg / لانج وحركات الرجل الواحدة",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "DB Glutes Step Ups",
+   "Supported Glutes Step Ups",
+   "Glute Pushdown"
+  ],
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Step-up / صعود",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Glute Pushdown",
+  "primary_muscle": "Glutes / المؤخرة",
+  "secondary_muscles": [
+   "Quadriceps / الأمامية"
+  ],
+  "pattern": "Lunge / Single-leg / لانج وحركات الرجل الواحدة",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "DB Glutes Step Ups",
+   "Supported Glutes Step Ups",
+   "Cable Glutes Step Ups"
+  ],
+  "video_url": "https://youtube.com/shorts/8h2kZ64Sp5k?si=NLPf4tywxhDGY9em",
+  "instructions": "تمسك بمقابض الجهاز، (كل ما زاد ارتفاع البنش زادت الصعوبة) + الطلوع والنزول يكون بواسطة القدم المرفوعة على البنش مو بالقدم اللي تحت، ارفع بتحكم الى أقصى ارتفاع تقدرعليه بدون ما يتقوس ظهرك السفلي، انزل لحد ما تقفل ركبتك تماما",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Step-up / صعود",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Glute Max Kickbacks",
+  "primary_muscle": "Glutes / المؤخرة",
+  "pattern": "Glute Hip Extension / دفع خلفي للورك",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Smith Machine Kickback",
+   "Glute Press",
+   "Hip Thrusts Machine",
+   "Hip Thrusts",
+   "Glute Bridge"
+  ],
+  "video_url": "https://youtube.com/shorts/t5mwSx4uNMc?feature=share",
+  "instructions": "ثبت الحبل على الكاحل، ارجع خطوة للخلف وانحني للامام قليلاً وتمسك بالكيبل لزيادة الثبات، اسحب للخلف مع انثناء بسيط بالركب.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Kickback / ركلة خلفية",
+  "anatomical_action": "Hip Extension / بسط الورك"
+ },
+ {
+  "name": "Hip Abduction",
+  "primary_muscle": "Abductors / مبعدات الفخذ",
+  "secondary_muscles": [
+   "Glutes / المؤخرة"
+  ],
+  "pattern": "Glute Hip Abduction / دفع جانبي للورك",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Seated Abductor Machine",
+   "Hip Abductor Plank",
+   "Dirty Dog",
+   "Glute Medius Kickbacks",
+   "Hip Hitch (Pelvic Drop)"
+  ],
+  "video_url": "https://youtu.be/_ARUxqrII3Y?si=Jcz5uh2Uu-IdVCS1",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "ضعف الألوية المتوسطة / Gluteus Medius Weakness",
+  "sub_pattern": "Hip Abduction / تبعيد الورك",
+  "anatomical_action": "Hip Abduction / تبعيد الورك",
+  "rehab_goal": "تقوية مبعدات الورك بمقاومة خارجية",
+  "rehab_phase": "مبكرة–متوسطة",
+  "rehab_load": "منخفض–متوسط",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة؛ الدليل يخص إبعاد الورك بمقاومة خارجية؛ يُتحقق من نوع الأداء",
+  "rehab_evidence": "Moore et al. 2020 — IJSPT (Systematic review, GMed/GMin)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/33344003/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Smith Machine Kickback",
+  "primary_muscle": "Glutes / المؤخرة",
+  "pattern": "Glute Hip Extension / دفع خلفي للورك",
+  "kind": "قوة",
+  "equipment": "سميث",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Glute Max Kickbacks",
+   "Glute Press",
+   "Hip Thrusts Machine",
+   "Hip Thrusts",
+   "Glute Bridge"
+  ],
+  "video_url": "https://youtube.com/shorts/GR4ny80bmhM?si=WeZcWM1hyfoLElM2",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Kickback / ركلة خلفية",
+  "anatomical_action": "Hip Extension / بسط الورك"
+ },
+ {
+  "name": "Glute Medius Kickbacks",
+  "primary_muscle": "Abductors / مبعدات الفخذ",
+  "secondary_muscles": [
+   "Glutes / المؤخرة"
+  ],
+  "pattern": "Glute Hip Abduction / دفع جانبي للورك",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Hip Abduction",
+   "Seated Abductor Machine",
+   "Hip Abductor Plank",
+   "Dirty Dog",
+   "Hip Hitch (Pelvic Drop)"
+  ],
+  "video_url": "https://youtube.com/shorts/kccsnZNbMFA?si=6c-VoB8Zsz8NxoyM",
+  "instructions": "ثبت الحبل على الكاحل، ارجع خطوة للخلف وانحني للامام قليلاً وتمسك بالكيبل لزيادة الثبات، اسحب للخلف وللخارج مع انثناء بسيط بالركب.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Abduction Kickback / ركلة خلفية مع تبعيد",
+  "anatomical_action": "Hip Abduction + Hip Extension / تبعيد الورك + بسط الورك"
+ },
+ {
+  "name": "Side Step Up",
+  "primary_muscle": "Glutes / المؤخرة",
+  "secondary_muscles": [
+   "Abductors / مبعدات الفخذ"
+  ],
+  "pattern": "Lunge / Single-leg / لانج وحركات الرجل الواحدة",
+  "kind": "قوة",
+  "level": "متوسط",
+  "status": "approved",
+  "alternatives": [
+   "DB Glutes Step Ups",
+   "Supported Glutes Step Ups",
+   "Cable Glutes Step Ups",
+   "Glute Pushdown"
+  ],
+  "video_url": "https://youtube.com/shorts/xOwIRnI4VxA?si=SJOgODRmNGdfHPb4",
+  "instructions": "يد فيها الوزن واليد الثانية سندها على الجدار",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "ضعف الألوية المتوسطة / Gluteus Medius Weakness | ضعف الألوية الصغرى / Gluteus Minimus Weakness",
+  "sub_pattern": "Step-up / صعود",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك",
+  "rehab_goal": "تقوية مبعدات الورك والتحكم بالحوض على رجل واحدة",
+  "rehab_phase": "متوسطة",
+  "rehab_load": "متوسط",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "Moore et al. 2020 — IJSPT (Systematic review, GMed/GMin) | Ganderton et al. — GMin/GMed EMG (RMIT University)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/33344003/ | https://research-repository.rmit.edu.au/articles/journal_contribution/Gluteus_Minimus_and_Gluteus_Medius_Muscle_Activity_during_Common_Rehabilitation_Exercises_in_Healthy_Postmenopausal_Women/27572301",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Hip Thrusts Machine",
+  "primary_muscle": "Glutes / المؤخرة",
+  "secondary_muscles": [
+   "Hamstrings / الخلفية"
+  ],
+  "pattern": "Glute Hip Extension / دفع خلفي للورك",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Hip Thrusts",
+   "Glute Bridge",
+   "DB Floor Glute Bridge",
+   "Single Hip Thrusts",
+   "Glute Max Kickbacks"
+  ],
+  "video_url": "https://youtube.com/shorts/0xfdeCBwoYw?si=HgJcNeB0a24gODkK",
+  "instructions": "ممكن تسويه بالسميث مشين او البار الحر ، اختر بوكس او بنش يكون بمستوى اكتافك الخلفية وانت جالس، لما ترفع البار فوق المفروض ركبك تكون بنفس مستوى القدم.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hip Thrust / Bridge / بسط الورك (ثرست وجسر)",
+  "anatomical_action": "Hip Extension / بسط الورك"
+ },
+ {
+  "name": "Hip Thrusts",
+  "primary_muscle": "Glutes / المؤخرة",
+  "secondary_muscles": [
+   "Hamstrings / الخلفية"
+  ],
+  "pattern": "Glute Hip Extension / دفع خلفي للورك",
+  "kind": "قوة",
+  "level": "متوسط",
+  "status": "approved",
+  "alternatives": [
+   "Hip Thrusts Machine",
+   "Glute Bridge",
+   "DB Floor Glute Bridge",
+   "Single Hip Thrusts",
+   "Glute Max Kickbacks"
+  ],
+  "video_url": "https://youtube.com/shorts/O0EoaP7gR1A?si=cGPZ8iIwM2mQjwSb",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hip Thrust / Bridge / بسط الورك (ثرست وجسر)",
+  "anatomical_action": "Hip Extension / بسط الورك"
+ },
+ {
+  "name": "Glute Bridge",
+  "primary_muscle": "Glutes / المؤخرة",
+  "secondary_muscles": [
+   "Hamstrings / الخلفية"
+  ],
+  "pattern": "Glute Hip Extension / دفع خلفي للورك",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Hip Thrusts Machine",
+   "Hip Thrusts",
+   "DB Floor Glute Bridge",
+   "Single Hip Thrusts",
+   "Glute Max Kickbacks"
+  ],
+  "video_url": "https://www.youtube.com/watch?v=dtlGynVdHYM",
+  "instructions": "ممكن تسويه بالسميث مشين او البار الحر ، اختر بوكس او بنش يكون بمستوى اكتافك الخلفية وانت جالس، لما ترفع البار فوق المفروض ركبك تكون بنفس مستوى القدم.",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "ضعف الألوية الكبرى / Gluteus Maximus Weakness | آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Hip Thrust / Bridge / بسط الورك (ثرست وجسر)",
+  "anatomical_action": "Hip Extension / بسط الورك",
+  "rehab_goal": "تقوية بسط الورك وتحمّل الجذع",
+  "rehab_phase": "مبكرة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "Boren et al. 2011 — IJSPT (EMG) | JOSPT CPG 2021 — Low Back Pain (George et al.)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/22034614/ | https://pubmed.ncbi.nlm.nih.gov/34719942/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "DB Floor Glute Bridge",
+  "primary_muscle": "Glutes / المؤخرة",
+  "secondary_muscles": [
+   "Hamstrings / الخلفية"
+  ],
+  "pattern": "Glute Hip Extension / دفع خلفي للورك",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Hip Thrusts Machine",
+   "Hip Thrusts",
+   "Glute Bridge",
+   "Single Hip Thrusts",
+   "Glute Max Kickbacks"
+  ],
+  "video_url": "https://youtube.com/shorts/iOrJXNUH3to?si=JySX6JMhoP2vWEVa",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "ضعف الألوية الكبرى / Gluteus Maximus Weakness",
+  "sub_pattern": "Hip Thrust / Bridge / بسط الورك (ثرست وجسر)",
+  "anatomical_action": "Hip Extension / بسط الورك",
+  "rehab_goal": "تقوية بسط الورك بتحميل خارجي متدرج",
+  "rehab_phase": "متوسطة",
+  "rehab_load": "متوسط",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "Boren et al. 2011 — IJSPT (EMG)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/22034614/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Glute Raise",
+  "primary_muscle": "Glutes / المؤخرة",
+  "secondary_muscles": [
+   "Hamstrings / الخلفية"
+  ],
+  "pattern": "Glute Hip Extension / دفع خلفي للورك",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Glute Max Kickbacks",
+   "Smith Machine Kickback",
+   "Hip Thrusts Machine",
+   "Hip Thrusts",
+   "Glute Bridge"
+  ],
+  "video_url": "https://youtu.be/X_kL_x4m77c",
+  "instructions": "ثبت رجولك تحت، الاسفنجة تكون تحت الورك أعلى الفخذ مو على الورك مباشرة، امسك وزن بيدينك بذراع مستقيمة، ارفع وكأنك تبي تدخل القلوتس جوا الاسفنجة، بمجرد ما تنقبض مؤخرتك وقف لا ترفع أكثر.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "45° Hip Extension / بسط الورك على جهاز الظهر",
+  "anatomical_action": "Hip Extension / بسط الورك"
+ },
+ {
+  "name": "Single Hip Thrusts",
+  "primary_muscle": "Glutes / المؤخرة",
+  "secondary_muscles": [
+   "Hamstrings / الخلفية"
+  ],
+  "pattern": "Glute Hip Extension / دفع خلفي للورك",
+  "kind": "قوة",
+  "level": "متوسط",
+  "status": "approved",
+  "alternatives": [
+   "Hip Thrusts Machine",
+   "Hip Thrusts",
+   "Glute Bridge",
+   "DB Floor Glute Bridge",
+   "Glute Max Kickbacks"
+  ],
+  "video_url": "https://youtube.com/shorts/ymg2AMDAwrY?si=fY8kBPTDYWRMHuAs",
+  "instructions": "اختر بوكس او بنش يكون بمستوى اكتافك الخلفية وانت جالس، لما ترفع فوق المفروض ركبك تكون بنفس مستوى القدم، التمرين صعب طبيعي تواجه صعوبة بالبداية لذلك لا تستعجل باضافة الاوزان",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hip Thrust / Bridge / بسط الورك (ثرست وجسر)",
+  "anatomical_action": "Hip Extension / بسط الورك"
+ },
+ {
+  "name": "Glute Press",
+  "primary_muscle": "Glutes / المؤخرة",
+  "pattern": "Glute Hip Extension / دفع خلفي للورك",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Glute Max Kickbacks",
+   "Smith Machine Kickback",
+   "Hip Thrusts Machine",
+   "Hip Thrusts",
+   "Glute Bridge"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/293/glute-press/",
+  "sub_pattern": "Kickback / ركلة خلفية",
+  "anatomical_action": "Hip Extension + Knee Extension / بسط الورك + مد الركبة"
+ },
+ {
+  "name": "Bulgarian Split Squat",
+  "primary_muscle": "Glutes / المؤخرة",
+  "secondary_muscles": [
+   "Quadriceps / الأمامية",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Lunge / Single-leg / لانج وحركات الرجل الواحدة",
+  "kind": "قوة",
+  "level": "متوسط",
+  "status": "approved",
+  "alternatives": [
+   "DB Glutes Step Ups",
+   "Supported Glutes Step Ups",
+   "Cable Glutes Step Ups",
+   "Glute Pushdown"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/366/bulgarian-split-squat/",
+  "sub_pattern": "Split Squat / سبليت سكوات",
+  "anatomical_action": "Knee Extension + Hip Extension / مد الركبة + بسط الورك"
+ },
+ {
+  "name": "Sumo Deadlift",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Quadriceps / الأمامية",
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Hip Hinge (Hip-dominant) / مفصلة الورك (هيمنة الورك)",
+  "kind": "قوة",
+  "equipment": "بار",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "BB RDL",
+   "DB RDL",
+   "SM SLDL",
+   "Single DB RDL",
+   "SLDL"
+  ],
+  "video_url": "https://www.youtube.com/watch?v=cDlOSfu-zHY",
+  "instructions": "وقف بفتحة أرجل واسعة بحيث الركب تكون خط مستقيم مع كعب القدم و اصابع الرجل باتجاه الخارج، البار بمنتصف القدم، شد ظهرك العلوي وادفع الارض برجولك واسحب البار للأعلى، وقف لما تنقبض مؤخرتك ولا تبالغ بتقفيل حوضك.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Deadlift / ديدلفت",
+  "anatomical_action": "Hip Extension + Knee Extension / بسط الورك + مد الركبة"
+ },
+ {
+  "name": "Conventional Deadlift",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Lower back / أسفل الظهر"
+  ],
+  "pattern": "Hip Hinge (Hip-dominant) / مفصلة الورك (هيمنة الورك)",
+  "kind": "قوة",
+  "equipment": "بار",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "BB RDL",
+   "DB RDL",
+   "SM SLDL",
+   "Single DB RDL",
+   "SLDL"
+  ],
+  "video_url": "https://youtu.be/GxsLrTzyGUU",
+  "instructions": "وقف باتساع اكتافك أو أوسع شوي، البار بمنتصف القدم، شد ظهرك العلوي وادفع الارض برجولك واسحب البار للأعلى، وقف لما تنقبض مؤخرتك ولا تبالغ بتقفيل حوضك.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Deadlift / ديدلفت",
+  "anatomical_action": "Hip Extension + Knee Extension / بسط الورك + مد الركبة"
+ },
+ {
+  "name": "BB RDL",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Lower back / أسفل الظهر"
+  ],
+  "pattern": "Hip Hinge (Hip-dominant) / مفصلة الورك (هيمنة الورك)",
+  "kind": "قوة",
+  "equipment": "بار",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "DB RDL",
+   "SM SLDL",
+   "Single DB RDL",
+   "SLDL",
+   "Single DB SLDL"
+  ],
+  "video_url": "https://youtu.be/mZxxJEncsyw",
+  "instructions": "وقف باتساع اكتافك واحرص ان راسك ونظرك ثابتين تحت طول التمرين، انزل وادفع مؤخرتك لآخر شي تقدر عليه للخلف وكأنك بتلمس جدار خلفك مع انثناء بسيط بالركب",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Romanian / Stiff-leg Deadlift / ديدلفت روماني أو بأرجل مستقيمة",
+  "anatomical_action": "Hip Extension with Knees Nearly Fixed / بسط الورك مع ركبة شبه ثابتة"
+ },
+ {
+  "name": "DB RDL",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Lower back / أسفل الظهر"
+  ],
+  "pattern": "Hip Hinge (Hip-dominant) / مفصلة الورك (هيمنة الورك)",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "متوسط",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "BB RDL",
+   "SM SLDL",
+   "Single DB RDL",
+   "SLDL",
+   "Single DB SLDL"
+  ],
+  "video_url": "https://youtu.be/RApyTtH6qAo",
+  "instructions": "وقف باتساع اكتافك واحرص ان راسك ونظرك ثابتين تحت طول التمرين، انزل وادفع مؤخرتك لآخر شي تقدر عليه للخلف وكأنك بتلمس جدار خلفك مع انثناء بسيط بالركب",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Romanian / Stiff-leg Deadlift / ديدلفت روماني أو بأرجل مستقيمة",
+  "anatomical_action": "Hip Extension with Knees Nearly Fixed / بسط الورك مع ركبة شبه ثابتة"
+ },
+ {
+  "name": "SM SLDL",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Lower back / أسفل الظهر"
+  ],
+  "pattern": "Hip Hinge (Hip-dominant) / مفصلة الورك (هيمنة الورك)",
+  "kind": "قوة",
+  "equipment": "سميث",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "BB RDL",
+   "DB RDL",
+   "Single DB RDL",
+   "SLDL",
+   "Single DB SLDL"
+  ],
+  "video_url": "https://youtu.be/0cB0_SzqgBU",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Romanian / Stiff-leg Deadlift / ديدلفت روماني أو بأرجل مستقيمة",
+  "anatomical_action": "Hip Extension with Knees Nearly Fixed / بسط الورك مع ركبة شبه ثابتة"
+ },
+ {
+  "name": "Single DB RDL",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Lower back / أسفل الظهر"
+  ],
+  "pattern": "Hip Hinge (Hip-dominant) / مفصلة الورك (هيمنة الورك)",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "متوسط",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "BB RDL",
+   "DB RDL",
+   "SM SLDL",
+   "SLDL",
+   "Single DB SLDL"
+  ],
+  "video_url": "https://youtube.com/shorts/U3prDlAbJDw?si=MRSBcSIcf9M-WQBH",
+  "instructions": "وقف باتساع اكتافك واحرص ان راسك ونظرك ثابتين تحت طول التمرين، انزل وادفع مؤخرتك لآخر شي تقدر عليه للخلف وكأنك بتلمس جدار خلفك مع انثناء بسيط بالركب",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "ضعف الألوية الكبرى / Gluteus Maximus Weakness",
+  "sub_pattern": "Romanian / Stiff-leg Deadlift / ديدلفت روماني أو بأرجل مستقيمة",
+  "anatomical_action": "Hip Extension with Knees Nearly Fixed / بسط الورك مع ركبة شبه ثابتة",
+  "rehab_goal": "تقوية باسطات الورك وتحكم أحادي الطرف",
+  "rehab_phase": "متقدمة",
+  "rehab_load": "متوسط",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة؛ مع الحفاظ على وضع محايد للظهر",
+  "rehab_evidence": "Distefano et al. 2009 — JOSPT (EMG)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/19574661/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "SLDL",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Lower back / أسفل الظهر"
+  ],
+  "pattern": "Hip Hinge (Hip-dominant) / مفصلة الورك (هيمنة الورك)",
+  "kind": "قوة",
+  "level": "متوسط",
+  "status": "approved",
+  "alternatives": [
+   "BB RDL",
+   "DB RDL",
+   "SM SLDL",
+   "Single DB RDL",
+   "Single DB SLDL"
+  ],
+  "video_url": "https://youtu.be/RApyTtH6qAo",
+  "instructions": "قف باتساع اكتافك واحرص ان راسك ونظرك ثابتين تحت طول التمرين، ابدأ الحركة بدفع مؤخرتك للخلف والأعلى وانزل",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Romanian / Stiff-leg Deadlift / ديدلفت روماني أو بأرجل مستقيمة",
+  "anatomical_action": "Hip Extension with Knees Nearly Fixed / بسط الورك مع ركبة شبه ثابتة"
+ },
+ {
+  "name": "Single DB SLDL",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Lower back / أسفل الظهر"
+  ],
+  "pattern": "Hip Hinge (Hip-dominant) / مفصلة الورك (هيمنة الورك)",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "متوسط",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "BB RDL",
+   "DB RDL",
+   "SM SLDL",
+   "Single DB RDL",
+   "SLDL"
+  ],
+  "video_url": "https://youtube.com/shorts/U3prDlAbJDw?si=MRSBcSIcf9M-WQBH",
+  "instructions": "قف باتساع اكتافك واحرص ان راسك ونظرك ثابتين تحت طول التمرين، ابدأ الحركة بدفع مؤخرتك للخلف والأعلى وانزل",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Romanian / Stiff-leg Deadlift / ديدلفت روماني أو بأرجل مستقيمة",
+  "anatomical_action": "Hip Extension with Knees Nearly Fixed / بسط الورك مع ركبة شبه ثابتة"
+ },
+ {
+  "name": "Good Morning",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Lower back / أسفل الظهر"
+  ],
+  "pattern": "Hip Hinge (Hip-dominant) / مفصلة الورك (هيمنة الورك)",
+  "kind": "قوة",
+  "equipment": "بار",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "BB RDL",
+   "DB RDL",
+   "SM SLDL",
+   "Single DB RDL",
+   "SLDL"
+  ],
+  "video_url": "https://youtu.be/f23vXjoG2e8?si=9rkfUF_6XUEcQ3Xs",
+  "instructions": "ثبت البار على الترابس او الاكتاف الخلفية وشد البار وكأنك بتكسره من النص، ادفع مؤخرتك لأقصى قدر تقدر عليه وكأنك بتلمس جدار خلفك.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Good Morning / قود مورنينق",
+  "anatomical_action": "Hip Extension with Knees Nearly Fixed / بسط الورك مع ركبة شبه ثابتة"
+ },
+ {
+  "name": "Seated Leg Curl",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Calves / البطات"
+  ],
+  "pattern": "Knee Flexion / ثني الركبة",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Band Leg Curl",
+   "Lying Leg Curl",
+   "DB Lying Leg Curl",
+   "Standing Leg Curl",
+   "Cable Leg Curl"
+  ],
+  "video_url": "https://youtu.be/o_J6MWyt5jM",
+  "instructions": "اجلس على الكرسي وثبت ظهرك السفلي على المقعد تمامًا، انزل لأقصى حد تقدر عليه وارفع لحد ما تستقيم ركبتك.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Curl / ثني الركبة",
+  "anatomical_action": "Knee Flexion / ثني الركبة"
+ },
+ {
+  "name": "Band Leg Curl",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Calves / البطات"
+  ],
+  "pattern": "Knee Flexion / ثني الركبة",
+  "kind": "قوة",
+  "equipment": "مطاط",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Seated Leg Curl",
+   "Lying Leg Curl",
+   "DB Lying Leg Curl",
+   "Standing Leg Curl",
+   "Cable Leg Curl"
+  ],
+  "video_url": "https://youtu.be/I-HTMUrJnxs",
+  "instructions": "ثبت الباند فوق الكعب، اجلس على طرف البنش وتمسك بيدينك لزيادة الثبات، اسحب الحبل لاقصى حد تقدر عليه واترك رجلك تستقيم تمامًا في الانبساط.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Curl / ثني الركبة",
+  "anatomical_action": "Knee Flexion / ثني الركبة"
+ },
+ {
+  "name": "Lying Leg Curl",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Calves / البطات"
+  ],
+  "pattern": "Knee Flexion / ثني الركبة",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Seated Leg Curl",
+   "Band Leg Curl",
+   "DB Lying Leg Curl",
+   "Standing Leg Curl",
+   "Cable Leg Curl"
+  ],
+  "video_url": "https://youtu.be/vl5nUdE9mWM",
+  "instructions": "حوضك ثابت على البنش، ارفع الوزن بثني ومد الركبة بدون ما يرتفع حوضك عن الكرسي",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Curl / ثني الركبة",
+  "anatomical_action": "Knee Flexion / ثني الركبة"
+ },
+ {
+  "name": "DB Lying Leg Curl",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Calves / البطات"
+  ],
+  "pattern": "Knee Flexion / ثني الركبة",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Seated Leg Curl",
+   "Band Leg Curl",
+   "Lying Leg Curl",
+   "Standing Leg Curl",
+   "Cable Leg Curl"
+  ],
+  "video_url": "https://youtu.be/ZHlBSI6JPsA?si=SpBiHxluwrYE8CTP",
+  "instructions": "ركبك ثابته على الارض، ارفع الوزن بثني ومد الركبة بدون ما يرتفع حوضك",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Curl / ثني الركبة",
+  "anatomical_action": "Knee Flexion / ثني الركبة"
+ },
+ {
+  "name": "Standing Leg Curl",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Calves / البطات"
+  ],
+  "pattern": "Knee Flexion / ثني الركبة",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Seated Leg Curl",
+   "Band Leg Curl",
+   "Lying Leg Curl",
+   "DB Lying Leg Curl",
+   "Cable Leg Curl"
+  ],
+  "video_url": "https://youtu.be/rDRwAURNbzU",
+  "instructions": "الحركة كلها بثني ومد الركبة",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Curl / ثني الركبة",
+  "anatomical_action": "Knee Flexion / ثني الركبة"
+ },
+ {
+  "name": "Cable Leg Curl",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Calves / البطات"
+  ],
+  "pattern": "Knee Flexion / ثني الركبة",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Seated Leg Curl",
+   "Band Leg Curl",
+   "Lying Leg Curl",
+   "DB Lying Leg Curl",
+   "Standing Leg Curl"
+  ],
+  "video_url": "https://youtu.be/mBJXWg8ZOy0",
+  "instructions": "اجلس على الكرسي وثبت ظهرك السفلي على المقعد تمامًا، ممكن تقدّم ظهرك العلوي وتمسك المقابض لزيادة الثبات، انزل لأقصى حد تقدر عليه وارفع لحد ما تستقيم ركبتك.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Curl / ثني الركبة",
+  "anatomical_action": "Knee Flexion / ثني الركبة"
+ },
+ {
+  "name": "Supine Cable Hamstring Curl",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Calves / البطات"
+  ],
+  "pattern": "Knee Flexion / ثني الركبة",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Seated Leg Curl",
+   "Band Leg Curl",
+   "Lying Leg Curl",
+   "DB Lying Leg Curl",
+   "Standing Leg Curl"
+  ],
+  "video_url": "https://youtube.com/shorts/sDCc1F5J8XA?si=Fi3D39aJogrB5ihd",
+  "instructions": "الركبة ثبت مكانها، اسحب الحبل لاقصى حد تقدر عليه واترك رجلك تستقيم تمامًا في الانبساط.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Leg Curl / ثني الركبة",
+  "anatomical_action": "Knee Flexion / ثني الركبة"
+ },
+ {
+  "name": "Nordic Hamstring Curl",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "pattern": "Knee Flexion / ثني الركبة",
+  "kind": "قوة",
+  "equipment": "وزن الجسم",
+  "level": "متقدم",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Seated Leg Curl",
+   "Band Leg Curl",
+   "Lying Leg Curl",
+   "DB Lying Leg Curl",
+   "Standing Leg Curl"
+  ],
+  "video_url": "https://youtu.be/Lgibr8od0yA?si=nfRetEkDRk55Bu0a",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Nordic (Eccentric) / نوردك (لامركزي)",
+  "anatomical_action": "Knee Flexion / ثني الركبة"
+ },
+ {
+  "name": "Stability Ball Hamstring Curl",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة"
+  ],
+  "pattern": "Knee Flexion / ثني الركبة",
+  "kind": "قوة",
+  "equipment": "كرة سويسرية",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "TRX Hamstrings Curl",
+   "Seated Leg Curl",
+   "Band Leg Curl",
+   "Lying Leg Curl",
+   "DB Lying Leg Curl"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/59/stability-ball-hamstring-curl/",
+  "sub_pattern": "Bridge Curl / ثني الركبة مع رفع الورك",
+  "anatomical_action": "Knee Flexion + Hip Extension / ثني الركبة + بسط الورك"
+ },
+ {
+  "name": "Hip Hinge",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة"
+  ],
+  "pattern": "Hip Hinge (Hip-dominant) / مفصلة الورك (هيمنة الورك)",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "BB RDL",
+   "DB RDL",
+   "SM SLDL",
+   "Single DB RDL",
+   "SLDL"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/33/hip-hinge/",
+  "sub_pattern": "Hinge Drill / تمرين مفصلة الورك",
+  "anatomical_action": "Hip Extension with Knees Nearly Fixed / بسط الورك مع ركبة شبه ثابتة"
+ },
+ {
+  "name": "TRX Hamstrings Curl",
+  "primary_muscle": "Hamstrings / الخلفية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة"
+  ],
+  "pattern": "Knee Flexion / ثني الركبة",
+  "kind": "قوة",
+  "equipment": "TRX",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Stability Ball Hamstring Curl",
+   "Seated Leg Curl",
+   "Band Leg Curl",
+   "Lying Leg Curl",
+   "DB Lying Leg Curl"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/86/trx-reg-hamstrings-curl/",
+  "sub_pattern": "Bridge Curl / ثني الركبة مع رفع الورك",
+  "anatomical_action": "Knee Flexion + Hip Extension / ثني الركبة + بسط الورك"
+ },
+ {
+  "name": "Flat DB Chest Press",
+  "primary_muscle": "Chest / الصدر",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "متوسط",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "DB Floor Chest Press",
+   "Flat Bench Press",
+   "Machine Chest Press",
+   "Feet Up Bench Press",
+   "Push Up"
+  ],
+  "video_url": "https://youtu.be/xphvjGDZeYE",
+  "instructions": "قوّس ظهرك العلوي قليلاً، الكوع قريب قليلا من الجسم، النزول الى تساوي اليد مع الصدر تقريبا",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
+ },
+ {
+  "name": "DB Floor Chest Press",
+  "primary_muscle": "Chest / الصدر",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "متوسط",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Flat DB Chest Press",
+   "Flat Bench Press",
+   "Machine Chest Press",
+   "Feet Up Bench Press",
+   "Push Up"
+  ],
+  "video_url": "https://youtube.com/shorts/UBmpZ7l5Nlk?si=kDcN-ueaTFxfKtbr",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
+ },
+ {
+  "name": "Flat Bench Press",
+  "primary_muscle": "Chest / الصدر",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "equipment": "بار",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Flat DB Chest Press",
+   "DB Floor Chest Press",
+   "Machine Chest Press",
+   "Feet Up Bench Press",
+   "Push Up"
+  ],
+  "video_url": "https://youtu.be/vcBig73ojpE",
+  "instructions": "استلق على بنش،القبضة بنفس مستوى الاكتاف أو أوسع قليلًا، قوّس ظهرك العلوي قليلاً، انزل لين تلمس صدرك واثبت ثانية ثم ارفع.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
+ },
+ {
+  "name": "Machine Chest Press",
+  "primary_muscle": "Chest / الصدر",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Flat DB Chest Press",
+   "DB Floor Chest Press",
+   "Flat Bench Press",
+   "Feet Up Bench Press",
+   "Push Up"
+  ],
+  "video_url": "https://youtube.com/shorts/pOCRC2kpxB8?si=02xGtrfPjiYpspMv",
+  "instructions": "قوّس ظهرك العلوي قليلاً، الكوع قريب قليلا من الجسم، النزول الى تساوي اليد مع الصدر تقريبا",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
+ },
+ {
+  "name": "Feet Up Bench Press",
+  "primary_muscle": "Chest / الصدر",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "equipment": "بار",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Flat DB Chest Press",
+   "DB Floor Chest Press",
+   "Flat Bench Press",
+   "Machine Chest Press",
+   "Push Up"
+  ],
+  "video_url": "https://youtu.be/HrehfM1dmBE",
+  "instructions": "قوّس ظهرك العلوي قليلاً، الكوع قريب قليلا من الجسم، النزول الى تساوي اليد مع الصدر تقريبا",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
+ },
+ {
+  "name": "Torso Elevated Push Up",
+  "primary_muscle": "Chest / الصدر",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Flat DB Chest Press",
+   "DB Floor Chest Press",
+   "Flat Bench Press",
+   "Machine Chest Press",
+   "Feet Up Bench Press"
+  ],
+  "video_url": "https://youtu.be/noaPB7u4_CU",
+  "instructions": "قوّس ظهرك العلوي قليلاً، الكوع قريب قليلا من الجسم، النزول الى تساوي اليد مع الصدر تقريبا",
+  "notes": "تصنيف فرعي: اليدان مرفوعتان؛ زاوية الضغط بالنسبة للجذع تشبه الضغط المائل لأسفل رغم تسميته الشائعة Incline Push-up — يحدده المدرب",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Decline Press / ضغط مائل لأسفل",
+  "anatomical_action": "Horizontal Adduction + Shoulder Extension / تقريب أفقي + مد الكتف"
+ },
+ {
+  "name": "Push Up",
+  "primary_muscle": "Chest / الصدر",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "equipment": "وزن الجسم",
+  "level": "متوسط",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Flat DB Chest Press",
+   "DB Floor Chest Press",
+   "Flat Bench Press",
+   "Machine Chest Press",
+   "Feet Up Bench Press"
+  ],
+  "video_url": "https://youtu.be/WDIpL0pjun0?si=utydS_A8QfRIJtJm",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
+ },
+ {
+  "name": "Bench Press",
+  "primary_muscle": "Chest / الصدر",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "equipment": "بار",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Flat DB Chest Press",
+   "DB Floor Chest Press",
+   "Flat Bench Press",
+   "Machine Chest Press",
+   "Feet Up Bench Press"
+  ],
+  "video_url": "https://www.youtube.com/watch?v=JvOJdUtx6UQ",
+  "instructions": "استلق على بنش،القبضة بنفس مستوى الاكتاف أو أوسع قليلًا، قوّس ظهرك العلوي قليلاً، انزل لين تلمس صدرك واثبت ثانية ثم ارفع.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
+ },
+ {
+  "name": "Paused Bench Press",
+  "primary_muscle": "Chest / الصدر",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "equipment": "بار",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Flat DB Chest Press",
+   "DB Floor Chest Press",
+   "Flat Bench Press",
+   "Machine Chest Press",
+   "Feet Up Bench Press"
+  ],
+  "video_url": "https://www.youtube.com/shorts/Q3GmnmJISwE",
+  "instructions": "استلق على بنش،القبضة بنفس مستوى الاكتاف أو أوسع قليلًا، قوّس ظهرك العلوي قليلاً، انزل لين تلمس صدرك واثبت 3 ثواني ثم ارفع.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
+ },
+ {
+  "name": "Incline Press",
+  "primary_muscle": "Chest / الصدر",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "level": "متوسط",
+  "status": "approved",
+  "alternatives": [
+   "Smith Machine Incline Press",
+   "Cable Chest Press",
+   "Flat DB Chest Press",
+   "DB Floor Chest Press",
+   "Flat Bench Press"
+  ],
+  "video_url": "https://youtu.be/0G2_XV7slIg",
+  "instructions": "قوّس ظهرك العلوي قليلاً، الكوع قريب قليلا من الجسم، النزول الى تساوي اليد مع الصدر تقريبا",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Incline Press / ضغط مائل لأعلى",
+  "anatomical_action": "Shoulder Flexion + Horizontal Adduction / ثني الكتف + تقريب أفقي",
+  "movement_subcategory": "Incline Press / ضغط مائل لأعلى"
+ },
+ {
+  "name": "Smith Machine Incline Press",
+  "primary_muscle": "Chest / الصدر",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "equipment": "سميث",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Incline Press",
+   "Cable Chest Press",
+   "Flat DB Chest Press",
+   "DB Floor Chest Press",
+   "Flat Bench Press"
+  ],
+  "video_url": "https://youtu.be/EeLLZMdg6zI?si=UVsgFN7jhXMm0vW3",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Incline Press / ضغط مائل لأعلى",
+  "anatomical_action": "Shoulder Flexion + Horizontal Adduction / ثني الكتف + تقريب أفقي",
+  "movement_subcategory": "Incline Press / ضغط مائل لأعلى"
+ },
+ {
+  "name": "Cable Chest Press",
+  "primary_muscle": "Chest / الصدر",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Incline Press",
+   "Smith Machine Incline Press",
+   "Flat DB Chest Press",
+   "DB Floor Chest Press",
+   "Flat Bench Press"
+  ],
+  "video_url": "https://youtu.be/tAILewhtCb0",
+  "instructions": "اجلس على بنش انكلاين، اضبط الكيبل بمستوى صدرك تقريبا، ادفع الوزن للأمام باتجاه الداخل، احرص ان كوعك ما يكون بنفس ارتفاع كتفك",
+  "notes": "تصنيف فرعي: التعليمات تذكر بنش انكلاين، وتصنيف المصدر iso_push_chest — يُحسم بين Incline Press وعزل الصدر",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Incline Press / ضغط مائل لأعلى",
+  "anatomical_action": "Shoulder Flexion + Horizontal Adduction / ثني الكتف + تقريب أفقي",
+  "movement_subcategory": "Incline Press / ضغط مائل لأعلى"
+ },
+ {
+  "name": "Sternal Cable Press Around",
+  "primary_muscle": "Chest / الصدر",
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Flat DB Chest Press",
+   "DB Floor Chest Press",
+   "Flat Bench Press",
+   "Machine Chest Press",
+   "Feet Up Bench Press"
+  ],
+  "video_url": "https://youtu.be/y8XQibXDnNo",
+  "instructions": "اضبط الكيبل بمستوى صدرك تقريبا، حافظ على ذراعك قريبة من جسمك،ادفع الحبل للأمام باتجاه الداخل.",
+  "notes": "تصنيف فرعي: حركة مختلطة بين الضغط والـ Fly — يُحسم بين Flat Press وعزل الصدر",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Press-around / ضغط مع تقريب",
+  "anatomical_action": "Horizontal Adduction + Elbow Extension / تقريب أفقي + مد الكوع"
+ },
+ {
+  "name": "Machine Chest Fly",
+  "primary_muscle": "Chest / الصدر",
+  "pattern": "Horizontal Adduction (Fly) / تقريب أفقي للكتف (فلاي)",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Cable Chest Fly",
+   "Flat DB Chest Press",
+   "DB Floor Chest Press"
+  ],
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Chest Isolation / عزل الصدر",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Chest Isolation / عزل الصدر"
+ },
+ {
+  "name": "Bar Cable Chest Press",
+  "primary_muscle": "Chest / الصدر",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Flat DB Chest Press",
+   "DB Floor Chest Press",
+   "Flat Bench Press",
+   "Machine Chest Press",
+   "Feet Up Bench Press"
+  ],
+  "video_url": "https://youtu.be/NhD3h6RG2TA?si=SoyNTIGB-nY2KiXl",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
+ },
+ {
+  "name": "Cable Chest Fly",
+  "primary_muscle": "Chest / الصدر",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف"
+  ],
+  "pattern": "Horizontal Adduction (Fly) / تقريب أفقي للكتف (فلاي)",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Machine Chest Fly",
+   "Flat DB Chest Press",
+   "DB Floor Chest Press"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/160/standing-chest-fly/",
+  "sub_pattern": "Chest Isolation / عزل الصدر",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Chest Isolation / عزل الصدر"
+ },
+ {
+  "name": "Bent Knee Push-up",
+  "primary_muscle": "Chest / الصدر",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Flat DB Chest Press",
+   "DB Floor Chest Press",
+   "Flat Bench Press",
+   "Machine Chest Press",
+   "Feet Up Bench Press"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/13/bent-knee-push-up/",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
+ },
+ {
+  "name": "Stability Ball Push-Up",
+  "primary_muscle": "Chest / الصدر",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Triceps / الترايسبس",
+   "Core / البطن والكور"
+  ],
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "equipment": "كرة سويسرية",
+  "level": "متوسط",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Flat DB Chest Press",
+   "DB Floor Chest Press",
+   "Flat Bench Press",
+   "Machine Chest Press",
+   "Feet Up Bench Press"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف فرعي: الزاوية تعتمد على موضع الكرة (تحت اليدين أو القدمين) — غير محدد",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/63/stability-ball-push-up/",
+  "sub_pattern": "Flat / Normal Press / ضغط مستوٍ أو عادي",
+  "anatomical_action": "Horizontal Adduction / تقريب أفقي للكتف",
+  "movement_subcategory": "Flat / Normal Press / ضغط مستوٍ أو عادي"
+ },
+ {
+  "name": "Cable Reardelt Rows",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Horizontal Pull / سحب أفقي",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Upper Back Horizontal Row",
+   "DB Chest Supported Reardelt Row",
+   "Bent-over Barbell Row",
+   "DB Chest Supported Row",
+   "Head Supported Row"
+  ],
+  "video_url": "https://youtu.be/uIdXVGjcfFE",
+  "instructions": "ثبت نفسك بالكرسي، فتحة واسعة، الكيبل بمستوى اسفل صدرك، واسحب لما تنقبض اكتافك الخلفية.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Wide-grip Row / تجديف بقبضة واسعة",
+  "anatomical_action": "Horizontal Abduction + Scapular Retraction / تبعيد أفقي للكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
+ },
+ {
+  "name": "Upper Back Horizontal Row",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Horizontal Pull / سحب أفقي",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Cable Reardelt Rows",
+   "DB Chest Supported Reardelt Row",
+   "Bent-over Barbell Row",
+   "DB Chest Supported Row",
+   "Head Supported Row"
+  ],
+  "video_url": "https://youtu.be/TSWohpfMlso",
+  "instructions": "ثبت نفسك بالكرسي، فتحة واسعة، الكيبل بمستوى أعلى صدرك، واسحب لما تنقبض الترابز.",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "ضعف العضلة المعينية / Rhomboid Weakness",
+  "sub_pattern": "Wide-grip Row / تجديف بقبضة واسعة",
+  "anatomical_action": "Horizontal Abduction + Scapular Retraction / تبعيد أفقي للكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي",
+  "rehab_goal": "تقوية انكماش لوح الكتف والظهر العلوي",
+  "rehab_phase": "متوسطة",
+  "rehab_load": "متوسط",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "Moseley et al. 1992 — AJSM (EMG, scapular muscles)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/1558238/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "DB Chest Supported Reardelt Row",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Horizontal Pull / سحب أفقي",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "متوسط",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Cable Reardelt Rows",
+   "Upper Back Horizontal Row",
+   "Bent-over Barbell Row",
+   "DB Chest Supported Row",
+   "Head Supported Row"
+  ],
+  "video_url": "https://youtube.com/shorts/x0v6GWYzI18?si=-jDt3D-ARIHouHjp",
+  "instructions": "ثبت صدرك على الكرسي، فتحة واسعة، واسحب لما تنقبض اكتافك الخلفية.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Wide-grip Row / تجديف بقبضة واسعة",
+  "anatomical_action": "Horizontal Abduction + Scapular Retraction / تبعيد أفقي للكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
+ },
+ {
+  "name": "Bent-over Barbell Row",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Horizontal Pull / سحب أفقي",
+  "kind": "قوة",
+  "equipment": "بار",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "DB Chest Supported Row",
+   "Head Supported Row",
+   "Single Arm Dumbbell Row",
+   "Single Arm Cable Row",
+   "Seated Cable Row"
+  ],
+  "instructions": "ادفع مؤخرتك للخلف واثني ركبك، قبضتك بنفس مستوى اكتافك، اسحب لما تنقبض عضلات الظهر.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
+ },
+ {
+  "name": "Cable Reardelt Fly",
+  "primary_muscle": "Shoulders / الأكتاف",
+  "secondary_muscles": [
+   "Rotator cuffs / الكفة المدورة"
+  ],
+  "pattern": "Shoulder Rear Pull / سحب خلفي للكتف",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "High Row",
+   "DB Shoulder Press",
+   "DB Standing Shoulder Press"
+  ],
+  "video_url": "https://youtube.com/shorts/bkejPHrPkmA?si=-O8q_5e72udoPRiY",
+  "notes": "تصنيف فرعي: حركة Fly (تبعيد أفقي للكتف) وليست سحباً أفقياً أو عمودياً",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Rear Delt Fly / فتح خلفي",
+  "anatomical_action": "Horizontal Abduction / تبعيد أفقي للكتف"
+ },
+ {
+  "name": "DB Chest Supported Row",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Horizontal Pull / سحب أفقي",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "متوسط",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Bent-over Barbell Row",
+   "Head Supported Row",
+   "Single Arm Dumbbell Row",
+   "Single Arm Cable Row",
+   "Seated Cable Row"
+  ],
+  "video_url": "https://youtu.be/H75im9fAUMc",
+  "instructions": "ثبت صدرك على الكرسي، فتحة واسعة، واسحب الدمبل باتجاه الورك.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
+ },
+ {
+  "name": "Head Supported Row",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Horizontal Pull / سحب أفقي",
+  "kind": "قوة",
+  "level": "متوسط",
+  "status": "approved",
+  "alternatives": [
+   "Bent-over Barbell Row",
+   "DB Chest Supported Row",
+   "Single Arm Dumbbell Row",
+   "Single Arm Cable Row",
+   "Seated Cable Row"
+  ],
+  "video_url": "https://youtube.com/shorts/c6lkPMhuyFA?si=eUivRGYSi0W7PmVe",
+  "instructions": "راسك ثابت على البنش بدون أي ميلان بالرقبة.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
+ },
+ {
+  "name": "Single Arm Dumbbell Row",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Horizontal Pull / سحب أفقي",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "متوسط",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Bent-over Barbell Row",
+   "DB Chest Supported Row",
+   "Head Supported Row",
+   "Single Arm Cable Row",
+   "Seated Cable Row"
+  ],
+  "video_url": "https://youtu.be/QBjaGx8mS1o",
+  "instructions": "اسحب باتجاه الورك.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
+ },
+ {
+  "name": "Single Arm Cable Row",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Horizontal Pull / سحب أفقي",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Bent-over Barbell Row",
+   "DB Chest Supported Row",
+   "Head Supported Row",
+   "Single Arm Dumbbell Row",
+   "Seated Cable Row"
+  ],
+  "video_url": "https://youtube.com/shorts/Qn_mHGObb8E?si=IZ0q9_tseiRIMtcs",
+  "instructions": "اسحب باتجاه الورك.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
+ },
+ {
+  "name": "Seated Cable Row",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Horizontal Pull / سحب أفقي",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Bent-over Barbell Row",
+   "DB Chest Supported Row",
+   "Head Supported Row",
+   "Single Arm Dumbbell Row",
+   "Single Arm Cable Row"
+  ],
+  "video_url": "https://youtu.be/0G3W83dFUeY",
+  "instructions": "اسحب باتجاه الورك.",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "ضعف العضلة المعينية / Rhomboid Weakness | تحدب الظهر / Postural Thoracic Kyphosis",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي",
+  "rehab_goal": "تقوية سحب وانكماش لوح الكتف",
+  "rehab_phase": "متوسطة",
+  "rehab_load": "متوسط",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "Moseley et al. 1992 — AJSM (EMG, scapular muscles) | Sepehri et al. 2024 — BMC Musculoskelet Disord (Systematic review: FHP / kyphosis)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/1558238/ | https://doi.org/10.1186/s12891-024-07224-4",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Band Seated Row",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Horizontal Pull / سحب أفقي",
+  "kind": "قوة",
+  "equipment": "مطاط",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Bent-over Barbell Row",
+   "DB Chest Supported Row",
+   "Head Supported Row",
+   "Single Arm Dumbbell Row",
+   "Single Arm Cable Row"
+  ],
+  "video_url": "https://youtu.be/Jy-WCFAofBY?si=9gqVby588rk1zFi9",
+  "instructions": "فتحة واسعة، واسحب لما تنقبض عضلات الظهر.",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "ضعف العضلة المعينية / Rhomboid Weakness | تحدب الظهر / Postural Thoracic Kyphosis | وضعية الرأس للأمام / Forward Head Posture",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي",
+  "rehab_goal": "تقوية سحب لوح الكتف بمقاومة منخفضة",
+  "rehab_phase": "مبكرة–متوسطة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "Moseley et al. 1992 — AJSM (EMG, scapular muscles) | Sepehri et al. 2024 — BMC Musculoskelet Disord (Systematic review: FHP / kyphosis)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/1558238/ | https://doi.org/10.1186/s12891-024-07224-4",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Chest Supported Cable Row",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Horizontal Pull / سحب أفقي",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Bent-over Barbell Row",
+   "DB Chest Supported Row",
+   "Head Supported Row",
+   "Single Arm Dumbbell Row",
+   "Single Arm Cable Row"
+  ],
+  "video_url": "https://youtu.be/DgHtyrQEMJ4?si=oTfTKVgD9j1H12wA",
+  "instructions": "ثبت صدرك على الكرسي، فتحة واسعة، واسحب لما تنقبض عضلات الظهر.",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "ضعف العضلة المعينية / Rhomboid Weakness",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي",
+  "rehab_goal": "تقوية انكماش لوح الكتف مع دعم الجذع",
+  "rehab_phase": "متوسطة",
+  "rehab_load": "متوسط",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "Moseley et al. 1992 — AJSM (EMG, scapular muscles)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/1558238/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Chest Supported Machine Row",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Horizontal Pull / سحب أفقي",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Bent-over Barbell Row",
+   "DB Chest Supported Row",
+   "Head Supported Row",
+   "Single Arm Dumbbell Row",
+   "Single Arm Cable Row"
+  ],
+  "video_url": "https://youtube.com/shorts/BZrdEAiR2Xs?si=WhKaSGhR0gKeeies",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
+ },
+ {
+  "name": "T-Bar Row",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Horizontal Pull / سحب أفقي",
+  "kind": "قوة",
+  "level": "متوسط",
+  "status": "approved",
+  "alternatives": [
+   "Bent-over Barbell Row",
+   "DB Chest Supported Row",
+   "Head Supported Row",
+   "Single Arm Dumbbell Row",
+   "Single Arm Cable Row"
+  ],
+  "video_url": "https://youtube.com/shorts/6OtcNinT0HM?si=UPfYyypfZCaN9tTA",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
+ },
+ {
+  "name": "Lats Cable Row",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Horizontal Pull / سحب أفقي",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Cable Reardelt Rows",
+   "Upper Back Horizontal Row",
+   "DB Chest Supported Reardelt Row",
+   "Bent-over Barbell Row",
+   "DB Chest Supported Row"
+  ],
+  "video_url": "https://youtu.be/CQkT-W18N5g",
+  "instructions": "الكيبل بنفس مستوى بطنك، اسحب باتجاه الورك.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lat-focused Row / تجديف لاتس",
+  "anatomical_action": "Shoulder Extension / مد الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
+ },
+ {
+  "name": "Upperback Pulldowns",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Vertical Pull / سحب عمودي",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Straight Arm Pulldown",
+   "Band Lat Pulldown",
+   "Band Assisted Pull Ups",
+   "Pull Ups",
+   "Negative Pull-Up"
+  ],
+  "video_url": "https://youtube.com/shorts/bNmvKpJSWKM?si=hy5HgBDAHkzFHcvv",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Wide-grip Pulldown / سحب علوي بقبضة واسعة",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
+ },
+ {
+  "name": "Straight Arm Pulldown",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "pattern": "Vertical Pull / سحب عمودي",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Upperback Pulldowns",
+   "Band Lat Pulldown",
+   "Band Assisted Pull Ups",
+   "Pull Ups",
+   "Negative Pull-Up"
+  ],
+  "video_url": "https://youtube.com/shorts/hAMcfubonDc?si=ocU_a8VQ4VzZnTg3",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Straight-arm Pull / سحب بذراع مستقيمة",
+  "anatomical_action": "Shoulder Extension + Scapular Depression / مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
+ },
+ {
+  "name": "DB Pullover",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Chest / الصدر",
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Vertical Pull / سحب عمودي",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "متوسط",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Straight Arm Pulldown",
+   "Upperback Pulldowns",
+   "Band Lat Pulldown",
+   "Band Assisted Pull Ups",
+   "Pull Ups"
+  ],
+  "video_url": "https://youtu.be/ieFKuQAGYIA?si=uwqyrbKhBL6Id3_-",
+  "instructions": "القبضة اوسع من الكتف شوي، اسحب باتجاه اعلى الصدر.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Straight-arm Pull / سحب بذراع مستقيمة",
+  "anatomical_action": "Shoulder Extension + Scapular Depression / مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
+ },
+ {
+  "name": "Band Lat Pulldown",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Vertical Pull / سحب عمودي",
+  "kind": "قوة",
+  "equipment": "مطاط",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Neutral Grip Lat Pulldown",
+   "Single Lats Pulldown",
+   "Kneeling Lat Pulldown",
+   "Upperback Pulldowns",
+   "Straight Arm Pulldown"
+  ],
+  "video_url": "https://youtu.be/5R0RYj3Y9Ro",
+  "instructions": "القبضة اوسع من الكتف شوي، اسحب باتجاه اعلى الصدر.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lat-focused Pull / سحب لاتس",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
+ },
+ {
+  "name": "Band Assisted Pull Ups",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Vertical Pull / سحب عمودي",
+  "kind": "قوة",
+  "equipment": "أخرى",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Pull Ups",
+   "Negative Pull-Up",
+   "Band Assisted Chin Ups",
+   "Chin Ups",
+   "Upperback Pulldowns"
+  ],
+  "video_url": "https://youtu.be/Ks8ah-8P1b0",
+  "instructions": "القبضة اوسع من الكتف شوي، اسحب باتجاه اعلى الصدر.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pull-up / Chin-up / عقلة",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
+ },
+ {
+  "name": "Pull Ups",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Vertical Pull / سحب عمودي",
+  "kind": "قوة",
+  "equipment": "أخرى",
+  "level": "متقدم",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Band Assisted Pull Ups",
+   "Negative Pull-Up",
+   "Band Assisted Chin Ups",
+   "Chin Ups",
+   "Upperback Pulldowns"
+  ],
+  "video_url": "https://youtu.be/x3NPAxiMRPw?si=Mwg6U1Df5aIFpjKB",
+  "instructions": "القبضة اوسع من الكتف شوي، اسحب باتجاه اعلى الصدر.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pull-up / Chin-up / عقلة",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
+ },
+ {
+  "name": "Negative Pull-Up",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Vertical Pull / سحب عمودي",
+  "kind": "قوة",
+  "equipment": "أخرى",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Band Assisted Pull Ups",
+   "Pull Ups",
+   "Band Assisted Chin Ups",
+   "Chin Ups",
+   "Upperback Pulldowns"
+  ],
+  "video_url": "https://youtu.be/gbPURTSxQLY?si=TvQF5zDWfU_rR1Ax",
+  "instructions": "القبضة اوسع من الكتف شوي، اسحب باتجاه اعلى الصدر، نزول بطيء.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pull-up / Chin-up / عقلة",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
+ },
+ {
+  "name": "Neutral Grip Lat Pulldown",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Vertical Pull / سحب عمودي",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Band Lat Pulldown",
+   "Single Lats Pulldown",
+   "Kneeling Lat Pulldown",
+   "Upperback Pulldowns",
+   "Straight Arm Pulldown"
+  ],
+  "video_url": "https://youtu.be/kVB6SlEyjQM",
+  "instructions": "القبضة بنفس مستوى الكتف، اسحب باتجاه اعلى الصدر.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lat-focused Pull / سحب لاتس",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
+ },
+ {
+  "name": "Single Lats Pulldown",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Vertical Pull / سحب عمودي",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Band Lat Pulldown",
+   "Neutral Grip Lat Pulldown",
+   "Kneeling Lat Pulldown",
+   "Upperback Pulldowns",
+   "Straight Arm Pulldown"
+  ],
+  "video_url": "https://youtu.be/Qed5O9toqT8",
+  "instructions": "اجلس على بنش واسند صدرك عليه، ارجع للخلف قليلا بحيث ان الكيبل ما يكون فوق راسك مباشرة، اسحب الكوع باتجاه الورك.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lat-focused Pull / سحب لاتس",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
+ },
+ {
+  "name": "Band Assisted Chin Ups",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Vertical Pull / سحب عمودي",
+  "kind": "قوة",
+  "equipment": "أخرى",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Band Assisted Pull Ups",
+   "Pull Ups",
+   "Negative Pull-Up",
+   "Chin Ups",
+   "Upperback Pulldowns"
+  ],
+  "video_url": "https://youtu.be/i0yC-0YK6Uk?si=gNX26kIFz_THnR4p",
+  "instructions": "مسكة ضيقة بمستوى الأكتاف، كل ما كان الحبل خفيف زادت المقاومة وزدات صعوبة التمرين لذلك ابدأ بحبل ثقيل وخفف كل ما تحسن مستواك.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pull-up / Chin-up / عقلة",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
+ },
+ {
+  "name": "Chin Ups",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Vertical Pull / سحب عمودي",
+  "kind": "قوة",
+  "equipment": "أخرى",
+  "level": "متقدم",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Band Assisted Pull Ups",
+   "Pull Ups",
+   "Negative Pull-Up",
+   "Band Assisted Chin Ups",
+   "Upperback Pulldowns"
+  ],
+  "video_url": "https://youtube.com/shorts/aV9Mz9nCsMw?si=E_ullJojGO_7srW2",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pull-up / Chin-up / عقلة",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
+ },
+ {
+  "name": "Kneeling Lat Pulldown",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Biceps / البايسبس"
+  ],
+  "pattern": "Vertical Pull / سحب عمودي",
+  "kind": "قوة",
+  "level": "متوسط",
+  "status": "approved",
+  "alternatives": [
+   "Band Lat Pulldown",
+   "Neutral Grip Lat Pulldown",
+   "Single Lats Pulldown",
+   "Upperback Pulldowns",
+   "Straight Arm Pulldown"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/35/kneeling-lat-pulldown/",
+  "sub_pattern": "Lat-focused Pull / سحب لاتس",
+  "anatomical_action": "Shoulder Adduction/Extension + Scapular Depression / تقريب أو مد الكتف + خفض لوح الكتف",
+  "movement_subcategory": "Vertical Pull / سحب عمودي"
+ },
+ {
+  "name": "TRX Back Row",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Biceps / البايسبس",
+   "Core / البطن والكور",
+   "Lower back / أسفل الظهر"
+  ],
+  "pattern": "Horizontal Pull / سحب أفقي",
+  "kind": "قوة",
+  "equipment": "TRX",
+  "level": "متوسط",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Bent-over Barbell Row",
+   "DB Chest Supported Row",
+   "Head Supported Row",
+   "Single Arm Dumbbell Row",
+   "Single Arm Cable Row"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/84/trx-reg-back-row/",
+  "sub_pattern": "Scapular Retraction / سحب لوح الكتف",
+  "anatomical_action": "Shoulder Extension + Scapular Retraction / مد الكتف + سحب لوح الكتف",
+  "movement_subcategory": "Horizontal Pull / سحب أفقي"
+ },
+ {
+  "name": "Shrug",
+  "primary_muscle": "Back & Lats / الظهر واللاتس",
+  "secondary_muscles": [
+   "Trapezius / الترابيس"
+  ],
+  "pattern": "Scapular Elevation / رفع لوح الكتف",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Cable Reardelt Rows",
+   "Upper Back Horizontal Row",
+   "DB Chest Supported Reardelt Row"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف فرعي: رفع الأكتاف (Shrug) ليس نمط سحب أفقي أو عمودي",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/72/shrug/",
+  "sub_pattern": "Shrug / هز الكتفين",
+  "anatomical_action": "Scapular Elevation / رفع لوح الكتف"
+ },
+ {
+  "name": "DB Shoulder Press",
+  "primary_muscle": "Shoulders / الأكتاف",
+  "secondary_muscles": [
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Vertical Push / دفع عمودي",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "متوسط",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "DB Standing Shoulder Press",
+   "Machine Shoulder Press",
+   "BB Overhead Press"
+  ],
+  "video_url": "https://youtu.be/NKeyUrDYqPk",
+  "instructions": "قوّس ظهرك العلوي قليلاً، الكوع قريب من الجسم، النزول الى مستوى الاكتاف",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Shoulder Press / ضغط الكتف",
+  "anatomical_action": "Shoulder Flexion/Abduction + Elbow Extension / ثني أو تبعيد الكتف + مد الكوع"
+ },
+ {
+  "name": "DB Standing Shoulder Press",
+  "primary_muscle": "Shoulders / الأكتاف",
+  "secondary_muscles": [
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Vertical Push / دفع عمودي",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "متوسط",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "DB Shoulder Press",
+   "Machine Shoulder Press",
+   "BB Overhead Press"
+  ],
+  "video_url": "https://youtube.com/shorts/wO0l5jW2NtQ?si=MVvS4F_7iFS8ji9R",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Shoulder Press / ضغط الكتف",
+  "anatomical_action": "Shoulder Flexion/Abduction + Elbow Extension / ثني أو تبعيد الكتف + مد الكوع"
+ },
+ {
+  "name": "Machine Shoulder Press",
+  "primary_muscle": "Shoulders / الأكتاف",
+  "secondary_muscles": [
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Vertical Push / دفع عمودي",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "DB Shoulder Press",
+   "DB Standing Shoulder Press",
+   "BB Overhead Press"
+  ],
+  "video_url": "https://youtu.be/3R14MnZbcpw",
+  "instructions": "قوّس ظهرك العلوي قليلاً، الكوع قريب من الجسم، النزول الى مستوى الاكتاف",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Shoulder Press / ضغط الكتف",
+  "anatomical_action": "Shoulder Flexion/Abduction + Elbow Extension / ثني أو تبعيد الكتف + مد الكوع"
+ },
+ {
+  "name": "BB Overhead Press",
+  "primary_muscle": "Shoulders / الأكتاف",
+  "secondary_muscles": [
+   "Triceps / الترايسبس"
+  ],
+  "pattern": "Vertical Push / دفع عمودي",
+  "kind": "قوة",
+  "equipment": "بار",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "DB Shoulder Press",
+   "DB Standing Shoulder Press",
+   "Machine Shoulder Press"
+  ],
+  "video_url": "https://youtu.be/_RlRDWO2jfg",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Shoulder Press / ضغط الكتف",
+  "anatomical_action": "Shoulder Flexion/Abduction + Elbow Extension / ثني أو تبعيد الكتف + مد الكوع"
+ },
+ {
+  "name": "DB Lateral Raise",
+  "primary_muscle": "Shoulders / الأكتاف",
+  "pattern": "Shoulder Lateral Raise / رفع جانبي للكتف",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Seated Lateral Raise",
+   "Lateral Raise Machine",
+   "Cable Crossover Lateral Raise",
+   "Single Arm DB Lateral Raise",
+   "Single Arm Cable Lateral Raise"
+  ],
+  "video_url": "https://youtube.com/shorts/qqntiuPmLDM?feature=share",
+  "instructions": "انحني للأمام قليلًا، ارفع للأعلى الى أن تصل لمستوى الأكتاف.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lateral Raise / رفع جانبي",
+  "anatomical_action": "Shoulder Abduction / تبعيد الكتف"
+ },
+ {
+  "name": "Seated Lateral Raise",
+  "primary_muscle": "Shoulders / الأكتاف",
+  "pattern": "Shoulder Lateral Raise / رفع جانبي للكتف",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "DB Lateral Raise",
+   "Lateral Raise Machine",
+   "Cable Crossover Lateral Raise",
+   "Single Arm DB Lateral Raise",
+   "Single Arm Cable Lateral Raise"
+  ],
+  "video_url": "https://youtube.com/shorts/v7fwGurZ9SU?feature=share",
+  "instructions": "انحني للأمام قليلًا، ارفع للأعلى الى أن تصل لمستوى الأكتاف.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lateral Raise / رفع جانبي",
+  "anatomical_action": "Shoulder Abduction / تبعيد الكتف"
+ },
+ {
+  "name": "Lateral Raise Machine",
+  "primary_muscle": "Shoulders / الأكتاف",
+  "pattern": "Shoulder Lateral Raise / رفع جانبي للكتف",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "DB Lateral Raise",
+   "Seated Lateral Raise",
+   "Cable Crossover Lateral Raise",
+   "Single Arm DB Lateral Raise",
+   "Single Arm Cable Lateral Raise"
+  ],
+  "video_url": "https://youtu.be/d0pRsZ9SY5w?si=XuXb_Ti0Flow7qvW",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lateral Raise / رفع جانبي",
+  "anatomical_action": "Shoulder Abduction / تبعيد الكتف"
+ },
+ {
+  "name": "Cable Crossover Lateral Raise",
+  "primary_muscle": "Shoulders / الأكتاف",
+  "pattern": "Shoulder Lateral Raise / رفع جانبي للكتف",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "DB Lateral Raise",
+   "Seated Lateral Raise",
+   "Lateral Raise Machine",
+   "Single Arm DB Lateral Raise",
+   "Single Arm Cable Lateral Raise"
+  ],
+  "video_url": "https://youtu.be/wKgCc5UQjoU?si=zsaz3i31PnEU9A43",
+  "instructions": "الكيبل يبدأ من الأسفل، انحني للأمام قليلًا، ارفع للأعلى وتحكم بالنزول.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lateral Raise / رفع جانبي",
+  "anatomical_action": "Shoulder Abduction / تبعيد الكتف"
+ },
+ {
+  "name": "DB Y Raises",
+  "primary_muscle": "Shoulders / الأكتاف",
+  "pattern": "Shoulder Lateral Raise / رفع جانبي للكتف",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Cable Y Raises",
+   "DB Lateral Raise",
+   "Seated Lateral Raise",
+   "Lateral Raise Machine",
+   "Cable Crossover Lateral Raise"
+  ],
+  "video_url": "https://youtu.be/lXp16YozXgk",
+  "instructions": "ثبت صدرك على البنش،ارفع الوزن على شكل Y.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Y Raise (Scaption) / رفع Y بمستوى لوح الكتف",
+  "anatomical_action": "Shoulder Elevation in Scapular Plane (Scaption) / رفع الذراع بمستوى لوح الكتف"
+ },
+ {
+  "name": "Cable Y Raises",
+  "primary_muscle": "Shoulders / الأكتاف",
+  "pattern": "Shoulder Lateral Raise / رفع جانبي للكتف",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "DB Y Raises",
+   "DB Lateral Raise",
+   "Seated Lateral Raise",
+   "Lateral Raise Machine",
+   "Cable Crossover Lateral Raise"
+  ],
+  "video_url": "https://youtube.com/shorts/P7u6PEeOn6Q?feature=share",
+  "instructions": "الكيبل يبدأ من تحت،ارفع الوزن على شكل Y.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Y Raise (Scaption) / رفع Y بمستوى لوح الكتف",
+  "anatomical_action": "Shoulder Elevation in Scapular Plane (Scaption) / رفع الذراع بمستوى لوح الكتف"
+ },
+ {
+  "name": "Single Arm DB Lateral Raise",
+  "primary_muscle": "Shoulders / الأكتاف",
+  "pattern": "Shoulder Lateral Raise / رفع جانبي للكتف",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "DB Lateral Raise",
+   "Seated Lateral Raise",
+   "Lateral Raise Machine",
+   "Cable Crossover Lateral Raise",
+   "Single Arm Cable Lateral Raise"
+  ],
+  "video_url": "https://youtu.be/Jm6GqVhWhNY",
+  "instructions": "انحني للأمام قليلًا، ارفع للأعلى الى أن تصل لمستوى الأكتاف.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lateral Raise / رفع جانبي",
+  "anatomical_action": "Shoulder Abduction / تبعيد الكتف"
+ },
+ {
+  "name": "Single Arm Cable Lateral Raise",
+  "primary_muscle": "Shoulders / الأكتاف",
+  "pattern": "Shoulder Lateral Raise / رفع جانبي للكتف",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "DB Lateral Raise",
+   "Seated Lateral Raise",
+   "Lateral Raise Machine",
+   "Cable Crossover Lateral Raise",
+   "Single Arm DB Lateral Raise"
+  ],
+  "video_url": "https://youtu.be/J-6uEOkYAKM",
+  "instructions": "الكيبل يبدأ من الأسفل، انحني للأمام قليلًا، ارفع للأعلى وتحكم بالنزول.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lateral Raise / رفع جانبي",
+  "anatomical_action": "Shoulder Abduction / تبعيد الكتف"
+ },
+ {
+  "name": "Front Raise",
+  "primary_muscle": "Shoulders / الأكتاف",
+  "pattern": "Shoulder Front Raise / رفع أمامي للكتف",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Cable Reardelt Fly",
+   "DB Shoulder Press",
+   "DB Standing Shoulder Press"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/54/front-raise/",
+  "sub_pattern": "Front Raise / رفع أمامي",
+  "anatomical_action": "Shoulder Flexion / ثني الكتف"
+ },
+ {
+  "name": "Diagonal Raise",
+  "primary_muscle": "Shoulders / الأكتاف",
+  "pattern": "Shoulder Lateral Raise / رفع جانبي للكتف",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "DB Lateral Raise",
+   "Seated Lateral Raise",
+   "Lateral Raise Machine",
+   "Cable Crossover Lateral Raise",
+   "DB Y Raises"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/371/diagonal-raise/",
+  "sub_pattern": "Diagonal Raise / رفع قطري",
+  "anatomical_action": "Shoulder Flexion + Abduction (Diagonal) / ثني وتبعيد الكتف (قطري)"
+ },
+ {
+  "name": "High Row",
+  "primary_muscle": "Shoulders / الأكتاف",
+  "pattern": "Shoulder Rear Pull / سحب خلفي للكتف",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Cable Reardelt Fly",
+   "DB Shoulder Press",
+   "DB Standing Shoulder Press"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/336/high-row/",
+  "sub_pattern": "High Row / Face Pull / سحب عالٍ باتجاه الوجه",
+  "anatomical_action": "Horizontal Abduction + Scapular Retraction / تبعيد أفقي للكتف + سحب لوح الكتف"
+ },
+ {
+  "name": "Biceps Curl",
+  "primary_muscle": "Biceps / البايسبس",
+  "secondary_muscles": [
+   "Forearms / الساعد"
+  ],
+  "pattern": "Elbow Flexion / ثني الكوع",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Cable Facing Away Curls",
+   "DB Incline Curl",
+   "Cable Facing In Curls",
+   "Single Arm Cable Facing Away Curls",
+   "Single Arm Cable Facing In Curls"
+  ],
+  "video_url": "https://youtube.com/shorts/09AYfVFf7pg?si=dcwLVAYqIbDLM6jd",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
+ },
+ {
+  "name": "Cable Rope Curls",
+  "primary_muscle": "Biceps / البايسبس",
+  "secondary_muscles": [
+   "Forearms / الساعد"
+  ],
+  "pattern": "Elbow Flexion / ثني الكوع",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Hammer Curl",
+   "Biceps Curl",
+   "Cable Facing Away Curls",
+   "DB Incline Curl",
+   "Cable Facing In Curls"
+  ],
+  "video_url": "https://youtube.com/shorts/xNXUTJ6TBZA?si=-r-Ql97awoVZla_1",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hammer / Neutral-grip Curl / ثني بقبضة محايدة",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
+ },
+ {
+  "name": "Cable Facing Away Curls",
+  "primary_muscle": "Biceps / البايسبس",
+  "secondary_muscles": [
+   "Forearms / الساعد"
+  ],
+  "pattern": "Elbow Flexion / ثني الكوع",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Biceps Curl",
+   "DB Incline Curl",
+   "Cable Facing In Curls",
+   "Single Arm Cable Facing Away Curls",
+   "Single Arm Cable Facing In Curls"
+  ],
+  "video_url": "https://youtu.be/fV9BpknCjGM",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
+ },
+ {
+  "name": "DB Incline Curl",
+  "primary_muscle": "Biceps / البايسبس",
+  "secondary_muscles": [
+   "Forearms / الساعد"
+  ],
+  "pattern": "Elbow Flexion / ثني الكوع",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Biceps Curl",
+   "Cable Facing Away Curls",
+   "Cable Facing In Curls",
+   "Single Arm Cable Facing Away Curls",
+   "Single Arm Cable Facing In Curls"
+  ],
+  "video_url": "https://youtu.be/js_StxxyxBM",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
+ },
+ {
+  "name": "Cable Facing In Curls",
+  "primary_muscle": "Biceps / البايسبس",
+  "secondary_muscles": [
+   "Forearms / الساعد"
+  ],
+  "pattern": "Elbow Flexion / ثني الكوع",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Biceps Curl",
+   "Cable Facing Away Curls",
+   "DB Incline Curl",
+   "Single Arm Cable Facing Away Curls",
+   "Single Arm Cable Facing In Curls"
+  ],
+  "video_url": "https://youtu.be/5z4y7QRTx1w",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
+ },
+ {
+  "name": "Single Arm Cable Facing Away Curls",
+  "primary_muscle": "Biceps / البايسبس",
+  "secondary_muscles": [
+   "Forearms / الساعد"
+  ],
+  "pattern": "Elbow Flexion / ثني الكوع",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Biceps Curl",
+   "Cable Facing Away Curls",
+   "DB Incline Curl",
+   "Cable Facing In Curls",
+   "Single Arm Cable Facing In Curls"
+  ],
+  "video_url": "https://youtube.com/shorts/6sO-pK7pTPs?feature=share",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
+ },
+ {
+  "name": "Single Arm Cable Facing In Curls",
+  "primary_muscle": "Biceps / البايسبس",
+  "secondary_muscles": [
+   "Forearms / الساعد"
+  ],
+  "pattern": "Elbow Flexion / ثني الكوع",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Biceps Curl",
+   "Cable Facing Away Curls",
+   "DB Incline Curl",
+   "Cable Facing In Curls",
+   "Single Arm Cable Facing Away Curls"
+  ],
+  "video_url": "https://youtube.com/shorts/I-197ZW9Ffo?si=M1Yq4R1PIpdZMXRx",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
+ },
+ {
+  "name": "DB Preacher",
+  "primary_muscle": "Biceps / البايسبس",
+  "secondary_muscles": [
+   "Forearms / الساعد"
+  ],
+  "pattern": "Elbow Flexion / ثني الكوع",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Preacher Curl Machine",
+   "Biceps Curl",
+   "Cable Rope Curls",
+   "Cable Facing Away Curls",
+   "DB Incline Curl"
+  ],
+  "video_url": "https://youtu.be/DZJNTb-zzn0?si=SwbdZ0O_0eTOET-5",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Preacher Curl / ثني على مسند",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
+ },
+ {
+  "name": "Preacher Curl Machine",
+  "primary_muscle": "Biceps / البايسبس",
+  "secondary_muscles": [
+   "Forearms / الساعد"
+  ],
+  "pattern": "Elbow Flexion / ثني الكوع",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "DB Preacher",
+   "Biceps Curl",
+   "Cable Rope Curls",
+   "Cable Facing Away Curls",
+   "DB Incline Curl"
+  ],
+  "video_url": "https://youtube.com/shorts/TouYMA3-ua4?feature=share",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Preacher Curl / ثني على مسند",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
+ },
+ {
+  "name": "DB Spider Curls",
+  "primary_muscle": "Biceps / البايسبس",
+  "secondary_muscles": [
+   "Forearms / الساعد"
+  ],
+  "pattern": "Elbow Flexion / ثني الكوع",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Biceps Curl",
+   "Cable Facing Away Curls",
+   "DB Incline Curl",
+   "Cable Facing In Curls",
+   "Single Arm Cable Facing Away Curls"
+  ],
+  "video_url": "https://youtube.com/shorts/cTMjzB2_IH8?si=qsIKEEFVfEvPXwqf",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
+ },
+ {
+  "name": "Zottman Curl",
+  "primary_muscle": "Biceps / البايسبس",
+  "secondary_muscles": [
+   "Forearms / الساعد"
+  ],
+  "pattern": "Elbow Flexion / ثني الكوع",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Biceps Curl",
+   "Cable Facing Away Curls",
+   "DB Incline Curl",
+   "Cable Facing In Curls",
+   "Single Arm Cable Facing Away Curls"
+  ],
+  "video_url": "https://www.youtube.com/watch?v=ZXbOOIOPOi8",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
+ },
+ {
+  "name": "Hammer Curl",
+  "primary_muscle": "Biceps / البايسبس",
+  "secondary_muscles": [
+   "Forearms / الساعد"
+  ],
+  "pattern": "Elbow Flexion / ثني الكوع",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Cable Rope Curls",
+   "Biceps Curl",
+   "Cable Facing Away Curls",
+   "DB Incline Curl",
+   "Cable Facing In Curls"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/10/hammer-curl/",
+  "sub_pattern": "Hammer / Neutral-grip Curl / ثني بقبضة محايدة",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
+ },
+ {
+  "name": "TRX Biceps Curl",
+  "primary_muscle": "Biceps / البايسبس",
+  "secondary_muscles": [
+   "Forearms / الساعد",
+   "Core / البطن والكور"
+  ],
+  "pattern": "Elbow Flexion / ثني الكوع",
+  "kind": "قوة",
+  "equipment": "TRX",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Biceps Curl",
+   "Cable Facing Away Curls",
+   "DB Incline Curl",
+   "Cable Facing In Curls",
+   "Single Arm Cable Facing Away Curls"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/78/trx-reg-biceps-curl/",
+  "sub_pattern": "Biceps Curl / ثني البايسبس",
+  "anatomical_action": "Elbow Flexion / ثني الكوع"
+ },
+ {
+  "name": "DB Triceps Extensions",
+  "primary_muscle": "Triceps / الترايسبس",
+  "pattern": "Elbow Extension / مد الكوع",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Cable Overhead Extension",
+   "DB Floor Triceps Extensions",
+   "Cable Crossbody Extensions",
+   "Triceps Pushdown",
+   "Cable Crossover Pressdowns"
+  ],
+  "video_url": "https://youtu.be/d7SXlU5HkYM?si=WuuPa9-yeByaP5sI",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Overhead Extension / مد فوق الرأس",
+  "anatomical_action": "Elbow Extension / مد الكوع"
+ },
+ {
+  "name": "DB Floor Triceps Extensions",
+  "primary_muscle": "Triceps / الترايسبس",
+  "pattern": "Elbow Extension / مد الكوع",
+  "kind": "قوة",
+  "equipment": "دمبل",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "DB Triceps Extensions",
+   "Cable Crossbody Extensions",
+   "Triceps Pushdown",
+   "Cable Crossover Pressdowns",
+   "Band Triceps Pushdown"
+  ],
+  "video_url": "https://youtube.com/shorts/dpFav9Ve4rY?si=ZBdKK8VF4aPMpi3v",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lying Extension / مد مستلقٍ",
+  "anatomical_action": "Elbow Extension / مد الكوع"
+ },
+ {
+  "name": "Cable Crossbody Extensions",
+  "primary_muscle": "Triceps / الترايسبس",
+  "pattern": "Elbow Extension / مد الكوع",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "DB Triceps Extensions",
+   "DB Floor Triceps Extensions",
+   "Triceps Pushdown",
+   "Cable Crossover Pressdowns",
+   "Band Triceps Pushdown"
+  ],
+  "video_url": "https://www.youtube.com/watch?v=jtLTcED38Dg",
+  "instructions": "الكيبل يبدأ بالمنتصف زي الفيديو، بحيث لما تسحب الكيبل يكون بنفس مستوى الترابس، الأكواع والأكتاف ثابتين مكانهم والحركة كلها بثني وفرد الكوع.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Cross-body Extension / مد عرضي",
+  "anatomical_action": "Elbow Extension / مد الكوع"
+ },
+ {
+  "name": "Triceps Pushdown",
+  "primary_muscle": "Triceps / الترايسبس",
+  "pattern": "Elbow Extension / مد الكوع",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Cable Crossover Pressdowns",
+   "Band Triceps Pushdown",
+   "Single Cable Triceps Pressdowns",
+   "DB Triceps Extensions",
+   "DB Floor Triceps Extensions"
+  ],
+  "video_url": "https://youtube.com/shorts/QsoN4u6j8nM?feature=share",
+  "instructions": "انحني للأمام قليلاً، امسك طرف الحبل، ثبتي اكواعك مكانها واسحب الحبل للأسفل باتجاه الخارج.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pushdown / دفع للأسفل",
+  "anatomical_action": "Elbow Extension / مد الكوع"
+ },
+ {
+  "name": "Cable Crossover Pressdowns",
+  "primary_muscle": "Triceps / الترايسبس",
+  "pattern": "Elbow Extension / مد الكوع",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Triceps Pushdown",
+   "Band Triceps Pushdown",
+   "Single Cable Triceps Pressdowns",
+   "DB Triceps Extensions",
+   "DB Floor Triceps Extensions"
+  ],
+  "video_url": "https://youtu.be/Y3CDzx-oj3k",
+  "instructions": "الكيبل يبدأ من الأعلى،انحني للأمام قليلاً، امسك طرف الحبل، ثبتي اكواعك مكانها واسحب الحبل للأسفل باتجاه الخارج.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pushdown / دفع للأسفل",
+  "anatomical_action": "Elbow Extension / مد الكوع"
+ },
+ {
+  "name": "Band Triceps Pushdown",
+  "primary_muscle": "Triceps / الترايسبس",
+  "pattern": "Elbow Extension / مد الكوع",
+  "kind": "قوة",
+  "equipment": "مطاط",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Triceps Pushdown",
+   "Cable Crossover Pressdowns",
+   "Single Cable Triceps Pressdowns",
+   "DB Triceps Extensions",
+   "DB Floor Triceps Extensions"
+  ],
+  "video_url": "https://youtube.com/shorts/mYs1rEYtZK4?si=k8vdZxNNEB5wj2CA",
+  "instructions": "الكيبل يبدأ من الأعلى،انحني للأمام قليلاً، امسك طرف الحبل، ثبتي اكواعك مكانها واسحب الحبل للأسفل باتجاه الخارج.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pushdown / دفع للأسفل",
+  "anatomical_action": "Elbow Extension / مد الكوع"
+ },
+ {
+  "name": "Single Cable Triceps Pressdowns",
+  "primary_muscle": "Triceps / الترايسبس",
+  "pattern": "Elbow Extension / مد الكوع",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Triceps Pushdown",
+   "Cable Crossover Pressdowns",
+   "Band Triceps Pushdown",
+   "DB Triceps Extensions",
+   "DB Floor Triceps Extensions"
+  ],
+  "video_url": "https://youtu.be/8rl4ioij6lc",
+  "instructions": "الكيبل يبدأ من الأعلى،انحني للأمام قليلاً، امسك طرف الحبل، ثبتي اكواعك مكانها واسحب الحبل للأسفل باتجاه الخارج.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pushdown / دفع للأسفل",
+  "anatomical_action": "Elbow Extension / مد الكوع"
+ },
+ {
+  "name": "Cable Overhead Extension",
+  "primary_muscle": "Triceps / الترايسبس",
+  "pattern": "Elbow Extension / مد الكوع",
+  "kind": "قوة",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "DB Triceps Extensions",
+   "DB Floor Triceps Extensions",
+   "Cable Crossbody Extensions",
+   "Triceps Pushdown",
+   "Cable Crossover Pressdowns"
+  ],
+  "video_url": "https://www.youtube.com/shorts/Q3bO1Fh4734",
+  "instructions": "اترك الحبل يسحب معصمك وكوعك ثابت لما تستطيل التراي ثم ارفع الوزن لما تستقيم اليد، كوعك ثابت طول الوقت والحركة ثني ومد من مفصل الكوع، ممكن تطبق كل يد لحالها اذا كان اسهل لك.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Overhead Extension / مد فوق الرأس",
+  "anatomical_action": "Elbow Extension / مد الكوع"
+ },
+ {
+  "name": "Triceps Dips",
+  "primary_muscle": "Triceps / الترايسبس",
+  "secondary_muscles": [
+   "Chest / الصدر",
+   "Shoulders / الأكتاف"
+  ],
+  "pattern": "Vertical Push / دفع عمودي",
+  "kind": "قوة",
+  "level": "متوسط",
+  "status": "approved",
+  "alternatives": [
+   "DB Triceps Extensions",
+   "DB Floor Triceps Extensions",
+   "Cable Crossbody Extensions"
+  ],
+  "video_url": "https://youtube.com/shorts/SpSE_A5L-YA?si=bSAzRM9SBuX-3mE0",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Dip / متوازي",
+  "anatomical_action": "Shoulder Extension + Elbow Extension / مد الكتف + مد الكوع"
+ },
+ {
+  "name": "Triceps Kickback",
+  "primary_muscle": "Triceps / الترايسبس",
+  "pattern": "Elbow Extension / مد الكوع",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "DB Triceps Extensions",
+   "DB Floor Triceps Extensions",
+   "Cable Crossbody Extensions",
+   "Triceps Pushdown",
+   "Cable Crossover Pressdowns"
+  ],
+  "video_url": "https://youtube.com/shorts/YebyKE3Ts8o?si=H_h9z5BXutFBbFhq",
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/55/triceps-kickback/",
+  "sub_pattern": "Triceps Kickback / ركلة الترايسبس",
+  "anatomical_action": "Elbow Extension / مد الكوع"
+ },
+ {
+  "name": "Plank",
+  "primary_muscle": "Core / البطن والكور",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Glutes / المؤخرة"
+  ],
+  "pattern": "Core Stability (Anti-movement) / ثبات الجذع (مقاومة الحركة)",
+  "kind": "كور",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Band Dead Bug",
+   "Dead Bug",
+   "Side Plank",
+   "McGill Big 3",
+   "Bird Dog"
+  ],
+  "video_url": "https://youtu.be/pvIjsG5Svck?si=cTP8ZyfMAJPfaEhw",
+  "instructions": "لما ترتفع الاكتاف تكون فوق الكوع والرجل ممتدة بالكامل.",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Anti-Extension / مقاومة البسط",
+  "anatomical_action": "Isometric Anti-Extension / تثبيت الجذع ضد البسط",
+  "rehab_goal": "تحمّل عضلات الجذع",
+  "rehab_phase": "متوسطة",
+  "rehab_load": "متوسط",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "JOSPT CPG 2021 — Low Back Pain (George et al.)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/34719942/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "deadbug",
+  "primary_muscle": "Core / البطن والكور",
+  "pattern": "Core Stability (Anti-movement) / ثبات الجذع (مقاومة الحركة)",
+  "kind": "كور",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "rejected",
+  "alternatives": [
+   "Plank",
+   "Band Dead Bug",
+   "Dead Bug",
+   "Side Plank",
+   "McGill Big 3"
+  ],
+  "video_url": "https://youtu.be/g_BYB0R-4Ws?si=D4nwJri73eBqJRqL",
+  "notes": "اسم مشابه موجود في المكتبة (deadbug / dead bug) — تُراجَع قبل الحذف أو الدمج",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Anti-Extension / مقاومة البسط",
+  "anatomical_action": "Isometric Anti-Extension / تثبيت الجذع ضد البسط",
+  "rehab_goal": "التحكم الحركي وتحمّل الجذع",
+  "rehab_phase": "مبكرة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "JOSPT CPG 2021 — Low Back Pain (George et al.)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/34719942/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Band Dead Bug",
+  "primary_muscle": "Core / البطن والكور",
+  "pattern": "Core Stability (Anti-movement) / ثبات الجذع (مقاومة الحركة)",
+  "kind": "كور",
+  "equipment": "مطاط",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Plank",
+   "Dead Bug",
+   "Side Plank",
+   "McGill Big 3",
+   "Bird Dog"
+  ],
+  "video_url": "https://youtube.com/shorts/iW_CtYtzbeU?si=Epequw3rqA3_TwTr",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Anti-Extension / مقاومة البسط",
+  "anatomical_action": "Isometric Anti-Extension / تثبيت الجذع ضد البسط",
+  "rehab_goal": "التحكم الحركي وتحمّل الجذع بمقاومة",
+  "rehab_phase": "مبكرة–متوسطة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "JOSPT CPG 2021 — Low Back Pain (George et al.)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/34719942/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Side Plank",
+  "primary_muscle": "Core / البطن والكور",
+  "secondary_muscles": [
+   "Abductors / مبعدات الفخذ",
+   "Shoulders / الأكتاف"
+  ],
+  "pattern": "Core Stability (Anti-movement) / ثبات الجذع (مقاومة الحركة)",
+  "kind": "كور",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Plank",
+   "Band Dead Bug",
+   "McGill Big 3",
+   "Dead Bug",
+   "Bird Dog"
+  ],
+  "instructions": "لما ترتفع الاكتاف تكون فوق الكوع والرجل ممتدة بالكامل.",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain | ضعف الألوية المتوسطة / Gluteus Medius Weakness",
+  "sub_pattern": "Anti-Lateral Flexion / مقاومة الميلان الجانبي",
+  "anatomical_action": "Isometric Anti-Lateral Flexion / تثبيت الجذع ضد الميلان",
+  "rehab_goal": "تحمّل الجذع الجانبي وتنشيط مبعدات الورك",
+  "rehab_phase": "متوسطة",
+  "rehab_load": "متوسط",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "JOSPT CPG 2021 — Low Back Pain (George et al.) | Boren et al. 2011 — IJSPT (EMG)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/34719942/ | https://pubmed.ncbi.nlm.nih.gov/22034614/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "McGill Big 3",
+  "primary_muscle": "Core / البطن والكور",
+  "pattern": "Core Stability (Anti-movement) / ثبات الجذع (مقاومة الحركة)",
+  "kind": "كور",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Plank",
+   "Band Dead Bug",
+   "Side Plank",
+   "Dead Bug",
+   "Bird Dog"
+  ],
+  "video_url": "https://youtu.be/jZylx81_kfg?si=_jP064GZIzvEvzyN",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Mixed (McGill Big 3) / مختلط",
+  "anatomical_action": "Isometric Trunk Stabilization / تثبيت الجذع",
+  "rehab_goal": "التحكم الحركي وتحمّل الجذع",
+  "rehab_phase": "مبكرة–متوسطة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "JOSPT CPG 2021 — Low Back Pain (George et al.)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/34719942/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Suitcase Carry",
+  "primary_muscle": "Core / البطن والكور",
+  "secondary_muscles": [
+   "Forearms / الساعد"
+  ],
+  "pattern": "Loaded Carry / حمل ومشي",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Plank",
+   "Band Dead Bug",
+   "Side Plank"
+  ],
+  "video_url": "https://youtu.be/BaRMAhD7SP4?si=KkiMH8OSIEz_TB53",
+  "notes": "نفس التمرين ورد أيضاً تحت التصنيف «Functional Training» (صف المصدر 160) || رابط آخر في المصدر (صف 160): https://youtu.be/BaRMAhD7SP4?si=dCR2n2VSPaHhxfL3",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Suitcase Carry / حمل جانبي",
+  "anatomical_action": "Isometric Trunk + Grip Under Load / تثبيت الجذع والقبضة أثناء المشي"
+ },
+ {
+  "name": "Single Leg Raise",
+  "primary_muscle": "Core / البطن والكور",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Hamstrings / الخلفية"
+  ],
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Plank",
+   "Band Dead Bug",
+   "Side Plank"
+  ],
+  "video_url": "https://youtu.be/ZJodU5OOaiA?si=p6ZD9dpzyRKBUn16",
+  "source": "المكتبة الأصلية"
+ },
+ {
+  "name": "Cable Crunch",
+  "primary_muscle": "Core / البطن والكور",
+  "pattern": "Trunk Flexion / ثني الجذع",
+  "kind": "كور",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Bosu Ball Crunch",
+   "Crunch",
+   "Leg Raises",
+   "Bent Knee V-Up",
+   "Reverse Crunch"
+  ],
+  "video_url": "https://youtu.be/ToJeyhydUxU?si=Z5dv34foxX4VtRH6",
+  "instructions": "الحركة عبارة عن ثني للعمود الفقري وكأنك تقرب صدرك لوركك.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Crunch / كرنش",
+  "anatomical_action": "Trunk Flexion / ثني الجذع"
+ },
+ {
+  "name": "Leg Raises",
+  "primary_muscle": "Core / البطن والكور",
+  "pattern": "Trunk Flexion / ثني الجذع",
+  "kind": "كور",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Reverse Crunch",
+   "Cable Crunch",
+   "Bosu Ball Crunch",
+   "Bent Knee V-Up",
+   "Crunch"
+  ],
+  "video_url": "https://youtube.com/shorts/UqmbxvOgnX4?si=U3pDG4Jf0x1mtC_7",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Reverse Crunch / Leg Raise / كرنش عكسي ورفع الأرجل",
+  "anatomical_action": "Hip Flexion + Posterior Pelvic Tilt / ثني الورك + إمالة الحوض للخلف"
+ },
+ {
+  "name": "Bosu Ball Crunch",
+  "primary_muscle": "Core / البطن والكور",
+  "pattern": "Trunk Flexion / ثني الجذع",
+  "kind": "كور",
+  "equipment": "أخرى",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Cable Crunch",
+   "Crunch",
+   "Leg Raises",
+   "Bent Knee V-Up",
+   "Reverse Crunch"
+  ],
+  "video_url": "https://youtube.com/shorts/KjvDgHPxXcg?si=zad59CHC6Y-calzi",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Crunch / كرنش",
+  "anatomical_action": "Trunk Flexion / ثني الجذع"
+ },
+ {
+  "name": "Bent Knee V-Up",
+  "primary_muscle": "Core / البطن والكور",
+  "pattern": "Trunk Flexion / ثني الجذع",
+  "kind": "كور",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Cable Crunch",
+   "Leg Raises",
+   "Bosu Ball Crunch",
+   "Reverse Crunch",
+   "Crunch"
+  ],
+  "video_url": "https://youtu.be/sbyFIM30_G8?si=dED0NQSRS44dz5G9",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "V-up / في أب",
+  "anatomical_action": "Trunk Flexion + Hip Flexion / ثني الجذع + ثني الورك"
+ },
+ {
+  "name": "Reverse Crunch",
+  "primary_muscle": "Core / البطن والكور",
+  "pattern": "Trunk Flexion / ثني الجذع",
+  "kind": "كور",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Leg Raises",
+   "Cable Crunch",
+   "Bosu Ball Crunch",
+   "Bent Knee V-Up",
+   "Crunch"
+  ],
+  "video_url": "https://youtube.com/shorts/esYVzdEfs04?si=N44MZZHlVeSQc1S3",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Reverse Crunch / Leg Raise / كرنش عكسي ورفع الأرجل",
+  "anatomical_action": "Hip Flexion + Posterior Pelvic Tilt / ثني الورك + إمالة الحوض للخلف"
+ },
+ {
+  "name": "Belly Breathing",
+  "primary_muscle": "Core / البطن والكور",
+  "pattern": "Core Activation & Breathing / تفعيل الجذع والتنفس",
+  "kind": "إحماء/تفعيل",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Pelvic Tilting",
+   "Plank",
+   "Band Dead Bug"
+  ],
+  "video_url": "https://youtube.com/shorts/Shk8cmgv0Ew?si=mXkcj9PH6eH_tLcd",
+  "instructions": "نفس عميق من الانف ننفخ فيه البطن ثم نطلعه من الفم ببطئ مع ضغط البطن للداخل اثناء اخراج النفس",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Diaphragmatic Breathing / تنفس حجابي",
+  "anatomical_action": "Diaphragmatic Breathing + Abdominal Bracing / تنفس حجابي + شد البطن"
+ },
+ {
+  "name": "Dead Bug",
+  "primary_muscle": "Core / البطن والكور",
+  "pattern": "Core Stability (Anti-movement) / ثبات الجذع (مقاومة الحركة)",
+  "kind": "كور",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Plank",
+   "Band Dead Bug",
+   "Side Plank",
+   "McGill Big 3",
+   "Bird Dog"
+  ],
+  "video_url": "https://youtu.be/bxn9FBrt4-A",
+  "instructions": "نحرك الرجلين ببطئ قليلا و بتحكم باستخدام عضلات البطن",
+  "notes": "اسم مشابه موجود في المكتبة (deadbug / dead bug) — تُراجَع قبل الحذف أو الدمج",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Anti-Extension / مقاومة البسط",
+  "anatomical_action": "Isometric Anti-Extension / تثبيت الجذع ضد البسط",
+  "rehab_goal": "التحكم الحركي وتحمّل الجذع",
+  "rehab_phase": "مبكرة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "JOSPT CPG 2021 — Low Back Pain (George et al.)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/34719942/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Reverse Tabletop Bridge",
+  "primary_muscle": "Core / البطن والكور",
+  "secondary_muscles": [
+   "Glutes / المؤخرة"
+  ],
+  "pattern": "Glute Hip Extension / دفع خلفي للورك",
+  "kind": "قوة",
+  "equipment": "وزن الجسم",
+  "level": "متوسط",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Plank",
+   "Band Dead Bug",
+   "Side Plank"
+  ],
+  "video_url": "https://youtu.be/d1yE9cGtPWo?si=2aoNqmUAN054rP75",
+  "instructions": "اخذ نفس اثناء الطلوع، اثبت ثواني فوق واشد عضلات بطني، اطلع النفس اثناء النزول",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hip Thrust / Bridge / بسط الورك (ثرست وجسر)",
+  "anatomical_action": "Hip Extension / بسط الورك"
+ },
+ {
+  "name": "Bird Dog",
+  "primary_muscle": "Core / البطن والكور",
+  "secondary_muscles": [
+   "Lower back / أسفل الظهر",
+   "Glutes / المؤخرة"
+  ],
+  "pattern": "Core Stability (Anti-movement) / ثبات الجذع (مقاومة الحركة)",
+  "kind": "كور",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Plank",
+   "Band Dead Bug",
+   "Side Plank",
+   "McGill Big 3",
+   "Dead Bug"
+  ],
+  "video_url": "https://youtube.com/shorts/L91QMACdA6Q?si=KBnuQDcm9WcUXxxI",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Anti-Rotation / مقاومة الدوران",
+  "anatomical_action": "Isometric Anti-Rotation / تثبيت الجذع ضد الدوران",
+  "rehab_goal": "التحكم الحركي وتحمّل الجذع",
+  "rehab_phase": "مبكرة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "JOSPT CPG 2021 — Low Back Pain (George et al.)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/34719942/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Pelvic Tilting",
+  "primary_muscle": "Core / البطن والكور",
+  "pattern": "Core Activation & Breathing / تفعيل الجذع والتنفس",
+  "kind": "إحماء/تفعيل",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Belly Breathing",
+   "Plank",
+   "Band Dead Bug"
+  ],
+  "video_url": "https://youtube.com/shorts/DqqUIfMuDX4?si=uzl0SRl_M9guUT3j",
+  "instructions": "الحركة من الحوض، اخذ نفس وادف حوضي للاعلى قليلا، اطلع النفس اثناء نزول الحوض والصق اسفل ظهري بالارض",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Pelvic Tilt / إمالة الحوض",
+  "anatomical_action": "Posterior Pelvic Tilt / إمالة الحوض للخلف"
+ },
+ {
+  "name": "Crunch",
+  "primary_muscle": "Core / البطن والكور",
+  "pattern": "Trunk Flexion / ثني الجذع",
+  "kind": "كور",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Cable Crunch",
+   "Bosu Ball Crunch",
+   "Leg Raises",
+   "Bent Knee V-Up",
+   "Reverse Crunch"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/52/crunch/",
+  "sub_pattern": "Crunch / كرنش",
+  "anatomical_action": "Trunk Flexion / ثني الجذع"
+ },
+ {
+  "name": "Standing Wood Chop",
+  "primary_muscle": "Core / البطن والكور",
+  "pattern": "Trunk Rotation / دوران الجذع",
+  "kind": "كور",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Russian Twist",
+   "Cable Twisted",
+   "Plank"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/108/standing-wood-chop/",
+  "sub_pattern": "Rotation / Chop / دوران وتقطيع",
+  "anatomical_action": "Trunk Rotation / دوران الجذع"
+ },
+ {
+  "name": "Russian Twist",
+  "primary_muscle": "Core / البطن والكور",
+  "secondary_muscles": [
+   "Lower back / أسفل الظهر"
+  ],
+  "pattern": "Trunk Rotation / دوران الجذع",
+  "kind": "كور",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Standing Wood Chop",
+   "Cable Twisted",
+   "Plank"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/65/russian-twist/",
+  "sub_pattern": "Rotation / Chop / دوران وتقطيع",
+  "anatomical_action": "Trunk Rotation / دوران الجذع"
+ },
+ {
+  "name": "Cable Twisted",
+  "primary_muscle": "Core / البطن والكور",
+  "secondary_muscles": [
+   "Lower back / أسفل الظهر"
+  ],
+  "pattern": "Trunk Rotation / دوران الجذع",
+  "kind": "كور",
+  "equipment": "كيبل",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Standing Wood Chop",
+   "Russian Twist",
+   "Plank"
+  ],
+  "source": "إضافة المدربة",
+  "sub_pattern": "Rotation / Chop / دوران وتقطيع",
+  "anatomical_action": "Trunk Rotation / دوران الجذع"
+ },
+ {
+  "name": "Calves On Leg Press",
+  "primary_muscle": "Calves / البطات",
+  "pattern": "Ankle Plantar Flexion / ثني أخمصي للكاحل",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Calves Raise",
+   "Calf Raise (Machine)",
+   "Calf Raises (Barbell)",
+   "High-Load Heel Raise (Towel Under Toes)"
+  ],
+  "video_url": "https://youtu.be/XdtWVYFVhGU",
+  "instructions": "ثبت أصابعك أو مقدمة رجلك على الجهاز، لا تبالغ بالوزن، انزل بكعبك لين تمتد بطاتك بشكل كامل ثم ادفع.",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Calf Raise / رفع الكعب",
+  "anatomical_action": "Ankle Plantar Flexion / ثني أخمصي للكاحل"
+ },
+ {
+  "name": "Calves Raise",
+  "primary_muscle": "Calves / البطات",
+  "pattern": "Ankle Plantar Flexion / ثني أخمصي للكاحل",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Calves On Leg Press",
+   "Calf Raise (Machine)",
+   "Calf Raises (Barbell)",
+   "High-Load Heel Raise (Towel Under Toes)"
+  ],
+  "video_url": "https://youtu.be/H6WptvjXkgw",
+  "instructions": "حط تحت اقدامك بليتس أو أي شي يرفعك عن الأرض، انزل من اصابعك اقصى نزول ثم ادفع للأعلى",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Calf Raise / رفع الكعب",
+  "anatomical_action": "Ankle Plantar Flexion / ثني أخمصي للكاحل"
+ },
+ {
+  "name": "Calf Raise (Machine)",
+  "primary_muscle": "Calves / البطات",
+  "pattern": "Ankle Plantar Flexion / ثني أخمصي للكاحل",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Calves On Leg Press",
+   "Calves Raise",
+   "Calf Raises (Barbell)",
+   "High-Load Heel Raise (Towel Under Toes)"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/294/calf-raise/",
+  "sub_pattern": "Calf Raise / رفع الكعب",
+  "anatomical_action": "Ankle Plantar Flexion / ثني أخمصي للكاحل"
+ },
+ {
+  "name": "Calf Raises (Barbell)",
+  "primary_muscle": "Calves / البطات",
+  "pattern": "Ankle Plantar Flexion / ثني أخمصي للكاحل",
+  "kind": "قوة",
+  "equipment": "بار",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Calves On Leg Press",
+   "Calves Raise",
+   "Calf Raise (Machine)",
+   "High-Load Heel Raise (Towel Under Toes)"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/51/calf-raises/",
+  "sub_pattern": "Calf Raise / رفع الكعب",
+  "anatomical_action": "Ankle Plantar Flexion / ثني أخمصي للكاحل"
+ },
+ {
+  "name": "High-Load Heel Raise (Towel Under Toes)",
+  "primary_muscle": "Calves / البطات",
+  "pattern": "Ankle Plantar Flexion / ثني أخمصي للكاحل",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Calves On Leg Press",
+   "Calves Raise",
+   "Calf Raise (Machine)",
+   "Calf Raises (Barbell)"
+  ],
+  "instructions": "رفع الكعب على رجل واحدة مع منشفة ملفوفة تحت أصابع القدم؛ صعود بطيء ثم ثبات قصير ثم نزول بطيء.",
+  "notes": "أُضيف لسد نقص في التصنيف التأهيلي",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "Rathleff et al. 2015 — Scand J Med Sci Sports (RCT)",
+  "source_url": "https://doi.org/10.1111/sms.12313",
+  "rehab_category": "اللفافة الأخمصية / Plantar Fasciopathy",
+  "sub_pattern": "Calf Raise / رفع الكعب",
+  "anatomical_action": "Ankle Plantar Flexion / ثني أخمصي للكاحل",
+  "rehab_goal": "تحميل تدريجي للقدم والكاحل",
+  "rehab_phase": "متقدمة",
+  "rehab_load": "مرتفع",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة؛ يُبدأ بعد تحسّن الأعراض وبتدرّج",
+  "rehab_evidence": "Rathleff et al. 2015 — Scand J Med Sci Sports (RCT) | JOSPT CPG 2023 — Heel Pain/Plantar Fasciitis (Koc et al.)",
+  "rehab_refs": "https://doi.org/10.1111/sms.12313 | https://pubmed.ncbi.nlm.nih.gov/38037331/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Adductor Slides",
+  "primary_muscle": "Adductors / الأفخاذ الداخلية",
+  "pattern": "Hip Adduction / تقريب الورك",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Adductor Machine",
+   "Side Lunge"
+  ],
+  "video_url": "https://youtu.be/6U7dfuxaX9g?si=lkH35E7tZxGBePBj",
+  "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «adductor strength»)",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Adductor Slide / انزلاق للتقريب",
+  "anatomical_action": "Hip Adduction / تقريب الورك"
+ },
+ {
+  "name": "Adductor Machine",
+  "primary_muscle": "Adductors / الأفخاذ الداخلية",
+  "pattern": "Hip Adduction / تقريب الورك",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Adductor Slides",
+   "Side Lunge"
+  ],
+  "video_url": "https://youtu.be/SU1LQhq3o2g?si=_55FKBOlcn8Ilw4X",
+  "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «adductor»)",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Adductor Machine / جهاز التقريب",
+  "anatomical_action": "Hip Adduction / تقريب الورك"
+ },
+ {
+  "name": "Side Lunge",
+  "primary_muscle": "Adductors / الأفخاذ الداخلية",
+  "secondary_muscles": [
+   "Quadriceps / الأمامية",
+   "Glutes / المؤخرة",
+   "Abductors / مبعدات الفخذ"
+  ],
+  "pattern": "Lunge / Single-leg / لانج وحركات الرجل الواحدة",
+  "kind": "قوة",
+  "level": "متوسط",
+  "status": "approved",
+  "alternatives": [
+   "Adductor Slides",
+   "Adductor Machine"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/50/side-lunge/",
+  "rehab_category": "ضعف الألوية المتوسطة / Gluteus Medius Weakness",
+  "sub_pattern": "Lateral Lunge / لانج جانبي",
+  "anatomical_action": "Knee/Hip Extension + Hip Adduction / مد الركبة والورك + تقريب الورك",
+  "rehab_goal": "تقوية مبعدات الورك والتحكم بالحوض",
+  "rehab_phase": "متوسطة",
+  "rehab_load": "متوسط",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "Moore et al. 2020 — IJSPT (Systematic review, GMed/GMin)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/33344003/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Seated Abductor Machine",
+  "primary_muscle": "Abductors / مبعدات الفخذ",
+  "pattern": "Glute Hip Abduction / دفع جانبي للورك",
+  "kind": "قوة",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Hip Abduction",
+   "Hip Abductor Plank",
+   "Dirty Dog",
+   "Glute Medius Kickbacks",
+   "Hip Hitch (Pelvic Drop)"
+  ],
+  "video_url": "https://youtube.com/shorts/riEMreTHNbM?si=wE3vfJBYQY7j_oJ2",
+  "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «adductor strength»)",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hip Abduction / تبعيد الورك",
+  "anatomical_action": "Hip Abduction / تبعيد الورك"
+ },
+ {
+  "name": "Hip Abductor Plank",
+  "primary_muscle": "Abductors / مبعدات الفخذ",
+  "secondary_muscles": [
+   "Core / البطن والكور"
+  ],
+  "pattern": "Glute Hip Abduction / دفع جانبي للورك",
+  "kind": "قوة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Hip Abduction",
+   "Seated Abductor Machine",
+   "Dirty Dog",
+   "Glute Medius Kickbacks",
+   "Hip Hitch (Pelvic Drop)"
+  ],
+  "video_url": "https://youtu.be/2lB5RL91yWo?si=WRm9rUORpFK6dXPl",
+  "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «adductor strength»)",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hip Abduction / تبعيد الورك",
+  "anatomical_action": "Hip Abduction / تبعيد الورك"
+ },
+ {
+  "name": "Dirty Dog",
+  "primary_muscle": "Abductors / مبعدات الفخذ",
+  "secondary_muscles": [
+   "Core / البطن والكور"
+  ],
+  "pattern": "Glute Hip Abduction / دفع جانبي للورك",
+  "kind": "قوة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Hip Abduction",
+   "Seated Abductor Machine",
+   "Hip Abductor Plank",
+   "Glute Medius Kickbacks",
+   "Hip Hitch (Pelvic Drop)"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/109/dirty-dog/",
+  "sub_pattern": "Hip Abduction / تبعيد الورك",
+  "anatomical_action": "Hip Abduction / تبعيد الورك"
+ },
+ {
+  "name": "Hip Hitch (Pelvic Drop)",
+  "primary_muscle": "Abductors / مبعدات الفخذ",
+  "pattern": "Glute Hip Abduction / دفع جانبي للورك",
+  "kind": "قوة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Hip Abduction",
+   "Glute Medius Kickbacks",
+   "Seated Abductor Machine",
+   "Hip Abductor Plank",
+   "Dirty Dog"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» / حسب المختص || أُضيف لسد نقص في التصنيف التأهيلي",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "Ganderton et al. — GMin/GMed EMG (RMIT University)",
+  "source_url": "https://research-repository.rmit.edu.au/articles/journal_contribution/Gluteus_Minimus_and_Gluteus_Medius_Muscle_Activity_during_Common_Rehabilitation_Exercises_in_Healthy_Postmenopausal_Women/27572301",
+  "rehab_category": "ضعف الألوية المتوسطة / Gluteus Medius Weakness | ضعف الألوية الصغرى / Gluteus Minimus Weakness",
+  "sub_pattern": "Pelvic Drop (Stance Leg) / تثبيت الحوض برجل الارتكاز",
+  "anatomical_action": "Hip Abduction of Stance Leg / تبعيد ورك رجل الارتكاز",
+  "rehab_goal": "تنشيط وتقوية مبعدات الورك (الألوية المتوسطة والصغرى) والتحكم بالحوض",
+  "rehab_phase": "مبكرة–متوسطة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "Ganderton et al. — GMin/GMed EMG (RMIT University) | Moore et al. 2020 — IJSPT (Systematic review, GMed/GMin)",
+  "rehab_refs": "https://research-repository.rmit.edu.au/articles/journal_contribution/Gluteus_Minimus_and_Gluteus_Medius_Muscle_Activity_during_Common_Rehabilitation_Exercises_in_Healthy_Postmenopausal_Women/27572301 | https://pubmed.ncbi.nlm.nih.gov/33344003/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Rotator Cuff",
+  "primary_muscle": "Rotator cuffs / الكفة المدورة",
+  "pattern": "Shoulder Rotation & Scapular Control / دوران الكتف والتحكم بلوح الكتف",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Shoulder I-Y-T-W Series",
+   "Supine Snow Angel (Wipers)"
+  ],
+  "video_url": "https://youtu.be/mO8YJAxVG2M?si=KL_llR6Z47Yt89uk",
+  "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «Functional Training»)",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "External Rotation / دوران خارجي",
+  "anatomical_action": "Shoulder External Rotation / دوران خارجي للكتف"
+ },
+ {
+  "name": "Shoulder I-Y-T-W Series",
+  "primary_muscle": "Rotator cuffs / الكفة المدورة",
+  "secondary_muscles": [
+   "Back & Lats / الظهر واللاتس",
+   "Shoulders / الأكتاف"
+  ],
+  "pattern": "Shoulder Rotation & Scapular Control / دوران الكتف والتحكم بلوح الكتف",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Rotator Cuff",
+   "Supine Snow Angel (Wipers)"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/237/shoulder-stability-mobility-series-i-y-t-w-formations/",
+  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis | وضعية الرأس للأمام / Forward Head Posture | ضعف العضلة المعينية / Rhomboid Weakness",
+  "sub_pattern": "I-Y-T-W / تمارين I-Y-T-W",
+  "anatomical_action": "Scapular Retraction/Depression + Arm Elevation / سحب وخفض لوح الكتف مع رفع الذراع",
+  "rehab_goal": "تقوية وتحكم عضلات لوح الكتف (الانكماش والتدوير)",
+  "rehab_phase": "مبكرة–متوسطة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "Sepehri et al. 2024 — BMC Musculoskelet Disord (Systematic review: FHP / kyphosis) | Sheikhhoseini et al. 2018 — JMPT (Systematic review, FHP) | Castelein et al. 2016 — Man Ther (EMG, rhomboid)",
+  "rehab_refs": "https://doi.org/10.1186/s12891-024-07224-4 | https://pubmed.ncbi.nlm.nih.gov/30107937/ | https://pubmed.ncbi.nlm.nih.gov/26409441/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Supine Snow Angel (Wipers)",
+  "primary_muscle": "Rotator cuffs / الكفة المدورة",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Core / البطن والكور"
+  ],
+  "pattern": "Shoulder Rotation & Scapular Control / دوران الكتف والتحكم بلوح الكتف",
+  "kind": "قوة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Rotator Cuff",
+   "Shoulder I-Y-T-W Series"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/124/supine-snow-angel-wipers-exercise/",
+  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis | وضعية الرأس للأمام / Forward Head Posture",
+  "sub_pattern": "Snow Angel / الملاك",
+  "anatomical_action": "Shoulder Abduction/Adduction + Scapular Control / تبعيد وتقريب الكتف مع تحكم لوح الكتف",
+  "rehab_goal": "حركة الكتف والتحكم بلوح الكتف",
+  "rehab_phase": "مبكرة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "Sepehri et al. 2024 — BMC Musculoskelet Disord (Systematic review: FHP / kyphosis)",
+  "rehab_refs": "https://doi.org/10.1186/s12891-024-07224-4",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Back Extension",
+  "primary_muscle": "Lower back / أسفل الظهر",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Hamstrings / الخلفية"
+  ],
+  "pattern": "Spinal Extension / بسط الجذع",
+  "kind": "كور",
+  "equipment": "جهاز",
+  "level": "مبتدئ",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Supermans",
+   "Stability Ball Reverse Extensions",
+   "Contralateral Limb Raises"
+  ],
+  "video_url": "https://youtu.be/bs7S3RFyIYs?si=tDLl3OYuDBIwK4Fj",
+  "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «Functional Training»)",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain | تحدب الظهر / Postural Thoracic Kyphosis",
+  "sub_pattern": "Back Extension / بسط الظهر",
+  "anatomical_action": "Hip Extension + Spinal Extension / بسط الورك + بسط العمود الفقري",
+  "rehab_goal": "تقوية باسطات الظهر",
+  "rehab_phase": "متقدمة",
+  "rehab_load": "متوسط",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة؛ يُراجَع إذا زاد الألم مع الامتداد",
+  "rehab_evidence": "JOSPT CPG 2021 — Low Back Pain (George et al.) | Sepehri et al. 2024 — BMC Musculoskelet Disord (Systematic review: FHP / kyphosis)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/34719942/ | https://doi.org/10.1186/s12891-024-07224-4",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Supermans",
+  "primary_muscle": "Lower back / أسفل الظهر",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Back & Lats / الظهر واللاتس",
+   "Shoulders / الأكتاف"
+  ],
+  "pattern": "Spinal Extension / بسط الجذع",
+  "kind": "كور",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Contralateral Limb Raises",
+   "Back Extension",
+   "Stability Ball Reverse Extensions"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/9/supermans/",
+  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis | آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Prone Extension / بسط على البطن",
+  "anatomical_action": "Spinal Extension / بسط العمود الفقري",
+  "rehab_goal": "تقوية باسطات الظهر والتحكم الوضعي",
+  "rehab_phase": "متوسطة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "Sepehri et al. 2024 — BMC Musculoskelet Disord (Systematic review: FHP / kyphosis) | JOSPT CPG 2021 — Low Back Pain (George et al.)",
+  "rehab_refs": "https://doi.org/10.1186/s12891-024-07224-4 | https://pubmed.ncbi.nlm.nih.gov/34719942/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Stability Ball Reverse Extensions",
+  "primary_muscle": "Lower back / أسفل الظهر",
+  "secondary_muscles": [
+   "Glutes / المؤخرة"
+  ],
+  "pattern": "Spinal Extension / بسط الجذع",
+  "kind": "كور",
+  "equipment": "كرة سويسرية",
+  "level": "مبتدئ",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Back Extension",
+   "Supermans",
+   "Contralateral Limb Raises"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/64/stability-ball-reverse-extensions/",
+  "sub_pattern": "Reverse Extension / بسط عكسي",
+  "anatomical_action": "Hip Extension + Spinal Extension / بسط الورك + بسط العمود الفقري"
+ },
+ {
+  "name": "Contralateral Limb Raises",
+  "primary_muscle": "Lower back / أسفل الظهر",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Back & Lats / الظهر واللاتس",
+   "Shoulders / الأكتاف"
+  ],
+  "pattern": "Spinal Extension / بسط الجذع",
+  "kind": "كور",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Supermans",
+   "Back Extension",
+   "Stability Ball Reverse Extensions"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» || تصنيف مقترح: ACE تذكر عدة عضلات أساسية (عمود «العضلات المستهدفة في المصدر») — يُراجَع قبل الاعتماد",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/53/contralateral-limb-raises/",
+  "sub_pattern": "Prone Extension / بسط على البطن",
+  "anatomical_action": "Spinal Extension / بسط العمود الفقري"
+ },
+ {
+  "name": "Inner Thigh Stretch",
+  "primary_muscle": "Stretching / الإطالات",
+  "pattern": "Mobility / Stretch / إطالة ومرونة",
+  "kind": "مرونة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Hips Stretch",
+   "Kneeling Hip-flexor Stretch",
+   "Supine Hamstrings Stretch",
+   "Side Lying Quadriceps Stretch",
+   "Standing Dorsi-Flexion (Calf Stretch)"
+  ],
+  "video_url": "https://youtube.com/shorts/uqCfJYKojLU?si=Gev0VeOwVp5z6gB2",
+  "instructions": "الضغط والدفع يكون من جهة الفخذ ، لا تدفع من ركبتك!",
+  "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «stretch»)",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Adductor Stretch / إطالة المقربات",
+  "anatomical_action": "Hip Abduction (Adductor Stretch) / تبعيد الورك (إطالة المقربات)"
+ },
+ {
+  "name": "Hips Stretch",
+  "primary_muscle": "Stretching / الإطالات",
+  "pattern": "Mobility / Stretch / إطالة ومرونة",
+  "kind": "مرونة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Inner Thigh Stretch",
+   "Kneeling Hip-flexor Stretch",
+   "Supine Hamstrings Stretch",
+   "Side Lying Quadriceps Stretch",
+   "Standing Dorsi-Flexion (Calf Stretch)"
+  ],
+  "video_url": "https://youtube.com/shorts/uqCfJYKojLU?si=Gev0VeOwVp5z6gB2",
+  "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «stretch»)",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hip Stretch / إطالة الورك"
+ },
+ {
+  "name": "Kneeling Hip-flexor Stretch",
+  "primary_muscle": "Stretching / الإطالات",
+  "pattern": "Mobility / Stretch / إطالة ومرونة",
+  "kind": "مرونة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Standing Lunge Stretch",
+   "Inner Thigh Stretch",
+   "Hips Stretch",
+   "Supine Hamstrings Stretch",
+   "Side Lying Quadriceps Stretch"
+  ],
+  "instructions": "من وضع الركوع: الركبة الخلفية تحت الورك والقدم الأمامية أمامك والركبة فوق الكاحل. شد البطن وادفع الحوض للأمام دون تقويس أسفل الظهر، واعصر مؤخرة الجهة الخلفية لزيادة الإطالة. اثبت 30–45 ثانية، 2–5 مرات.",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/142/kneeling-hip-flexor-stretch/",
+  "sub_pattern": "Hip Flexor Stretch / إطالة ثانيات الورك",
+  "anatomical_action": "Hip Extension (End Range) / بسط الورك في نهاية المدى"
+ },
+ {
+  "name": "Supine Hamstrings Stretch",
+  "primary_muscle": "Stretching / الإطالات",
+  "pattern": "Mobility / Stretch / إطالة ومرونة",
+  "kind": "مرونة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Inner Thigh Stretch",
+   "Hips Stretch",
+   "Kneeling Hip-flexor Stretch",
+   "Side Lying Quadriceps Stretch",
+   "Standing Dorsi-Flexion (Calf Stretch)"
+  ],
+  "instructions": "استلقِ على ظهرك وارفع رجلاً واحدة ومدّها ببطء مع سحب أصابع القدم نحوك، دون أي حركة في الحوض أو أسفل الظهر. اثبت 15–30 ثانية، 2–4 مرات لكل رجل.",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/235/supine-hamstrings-stretch/",
+  "sub_pattern": "Hamstring Stretch / إطالة الخلفية",
+  "anatomical_action": "Hip Flexion with Knee Extended / ثني الورك مع مد الركبة"
+ },
+ {
+  "name": "Side Lying Quadriceps Stretch",
+  "primary_muscle": "Stretching / الإطالات",
+  "pattern": "Mobility / Stretch / إطالة ومرونة",
+  "kind": "مرونة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Inner Thigh Stretch",
+   "Hips Stretch",
+   "Kneeling Hip-flexor Stretch",
+   "Supine Hamstrings Stretch",
+   "Standing Dorsi-Flexion (Calf Stretch)"
+  ],
+  "instructions": "استلقِ على جنبك وشد البطن، واسحب كعب الرجل العلوية نحو المؤخرة بيدك مع إبقاء الركبة في خط الورك. اثبت 30–45 ثانية، 2–5 مرات لكل جهة.",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/149/side-lying-quadriceps-stretch/",
+  "sub_pattern": "Quadriceps Stretch / إطالة الأمامية",
+  "anatomical_action": "Knee Flexion + Hip Extension (End Range) / ثني الركبة + بسط الورك"
+ },
+ {
+  "name": "Standing Dorsi-Flexion (Calf Stretch)",
+  "primary_muscle": "Stretching / الإطالات",
+  "pattern": "Mobility / Stretch / إطالة ومرونة",
+  "kind": "مرونة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Inner Thigh Stretch",
+   "Hips Stretch",
+   "Kneeling Hip-flexor Stretch",
+   "Supine Hamstrings Stretch",
+   "Side Lying Quadriceps Stretch"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/152/standing-dorsi-flexion-calf-stretch/",
+  "rehab_category": "اللفافة الأخمصية / Plantar Fasciopathy",
+  "sub_pattern": "Calf Stretch / إطالة البطات",
+  "anatomical_action": "Ankle Dorsiflexion / ثني ظهري للكاحل",
+  "rehab_goal": "إطالة عضلات الساق",
+  "rehab_phase": "مبكرة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "JOSPT CPG 2023 — Heel Pain/Plantar Fasciitis (Koc et al.)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/38037331/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Cat-Cow",
+  "primary_muscle": "Stretching / الإطالات",
+  "pattern": "Mobility / Stretch / إطالة ومرونة",
+  "kind": "مرونة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Inner Thigh Stretch",
+   "Hips Stretch",
+   "Kneeling Hip-flexor Stretch",
+   "Supine Hamstrings Stretch",
+   "Side Lying Quadriceps Stretch"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/15/cat-cow/",
+  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis | آلام أسفل الظهر غير النوعية / Non-specific Low Back Pain",
+  "sub_pattern": "Spinal Mobility / مرونة العمود الفقري",
+  "anatomical_action": "Spinal Flexion/Extension / ثني وبسط العمود الفقري",
+  "rehab_goal": "حركة العمود الفقري ضمن مدى حركة مريح",
+  "rehab_phase": "مبكرة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "Sepehri et al. 2024 — BMC Musculoskelet Disord (Systematic review: FHP / kyphosis) | JOSPT CPG 2021 — Low Back Pain (George et al.)",
+  "rehab_refs": "https://doi.org/10.1186/s12891-024-07224-4 | https://pubmed.ncbi.nlm.nih.gov/34719942/",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Standing Lunge Stretch",
+  "primary_muscle": "Stretching / الإطالات",
+  "pattern": "Mobility / Stretch / إطالة ومرونة",
+  "kind": "مرونة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Kneeling Hip-flexor Stretch",
+   "Inner Thigh Stretch",
+   "Hips Stretch",
+   "Supine Hamstrings Stretch",
+   "Side Lying Quadriceps Stretch"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/137/standing-lunge-stretch/",
+  "sub_pattern": "Hip Flexor Stretch / إطالة ثانيات الورك",
+  "anatomical_action": "Hip Extension (End Range) / بسط الورك في نهاية المدى"
+ },
+ {
+  "name": "Plantar Fascia-Specific Stretch",
+  "primary_muscle": "Stretching / الإطالات",
+  "pattern": "Mobility / Stretch / إطالة ومرونة",
+  "kind": "مرونة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "review",
+  "alternatives": [
+   "Inner Thigh Stretch",
+   "Hips Stretch",
+   "Kneeling Hip-flexor Stretch",
+   "Supine Hamstrings Stretch",
+   "Side Lying Quadriceps Stretch"
+  ],
+  "instructions": "تُسحب أصابع القدم للخلف باليد حتى يُشعر بشد في باطن القدم، مع تحسّس اللفافة للتأكد من الشد.",
+  "notes": "أُضيف لسد نقص في التصنيف التأهيلي",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "Rathleff et al. 2015 — Scand J Med Sci Sports (RCT)",
+  "source_url": "https://doi.org/10.1111/sms.12313",
+  "rehab_category": "اللفافة الأخمصية / Plantar Fasciopathy",
+  "sub_pattern": "Plantar Fascia Stretch / إطالة اللفافة الأخمصية",
+  "anatomical_action": "Toe Extension + Ankle Dorsiflexion / مد أصابع القدم + ثني ظهري",
+  "rehab_goal": "إطالة اللفافة الأخمصية",
+  "rehab_phase": "مبكرة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "JOSPT CPG 2023 — Heel Pain/Plantar Fasciitis (Koc et al.) | Rathleff et al. 2015 — Scand J Med Sci Sports (RCT)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/38037331/ | https://doi.org/10.1111/sms.12313",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Lateral Bound",
+  "primary_muscle": "Plyometrics / التمارين الانفجارية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Quadriceps / الأمامية",
+   "Abductors / مبعدات الفخذ"
+  ],
+  "pattern": "Jump / Plyometric / قفز وحركات انفجارية",
+  "kind": "قدرة",
+  "equipment": "وزن الجسم",
+  "level": "متوسط",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Box Jumps"
+  ],
+  "video_url": "https://www.youtube.com/watch?v=soqQy4dzEts",
+  "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «Functional Training»)",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Lateral Jump / قفز جانبي",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
+ },
+ {
+  "name": "Box Jumps",
+  "primary_muscle": "Plyometrics / التمارين الانفجارية",
+  "secondary_muscles": [
+   "Quadriceps / الأمامية",
+   "Glutes / المؤخرة",
+   "Calves / البطات"
+  ],
+  "pattern": "Jump / Plyometric / قفز وحركات انفجارية",
+  "kind": "قدرة",
+  "equipment": "أخرى",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "notes": "العضلة محددة من اسم التمرين نفسه (تصنيفه في المصدر «CrossFit»)",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Vertical Jump / قفز عمودي",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
+ },
+ {
+  "name": "Squat Jump",
+  "primary_muscle": "Plyometrics / التمارين الانفجارية",
+  "secondary_muscles": [
+   "Quadriceps / الأمامية",
+   "Glutes / المؤخرة"
+  ],
+  "pattern": "Jump / Plyometric / قفز وحركات انفجارية",
+  "kind": "قدرة",
+  "equipment": "وزن الجسم",
+  "level": "متوسط",
+  "place": "بدون معدات",
+  "status": "review",
+  "alternatives": [
+   "Box Jumps"
+  ],
+  "instructions": "قف بعرض الحوض، ادفع الورك للخلف وانزل، ثم اقفز بقوة بمدّ الكاحل والركبة والورك معاً. انزل بهدوء على منتصف القدم مع دفع الورك للخلف ودون قفل الركب. ابدأ بقفزات صغيرة حتى تتقن الهبوط.",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/222/squat-jump/",
+  "sub_pattern": "Vertical Jump / قفز عمودي",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
+ },
+ {
+  "name": "Tuck Jump",
+  "primary_muscle": "Plyometrics / التمارين الانفجارية",
+  "secondary_muscles": [
+   "Quadriceps / الأمامية",
+   "Glutes / المؤخرة"
+  ],
+  "pattern": "Jump / Plyometric / قفز وحركات انفجارية",
+  "kind": "قدرة",
+  "equipment": "وزن الجسم",
+  "level": "متقدم",
+  "place": "بدون معدات",
+  "status": "review",
+  "alternatives": [
+   "Box Jumps"
+  ],
+  "instructions": "استخدم الذراعين للزخم: أرجعهما للخلف عند النزول وأرجحهما للأمام والأعلى عند القفز، واسحب الركبتين نحو الصدر في الهواء.",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/180/tuck-jump/",
+  "sub_pattern": "Vertical Jump / قفز عمودي",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
+ },
+ {
+  "name": "Cycled Split-Squat Jump",
+  "primary_muscle": "Plyometrics / التمارين الانفجارية",
+  "secondary_muscles": [
+   "Quadriceps / الأمامية",
+   "Glutes / المؤخرة",
+   "Hamstrings / الخلفية"
+  ],
+  "pattern": "Jump / Plyometric / قفز وحركات انفجارية",
+  "kind": "قدرة",
+  "equipment": "وزن الجسم",
+  "level": "متقدم",
+  "place": "بدون معدات",
+  "status": "review",
+  "alternatives": [
+   "Box Jumps"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/234/cycled-split-squat-jump/",
+  "sub_pattern": "Split Jump / قفز سبليت",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
+ },
+ {
+  "name": "Lateral Cone Jumps",
+  "primary_muscle": "Plyometrics / التمارين الانفجارية",
+  "secondary_muscles": [
+   "Quadriceps / الأمامية",
+   "Glutes / المؤخرة",
+   "Calves / البطات"
+  ],
+  "pattern": "Jump / Plyometric / قفز وحركات انفجارية",
+  "kind": "قدرة",
+  "equipment": "أخرى",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "review",
+  "alternatives": [
+   "Box Jumps"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/120/lateral-cone-jumps/",
+  "sub_pattern": "Lateral Jump / قفز جانبي",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
+ },
+ {
+  "name": "Forward Linear Jumps",
+  "primary_muscle": "Plyometrics / التمارين الانفجارية",
+  "secondary_muscles": [
+   "Quadriceps / الأمامية",
+   "Glutes / المؤخرة",
+   "Hamstrings / الخلفية"
+  ],
+  "pattern": "Jump / Plyometric / قفز وحركات انفجارية",
+  "kind": "قدرة",
+  "equipment": "وزن الجسم",
+  "level": "متوسط",
+  "place": "بدون معدات",
+  "status": "review",
+  "alternatives": [
+   "Box Jumps"
+  ],
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر»",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "ACE Fitness (American Council on Exercise) — Exercise Library",
+  "source_url": "https://www.acefitness.org/resources/everyone/exercise-library/177/forward-linear-jumps/",
+  "sub_pattern": "Horizontal Jump / قفز أمامي",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
+ },
+ {
+  "name": "Jogging",
+  "primary_muscle": "CrossFit / كروس فت",
+  "secondary_muscles": [
+   "Quadriceps / الأمامية",
+   "Hamstrings / الخلفية",
+   "Calves / البطات"
+  ],
+  "pattern": "Locomotion / مشي وجري ودفع",
+  "kind": "كارديو",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Wall Ball",
+   "Snatch",
+   "Clean"
+  ],
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Running / جري",
+  "anatomical_action": "Gait: Alternating Hip/Knee Extension / نمط المشي والجري"
+ },
+ {
+  "name": "Wall Ball",
+  "primary_muscle": "CrossFit / كروس فت",
+  "secondary_muscles": [
+   "Quadriceps / الأمامية",
+   "Glutes / المؤخرة",
+   "Shoulders / الأكتاف"
+  ],
+  "pattern": "Squat (Knee-dominant) / سكوات (هيمنة الركبة)",
+  "kind": "قوة",
+  "equipment": "أخرى",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Jogging",
+   "Snatch",
+   "Clean"
+  ],
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Squat to Throw / سكوات مع رمي",
+  "anatomical_action": "Knee/Hip Extension + Shoulder Flexion / مد الركبة والورك + ثني الكتف"
+ },
+ {
+  "name": "Snatch",
+  "primary_muscle": "CrossFit / كروس فت",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Hamstrings / الخلفية",
+   "Shoulders / الأكتاف"
+  ],
+  "pattern": "Olympic Lift (Triple Extension) / رفعات أولمبية (بسط ثلاثي)",
+  "kind": "قدرة",
+  "equipment": "بار",
+  "level": "متقدم",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Clean",
+   "Jogging",
+   "Wall Ball"
+  ],
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Snatch / سناتش",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
+ },
+ {
+  "name": "Clean",
+  "primary_muscle": "CrossFit / كروس فت",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Hamstrings / الخلفية",
+   "Quadriceps / الأمامية"
+  ],
+  "pattern": "Olympic Lift (Triple Extension) / رفعات أولمبية (بسط ثلاثي)",
+  "kind": "قدرة",
+  "equipment": "بار",
+  "level": "متقدم",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Snatch",
+   "Jogging",
+   "Wall Ball"
+  ],
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Clean / كلين",
+  "anatomical_action": "Triple Extension (Hip, Knee, Ankle) / بسط ثلاثي (الورك والركبة والكاحل)"
+ },
+ {
+  "name": "Turkish Get-Up",
+  "primary_muscle": "Functional / التمارين الوظيفية",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Core / البطن والكور",
+   "Glutes / المؤخرة"
+  ],
+  "pattern": "Full-body Integrated / حركة متكاملة للجسم",
+  "kind": "قوة",
+  "equipment": "كيتلبل",
+  "level": "متقدم",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Farmer’s Walk",
+   "Kettlebell Swing"
+  ],
+  "video_url": "https://www.youtube.com/watch?v=0bWRPC49-KI",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Turkish Get-Up / النهوض التركي",
+  "anatomical_action": "Multi-joint Integrated / حركة متعددة المفاصل"
+ },
+ {
+  "name": "Crab Reach (Thoracic Bridge)",
+  "primary_muscle": "Functional / التمارين الوظيفية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Shoulders / الأكتاف"
+  ],
+  "pattern": "Mobility / Stretch / إطالة ومرونة",
+  "kind": "مرونة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Turkish Get-Up",
+   "Farmer’s Walk",
+   "Kettlebell Swing"
+  ],
+  "video_url": "https://www.youtube.com/watch?v=fgsUe3Lc3hI",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis",
+  "sub_pattern": "Thoracic Bridge / جسر صدري",
+  "anatomical_action": "Hip Extension + Thoracic Rotation / بسط الورك + دوران الصدر",
+  "rehab_goal": "حركة الامتداد والدوران الصدري",
+  "rehab_phase": "متوسطة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة؛ يتطلب تحمّلاً جيداً للرسغ والكتف",
+  "rehab_evidence": "Sepehri et al. 2024 — BMC Musculoskelet Disord (Systematic review: FHP / kyphosis)",
+  "rehab_refs": "https://doi.org/10.1186/s12891-024-07224-4",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Sled Pull/Push",
+  "primary_muscle": "Functional / التمارين الوظيفية",
+  "secondary_muscles": [
+   "Quadriceps / الأمامية",
+   "Glutes / المؤخرة",
+   "Calves / البطات"
+  ],
+  "pattern": "Locomotion / مشي وجري ودفع",
+  "kind": "قوة",
+  "equipment": "أخرى",
+  "level": "متوسط",
+  "place": "نادي",
+  "status": "approved",
+  "alternatives": [
+   "Turkish Get-Up",
+   "Farmer’s Walk",
+   "Kettlebell Swing"
+  ],
+  "video_url": "https://www.youtube.com/watch?v=3KWK7SIdPz4",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Sled Push / Pull / دفع وسحب الزلاجة",
+  "anatomical_action": "Hip/Knee Extension in Gait / بسط الورك والركبة بنمط المشي"
+ },
+ {
+  "name": "Farmer’s Walk",
+  "primary_muscle": "Functional / التمارين الوظيفية",
+  "secondary_muscles": [
+   "Forearms / الساعد",
+   "Core / البطن والكور",
+   "Back & Lats / الظهر واللاتس"
+  ],
+  "pattern": "Loaded Carry / حمل ومشي",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "approved",
+  "alternatives": [
+   "Turkish Get-Up",
+   "Kettlebell Swing"
+  ],
+  "video_url": "https://www.youtube.com/watch?v=hx24PM6gXs8",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Farmer's Walk / مشي المزارع",
+  "anatomical_action": "Isometric Trunk + Grip Under Load / تثبيت الجذع والقبضة أثناء المشي"
+ },
+ {
+  "name": "90s Transition",
+  "primary_muscle": "Functional / التمارين الوظيفية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Adductors / الأفخاذ الداخلية"
+  ],
+  "pattern": "Mobility / Stretch / إطالة ومرونة",
+  "kind": "مرونة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Turkish Get-Up",
+   "Farmer’s Walk",
+   "Kettlebell Swing"
+  ],
+  "video_url": "https://www.youtube.com/watch?v=ogU-azeGe_k",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Hip Rotation Mobility (90/90) / مرونة دوران الورك",
+  "anatomical_action": "Hip Internal/External Rotation / دوران الورك الداخلي والخارجي"
+ },
+ {
+  "name": "Prone Swimmer",
+  "primary_muscle": "Functional / التمارين الوظيفية",
+  "secondary_muscles": [
+   "Back & Lats / الظهر واللاتس",
+   "Shoulders / الأكتاف"
+  ],
+  "pattern": "Shoulder Rear Pull / سحب خلفي للكتف",
+  "kind": "قوة",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "approved",
+  "alternatives": [
+   "Turkish Get-Up",
+   "Farmer’s Walk",
+   "Kettlebell Swing"
+  ],
+  "video_url": "https://www.youtube.com/watch?v=M8a1cgnhyqk",
+  "source": "المكتبة الأصلية",
+  "rehab_category": "تحدب الظهر / Postural Thoracic Kyphosis | وضعية الرأس للأمام / Forward Head Posture",
+  "sub_pattern": "Prone Swimmer / سبّاح على البطن",
+  "anatomical_action": "Shoulder Extension/Abduction + Rotation / مد وتبعيد الكتف مع الدوران",
+  "rehab_goal": "تحمّل عضلات لوح الكتف والامتداد الصدري",
+  "rehab_phase": "متوسطة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة",
+  "rehab_evidence": "Sepehri et al. 2024 — BMC Musculoskelet Disord (Systematic review: FHP / kyphosis)",
+  "rehab_refs": "https://doi.org/10.1186/s12891-024-07224-4",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Kettlebell Swing",
+  "primary_muscle": "Functional / التمارين الوظيفية",
+  "secondary_muscles": [
+   "Glutes / المؤخرة",
+   "Hamstrings / الخلفية",
+   "Core / البطن والكور"
+  ],
+  "pattern": "Hip Hinge (Hip-dominant) / مفصلة الورك (هيمنة الورك)",
+  "kind": "قدرة",
+  "equipment": "كيتلبل",
+  "level": "متوسط",
+  "place": "منزل",
+  "status": "approved",
+  "alternatives": [
+   "Turkish Get-Up",
+   "Farmer’s Walk"
+  ],
+  "video_url": "https://www.youtube.com/watch?v=d94xX-AQZ0A",
+  "notes": "نفس التمرين ورد أيضاً تحت التصنيف «CrossFit» (صف المصدر 168)",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Ballistic Hinge (Swing) / مفصلة انفجارية (سوينق)",
+  "anatomical_action": "Hip Extension (Ballistic) / بسط الورك الانفجاري"
+ },
+ {
+  "name": "Serratus Punches Supine",
+  "primary_muscle": "Functional / التمارين الوظيفية",
+  "secondary_muscles": [
+   "Shoulders / الأكتاف",
+   "Chest / الصدر"
+  ],
+  "pattern": "Horizontal Push / دفع أفقي",
+  "kind": "قوة",
+  "level": "متوسط",
+  "status": "approved",
+  "alternatives": [
+   "Turkish Get-Up",
+   "Farmer’s Walk",
+   "Kettlebell Swing"
+  ],
+  "video_url": "https://youtu.be/cxaAqmdlrgk?si=2YRAIgFFXPAvDadG",
+  "source": "المكتبة الأصلية",
+  "sub_pattern": "Scapular Protraction / دفع لوح الكتف",
+  "anatomical_action": "Scapular Protraction / دفع لوح الكتف"
+ },
+ {
+  "name": "Isometric Wrist Extension",
+  "primary_muscle": "Forearms / الساعد",
+  "pattern": "Wrist Extension / مد الرسغ",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "review",
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» / حسب المختص || أُضيف لسد نقص في التصنيف التأهيلي",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "JOSPT CPG 2022 — Lateral Elbow Pain (Lucado et al.)",
+  "source_url": "https://www.orthopt.org/uploads/content_files/files/jospt.2022.0302.pdf",
+  "rehab_category": "مرفق التنس / Lateral Elbow Tendinopathy",
+  "sub_pattern": "Isometric / ثابت",
+  "anatomical_action": "Wrist Extension / مد الرسغ",
+  "rehab_goal": "تحميل تدريجي لباسطات الرسغ (انقباض ثابت)",
+  "rehab_phase": "مبكرة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة؛ ضمن ألم مقبول لا يتزايد بعد التمرين",
+  "rehab_evidence": "JOSPT CPG 2022 — Lateral Elbow Pain (Lucado et al.)",
+  "rehab_refs": "https://www.orthopt.org/uploads/content_files/files/jospt.2022.0302.pdf",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Eccentric Wrist Extension",
+  "primary_muscle": "Forearms / الساعد",
+  "pattern": "Wrist Extension / مد الرسغ",
+  "kind": "قوة",
+  "level": "مبتدئ",
+  "status": "review",
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» / حسب المختص || أُضيف لسد نقص في التصنيف التأهيلي",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "JOSPT CPG 2022 — Lateral Elbow Pain (Lucado et al.)",
+  "source_url": "https://www.orthopt.org/uploads/content_files/files/jospt.2022.0302.pdf",
+  "rehab_category": "مرفق التنس / Lateral Elbow Tendinopathy",
+  "sub_pattern": "Eccentric / لامركزي",
+  "anatomical_action": "Wrist Extension / مد الرسغ",
+  "rehab_goal": "تحميل تدريجي لباسطات الرسغ (لامركزي)",
+  "rehab_phase": "متوسطة",
+  "rehab_load": "منخفض–متوسط",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة؛ ضمن ألم مقبول لا يتزايد بعد التمرين",
+  "rehab_evidence": "JOSPT CPG 2022 — Lateral Elbow Pain (Lucado et al.)",
+  "rehab_refs": "https://www.orthopt.org/uploads/content_files/files/jospt.2022.0302.pdf",
+  "rehab_review": "needs_review"
+ },
+ {
+  "name": "Chin Tuck (Deep Neck Flexor)",
+  "primary_muscle": "Neck / الرقبة",
+  "pattern": "Neck Flexion (Deep Flexors) / ثني الرقبة العميق",
+  "kind": "إحماء/تفعيل",
+  "equipment": "وزن الجسم",
+  "level": "مبتدئ",
+  "place": "بدون معدات",
+  "status": "review",
+  "notes": "خطوات الأداء التفصيلية في «رابط المصدر» / حسب المختص || أُضيف لسد نقص في التصنيف التأهيلي",
+  "source": "مصدر خارجي موثوق",
+  "source_name": "Sheikhhoseini et al. 2018 — JMPT (Systematic review, FHP)",
+  "source_url": "https://pubmed.ncbi.nlm.nih.gov/30107937/",
+  "rehab_category": "وضعية الرأس للأمام / Forward Head Posture",
+  "sub_pattern": "Chin Tuck / سحب الذقن",
+  "anatomical_action": "Upper Cervical Flexion + Retraction / ثني علوي للرقبة مع سحبها للخلف",
+  "rehab_goal": "تحكم عضلات الرقبة العميقة ووضعية الرأس",
+  "rehab_phase": "مبكرة",
+  "rehab_load": "منخفض",
+  "rehab_safety": "يُستخدم بعد تقييم فردي وتحت إشراف مختص عند الحاجة؛ يُوقف مع دوخة أو ألم/تنميل يمتد للذراع",
+  "rehab_evidence": "Sheikhhoseini et al. 2018 — JMPT (Systematic review, FHP) | Sepehri et al. 2024 — BMC Musculoskelet Disord (Systematic review: FHP / kyphosis)",
+  "rehab_refs": "https://pubmed.ncbi.nlm.nih.gov/30107937/ | https://doi.org/10.1186/s12891-024-07224-4",
+  "rehab_review": "needs_review"
+ }
+]

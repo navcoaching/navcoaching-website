@@ -1,0 +1,49 @@
+{
+  "name": "navcoaching-platform",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20.9"
+  },
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "node scripts/migrate.mjs",
+    "db:seed": "node scripts/seed.mjs",
+    "db:seed-demo": "node scripts/seed-demo.mjs",
+    "db:purge-demo": "node scripts/purge-demo.mjs",
+    "make-coach": "node scripts/make-coach.mjs",
+    "test:unit": "node --test tests/unit/*.test.mts",
+    "test:db": "node --test --test-concurrency=1 tests/db/rls.test.mjs",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0",
+    "@better-auth/expo": "^1.7.6",
+    "@fontsource-variable/readex-pro": "^5.3.0",
+    "@fontsource/ibm-plex-sans-arabic": "^5.3.0",
+    "@netlify/blobs": "^11.1.1",
+    "better-auth": "^1.7.6",
+    "file-type": "^22.1.1",
+    "next": "^16.4.0",
+    "pg": "^8.23.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "resend": "^6.30.0",
+    "sharp": "^0.35.5",
+    "web-push": "^3.6.7",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^26.6.2",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/web-push": "^3.6.4",
+    "typescript": "^5.9.3"
+  }
+}
