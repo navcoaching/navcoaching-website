@@ -7,18 +7,20 @@ import { buildPlans, loadRecipes, kcalOf, recipeTemplatesSql } from "../../scrip
 
 type R = { id: string; slot: string; set?: string; original?: { kcal: number }; protein: number; carbs: number; fat: number; kcal_book: number; basis?: { food: string; g: number }[]; ingredients: string[]; steps: string[] };
 
-test("26 وصفة من الكتيب (9 فطور، 9 غداء وعشاء، 8 سناك) + 9 مضادات أكسدة + 17 وصفة إضافية، بأرقام ضمن حدود الجدول", () => {
+test("26 وصفة من الكتيب (9 فطور، 9 غداء وعشاء، 8 سناك) + 9 مضادات أكسدة + 17 وصفة إضافية + 13 عربية، بأرقام ضمن حدود الجدول", () => {
   const rs = loadRecipes() as R[];
-  assert.equal(rs.length, 60);
+  assert.equal(rs.length, 73);
   const book = rs.filter((r) => !r.set), ao = rs.filter((r) => r.set === "antioxidant"), ex = rs.filter((r) => r.set === "extra");
   assert.deepEqual(["b", "l", "s"].map((s) => ex.filter((r) => r.slot === s).length), [4, 9, 4]);
   assert.deepEqual(["b", "l", "s"].map((s) => book.filter((r) => r.slot === s).length), [9, 9, 8]);
   assert.deepEqual(["b", "l", "s"].map((s) => ao.filter((r) => r.slot === s).length), [3, 3, 3]);
+  // الوصفات العربية: كبسة لحم، مندي، مقلوبة، برياني، مسقعة، محشي، سليق، شاورما، فتوش + فتة، بيض بالطماطم، معصوب + تمر بالطحينة
+  assert.deepEqual(["b", "l", "s"].map((s) => rs.filter((r) => r.set === "arabic" && r.slot === s).length), [3, 9, 1]);
   for (const r of rs) {
     assert.ok(r.protein >= 0 && r.protein <= 500 && r.carbs >= 0 && r.carbs <= 500 && r.fat >= 0 && r.fat <= 300, r.id);
     assert.ok(r.ingredients.length > 0 && r.steps.length > 0, r.id);
   }
-  assert.equal(new Set(rs.map((r) => r.id)).size, 60);
+  assert.equal(new Set(rs.map((r) => r.id)).size, 73);
 });
 
 test("كل قالب: فطور وغداء وعشاء وسناك بوصفات مختلفة، والمجاميع صحيحة", () => {
@@ -54,7 +56,7 @@ test("كل وصفة لها مكونات محسوبة (مضادات الأكسد�
   // سكوب الواي من ملف تغذية المدربة: 25غ بروتين، 3 كارب، 2 دهون لكل سكوب (30غ)
   byName.set("سكوب واي بروتين (ملف المدربة)", { protein_100: 2500 / 30, carbs_100: 300 / 30, fat_100: 200 / 30 });
   const ao = (loadRecipes() as R[]).filter((r) => r.basis);
-  assert.equal(ao.length, 9 + 17 + 10 + 8);
+  assert.equal(ao.length, 9 + 17 + 10 + 8 + 13);
   for (const r of ao) {
     assert.ok(r.basis && r.basis.length > 0, r.id);
     const t = { p: 0, c: 0, f: 0 };
@@ -100,13 +102,21 @@ test("وصفات الألياف: كل وجبة رئيسية 8غ ألياف أو 
   assert.match(p.notes, /ألياف \d+غ/);
 });
 
-test("مكتبة الوجبات: كل الوصفات (60) كوجبات، وSQL المكتبة يضع is_library ولا يمس القوالب الخمسة", () => {
+test("مكتبة الوجبات: كل الوصفات (73) كوجبات، وSQL المكتبة يضع is_library ولا يمس القوالب الخمسة", () => {
   const [lib] = buildPlans(loadRecipes(), "library");
   assert.equal(lib.name, "مكتبة الوجبات");
-  assert.equal(lib.meals.length, 60);
-  assert.equal(new Set(lib.meals.map((m: { title: string }) => m.title)).size, 60);
+  assert.equal(lib.meals.length, 73);
+  assert.equal(new Set(lib.meals.map((m: { title: string }) => m.title)).size, 73);
   assert.ok(lib.meals.every((m: { kind: string; items: unknown[] }) => ["breakfast", "lunch", "snack"].includes(m.kind) && m.items.length === 1));
   assert.match(recipeTemplatesSql("library") as string, /is_library/);
   assert.doesNotMatch(recipeTemplatesSql("main") as string, /is_library/); // الملف الرئيسي يعمل قبل migration 030
   assert.equal(buildPlans().length, 5);
+});
+
+test("إضافة الوصفات العربية للمكتبة: إضافة فقط بدون حذف، وتتجاوز الموجود بنفس الاسم", async () => {
+  const { libraryAddSql } = await import("../../scripts/recipes-sql.mjs");
+  const sql = libraryAddSql("arabic") as string;
+  assert.ok(!/DELETE/i.test(sql));
+  assert.match(sql, /CONTINUE WHEN EXISTS/);
+  for (const n of ["كبسة لحم بالطريقة الخفيفة", "مندي دجاج مع سلطة", "فتة حمص بالزبادي"]) assert.ok(sql.includes(n), n);
 });

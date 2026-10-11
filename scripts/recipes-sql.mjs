@@ -107,6 +107,40 @@ END $do$;
 `;
 }
 
+/**
+ * إضافة وصفات جديدة لـ«مكتبة الوجبات» بدون لمس الموجودة (node scripts/recipes-sql.mjs library-add arabic).
+ * لا يحذف شيئاً: سجلات أكل المتدربين مربوطة بوجبات المكتبة، والاستبدال الكامل يفصلها عن تفاصيلها.
+ * الوجبة الموجودة بنفس الاسم تُتجاوز، فالملف آمن لو انشغّل مرتين.
+ */
+export function libraryAddSql(set) {
+  const kind = { b: "breakfast", l: "lunch", s: "snack" };
+  const recipes = loadRecipes();
+  const meals = recipes.filter((r) => r.set === set).map((r) => mealOf(kind[r.slot], r));
+  if (!meals.length) throw new Error(`لا توجد وصفات بالمجموعة ${set}`);
+  return `DO $do$
+DECLARE
+  d jsonb := $rt$${JSON.stringify(meals)}$rt$;
+  m jsonb; it jsonb; v_plan uuid; v_meal uuid; j int; k int;
+BEGIN
+  SELECT id INTO v_plan FROM nutrition_plans WHERE order_id IS NULL AND is_library;
+  IF v_plan IS NULL THEN RAISE EXCEPTION 'مكتبة الوجبات غير موجودة. شغّلي ملف meal-library أولاً.'; END IF;
+  j := coalesce((SELECT max(position) + 1 FROM plan_meals WHERE plan_id = v_plan), 0);
+  FOR m IN SELECT * FROM jsonb_array_elements(d) LOOP
+    CONTINUE WHEN EXISTS (SELECT 1 FROM plan_meals WHERE plan_id = v_plan AND title = m->>'title');
+    INSERT INTO plan_meals (plan_id, kind, title, method, position) VALUES (v_plan, m->>'kind', m->>'title', nullif(m->>'method', ''), j) RETURNING id INTO v_meal;
+    k := 0;
+    FOR it IN SELECT * FROM jsonb_array_elements(m->'items') LOOP
+      INSERT INTO plan_items (meal_id, food, portion, protein, carbs, fat, position)
+      VALUES (v_meal, it->>'food', nullif(it->>'portion', ''), (it->>'protein')::numeric, (it->>'carbs')::numeric, (it->>'fat')::numeric, k);
+      k := k + 1;
+    END LOOP;
+    j := j + 1;
+  END LOOP;
+  UPDATE nutrition_plans SET notes = regexp_replace(coalesce(notes, ''), '[0-9]+ وجبة', (SELECT count(*) FROM plan_meals WHERE plan_id = v_plan) || ' وجبة'), updated_at = now() WHERE id = v_plan;
+END $do$;
+`;
+}
+
 /** جُمل migration كنص (بدون التعليقات)، كل جملة لوحدها لتُنفَّذ داخل كتلة شرطية */
 function migrationStatements(file) {
   return readFileSync(new URL(`../db/migrations/${file}`, import.meta.url), "utf8")
@@ -114,7 +148,19 @@ function migrationStatements(file) {
     .split(";").map((x) => x.trim()).filter(Boolean);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === `file://${process.argv[1]}` && process.argv[2] === "library-add") {
+  const set = process.argv[3] ?? "arabic";
+  process.stdout.write(`-- وصفات عربية جديدة في «مكتبة الوجبات» (كبسة لحم، مندي، مقلوبة، برياني، مسقعة، محشي، سليق، شاورما، فتوش، فتة، بيض بالطماطم، معصوب، تمر بالطحينة).
+-- القيم محسوبة من المكونات بقاعدة الأكل (USDA). يضيف الجديد فقط ولا يغيّر الوجبات الموجودة ولا سجلات المتدربين. آمن لو انشغّل مرتين.
+BEGIN;
+${libraryAddSql(set)}
+SELECT m.title, round(sum(i.protein*4 + i.carbs*4 + i.fat*9)) AS kcal
+  FROM plan_meals m JOIN nutrition_plans p ON p.id = m.plan_id JOIN plan_items i ON i.meal_id = m.id
+ WHERE p.is_library AND p.order_id IS NULL AND m.title IN (${loadRecipes().filter((r) => r.set === set).map((r) => `'${r.name.replace(/'/g, "''")}'`).join(", ")})
+ GROUP BY m.title, m.position ORDER BY m.position;
+COMMIT;
+`);
+} else if (import.meta.url === `file://${process.argv[1]}`) {
   const group = ["antioxidant", "fiber", "library"].includes(process.argv[2]) ? process.argv[2] : "main";
   const head = group === "library"
     ? `-- مكتبة الوجبات: كل الوصفات كوجبات يختار منها المتدرب في «كل الوجبات» + migration 030 (عمود is_library وتسمية سجل الأكل).
