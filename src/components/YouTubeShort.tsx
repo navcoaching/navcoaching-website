@@ -32,7 +32,7 @@ export default function YouTubeShort({ id, title, wide = false }: { id: string; 
             )}
             <button type="button" className="short-play" onClick={() => setPlay(true)} aria-label={`تشغيل المقطع: ${title}`}>
               <span className="disc"><IconPlay size={30} /></span>
-              <span className="cap">اضغط للتشغيل</span>
+              <span className="cap">تشغيل المقطع</span>
             </button>
           </>
         )}

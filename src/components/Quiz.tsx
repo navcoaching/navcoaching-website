@@ -5,10 +5,10 @@ import { QUIZ_SKU, recommend } from "@/lib/quiz";
 
 type OfferInfo = { sku: string; name: string; slug: string; price: string; monthly: boolean };
 const Q = [
-  { name: "level", title: "وش مستواك في التمرين؟", opts: [["beg", "مبتدئ · أقل من 6 أشهر"], ["mid", "متوسط · 6 أشهر – سنتين"], ["adv", "متقدم · أكثر من سنتين"]] },
-  { name: "need", title: "وش تحتاج بالضبط؟", opts: [["both", "تمرين وتغذية"], ["train", "تمرين فقط"], ["food", "تغذية فقط"], ["askT", "عندي أسئلة محددة في التمرين"], ["askN", "عندي أسئلة محددة في التغذية"]] },
-  { name: "follow", title: "أي نوع متابعة يناسبك؟", opts: [["close", "متابعة أسبوعية + مكالمات زوم"], ["weekly", "متابعة أسبوعية بدون مكالمات"], ["none", "ما أحتاج متابعة، أبي جدول وأمشي عليه"]] },
-  { name: "live", title: "تحتاج جلسة حضورية لتصحيح التكنيك؟ (للبنات في المنطقة الشرقية)", opts: [["yes", "نعم"], ["no", "لا"]] },
+  { name: "level", title: "مستوى التمرين الحالي", opts: [["beg", "مستوى مبتدئ · أقل من 6 أشهر"], ["mid", "مستوى متوسط · 6 أشهر – سنتين"], ["adv", "مستوى متقدم · أكثر من سنتين"]] },
+  { name: "need", title: "وش الاحتياج بالضبط؟", opts: [["both", "تمرين وتغذية"], ["train", "تمرين فقط"], ["food", "تغذية فقط"], ["askT", "عندي أسئلة محددة في التمرين"], ["askN", "عندي أسئلة محددة في التغذية"]] },
+  { name: "follow", title: "نوع المتابعة المناسب", opts: [["close", "متابعة أسبوعية + مكالمات زوم"], ["weekly", "متابعة أسبوعية بدون مكالمات"], ["none", "ما أحتاج متابعة، أبي جدول وأمشي عليه"]] },
+  { name: "live", title: "هل الجلسة الحضورية لتصحيح التكنيك مطلوبة؟ (للبنات في المنطقة الشرقية)", opts: [["yes", "نعم"], ["no", "لا"]] },
 ] as const;
 
 export default function Quiz({ offers }: { offers: Record<string, OfferInfo> }) {
@@ -37,16 +37,16 @@ export default function Quiz({ offers }: { offers: Record<string, OfferInfo> }) 
       </form>
       <div className="card" aria-live="polite">
         {!P ? (
-          <p className="muted">جاوب على الأسئلة وتظهر لك التوصية هنا.</p>
+          <p className="muted">التوصية تظهر هنا بعد الإجابة على الأسئلة.</p>
         ) : (
           <div className="stack">
-            <span className="eyebrow">الباقة الأنسب لك</span>
+            <span className="eyebrow">الباقة الأنسب</span>
             <h3 style={{ fontSize: 26 }}>{P.name}</h3>
             <p className="num" style={{ fontWeight: 600 }}>{P.price}{P.monthly ? " / شهر" : ""}</p>
             <ul className="checklist">{r!.why.map((w) => <li key={w}>{w}</li>)}</ul>
             <div className="row">
-              <Link className="btn" href={`/checkout/${P.sku}`}>اشترك في {P.name}</Link>
-              <Link className="btn btn-ghost" href={`/programs/${P.slug}`}>شوف تفاصيلها</Link>
+              <Link className="btn" href={`/checkout/${P.sku}`}>الاشتراك في {P.name}</Link>
+              <Link className="btn btn-ghost" href={`/programs/${P.slug}`}>التفاصيل</Link>
             </div>
             {A && <p className="small muted">بديل مناسب: <Link href={`/programs/${A.slug}`}>{A.name}</Link> ({A.price}{A.monthly ? " / شهر" : ""})</p>}
           </div>

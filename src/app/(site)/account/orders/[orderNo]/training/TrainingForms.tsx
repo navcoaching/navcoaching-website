@@ -238,7 +238,7 @@ function ImportFlow({ orderNo, day, week, again }: { orderNo: string; day: strin
     if (reading) return;
     const fd = new FormData(e.currentTarget);
     const files = fd.getAll("image").filter((f): f is File => f instanceof File && f.size > 0);
-    if (files.length > 4) { setPreview({ error: "اختر حتى 4 صور." }); return; }
+    if (files.length > 4) { setPreview({ error: "الحد 4 صور." }); return; }
     fd.delete("image");
     // تصغير كل صورة (أكثر من صورة ← تصغير أقوى حتى يبقى المجموع تحت حد الخادم)
     for (const f of files) fd.append("image", await shrinkImage(f, files.length > 1 ? 1600 : 2000, files.length > 1 ? 600_000 : 1_500_000));
@@ -268,7 +268,7 @@ function ImportFlow({ orderNo, day, week, again }: { orderNo: string; day: strin
               <div className="field">
                 <label htmlFor={`img-${day}`}>لقطات شاشة لتمرين اليوم من تطبيقك (حتى 4 صور)</label>
                 <FilePicker id={`img-${day}`} name="image" accept="image/png,image/jpeg,image/webp" multiple required maxMb={40} hint="حتى 4 صور (تُصغَّر تلقائياً)" />
-                <span className="hint">إذا التمرين طويل اختر اللقطات بالترتيب. نقرأ التمارين والأوزان والتكرارات، وتراجعها قبل الحفظ. الصور لا تُحفظ في الموقع، وتُرسل لخدمة قراءة الصور (Anthropic) للقراءة فقط.</span>
+                <span className="hint">إذا التمرين طويل، اللقطات تكون بالترتيب. نقرأ التمارين والأوزان والتكرارات، وتراجعها قبل الحفظ. الصور لا تُحفظ في الموقع، وتُرسل لخدمة قراءة الصور (Anthropic) للقراءة فقط.</span>
               </div>
               {preview.error && <p className="alert err" role="alert">{preview.error}</p>}
               <div><Submit className="btn btn-sm" pending={reading} pendingText="جارٍ قراءة الصور… (حتى 30 ثانية)">اقرأ الصورة</Submit></div>
@@ -283,7 +283,7 @@ function ImportFlow({ orderNo, day, week, again }: { orderNo: string; day: strin
                 {rows.map((r, k) => (
                   <fieldset key={k} className="import-row">
                     <legend><bdi dir="ltr">{r.external}</bdi>{" "}
-                      {r.how ? <span className={`status ${HOW[r.how][1]}`}>{HOW[r.how][0]}</span> : <span className="status muted">اختر التمرين</span>}</legend>
+                      {r.how ? <span className={`status ${HOW[r.how][1]}`}>{HOW[r.how][0]}</span> : <span className="status muted">اختيار التمرين</span>}</legend>
                     <input type="hidden" name={`key_${k}`} value={r.key} />
                     <input type="hidden" name={`how_${k}`} value={r.how ?? ""} />
                     <div className="field">

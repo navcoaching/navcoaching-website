@@ -41,8 +41,8 @@ export async function saveMyBodyInfoAction(_: ActionState, fd: FormData): Promis
   if (!ORDER_NO.test(orderNo)) return { error: GENERIC };
   const height = n(s(fd, "height")), paf = n(s(fd, "paf")), days = n(s(fd, "days")), minutes = n(s(fd, "minutes"));
   if (height != null && !(height >= 120 && height <= 230)) return { error: "الطول بين 120 و 230 سم." };
-  if (paf == null || !PAFS.includes(paf)) return { error: "اختر مستوى نشاطك." };
-  if (days == null || !Number.isInteger(days) || days < 0 || days > 7) return { error: "اختر أيام التمرين." };
+  if (paf == null || !PAFS.includes(paf)) return { error: "اختيار مستوى النشاط مطلوب." };
+  if (days == null || !Number.isInteger(days) || days < 0 || days > 7) return { error: "اختيار أيام التمرين مطلوب." };
   if (minutes == null || !Number.isInteger(minutes) || minutes < 0 || minutes > 240) return { error: "مدة التمرين بين 0 و 240 دقيقة." };
   try {
     await withUser(user.id, async (tx) => {

@@ -51,8 +51,8 @@ export const MAX_IMAGES = 4;
 export async function readWorkoutImages(images: { data: Buffer; mime: string }[]): Promise<ExtractedExercise[]> {
   if (visionMock()) return MOCK;
   if (!process.env.ANTHROPIC_API_KEY) throw new VisionError("قراءة الصور غير مفعّلة حالياً.");
-  if (!images.length || images.length > MAX_IMAGES) throw new VisionError(`ارفع من صورة إلى ${MAX_IMAGES} صور.`);
-  if (images.some((i) => !["image/jpeg", "image/png", "image/webp", "image/gif"].includes(i.mime))) throw new VisionError("ارفع صور JPG أو PNG.");
+  if (!images.length || images.length > MAX_IMAGES) throw new VisionError(`المطلوب من صورة إلى ${MAX_IMAGES} صور.`);
+  if (images.some((i) => !["image/jpeg", "image/png", "image/webp", "image/gif"].includes(i.mime))) throw new VisionError("الصور المقبولة: JPG أو PNG.");
   const data = { length: images.reduce((n, i) => n + i.data.length, 0) }; // للسجل فقط
 
   // مهلة أقصر من حد وظائف الخادم، بدون إعادة محاولة: رسالة واضحة بدل انقطاع الطلب
@@ -93,6 +93,6 @@ export async function readWorkoutImages(images: { data: Buffer; mime: string }[]
   if (response.stop_reason === "max_tokens") throw new VisionError("الصورة فيها تمارين كثيرة. جرّب لقطة لجزء منها. (رمز: V-MAX)");
   if (!response.parsed_output) throw new VisionError("تعذّرت قراءة الصورة. جرّب لقطة أوضح أو سجّل يدوياً. (رمز: V-PARSE)");
   const out = response.parsed_output;
-  if (!out.is_workout || !out.exercises.length) throw new VisionError("ما لقينا تمارين في الصورة. ارفع لقطة شاشة من سجل التمرين.");
+  if (!out.is_workout || !out.exercises.length) throw new VisionError("ما لقينا تمارين في الصورة. المطلوب لقطة شاشة من سجل التمرين.");
   return out.exercises.slice(0, 30).map((e) => ({ name: e.name.slice(0, 120), unit: e.unit, sets: e.sets.slice(0, 15) }));
 }

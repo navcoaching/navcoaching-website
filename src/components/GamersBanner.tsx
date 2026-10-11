@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { riyals, waLink } from "@/lib/format";
 import type { Product } from "@/lib/data";
+import { IconChair, IconCrosshair, IconGamepad, IconZap } from "./Icons";
 
 const POINTS = [
-  ["⚡", "تركيز وأداء ذهني أعلى", "طاقة ثابتة وتركيز أطول في الجلسات الطويلة."],
-  ["🎯", "سرعة استجابة أفضل", "تمارين وعادات تدعم رد الفعل واليقظة أثناء اللعب."],
-  ["🪑", "ظهر ورقبة أريح", "تمارين تساعد تخفف آلام الظهر والرقبة من الجلوس الطويل."],
+  [IconZap, "تركيز وأداء ذهني أعلى", "طاقة ثابتة وتركيز أطول في الجلسات الطويلة."],
+  [IconCrosshair, "سرعة استجابة أفضل", "تمارين وعادات تدعم رد الفعل واليقظة أثناء اللعب."],
+  [IconChair, "ظهر ورقبة أريح", "تمارين تساعد تخفف آلام الظهر والرقبة من الجلوس الطويل."],
 ] as const;
 
 /** بانر «باقة القيمرز» في الصفحة الرئيسية. يظهر فقط إذا نُشرت باقة بالرابط /programs/gamers */
@@ -18,7 +19,7 @@ export default function GamersBanner({ product, whatsapp }: { product: Product |
       <div className="wrap">
         <div className="gamers-banner reveal">
           <div className="gamers-copy">
-            <span className="gamers-tag">🎮 للقيمرز</span>
+            <span className="gamers-tag"><IconGamepad size={18} /> للقيمرز</span>
             <h2 id="gamers-h">قيمر؟ عندي باقة مصممة لك</h2>
             <p className="gamers-lead">لأني جاية من عالم الرياضات الإلكترونية، صممت باقة خاصة للقيمرز: لياقة أفضل داخل وخارج الشاشة.</p>
             <div className="row gamers-cta">
@@ -28,9 +29,9 @@ export default function GamersBanner({ product, whatsapp }: { product: Product |
             {from != null && <p className="gamers-price">تبدأ من <b className="num">{riyals(from)}</b></p>}
           </div>
           <ul className="gamers-points">
-            {POINTS.map(([icon, title, body]) => (
+            {POINTS.map(([Icon, title, body]) => (
               <li key={title}>
-                <span className="gamers-ico" aria-hidden="true">{icon}</span>
+                <span className="gamers-ico" aria-hidden="true"><Icon /></span>
                 <div><b>{title}</b><p>{body}</p></div>
               </li>
             ))}

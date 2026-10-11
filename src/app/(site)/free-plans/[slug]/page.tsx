@@ -34,7 +34,7 @@ export default async function FreePlanPage({ params }: P) {
             <h1 style={{ fontSize: "clamp(26px,4vw,38px)" }}>{plan.title}</h1>
             <p style={{ whiteSpace: "pre-wrap" }}>{plan.summary}</p>
             <FreePlanButton slug={plan.slug} loggedIn={Boolean(user)} owned={plan.owned} />
-            <p className="small muted">ملف PDF مجاني يُحمّل من حسابك بعد الطلب. الجدول عام وإرشادي؛ استشر مختصاً إذا عندك إصابة أو حالة صحية.</p>
+            <p className="small muted">ملف PDF مجاني يُحمّل من الحساب بعد الطلب. الجدول عام وإرشادي، ويُنصح باستشارة مختص في حال وجود إصابة أو حالة صحية.</p>
           </div>
         </div>
         <Link href="/free-plans">← كل الجداول المجانية</Link>

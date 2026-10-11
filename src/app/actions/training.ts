@@ -412,7 +412,7 @@ export async function assignTemplateAction(_: ActionState, fd: FormData): Promis
   try {
     results = await asCoach(async (tx) => {
       await tx.query("SELECT app.coach_assign_template($1,$2,$3,$4)", [orderNo, tpl, start, name || null]);
-      return fd.get("notify") === "on" ? notifyProgram(tx, orderNo, "جهّزت لك المدربة برنامج التمرين. تقدر تشوفه وتسجّل تمارينك من حسابك في الموقع.") : [];
+      return fd.get("notify") === "on" ? notifyProgram(tx, orderNo, "جهّزت المدربة برنامج التمرين. عرضه وتسجيل التمارين متاح من حسابك في الموقع.") : [];
     });
   } catch (err) { return fail(err); }
   revalidatePath(`/admin/orders/${orderNo}/program`);
@@ -608,7 +608,7 @@ export async function rateDayAction(_: ActionState, fd: FormData): Promise<Actio
   const day = idOf(fd, "day");
   const week = Number(fd.get("week")), rating = Number(fd.get("rating"));
   if (!day || !Number.isInteger(week)) return { error: T_GENERIC };
-  if (!(rating >= 1 && rating <= 5)) return { error: "اختر تقييماً من 1 إلى 5." };
+  if (!(rating >= 1 && rating <= 5)) return { error: "التقييم يكون من 1 إلى 5." };
   try {
     await asTrainee((tx) => tx.query("SELECT app.rate_day($1,$2,$3)", [day, week, rating]));
   } catch (err) { return tFail(err); }
@@ -620,7 +620,7 @@ export async function rateDayAction(_: ActionState, fd: FormData): Promise<Actio
 export async function swapExerciseAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const item = idOf(fd, "item"), ex = idOf(fd, "exercise");
   const no = String(fd.get("order_no") ?? "");
-  if (!item || !ex || !ORDER_NO.test(no)) return { error: "اختر التمرين البديل من القائمة." };
+  if (!item || !ex || !ORDER_NO.test(no)) return { error: "اختيار التمرين البديل من القائمة مطلوب." };
   let r: { changed: boolean; from?: string; to?: string };
   let who = "";
   try {
@@ -657,7 +657,7 @@ const DATE = /^\d{4}-\d{2}-\d{2}$/;
 export async function logWeightAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const date = String(fd.get("date") ?? "");
   const kg = toNum(fd.get("kg"));
-  if (!DATE.test(date)) return { error: "اختر التاريخ." };
+  if (!DATE.test(date)) return { error: "اختيار التاريخ مطلوب." };
   if (kg != null && (!Number.isFinite(kg) || kg < 25 || kg > 350)) return { error: "اكتب الوزن بالكيلو (مثل 72.4)." };
   try {
     await asTrainee((tx) => tx.query("SELECT app.log_weight($1,$2)", [date, kg]));
@@ -670,7 +670,7 @@ export async function logWeightAction(_: ActionState, fd: FormData): Promise<Act
 export async function logMeasurementsAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const date = String(fd.get("date") ?? "");
   const vals = ["chest", "waist", "hips", "thigh"].map((k) => toNum(fd.get(k)));
-  if (!DATE.test(date)) return { error: "اختر التاريخ." };
+  if (!DATE.test(date)) return { error: "اختيار التاريخ مطلوب." };
   if (vals.some((v) => v != null && !Number.isFinite(v))) return { error: "القياسات أرقام بالسنتيمتر." };
   if (vals.every((v) => v == null)) return { error: "اكتب قياساً واحداً على الأقل." };
   try {
@@ -716,7 +716,7 @@ export async function readWorkoutImageAction(_: ImportPreview, fd: FormData): Pr
   let extracted: ExtractedExercise[];
   try {
     const files = fd.getAll("image").filter((f): f is File => f instanceof File && f.size > 0);
-    if (!files.length) throw new UploadError("اختر صورة.");
+    if (!files.length) throw new UploadError("اختيار صورة مطلوب.");
     if (files.length > MAX_IMAGES) throw new UploadError(`حتى ${MAX_IMAGES} صور في المرة.`);
     const imgs = [];
     for (const f of files) imgs.push(await cleanUpload(f, "image"));
@@ -751,7 +751,7 @@ export async function saveImportedLogsAction(_: ActionState, fd: FormData): Prom
     const weights = reps.map((_, i) => (ws[i] ?? ws[ws.length - 1]) as number);
     const rir = toNum(fd.get(`rir_${k}`));
     if (rir != null && (!Number.isFinite(rir) || rir < 0 || rir > 10)) return { error: "RIR رقم من 0 إلى 10." };
-    if (entries.some((e) => e.item === item)) return { error: "ربطت تمرينين من الصورة بنفس تمرين البرنامج. اختر «تجاهل» لأحدهما." };
+    if (entries.some((e) => e.item === item)) return { error: "ربطت تمرينين من الصورة بنفس تمرين البرنامج. الحل: «تجاهل» لأحدهما." };
     entries.push({ item, weights, reps, rir, key: String(fd.get(`key_${k}`) ?? "").slice(0, 120), how: String(fd.get(`how_${k}`) ?? "") });
   }
   if (!entries.length) return { error: "ما فيه تمارين للحفظ. اربط تمريناً واحداً على الأقل." };

@@ -7,7 +7,7 @@ import { EB_GOALS as GOALS, MACRO_DEFAULTS, MACRO_LIMITS, PAF_LEVELS as PAF, PRO
 const METHODS: { v: BmrMethod; t: string; d: string }[] = [
   { v: "cunningham", t: "أعرف نسبة الدهون", d: "الأدق: يعتمد على الكتلة الخالية من الدهون (معادلة Cunningham)." },
   { v: "tenhaaf", t: "ما أعرف نسبة الدهون", d: "يعتمد على الوزن والطول والعمر والجنس (معادلة Ten Haaf) — مناسبة للأشخاص الرياضيين." },
-  { v: "tinsley", t: "رياضي بنية عضلية عالية", d: "للاعبي كمال الأجسام ومن في بنيتهم فقط (معادلة Tinsley)." },
+  { v: "tinsley", t: "بنية رياضية وعضلية عالية", d: "للاعبي كمال الأجسام ومن في بنيتهم فقط (معادلة Tinsley)." },
 ];
 
 type Raw = { method: BmrMethod; weight: string; bodyFat: string; heightCm: string; age: string; sex: "" | "male" | "female"; paf: string; minutes: string; trainingDays: string; ebFactor: string };
@@ -113,7 +113,7 @@ export default function IntakeCalculator({ idPrefix = "i" }: { idPrefix?: string
           {td > 0 && num("minutes", "مدة جلسة التمرين", "دقيقة")}
           {select("ebFactor", "هدفك", GOALS)}
         </div>
-        <button type="submit" className="btn btn-block">احسب السعرات</button>
+        <button type="submit" className="btn btn-block">حساب السعرات</button>
       </form>
 
       {result && (
@@ -148,7 +148,7 @@ export default function IntakeCalculator({ idPrefix = "i" }: { idPrefix?: string
                 {td < 7 && macroRow("يوم الراحة", result.restDayTarget, "macros-rest")}
               </div>
             )}
-            <span className="hint">البروتين والدهون ثابتة حسب وزنك، والكارب هو الباقي من السعرات (السعرات = بروتين×4 + كارب×4 + دهون×9). الأرقام مبدئية وتقدر تعدّلها، وخطتك مع المدربة تحدد المناسب لك.</span>
+            <span className="hint">البروتين والدهون ثابتة حسب وزنك، والكارب هو الباقي من السعرات (السعرات = بروتين×4 + كارب×4 + دهون×9). الأرقام مبدئية والتعديل عليها متاح، وخطتك مع المدربة تحدد المناسب لك.</span>
           </div>
           <details className="small">
             <summary style={{ cursor: "pointer", minHeight: 44 }}>كيف حسبناها؟</summary>
@@ -163,10 +163,10 @@ export default function IntakeCalculator({ idPrefix = "i" }: { idPrefix?: string
               <li>معادلات السعرات من حاسبة Menno Henselmans (Energy Intake Calculator).</li>
             </ul>
           </details>
-          <p className="small muted">نقطة بداية تقريبية: راقب وزنك وقياساتك أسبوعين إلى ثلاثة، وعدّل حسب النتيجة. بعد فترة تقدر تحسب سعراتك الفعلية بدقة من <Link href="/calculator#energy-balance">حاسبة توازن الطاقة</Link>.</p>
+          <p className="small muted">نقطة بداية تقريبية: مراقبة الوزن والقياسات أسبوعين إلى ثلاثة، والتعديل حسب النتيجة. بعد فترة تُحسب السعرات الفعلية بدقة من <Link href="/calculator#energy-balance">حاسبة توازن الطاقة</Link>.</p>
           <div className="alert info calc-cta">
-            <span>تبي خطة تدريب وتغذية مبنية على أرقامك مع متابعة أسبوعية؟</span>
-            <Link href="/programs" className="btn btn-sm">شوف البرامج</Link>
+            <span>خطة تدريب وتغذية مبنية على أرقامك مع متابعة أسبوعية؟</span>
+            <Link href="/programs" className="btn btn-sm">البرامج</Link>
           </div>
         </section>
       )}

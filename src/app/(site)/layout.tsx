@@ -9,7 +9,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   const s = await getSettings();
   return (
     <>
-      <a href="#main" className="skip">تخطَّ إلى المحتوى</a>
+      <a href="#main" className="skip">الانتقال إلى المحتوى</a>
       <Header />
       <main id="main">{children}</main>
       <Footer s={s} />

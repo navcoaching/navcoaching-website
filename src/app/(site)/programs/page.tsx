@@ -22,7 +22,7 @@ const COMPARE: [string, string[]][] = [
   ["شرح MyFitnessPal", ["✓", "—", "—", "—"]],
   ["كتيب الرياضة والتغذية", ["✓", "✓", "✓", "—"]],
   ["تواصل يومي (رد خلال 48 ساعة)", ["✓", "✓", "✓", "✓"]],
-  ["مناسبة لـ", ["المبتدئ", "صاحب الخبرة", "من يحتاج تمرين فقط", "من يحتاج تغذية فقط"]],
+  ["مناسبة لـ", ["المبتدئين", "أصحاب الخبرة", "من يحتاج تمرين فقط", "من يحتاج تغذية فقط"]],
 ];
 const COMPARE_SLUGS = ["intensive", "advanced", "basic", "nutrition"];
 
@@ -39,10 +39,10 @@ export default async function Programs() {
     <div className="pub">
       <section className="page-hero">
         <div className="wrap">
-          <span className="eyebrow">البرامج والأسعار</span>
-          <h1 style={{ fontSize: "clamp(30px,5vw,48px)", marginTop: 12 }}>اختر برنامجك</h1>
-          <p className="lead">كل البرامج مخصصة لك بعد الاستبيان. {s.badges.slice(0, 2).join(" و")}.</p>
-          <Link href="#quiz" className="btn btn-cyan" style={{ marginTop: 20 }}>محتار أي باقة تناسبك؟ جاوب على 4 أسئلة</Link>
+          <span className="eyebrow">البرامج</span>
+          <h1 style={{ fontSize: "clamp(30px,5vw,48px)", marginTop: 12 }}>البرامج والأسعار</h1>
+          <p className="lead">كل البرامج مخصصة حسب الهدف بعد الاستبيان. خصم 10% للطلاب ومجاني لأهل غزة.</p>
+          <p style={{ marginTop: 16 }}>أي باقة تناسبني؟ 4 أسئلة تحدد البرنامج المناسب. <Link href="#quiz" className="text-link">بدء الاختبار</Link></p>
         </div>
       </section>
 
@@ -93,7 +93,7 @@ export default async function Programs() {
 
       <section className="section" id="quiz">
         <div className="wrap">
-          <div className="sec-head"><span className="eyebrow">أي باقة تناسبني؟</span><h2>جاوب على 4 أسئلة، وأقترح لك الباقة الأنسب</h2></div>
+          <div className="sec-head"><span className="eyebrow">أي باقة تناسبني؟</span><h2>4 أسئلة تحدد البرنامج المناسب</h2></div>
           <Quiz offers={quizOffers} />
         </div>
       </section>

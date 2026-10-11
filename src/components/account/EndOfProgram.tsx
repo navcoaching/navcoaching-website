@@ -48,7 +48,7 @@ export function EndOfProgramCard({ orderNo, product, name, survey, review }: { o
         <p className="alert ok" role="status" style={{ margin: 0 }}>شكراً لك، وصلني ردك 🤍</p>
       ) : (
         <>
-          <p style={{ margin: 0 }}>عندي لك بعض الأسئلة، ولا عليك أمر تجاوبها:</p>
+          <p style={{ margin: 0 }}>عندي بعض الأسئلة، والإجابة عليها اختيارية:</p>
           <ExitSurveyForm orderNo={orderNo} />
         </>
       )}

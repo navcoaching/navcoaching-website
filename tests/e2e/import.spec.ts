@@ -70,7 +70,7 @@ test("تعبئة التسجيل من صورة: قراءة، ربط يدوي، ح
   const five = Array.from({ length: 5 }, (_, i) => ({ name: `s${i}.png`, mimeType: "image/png", buffer: image }));
   await box.locator('input[type="file"]').setInputFiles(five);
   await box.getByRole("button", { name: "اقرأ الصورة" }).click();
-  await expect(box.getByText("اختر حتى 4 صور.")).toBeVisible();
+  await expect(box.getByText("الحد 4 صور.")).toBeVisible();
   await box.locator('input[type="file"]').setInputFiles([
     { name: "strong-1.png", mimeType: "image/png", buffer: big },
     { name: "strong-2.png", mimeType: "image/png", buffer: image },
@@ -80,7 +80,7 @@ test("تعبئة التسجيل من صورة: قراءة، ربط يدوي، ح
   await expect(review.locator("fieldset")).toHaveCount(3);
   await expect(review.locator("fieldset").nth(0)).toContainText("مطابقة تقريبية");
   await expect(review.locator("fieldset").nth(1)).toContainText("مطابقة بالاسم");
-  await expect(review.locator("fieldset").nth(2)).toContainText("اختر التمرين");
+  await expect(review.locator("fieldset").nth(2)).toContainText("اختيار التمرين");
   await expect(review.locator('input[name="weights_0"]')).toHaveValue("100, 110"); // الإحماء لا يُحسب، ووزن لكل جولة
   await expect(review.locator('input[name="reps_0"]')).toHaveValue("12, 10");
   await expect(review.locator('input[name="weights_2"]')).toHaveValue("45.5"); // 100 lb

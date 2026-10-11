@@ -26,3 +26,15 @@ export const IconInstagram = ({ size = 24 }: P) => (
     <rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none" />
   </svg>
 );
+// أيقونات بأسلوب Lucide (خطية، 24px، سماكة 1.8) بدل الإيموجي في الصفحات العامة
+export const IconClipboard = (p: P) => <S {...p}><rect x="6" y="4" width="12" height="17" rx="2" /><path d="M9 4.5V3h6v1.5M9 11h6M9 15h4" /></S>;
+export const IconEye = (p: P) => <S {...p}><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" /><circle cx="12" cy="12" r="3" /></S>;
+export const IconVideo = (p: P) => <S {...p}><rect x="3" y="6" width="13" height="12" rx="2" /><path d="M16 10.5l5-3v9l-5-3" /></S>;
+export const IconZap = (p: P) => <S {...p}><path d="M13 2.5L4.5 13.5H12l-1 8 8.5-11H12z" /></S>;
+export const IconCrosshair = (p: P) => <S {...p}><circle cx="12" cy="12" r="8" /><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4" /></S>;
+export const IconChair = (p: P) => <S {...p}><path d="M7 3h10v8H7zM5 11h14v3H5zM7 14v7M17 14v7" /></S>;
+export const IconGamepad = (p: P) => <S {...p}><path d="M7 8h10a4 4 0 0 1 4 4v1.5a3 3 0 0 1-5.4 1.8L14.5 14h-5l-1.1 1.3A3 3 0 0 1 3 13.5V12a4 4 0 0 1 4-4z" /><path d="M7.5 10.5v3M6 12h3M15.5 11.5h.01M17.5 13h.01" /></S>;
+export const IconLock = (p: P) => <S {...p}><rect x="4.5" y="10.5" width="15" height="10" rx="2" /><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" /></S>;
+export const IconReceipt = (p: P) => <S {...p}><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z" /><path d="M9 8h6M9 12h6M9 16h3" /></S>;
+export const IconSalad = (p: P) => <S {...p}><path d="M3.5 12h17a8.5 8.5 0 0 1-17 0z" /><path d="M8 12c0-3 1.5-5 4-6M12 12c0-2.5 1.2-4.5 3.5-5.5M7 21h10" /></S>;
+export const IconBook = (p: P) => <S {...p}><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z" /><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5" /></S>;

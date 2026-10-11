@@ -430,24 +430,19 @@ test("الأعضاء المسجلون وإضافة برنامج يدوياً ب�
 test("حاسبة السعرات: توازن الطاقة (معادلة Henselmans)، التحقق، والنتائج", async ({ browser }, info) => {
   const page = await newPage(browser, info.project.name + "-calc");
   await page.goto("/");
-  // موجودة في آخر الصفحة الرئيسية
-  await expect(page.locator("#calculator").getByRole("button", { name: "احسب السعرات" })).toBeVisible();
-  if (await page.getByLabel("فتح القائمة").isVisible()) {
-    await page.getByLabel("فتح القائمة").click();
-    await page.locator(".menu-panel").getByRole("link", { name: "حاسبة السعرات" }).click();
-  } else {
-    await page.locator(".nav").getByRole("link", { name: "حاسبة السعرات" }).click();
-  }
+  // انتقلت من الرئيسية إلى صفحتها، ورابطها في التذييل تحت «أدوات مجانية»
+  await expect(page.locator("#calculator")).toHaveCount(0);
+  await page.locator(".site-footer").getByRole("link", { name: "حاسبة السعرات" }).click();
   await expect(page).toHaveURL(/\/calculator$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("حاسبة السعرات");
   await noHorizontalScroll(page);
 
   // ---------- حاسبة السعرات اليومية: مثال ملف Henselmans (Cunningham) ----------
   await page.fill("#i-weight", "80");
-  await page.getByRole("button", { name: "احسب السعرات", exact: true }).click();
+  await page.getByRole("button", { name: "حساب السعرات", exact: true }).click();
   await expect(page.getByText("اكتب نسبة الدهون.")).toBeVisible();
   await page.fill("#i-bodyFat", "15");
-  await page.getByRole("button", { name: "احسب السعرات", exact: true }).click(); // الافتراضي: نشاط 1.0، 60 دقيقة، 4 أيام، تنشيف 0.8
+  await page.getByRole("button", { name: "حساب السعرات", exact: true }).click(); // الافتراضي: نشاط 1.0، 60 دقيقة، 4 أيام، تنشيف 0.8
   await expect(page.getByTestId("intake-target")).toHaveText("2,029");
   await expect(page.getByTestId("intake-maintenance")).toHaveText("2,536");
   await expect(page.getByTestId("intake-bmr")).toHaveText("1,839");
@@ -468,20 +463,20 @@ test("حاسبة السعرات: توازن الطاقة (معادلة Henselman
   // Ten Haaf: يطلب الطول والعمر والجنس
   await page.locator(".method", { hasText: "ما أعرف نسبة الدهون" }).click();
   await page.fill("#i-weight", "85");
-  await page.getByRole("button", { name: "احسب السعرات", exact: true }).click();
-  await expect(page.getByText("اختر الجنس.")).toBeVisible();
+  await page.getByRole("button", { name: "حساب السعرات", exact: true }).click();
+  await expect(page.getByText("اختيار الجنس مطلوب.")).toBeVisible();
   await page.fill("#i-heightCm", "178");
   await page.fill("#i-age", "35");
   await page.locator(".choice", { has: page.locator('input[name="i-sex"][value="male"]') }).click();
-  await page.getByRole("button", { name: "احسب السعرات", exact: true }).click();
+  await page.getByRole("button", { name: "حساب السعرات", exact: true }).click();
   await expect(page.getByTestId("intake-maintenance")).toHaveText("2,745");
   await expect(page.getByTestId("intake-target")).toHaveText("2,196");
   await noHorizontalScroll(page);
 
   // تحقق: حقول فارغة
-  await page.getByRole("button", { name: "احسب توازن الطاقة" }).click();
+  await page.getByRole("button", { name: "حساب توازن الطاقة" }).click();
   await expect(page.getByText(/اكتب تغيّر الكتلة الخالية من الدهون/)).toBeVisible();
-  await expect(page.getByText("اختر تاريخ القياس الأول.")).toBeVisible();
+  await expect(page.getByText("اختيار تاريخ القياس الأول مطلوب.")).toBeVisible();
 
   // مثال ملف Henselmans: عضل +5، دهون −3، 31 يوم، 2069 × 6 أيام تمرين، 1548 يوم الراحة
   await page.fill("#c-lean", "5");
@@ -492,10 +487,10 @@ test("حاسبة السعرات: توازن الطاقة (معادلة Henselman
   await page.fill("#c-trainingKcal", "2069");
   await page.selectOption("#c-trainingDays", "6");
   await page.fill("#c-restKcal", "0");
-  await page.getByRole("button", { name: "احسب توازن الطاقة" }).click();
+  await page.getByRole("button", { name: "حساب توازن الطاقة" }).click();
   await expect(page.getByText("سعرات يوم الراحة لازم تكون أكبر من صفر.")).toBeVisible();
   await page.fill("#c-restKcal", "1548");
-  await page.getByRole("button", { name: "احسب توازن الطاقة" }).click();
+  await page.getByRole("button", { name: "حساب توازن الطاقة" }).click();
   await expect(page.getByTestId("calc-daily")).toHaveText("−620");
   await expect(page.getByTestId("calc-net")).toHaveText("−19,227");
   await expect(page.getByTestId("calc-days")).toHaveText("31");
@@ -557,12 +552,7 @@ test("الجداول المجانية: عرض، طلب بعد الدخول، ت�
   // ---------- الزائر: يرى المنشور فقط، ولا يطلب بدون حساب ----------
   const page = await newPage(browser, project + "-fp");
   await page.goto("/");
-  if (await page.getByLabel("فتح القائمة").isVisible()) {
-    await page.getByLabel("فتح القائمة").click();
-    await page.locator(".menu-panel").getByRole("link", { name: "الجداول المجانية" }).click();
-  } else {
-    await page.locator(".nav").getByRole("link", { name: "الجداول المجانية" }).click();
-  }
+  await page.locator(".site-footer").getByRole("link", { name: "الجداول المجانية" }).click();
   await expect(page).toHaveURL(/\/free-plans$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("جداول تدريب مجانية");
   const list = page.getByTestId("free-plans");

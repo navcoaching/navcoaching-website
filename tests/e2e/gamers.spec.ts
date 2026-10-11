@@ -39,11 +39,11 @@ async function setStatus(page: Page, id: string, status: "published" | "archived
   await expect(page.getByText("تم حفظ المنتج")).toBeVisible();
 }
 
-test("بانر باقة القيمرز: مخفي بدون باقة، ويظهر بعد نشرها", async ({ browser }, info) => {
+test("باقة القيمرز: مخفية بدون باقة، وتظهر في «مسارات خاصة» بعد نشرها", async ({ browser }, info) => {
   const project = info.project.name;
   const visitor = await newPage(browser, project + "-v");
   await visitor.goto("/");
-  await expect(visitor.getByTestId("gamers-banner")).toHaveCount(0);
+  await expect(visitor.locator('#programs a[href="/programs/gamers"]')).toHaveCount(0);
 
   // باقة تجريبية (مسودة) بعرض سعر، ثم تنشرها المدربة من لوحة الإدارة
   const { rows: [p] } = await db.query(
@@ -59,28 +59,19 @@ test("بانر باقة القيمرز: مخفي بدون باقة، ويظهر 
     await setStatus(coach, p.id, "published");
 
     await visitor.goto("/");
-    const banner = visitor.getByTestId("gamers-banner");
-    await expect(banner).toBeVisible();
-    await expect(banner).toContainText("قيمر؟ عندي باقة مصممة لك");
-    await expect(banner).toContainText("سرعة استجابة أفضل");
-    await expect(banner).toContainText("تقييم مختص");
-    await expect(banner).toContainText("300");
-    // العنوان أبيض على خلفية البانر الداكنة (لا يرث لون عناوين الأقسام الفاتحة)
-    expect(await banner.locator("h2").evaluate((e) => getComputedStyle(e).color)).toBe("rgb(255, 255, 255)");
-    if (process.env.SHOT_DIR) {
-      await banner.scrollIntoViewIfNeeded();
-      await visitor.waitForTimeout(1200); // انتهاء حركة الظهور
-      await banner.screenshot({ path: `${process.env.SHOT_DIR}/gamers-${project}.png` });
-    }
-    // بعد قسم البرامج مباشرة
-    expect(await visitor.evaluate(() => document.querySelector("#programs")?.nextElementSibling?.id)).toBe("gamers");
+    // بانر القيمرز انشال من الرئيسية، والباقة تظهر ببطاقة البرامج نفسها تحت «مسارات خاصة»
+    await expect(visitor.getByTestId("gamers-banner")).toHaveCount(0);
+    await expect(visitor.getByRole("heading", { name: "مسارات خاصة" })).toBeVisible();
+    const card = visitor.locator('.special-row a[href="/programs/gamers"]');
+    await expect(card).toBeVisible();
+    await expect(card).toContainText("300");
     await noHorizontalScroll(visitor);
-    await banner.getByRole("link", { name: /شوف باقة القيمرز/ }).click();
+    await card.click();
     await expect(visitor).toHaveURL(/\/programs\/gamers$/);
     await expect(visitor.getByRole("heading", { name: /باقة القيمرز/ }).first()).toBeVisible();
   } finally {
     await setStatus(coach, p.id, "archived");
   }
   await visitor.goto("/");
-  await expect(visitor.getByTestId("gamers-banner")).toHaveCount(0);
+  await expect(visitor.locator('#programs a[href="/programs/gamers"]')).toHaveCount(0);
 });

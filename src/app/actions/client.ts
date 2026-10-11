@@ -110,7 +110,7 @@ const reviewSchema = z.object({
   order_no: z.string().min(5).max(40),
   rating: z.union([z.literal(""), z.coerce.number().int().min(1).max(5)]).optional().default(""),
   body: z.string().trim().min(10, "اكتب تجربتك (10 أحرف على الأقل).").max(1500, "النص أطول من 1500 حرف."),
-  display_mode: z.enum(["full", "first", "anon"], { message: "اختر طريقة ظهور اسمك." }),
+  display_mode: z.enum(["full", "first", "anon"], { message: "اختيار طريقة ظهور الاسم مطلوب." }),
   consent: z.enum(["", "on"]).optional().default(""),
 });
 
@@ -203,7 +203,7 @@ export async function requestFreePlanAction(_: FreePlanState, fd: FormData): Pro
     const { rows: [r] } = await withUser(user.id, (tx) => tx.query("SELECT app.request_free_plan($1) AS r", [slug]));
     revalidatePath("/account");
     return r.r.created
-      ? { ok: true, owned: true, message: "تم! أُضيف الجدول إلى «جداولي المجانية» في حسابك، وتقدر تحمّله الآن." }
+      ? { ok: true, owned: true, message: "تم! أُضيف الجدول إلى «جداولي المجانية» في حسابك، وتحميله متاح الآن." }
       : { ok: true, owned: true, message: "هذا الجدول موجود في جداولي مسبقاً." };
   } catch (err) {
     return { error: dbErrorMessage(err) ?? GENERIC };
@@ -229,7 +229,7 @@ export async function submitExitSurveyAction(_: ActionState, fd: FormData): Prom
   const reason = String(fd.get("reason") ?? "").trim();
   const experience = String(fd.get("experience") ?? "").trim();
   const fieldErrors: Record<string, string> = {};
-  if (wants !== "yes" && wants !== "no") fieldErrors.wants_renewal = "اختر نعم أو لا.";
+  if (wants !== "yes" && wants !== "no") fieldErrors.wants_renewal = "الإجابة بنعم أو لا مطلوبة.";
   if (reason.length < 2) fieldErrors.reason = "وضّح السبب باختصار.";
   if (experience.length < 2) fieldErrors.experience = "اكتب باختصار كيف كانت تجربتك.";
   if (Object.keys(fieldErrors).length) return { error: "راجع الحقول المحددة.", fieldErrors };
@@ -257,7 +257,7 @@ export async function setStartPrefAction(_: ActionState, fd: FormData): Promise<
   const orderNo = String(fd.get("order_no") ?? "");
   const mode = String(fd.get("start_mode") ?? "asap");
   const date = String(fd.get("start_date") ?? "");
-  if (mode === "date" && !validStartPref(date)) return { error: "اختر تاريخاً من بكرة إلى شهر من اليوم.", fieldErrors: { start_date: "اختر تاريخاً من بكرة إلى شهر من اليوم." } };
+  if (mode === "date" && !validStartPref(date)) return { error: "التاريخ يكون من بكرة إلى شهر من اليوم.", fieldErrors: { start_date: "التاريخ يكون من بكرة إلى شهر من اليوم." } };
   try {
     await withUser(user.id, (tx) => tx.query("SELECT app.set_my_start_pref($1, $2::date)", [orderNo, mode === "date" ? date : null]));
   } catch (err) {

@@ -75,7 +75,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </div>
 
           <aside className="card" style={{ position: "sticky", top: "calc(var(--header-h) + 16px)" }} aria-label="الاشتراك">
-            <h2 style={{ fontSize: 20 }}>اختر المدة</h2>
+            <h2 style={{ fontSize: 20 }}>مدة الاشتراك</h2>
             <div className="stack" style={{ marginTop: 14 }}>
               {offers.map((o) => (
                 <div key={o.sku} className="card flat" style={{ padding: 16 }}>
@@ -85,7 +85,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                   </div>
                   {o.months > 1 && <p className="small muted">≈ {riyals(Math.round(o.price_halalas / o.months))} شهرياً</p>}
                   <Link href={`/checkout/${o.sku}`} className="btn btn-block" style={{ marginTop: 12 }}>
-                    اشترك في {shortName(p.name)} — {o.label} <IconArrow size={18} className="arrow" />
+                    الاشتراك في {shortName(p.name)} — {o.label} <IconArrow size={18} className="arrow" />
                   </Link>
                 </div>
               ))}

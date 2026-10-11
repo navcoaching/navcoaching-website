@@ -9,12 +9,12 @@ export default async function AccountLayout({ children }: { children: React.Reac
   const cur = await loadCurrentOrder(user.id);
   const base = cur ? `/account/orders/${cur.order_no}` : null;
   const links: AccountLink[] = [
-    { href: "/account", label: "طلباتي", icon: "🧾", exact: true },
-    { href: base && cur?.training ? `${base}/training` : null, label: "جدول التمرين", icon: "🏋️" },
-    { href: base ? `${base}/progress` : null, label: "التقدم", icon: "📈" },
-    { href: base && cur?.nutrition ? `${base}/nutrition` : null, label: "التغذية والمكملات", icon: "🥗" },
-    { href: base ? `${base}#checkin` : null, label: "المراجعة الأسبوعية", icon: "📝" },
-    { href: "/account/guide", label: "دليل الاستخدام", icon: "📖" },
+    { href: "/account", label: "طلباتي", icon: "orders", exact: true },
+    { href: base && cur?.training ? `${base}/training` : null, label: "جدول التمرين", icon: "training" },
+    { href: base ? `${base}/progress` : null, label: "التقدم", icon: "progress" },
+    { href: base && cur?.nutrition ? `${base}/nutrition` : null, label: "التغذية والمكملات", icon: "nutrition" },
+    { href: base ? `${base}#checkin` : null, label: "المراجعة الأسبوعية", icon: "checkin" },
+    { href: "/account/guide", label: "دليل الاستخدام", icon: "guide" },
   ];
   return (
     <div className="account-shell app">

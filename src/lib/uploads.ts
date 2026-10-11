@@ -29,7 +29,7 @@ const ALLOWED: Record<Kind, string[]> = {
  * ملاحظة: لا يوجد فحص فيروسات هنا؛ ملفات PDF تُخدم دائماً كتحميل مع nosniff.
  */
 export async function cleanUpload(file: File | null, kind: Kind): Promise<CleanFile> {
-  if (!file || typeof file === "string" || file.size === 0) throw new UploadError("اختر ملفاً.");
+  if (!file || typeof file === "string" || file.size === 0) throw new UploadError("اختيار ملف مطلوب.");
   if (file.size > MAX_UPLOAD_BYTES) throw new UploadError("حجم الملف أكبر من 5 ميجابايت.");
   const raw = Buffer.from(await file.arrayBuffer());
   const type = await fileTypeFromBuffer(raw);

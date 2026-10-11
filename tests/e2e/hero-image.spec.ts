@@ -62,7 +62,7 @@ test("صورة الواجهة: عريضة وطويلة تظهر كاملة بد�
 
     const visitor = await newPage(browser, project + "-v" + tag);
     await visitor.goto("/");
-    const img = visitor.locator(".hero-photo img");
+    const img = visitor.locator(".hero-frame img");
     await expect(img).toBeVisible();
     await expect.poll(() => img.evaluate((e: HTMLImageElement) => e.complete && e.naturalWidth > 0)).toBe(true);
     const r = await img.evaluate((e: HTMLImageElement) => ({ nw: e.naturalWidth, nh: e.naturalHeight, w: e.getBoundingClientRect().width, h: e.getBoundingClientRect().height,

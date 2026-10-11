@@ -88,7 +88,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
 
         {sp.renewed && o.status === "awaiting_payment" && (
           <div className="alert ok" role="status" data-testid="renewed-alert">
-            <div><b>تم إنشاء طلب التجديد بخصم 10%.</b> حوّل المبلغ وارفع الإيصال بالأسفل، ويبدأ اشتراكك الجديد بعد نهاية الحالي.</div>
+            <div><b>تم إنشاء طلب التجديد بخصم 10%.</b> تحويل المبلغ ثم رفع الإيصال بالأسفل، ويبدأ اشتراكك الجديد بعد نهاية الحالي.</div>
           </div>
         )}
 
@@ -129,14 +129,14 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                 <>
                   <p>طلبت خصم الطالب. أرسل إثبات الطالب (مثل البطاقة الجامعية) على واتساب، وبنأكد لك المبلغ النهائي هنا قبل التحويل.</p>
                   <a className="btn" href={waLink(s.contact.whatsapp, `مرحباً، هذا إثبات الطالب لطلبي رقم ${o.order_no}`)} target="_blank" rel="noopener">أرسل الإثبات على واتساب</a>
-                  <p className="small muted">لا تحوّل قبل ما يظهر المبلغ المؤكد في هذه الصفحة.</p>
+                  <p className="small muted">التحويل يكون بعد ظهور المبلغ المؤكد في هذه الصفحة.</p>
                 </>
               )}
 
               {o.status === "awaiting_payment" && amount != null && (
                 <>
                   {lastRejected?.review_note && <p className="alert err">لم يُعتمد الإيصال السابق: {lastRejected.review_note}</p>}
-                  <p>حوّل <b className="num" style={{ fontSize: 20 }}>{riyals(amount)}</b> على الحساب التالي، ثم ارفع صورة الإيصال.</p>
+                  <p>تحويل <b className="num" style={{ fontSize: 20 }}>{riyals(amount)}</b> على الحساب التالي، ثم رفع صورة الإيصال.</p>
                   <div className="bank">
                     <div><span className="muted small">اسم الحساب</span><div>{s.bank.accountName}</div></div>
                     <div><span className="muted small">البنك</span><div>{s.bank.bankName}</div></div>
@@ -161,7 +161,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
               {o.status === "completed" && <p>{review ? "شكراً لك! وصلنا تقييمك." : "انتهت الخدمة. يسعدنا تكتب تقييمك لتجربتك بالأسفل."}</p>}
               {o.status === "cancelled" && (
                 <div className="stack" style={{ ["--space" as string]: "6px" }} data-testid="cancel-reason">
-                  <p style={{ margin: 0 }}>هذا الطلب ملغي. إذا تحتاج مساعدة تواصل معنا.</p>
+                  <p style={{ margin: 0 }}>هذا الطلب ملغي. للمساعدة: التواصل عبر واتساب.</p>
                   {cancelNote && <p className="alert info" style={{ margin: 0 }}><b>ملاحظة المدربة:</b> {cancelNote}</p>}
                 </div>
               )}

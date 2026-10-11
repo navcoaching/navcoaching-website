@@ -75,7 +75,7 @@ export default function CalculatorForm({ compact = false }: { compact?: boolean 
     <>
       <form className="card form calc-form" onSubmit={onSubmit} noValidate aria-label="حاسبة توازن الطاقة">
         <h2 style={{ fontSize: 22 }}>التغيّر في جسمك</h2>
-        <p className="small muted" style={{ marginTop: -8 }}>قارن بين قياسين (مثل فحصي InBody) بينهما 4 أسابيع أو أكثر، واكتب الفرق.</p>
+        <p className="small muted" style={{ marginTop: -8 }}>مقارنة قياسين (مثل فحصي InBody) بينهما 4 أسابيع أو أكثر، وكتابة الفرق.</p>
         <div className="grid g2">
           {change("lean", "leanDir", "leanChange", "الكتلة الخالية من الدهون", "في InBody: Lean Body Mass أو «الكتلة الخالية من الدهون» (= الوزن − كتلة الدهون).")}
           {change("fat", "fatDir", "fatChange", "كتلة الدهون", "في InBody: Body Fat Mass أو «كتلة الدهون» بالكيلو، وليس النسبة المئوية.")}
@@ -106,7 +106,7 @@ export default function CalculatorForm({ compact = false }: { compact?: boolean 
           </div>
           {kcalField("restKcal", "سعرات يوم الراحة")}
         </div>
-        <button type="submit" className="btn btn-block">احسب توازن الطاقة</button>
+        <button type="submit" className="btn btn-block">حساب توازن الطاقة</button>
       </form>
 
       {result && (
@@ -135,8 +135,8 @@ export default function CalculatorForm({ compact = false }: { compact?: boolean 
             </ul>
           </details>
           <div className="alert info calc-cta">
-            <span>تبي خطة تدريب وتغذية مبنية على أرقامك مع متابعة أسبوعية؟</span>
-            <Link href="/programs" className="btn btn-sm">شوف البرامج</Link>
+            <span>خطة تدريب وتغذية مبنية على أرقامك مع متابعة أسبوعية؟</span>
+            <Link href="/programs" className="btn btn-sm">البرامج</Link>
           </div>
         </section>
       )}

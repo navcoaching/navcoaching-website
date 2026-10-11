@@ -24,7 +24,7 @@ export default async function Checkout({ params }: { params: Promise<{ sku: stri
         <div className="wrap">
           <span className="eyebrow">استبيان المتدرب</span>
           <h1 style={{ fontSize: "clamp(28px,5vw,44px)", marginTop: 12 }}>خلّني أعرفك عشان أصمم برنامجك</h1>
-          <p className="lead">5 خطوات قصيرة، وبعدها يظهر لك رقم طلبك وبيانات الدفع. إجاباتك تُحفظ على جهازك أثناء التعبئة (عدا البيانات الصحية والقياسات).</p>
+          <p className="lead">5 خطوات قصيرة، وبعدها يظهر رقم الطلب وبيانات الدفع. إجاباتك تُحفظ على جهازك أثناء التعبئة (عدا البيانات الصحية والقياسات).</p>
         </div>
       </section>
       <section className="section tight">
@@ -34,7 +34,7 @@ export default async function Checkout({ params }: { params: Promise<{ sku: stri
             <span className="eyebrow">طلبك</span>
             <h2 style={{ fontSize: 20 }}>{found.product.name}</h2>
             <p>{found.offer.label} · <b className="num">{riyals(found.offer.price_halalas)}</b></p>
-            <p className="small muted">تقدر تغيّر الباقة من الخطوة الأولى. الدفع بتحويل بنكي بعد إرسال الاستبيان، ولا يُعتبر الطلب مدفوعاً إلا بعد التحقق من وصول المبلغ.</p>
+            <p className="small muted">تغيير الباقة متاح من الخطوة الأولى. الدفع بتحويل بنكي بعد إرسال الاستبيان، ولا يُعتبر الطلب مدفوعاً إلا بعد التحقق من وصول المبلغ.</p>
             <p className="small muted">مسجّل الدخول بـ <bdi dir="ltr">{user.email}</bdi></p>
           </aside>
         </div>

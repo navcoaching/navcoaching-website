@@ -111,7 +111,7 @@ export default function PushCard({ publicKey, intro }: { publicKey: string; intr
         <p className="small" style={{ margin: 0 }}>على الآيفون تشتغل الإشعارات بعد إضافة التطبيق للشاشة الرئيسية (iOS 16.4 أو أحدث). <Link href="/install">طريقة الإضافة ←</Link></p>
       )}
       {state === "denied" && <p className="small" style={{ margin: 0 }}>الإشعارات مرفوضة لهذا الموقع. فعّلها من إعدادات الجهاز أو المتصفح، ثم ارجع هنا.</p>}
-      {state === "off" && <button type="button" className="btn btn-sm" onClick={enable} disabled={busy}>فعّل الإشعارات على هذا الجهاز</button>}
+      {state === "off" && <button type="button" className="btn btn-sm" onClick={enable} disabled={busy}>تفعيل الإشعارات على هذا الجهاز</button>}
       {state === "on" && (
         <div className="row" style={{ gap: 8 }}>
           <span className="status ok">مفعّلة على هذا الجهاز</span>

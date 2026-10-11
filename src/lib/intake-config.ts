@@ -12,7 +12,7 @@ export const BUILTIN_QUESTIONS: BuiltinQuestion[] = [
   { key: "gender", label: "الجنس", step: 1 }, { key: "age", label: "العمر", step: 1 },
   { key: "city", label: "المدينة (اختياري)", step: 1, hideable: true },
   { key: "goal", label: "هدفك الرئيسي", step: 2 }, { key: "level", label: "مستواك", step: 2 }, { key: "place", label: "مكان التمرين", step: 2 },
-  { key: "equip", label: "الأدوات المتوفرة في البيت (اختر كل ما ينطبق)", step: 2 },
+  { key: "equip", label: "الأدوات المتوفرة في البيت (كل ما ينطبق)", step: 2 },
   { key: "days", label: "أيام التمرين بالأسبوع", step: 2 }, { key: "duration", label: "وقت التمرين باليوم", step: 2 },
   { key: "injury", label: "هل عندك إصابة حالية أو ألم يحد من التمرين؟", step: 3 },
   { key: "condition", label: "هل عندك حالة صحية أو تعليمات طبية قد تؤثر على التمرين؟", step: 3 },
@@ -30,7 +30,7 @@ export const BUILTIN_QUESTIONS: BuiltinQuestion[] = [
   { key: "prev_why", label: "ليه ما استمريت معه؟ (اختياري)", step: 5 },
   { key: "source", label: "من وين سمعت عني؟", step: 5, hideable: true },
   { key: "media", label: "هل تسمح بعرض نتيجتك في السوشل ميديا؟", step: 5 },
-  { key: "notes", label: "أي شي تبي تضيفه؟ (اختياري)", step: 5, hideable: true },
+  { key: "notes", label: "إضافات أخرى (اختياري)", step: 5, hideable: true },
 ];
 const BUILTIN = new Map(BUILTIN_QUESTIONS.map((q) => [q.key, q]));
 
@@ -95,7 +95,7 @@ export function validateCustomAnswers(cfg: IntakeConfig, get: Getter): { answers
     if (!raw) { if (q.required) errors[name] = "هذا السؤال مطلوب."; continue; }
     const max = q.type === "long" ? LIMITS.long : LIMITS.text;
     if (q.type === "choice" && !q.options.includes(raw)) { errors[name] = "اختيار غير صالح."; continue; }
-    if (q.type === "yesno" && !["نعم", "لا"].includes(raw)) { errors[name] = "اختر نعم أو لا."; continue; }
+    if (q.type === "yesno" && !["نعم", "لا"].includes(raw)) { errors[name] = "الإجابة بنعم أو لا مطلوبة."; continue; }
     if ((q.type === "text" || q.type === "long") && raw.length > max) { errors[name] = `النص أطول من ${max} حرفاً.`; continue; }
     answers.push({ id: q.id, label: q.label, value: raw });
   }

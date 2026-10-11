@@ -39,10 +39,10 @@ export default async function Faq() {
                 <div><span className="muted small">الآيبان</span><div className="iban"><bdi>{s.bank.iban}</bdi></div></div>
                 <CopyButton value={s.bank.iban} label="نسخ الآيبان" />
               </div>
-              <p className="small muted" style={{ marginTop: 10 }}>حوّل فقط بعد إرسال الاستبيان وظهور رقم طلبك والمبلغ.</p>
+              <p className="small muted" style={{ marginTop: 10 }}>التحويل يكون بعد إرسال الاستبيان فقط، وظهور رقم الطلب والمبلغ.</p>
             </div>
             <div className="card flat">
-              <p>ما لقيت جوابك؟</p>
+              <p>لم يظهر الجواب؟</p>
               <a className="btn btn-block" style={{ marginTop: 10 }} href={waLink(s.contact.whatsapp)} target="_blank" rel="noopener">راسلنا على واتساب</a>
               <Link className="btn btn-ghost btn-block" style={{ marginTop: 8 }} href="/policies">السياسات الكاملة</Link>
             </div>

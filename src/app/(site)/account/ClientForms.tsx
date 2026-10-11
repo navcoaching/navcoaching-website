@@ -61,7 +61,7 @@ export function CancelForm({ orderNo }: { orderNo: string }) {
   return (
     <form onSubmit={onSubmit} className="stack">
       <input type="hidden" name="order_no" value={orderNo} />
-      <p className="small">متأكد تبي تلغي الطلب؟ لا يمكن التراجع.</p>
+      <p className="small">تأكيد إلغاء الطلب؟ لا يمكن التراجع.</p>
       <FormMessage state={state} />
       <div className="row">
         <Submit pending={pending} className="btn btn-danger btn-sm">نعم، ألغِ الطلب</Submit>
@@ -124,7 +124,7 @@ export function ReviewForm({ orderNo, name }: { orderNo: string; name: string })
       </fieldset>
       <label className="check">
         <input type="checkbox" name="consent" />
-        <span>أوافق على نشر تقييمي في موقع Nav Coaching بعد المراجعة (اختياري ومنفصل — تقدر تسحب موافقتك لاحقاً).</span>
+        <span>أوافق على نشر تقييمي في موقع Nav Coaching بعد المراجعة (اختياري ومنفصل، وسحب الموافقة لاحقاً متاح).</span>
       </label>
       <FormMessage state={state} />
       <Submit pending={pending} className="btn">أرسل التقييم</Submit>

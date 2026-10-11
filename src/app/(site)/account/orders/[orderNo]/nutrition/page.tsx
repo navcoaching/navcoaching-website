@@ -115,8 +115,8 @@ export default async function NutritionPage({ params, searchParams }: { params: 
             )}
 
             {tab === "plans" && plans.length > 1 && (
-              <nav className="plan-picker" aria-label="اختر جدولك الغذائي" data-testid="plan-picker">
-                <p className="small muted" style={{ margin: 0 }}>عندك {plans.length} جداول، اختر اللي يناسبك:</p>
+              <nav className="plan-picker" aria-label="جداولك الغذائية" data-testid="plan-picker">
+                <p className="small muted" style={{ margin: 0 }}>عندك {plans.length} جداول، والاختيار حسب المناسب:</p>
                 <div className="plan-options">
                   {plans.map((p) => (
                     <Link key={p.id} href={`${base}?tab=plans&plan=${p.id}`} className={`card plan-option${p.id === shownPlan?.id ? " on" : ""}`}

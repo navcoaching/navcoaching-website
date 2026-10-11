@@ -42,8 +42,8 @@ export async function sendTestPushAction(): Promise<{ ok: boolean; error?: strin
     title: "Nav Coaching", body: "تمام! إشعارات الجوال شغّالة على هذا الجهاز ✅", url: "/account", tag: "test",
   }));
   if (r.sent) return { ok: true, sent: r.sent };
-  if (!r.failed && !r.removed) return { ok: false, error: "ما لقينا اشتراك لهذا الجهاز. اضغط «إيقاف» ثم «فعّل الإشعارات» من جديد." };
-  if (r.removed && !r.failed) return { ok: false, error: "اشتراك هذا الجهاز انتهى. اضغط «إيقاف» ثم «فعّل الإشعارات» من جديد." };
+  if (!r.failed && !r.removed) return { ok: false, error: "ما لقينا اشتراك لهذا الجهاز. الحل: «إيقاف» ثم «تفعيل الإشعارات» من جديد." };
+  if (r.removed && !r.failed) return { ok: false, error: "اشتراك هذا الجهاز انتهى. الحل: «إيقاف» ثم «تفعيل الإشعارات» من جديد." };
   return { ok: false, error: `رفض خادم الإشعارات الإرسال (${r.errors[0] ?? "بدون تفاصيل"}). أرسل هذي الرسالة للدعم.` };
 }
 

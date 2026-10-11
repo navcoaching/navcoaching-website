@@ -45,22 +45,22 @@ export const intakeSchema = z
     idempotency_key: z.string().min(16).max(80),
     sku: z.string().min(1).max(40),
     name: z.string().trim().min(2, "اكتب اسمك (حرفين على الأقل).").max(80),
-    cc: oneOf(OPT.cc, "اختر رمز الدولة"),
+    cc: oneOf(OPT.cc, "اختيار رمز الدولة مطلوب"),
     phone: z.string().trim().max(20),
-    gender: oneOf(OPT.gender, "اختر الجنس"),
+    gender: oneOf(OPT.gender, "اختيار الجنس مطلوب"),
     age: z.string().trim().regex(/^\d{1,3}$/, `اكتب عمرك رقماً صحيحاً بين ${AGE_MIN} و ${AGE_MAX}.`)
       .transform(Number).refine((n) => n >= AGE_MIN && n <= AGE_MAX, `اكتب عمرك رقماً صحيحاً بين ${AGE_MIN} و ${AGE_MAX}.`),
     guardian_ok: z.enum(["", "on"]).optional().default(""),
     city: optionalOneOf(OPT.city),
     student: z.enum(["", "نعم"]).optional().default(""),
-    goal: oneOf(OPT.goal, "اختر هدفاً"),
-    level: oneOf(OPT.level, "اختر مستواك"),
-    place: oneOf(OPT.place, "اختر مكان التمرين"),
+    goal: oneOf(OPT.goal, "اختيار الهدف مطلوب"),
+    level: oneOf(OPT.level, "اختيار المستوى مطلوب"),
+    place: oneOf(OPT.place, "اختيار مكان التمرين مطلوب"),
     equip: z.array(oneOf(OPT.equip, "اختيار غير صالح")).max(OPT.equip.length).default([]),
-    days: oneOf(OPT.days, "اختر عدد الأيام"),
-    duration: oneOf(OPT.duration, "اختر الوقت المتاح"),
-    injury: oneOf(OPT.yesno, "اختر نعم أو لا"),
-    condition: oneOf(OPT.yesno, "اختر نعم أو لا"),
+    days: oneOf(OPT.days, "اختيار عدد الأيام مطلوب"),
+    duration: oneOf(OPT.duration, "اختيار الوقت المتاح مطلوب"),
+    injury: oneOf(OPT.yesno, "الإجابة بنعم أو لا مطلوبة"),
+    condition: oneOf(OPT.yesno, "الإجابة بنعم أو لا مطلوبة"),
     pregnancy: optionalOneOf(OPT.pregnancy),
     health_notes: text(600),
     health_ack: z.literal("on", { message: "نحتاج موافقتك على هذه النقطة للمتابعة." }),
@@ -76,9 +76,9 @@ export const intakeSchema = z
     prev_coach: optionalOneOf(OPT.yesno),
     prev_why: text(300),
     source: optionalOneOf(OPT.source),
-    media: oneOf(OPT.media, "اختر إجابة"),
+    media: oneOf(OPT.media, "اختيار إجابة مطلوب"),
     notes: text(800),
-    start_mode: z.enum(["asap", "date"], { message: "اختر متى تبي تبدأ." }).optional().default("asap"),
+    start_mode: z.enum(["asap", "date"], { message: "موعد البداية مطلوب." }).optional().default("asap"),
     start_date: z.string().trim().max(10).optional().default(""),
     consent_terms: z.literal("on", { message: "نحتاج موافقتك للإرسال." }),
     consent_wa: z.literal("on", { message: "التواصل يتم على واتساب، فنحتاج موافقتك." }),
@@ -86,11 +86,11 @@ export const intakeSchema = z
   })
   .superRefine((v, ctx) => {
     if (v.start_mode === "date" && !validStartPref(v.start_date))
-      ctx.addIssue({ code: "custom", path: ["start_date"], message: "اختر تاريخاً من بكرة إلى شهر من اليوم." });
+      ctx.addIssue({ code: "custom", path: ["start_date"], message: "التاريخ يكون من بكرة إلى شهر من اليوم." });
     if (v.age < 18 && v.guardian_ok !== "on")
       ctx.addIssue({ code: "custom", path: ["guardian_ok"], message: "للأعمار أقل من 18 نحتاج تأكيد موافقة ولي الأمر." });
     if (NUTRITION_SKUS.includes(v.sku) && !v.calories)
-      ctx.addIssue({ code: "custom", path: ["calories"], message: "اختر خبرتك — باقتك تشمل تغذية." });
+      ctx.addIssue({ code: "custom", path: ["calories"], message: "الخبرة في حساب السعرات مطلوبة، لأن باقتك تشمل تغذية." });
     const digits = v.phone.replace(/[^\d]/g, "").replace(/^0+/, "");
     if (v.cc === "+966" ? !/^5\d{8}$/.test(digits) : !/^\d{6,14}$/.test(digits))
       ctx.addIssue({ code: "custom", path: ["phone"], message: v.cc === "+966" ? "الرقم السعودي يبدأ بـ 5 ويتكون من 9 أرقام، مثل 512345678." : "اكتب رقماً صحيحاً." });

@@ -83,7 +83,7 @@ export default function ProgressView({ data, body, lifts }: {
             </table>
           </div>
         )}
-        {prs.length > 0 && <p className="small muted" style={{ margin: 0 }}>1RM تقديري = أعلى وزن تقدر تشيله لتكرار واحد، محسوب من أفضل جولة بمعادلة Epley: الوزن × (1 + التكرارات ÷ 30). أدق مع 10 تكرارات أو أقل، ولا يعني أنك تختبره فعلياً.</p>}
+        {prs.length > 0 && <p className="small muted" style={{ margin: 0 }}>1RM تقديري = أعلى وزن ممكن لتكرار واحد، محسوب من أفضل جولة بمعادلة Epley: الوزن × (1 + التكرارات ÷ 30). أدق مع 10 تكرارات أو أقل، ولا يلزم اختباره فعلياً.</p>}
       </section>
     </div>
   );

@@ -12,8 +12,7 @@ export default function Footer({ s }: { s: Settings }) {
           <div className="foot-grid">
             <div className="stack" style={{ ["--space" as string]: "14px" }}>
               <Image src="/brand/logo-white.webp" alt="Nav Coaching" width={150} height={34} />
-              <p className="foot-tag" lang="en" dir="ltr">{s.hero.tagline || "Where Passion Meets Quality"}</p>
-              <p>برامج تدريب وتغذية مخصصة لأهدافك، مع متابعة أسبوعية.</p>
+              <p>برامج تدريب وتغذية مخصصة حسب الهدف، مع متابعة أسبوعية.</p>
               <p className="small">ساعات العمل والرد: {s.response_time}</p>
               <div className="social" aria-label="حساباتنا">
                 <a href={waLink(s.contact.whatsapp)} target="_blank" rel="noopener" aria-label="واتساب" title="واتساب" className="wa"><IconWhatsApp size={24} /></a>
@@ -28,6 +27,15 @@ export default function Footer({ s }: { s: Settings }) {
                 <li><Link href="/reviews">تقييمات المتدربين</Link></li>
                 <li><Link href="/faq">الأسئلة الشائعة</Link></li>
                 <li><Link href="/account">حسابي وطلباتي</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h2>أدوات مجانية</h2>
+              <ul>
+                <li><Link href="/calculator">حاسبة السعرات</Link></li>
+                <li><Link href="/free-plans">الجداول المجانية</Link></li>
+                {s.guide_video?.url && <li><Link href="/video-guide">فيديو شرح استخدام الموقع</Link></li>}
+                <li><Link href="/program-preview">نظرة داخل البرنامج</Link></li>
               </ul>
             </div>
             <div>

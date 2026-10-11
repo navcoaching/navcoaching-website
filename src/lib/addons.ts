@@ -47,7 +47,7 @@ export async function createAddonOrder(user: { id: string; name: string; email: 
     try { payload = JSON.parse(rawPayload); } catch { return { error: "تعذّرت قراءة الطلب. حاول مرة ثانية." }; }
     if (!payload || typeof payload !== "object" || Array.isArray(payload) || rawPayload.length > 150_000) return { error: "محتوى الطلب كبير جداً أو غير صالح." };
   }
-  if (offer.kind === "program_review" && !payload) return { error: "اختر البرنامج اللي تبي المدربة تراجعه." };
+  if (offer.kind === "program_review" && !payload) return { error: "اختيار البرنامج المطلوب مراجعته مطلوب." };
   let video: Awaited<ReturnType<typeof cleanUpload>> | null = null;
   if (offer.kind === "form_check") {
     try { video = await cleanUpload(fd.get("video") as File | null, "video"); }

@@ -21,7 +21,7 @@ export default async function FreePlans() {
           <span className="eyebrow">الجداول المجانية</span>
           <h1 style={{ fontSize: "clamp(30px,5vw,50px)", marginTop: 12 }}>جداول تدريب مجانية</h1>
           <p className="lead" style={{ maxWidth: 720 }}>
-            اكتشف جداول تدريب مجانية تساعدك على تنظيم تمارينك والبدء بخطوات واضحة تناسب هدفك. أنشئ حسابك واطلب الجدول المناسب، ثم حمّل ملف PDF من لوحة التحكم الخاصة بك.
+            جداول تدريب مجانية تساعد على تنظيم التمارين والبدء بخطوات واضحة حسب الهدف. إنشاء حساب وطلب الجدول المناسب، ثم تحميل ملف PDF من لوحة التحكم في الحساب.
           </p>
         </div>
       </section>
@@ -29,8 +29,8 @@ export default async function FreePlans() {
         <div className="wrap stack" style={{ ["--space" as string]: "22px" }}>
           {plans.length === 0 ? (
             <div className="card stack">
-              <p>ما فيه جداول مجانية منشورة حالياً. تابعنا، وبنضيفها قريباً.</p>
-              <Link href="/programs" className="btn btn-ghost" style={{ width: "fit-content" }}>تصفح البرامج</Link>
+              <p>ما فيه جداول مجانية منشورة حالياً. تابعونا، وبنضيفها قريباً.</p>
+              <Link href="/programs" className="btn btn-ghost" style={{ width: "fit-content" }}>تصفّح البرامج</Link>
             </div>
           ) : (
             <ul className="fp-grid" data-testid="free-plans">
@@ -48,7 +48,7 @@ export default async function FreePlans() {
             </ul>
           )}
           <p className="small muted">
-            الجداول إرشادية وعامة، وقد لا تناسب كل شخص. إذا عندك إصابة أو حالة صحية استشر مختصاً قبل البدء. وإذا تبي برنامجاً مصمماً لك مع متابعة، شوف <Link href="/programs">البرامج</Link>.
+            الجداول إرشادية وعامة، وقد لا تناسب كل شخص. في حال وجود إصابة أو حالة صحية يُنصح باستشارة مختص قبل البدء. وللبرنامج المصمم حسب الهدف مع متابعة: <Link href="/programs">البرامج</Link>.
           </p>
         </div>
       </section>

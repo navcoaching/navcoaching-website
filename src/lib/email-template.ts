@@ -72,15 +72,15 @@ export const PAYMENT_LABEL: Record<string, string> = { bank_transfer: "تحوي�
 export function statusCopy(status: string, category: string): { headline: string; message: string } {
   switch (status) {
     case "awaiting_quote": return { headline: "وصلنا طلبك 🙌", message: "طلبت خصم الطالب. أرسل إثبات الطالب على واتساب، ونأكد لك المبلغ النهائي في حسابك قبل التحويل." };
-    case "awaiting_payment": return { headline: "وصلنا طلبك 🙌", message: "خطوة وحدة وتبدأ رحلتك: حوّل المبلغ على الحساب الموضح في صفحة طلبك، ثم ارفع صورة الإيصال." };
+    case "awaiting_payment": return { headline: "وصلنا طلبك 🙌", message: "خطوة وحدة وتبدأ رحلتك: تحويل المبلغ على الحساب الموضح في صفحة طلبك، ثم رفع صورة الإيصال." };
     case "payment_review": return { headline: "وصلنا إيصالك 🧾", message: "نتحقق الآن من وصول المبلغ، ونحدّث حالة طلبك بعد التأكد مباشرة." };
     case "preparing": return { headline: "نبشرك بتأكيد الطلب 😍", message: `ونعمل في هذه اللحظة على ${category === "consult" ? "تنسيق موعد جلستك" : "تجهيز برنامجك"}. سنوافيك بتحديث حالة الطلب قريباً. يومك سعيد ❤️` };
-    case "active": return { headline: "برنامجك جاهز 💪", message: "برنامجك صار نشط. ادخل حسابك وابدأ: برنامج التمرين، التغذية، والمراجعة الأسبوعية كلها هناك." };
+    case "active": return { headline: "برنامجك جاهز 💪", message: "برنامجك صار نشط. برنامج التمرين، والتغذية، والمراجعة الأسبوعية كلها في حسابك." };
     case "delivered": return { headline: "ملفاتك جاهزة 🎉", message: "ملفات برنامجك متاحة الآن في حسابك، وهي لك مدى الحياة." };
     case "completed": return category === "follow"
       ? { headline: "انتهى برنامجك 🌱", message: "ولله الحمد انتهى البرنامج، لكن لم تنتهِ رحلتك في التطور النفسي والجسدي. يسعدنا نسمع رأيك من حسابك." }
       : { headline: "شكراً لك 🌱", message: "اكتمل طلبك. يسعدنا نسمع رأيك من حسابك." };
-    case "cancelled": return { headline: "تم إلغاء طلبك", message: "إذا تحتاج مساعدة أو كان الإلغاء بالخطأ، تواصل معنا على واتساب." };
+    case "cancelled": return { headline: "تم إلغاء طلبك", message: "للمساعدة أو إذا كان الإلغاء بالخطأ: التواصل عبر واتساب." };
     default: return { headline: "تحديث على طلبك", message: "" };
   }
 }
@@ -146,7 +146,7 @@ function footer(b: EmailBrand) {
     <tr><td align="center" style="font:400 14px/1.8 ${FONT};color:${C.muted};padding:6px 10px">
       جميع الحقوق محفوظة لدى ${esc(b.legalName || "Nav Coaching")} | Nav Coaching${b.cr ? `<br>السجل التجاري: <span dir="ltr">${esc(b.cr)}</span>` : ""}
     </td></tr>
-    ${icons ? `<tr><td align="center" style="font:400 14px/1.8 ${FONT};color:${C.muted};padding:10px 10px 4px">لتبقى على اطلاع بجديدنا، تابعنا على منصات التواصل الاجتماعي</td></tr>
+    ${icons ? `<tr><td align="center" style="font:400 14px/1.8 ${FONT};color:${C.muted};padding:10px 10px 4px">لمتابعة جديدنا، تابعونا على منصات التواصل الاجتماعي</td></tr>
     <tr><td align="center" style="padding:8px 0 4px">${icons}</td></tr>` : ""}
   </table>`;
 }

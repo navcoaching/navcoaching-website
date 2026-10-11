@@ -441,12 +441,12 @@ export async function logFoodAction(_: ActionState, fd: FormData): Promise<Actio
   const kind = kindOf(s(fd, "kind"));
   const meal = id(fd, "meal");
   if (!ORDER_NO.test(orderNo) || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return { error: T_GENERIC };
-  if (!kind) return { error: "اختر الوجبة (فطور، غداء، عشاء، سناك)." };
+  if (!kind) return { error: "اختيار الوجبة مطلوب (فطور، غداء، عشاء، سناك)." };
   try {
     let name: string | null = null, p = 0, c = 0, f = 0;
     if (!meal) {
       name = s(fd, "name");
-      if (!name) throw bad("اكتب اسم الأكلة أو اختر وجبة من جدولك.");
+      if (!name) throw bad("المطلوب اسم الأكلة أو وجبة من جدولك.");
       if (name.length > 160) throw bad("اسم الأكلة طويل.");
       p = macro(fd, "protein", "البروتين", 500); c = macro(fd, "carbs", "الكارب", 500); f = macro(fd, "fat", "الدهون", 300);
     }
@@ -481,7 +481,7 @@ export async function logFoodGramsAction(_: ActionState, fd: FormData): Promise<
   const grams = toNum(s(fd, "grams"));
   const source = s(fd, "source");
   if (!ORDER_NO.test(orderNo) || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return { error: T_GENERIC };
-  if (!kind) return { error: "اختر الوجبة (فطور، غداء، عشاء، سناك)." };
+  if (!kind) return { error: "اختيار الوجبة مطلوب (فطور، غداء، عشاء، سناك)." };
   if (grams == null || !Number.isFinite(grams) || grams < 1 || grams > 3000) return { error: "اكتب الكمية بالغرام (من 1 إلى 3000)." };
   try {
     if (source === "fatsecret") {
@@ -495,12 +495,12 @@ export async function logFoodGramsAction(_: ActionState, fd: FormData): Promise<
         [orderNo, date, kind, name, grams, f.protein_100, f.carbs_100, f.fat_100]));
     } else {
       const food = id(fd, "food");
-      if (!food) throw bad("اختر الصنف من نتائج البحث.");
+      if (!food) throw bad("اختيار الصنف من نتائج البحث مطلوب.");
       await withUser(u.id, (tx) => tx.query("SELECT app.log_food_grams($1,$2,$3,$4,$5)", [orderNo, date, kind, food, grams]));
     }
   } catch (err) {
     const m = (err as Error).message;
-    if (m.startsWith("fatsecret")) { console.error("[fatsecret]", m); return { error: "تعذّر الاتصال بقاعدة FatSecret الآن. جرّب لاحقاً أو اختر من قاعدة الموقع." }; }
+    if (m.startsWith("fatsecret")) { console.error("[fatsecret]", m); return { error: "تعذّر الاتصال بقاعدة FatSecret الآن. المحاولة لاحقاً أو الاختيار من قاعدة الموقع متاح." }; }
     return { error: m.startsWith("user:") ? m.slice(5) : dbErrorMessage(err) ?? T_GENERIC };
   }
   revalidatePath(`/account/orders/${orderNo}/nutrition`);

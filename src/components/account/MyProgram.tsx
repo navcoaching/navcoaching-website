@@ -41,7 +41,7 @@ export function ExpiryAlert({ o, soonDays, whatsapp, renewal }: { o: O; soonDays
         <div className="stack" style={{ ["--space" as string]: "8px" }}>
           <b>{renewal.status === "awaiting_payment" ? "طلب التجديد بانتظار الدفع." : "طلب التجديد قيد التأكيد."}</b>
           <Link className="btn btn-sm" style={{ width: "fit-content" }} href={`/account/orders/${renewal.orderNo}`}>
-            {renewal.status === "awaiting_payment" ? "ادفع وارفع الإيصال" : "تفاصيل طلب التجديد"}</Link>
+            {renewal.status === "awaiting_payment" ? "الدفع ورفع الإيصال" : "تفاصيل طلب التجديد"}</Link>
         </div>
       </div>
     );

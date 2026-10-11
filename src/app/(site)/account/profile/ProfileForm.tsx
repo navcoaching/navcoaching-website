@@ -17,7 +17,7 @@ export default function ProfileForm({ initial }: { initial: V }) {
   const select = (name: string, label: string, opts: readonly string[], required = false, onChange?: (v: string) => void) => (
     <div className="field"><label htmlFor={`pf-${name}`}>{label}{required && <> <span className="req">*</span></>}</label>
       <select id={`pf-${name}`} name={name} defaultValue={s(name)} required={required} onChange={(e) => onChange?.(e.target.value)}>
-        <option value="">اختر</option>{opts.map((o) => <option key={o} value={o}>{o}</option>)}
+        <option value="">اختيار</option>{opts.map((o) => <option key={o} value={o}>{o}</option>)}
       </select>{err(name)}</div>
   );
   const bodyfat = gender === "ذكر" ? OPT.bodyfat_male : OPT.bodyfat_female;
@@ -35,7 +35,7 @@ export default function ProfileForm({ initial }: { initial: V }) {
           <input id="pf-height" name="height" type="number" inputMode="numeric" min={120} max={230} step="0.1" required defaultValue={s("height")} />{err("height")}</div>
         {select("city", "المدينة", OPT.city)}
         <div className="field"><label htmlFor="pf-bodyfat">نسبة الدهون (إن عرفتها)</label>
-          <select id="pf-bodyfat" name="bodyfat" defaultValue={s("bodyfat")}><option value="">اختر</option>{bodyfat.map((o) => <option key={o} value={o}>{o}</option>)}</select></div>
+          <select id="pf-bodyfat" name="bodyfat" defaultValue={s("bodyfat")}><option value="">اختيار</option>{bodyfat.map((o) => <option key={o} value={o}>{o}</option>)}</select></div>
       </div>
 
       <h2 style={{ fontSize: 18 }}>الهدف والتمرين</h2>

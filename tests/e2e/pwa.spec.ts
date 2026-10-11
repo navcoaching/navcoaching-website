@@ -59,7 +59,7 @@ test("إشعارات الجوال: التفعيل، التجربة، وصول ت
   await page.goto("/account");
   const card = page.getByTestId("push-card");
   await expect(card).toHaveAttribute("data-state", "off");
-  await card.getByRole("button", { name: "فعّل الإشعارات على هذا الجهاز" }).click();
+  await card.getByRole("button", { name: "تفعيل الإشعارات على هذا الجهاز" }).click();
   await expect(card).toContainText("تم تفعيل الإشعارات");
   await expect(card).toHaveAttribute("data-state", "on");
   const subs = (await db.query(`SELECT device FROM push_subscriptions WHERE user_id = $1`, [u.id])).rows;

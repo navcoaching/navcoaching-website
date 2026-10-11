@@ -43,7 +43,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
           <div>
             <span className="eyebrow">حسابي</span>
             <h1 style={{ fontSize: "clamp(26px,4vw,36px)", marginTop: 8 }}>أهلاً {user.name.includes("@") ? "" : user.name.split(" ")[0]} 👋</h1>
-            <p className="muted" style={{ marginTop: 4 }}>{inProgram.length ? "برنامجك وتقدمك وكل ما تحتاجه في مكان واحد." : "من هنا تتابع طلباتك وتجهّز حسابك."}</p>
+            <p className="muted" style={{ marginTop: 4 }}>{inProgram.length ? "برنامجك وتقدمك وكل المطلوب في مكان واحد." : "متابعة الطلبات وتجهيز الحساب من هنا."}</p>
             <p className="small muted account-who" data-testid="account-who">داخل بـ <bdi dir="ltr">{user.email}</bdi> · <SignOut label="لست أنت؟ تسجيل الخروج" className="link-btn" /></p>
           </div>
           {prefsCard}
@@ -79,7 +79,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
           {orders.length === 0 ? (
             <div className="card stack">
               <p>ما عندك طلبات حتى الآن.</p>
-              <Link href="/programs" className="btn" style={{ width: "fit-content" }}>تصفح البرامج</Link>
+              <Link href="/programs" className="btn" style={{ width: "fit-content" }}>تصفّح البرامج</Link>
             </div>
           ) : (
             <>
@@ -133,7 +133,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
             <span className="small muted">خطوات مصوّرة لـ iPhone وأندرويد</span>
           </Link>
           <div className="card flat stack">
-            <p className="small">تحتاج مساعدة؟ راسلنا على واتساب واذكر رقم طلبك.</p>
+            <p className="small">للمساعدة: التواصل عبر واتساب مع ذكر رقم الطلب.</p>
             <SignOut />
           </div>
           {prefs.saved && (

@@ -1,4 +1,4 @@
-// مقطع شرح استخدام الموقع بالكامل: قسم كبير في الصفحة الرئيسية، يُضبط من «المحتوى والإعدادات» (قاعدة nav_e2e).
+// مقطع شرح استخدام الموقع بالكامل: صفحة مستقلة /video-guide ورابطها في التذييل، يُضبط من «المحتوى والإعدادات» (قاعدة nav_e2e).
 import { test, expect, type Page, type Browser } from "@playwright/test";
 import pg from "pg";
 
@@ -34,7 +34,7 @@ async function noHorizontalScroll(page: Page) {
 }
 
 
-test("مقطع شرح الموقع بالكامل: قسم في الصفحة الرئيسية يظهر بعد إضافة الرابط ويختفي بمسحه", async ({ browser }, info) => {
+test("مقطع شرح الموقع بالكامل: صفحة مستقلة ورابط في التذييل يظهر بعد إضافة الرابط ويختفي بمسحه", async ({ browser }, info) => {
   const project = info.project.name;
   const coachEmail = `coach-gv-${project}@e2e.test`;
   const coach = await newPage(browser, project + "-c");
@@ -54,8 +54,11 @@ test("مقطع شرح الموقع بالكامل: قسم في الصفحة ال
 
   const visitor = await newPage(browser, project + "-v");
   await visitor.goto("/");
+  await expect(visitor.getByTestId("guide-video")).toHaveCount(0);
+  await visitor.locator(".site-footer").getByRole("link", { name: "فيديو شرح استخدام الموقع" }).click();
+  await expect(visitor).toHaveURL(/\/video-guide$/);
   const sec = visitor.getByTestId("guide-video");
-  await expect(sec.getByRole("heading", { name: "شرح الموقع كامل" })).toBeVisible();
+  await expect(visitor.getByRole("heading", { name: "شرح الموقع كامل" })).toBeVisible();
   // إطار عرضي 16:9 يملأ عرض القسم
   const frame = sec.locator(".short-frame.wide");
   const bb = (await frame.boundingBox())!;
@@ -71,5 +74,7 @@ test("مقطع شرح الموقع بالكامل: قسم في الصفحة ال
   await box.getByRole("button", { name: "حفظ" }).click();
   await expect(box.getByText(/تم/)).toBeVisible();
   await visitor.goto("/");
-  await expect(visitor.getByTestId("guide-video")).toHaveCount(0);
+  await expect(visitor.locator(".site-footer").getByRole("link", { name: "فيديو شرح استخدام الموقع" })).toHaveCount(0);
+  await visitor.goto("/video-guide");
+  await expect(visitor.getByText("الفيديو قريباً.")).toBeVisible();
 });

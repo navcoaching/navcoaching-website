@@ -33,8 +33,8 @@ export default function AdherenceBar({ a, rewarded, compact, coach }: { a: Adher
         <p className="small" style={{ margin: 0 }} data-testid="reward-progress">
           {got ? "🎁 حصلت على مكافأة الالتزام: 3 أشهر مجاناً. استمر!"
             : a.eligible ? "🎉 أحسنت! التزامك 90% فأكثر خلال 3 أشهر، واستحققت اشتراكاً مجانياً لـ 3 أشهر. ستتواصل معك المدربة."
-            : a.weeksLeft > 0 ? `حافظ على التزام 90% فأكثر، وباقي ${weeksText(a.weeksLeft)} وتحصل على 3 أشهر مجاناً 🎁`
-            : `التزام 90% فأكثر خلال ${REWARD_WEEKS} أسبوعاً يمنحك 3 أشهر مجاناً. ارفع التزامك في الأسابيع الجاية 💪`}
+            : a.weeksLeft > 0 ? `المحافظة على التزام 90% فأكثر، وباقي ${weeksText(a.weeksLeft)} على 3 أشهر مجاناً 🎁`
+            : `التزام 90% فأكثر خلال ${REWARD_WEEKS} أسبوعاً يمنحك 3 أشهر مجاناً. رفع الالتزام في الأسابيع الجاية يقرّبك منها 💪`}
         </p>
       )}
     </div>

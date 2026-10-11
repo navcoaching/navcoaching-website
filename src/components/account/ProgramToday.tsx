@@ -53,7 +53,7 @@ export default function ProgramTodayView({ orderNo, p }: { orderNo: string; p: P
               return (
                 <li key={d.id}>
                   <Link href={`${base}/training?week=${p.block!.week}&day=${d.id}`} className={done ? "done" : ""}>
-                    <span><b>اليوم {d.day_no}</b> <bdi dir="ltr">{d.title}</bdi></span>
+                    <span><b>اليوم {d.day_no}:</b> <bdi dir="auto">{d.title}</bdi></span>
                     <span className="small">{done ? "✅ تم" : `${d.logged} من ${d.items}`}</span>
                   </Link>
                 </li>

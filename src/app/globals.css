@@ -446,7 +446,7 @@ dialog.lightbox .lb-bar { display: flex; justify-content: space-between; align-i
 .site-footer { background: var(--ink); color: var(--on-dark-muted); padding-block: 56px calc(28px + env(safe-area-inset-bottom)); }
 .site-footer a { color: var(--on-dark); text-decoration: none; }
 .site-footer a:hover { color: var(--cyan); }
-.foot-grid { display: grid; gap: 28px; grid-template-columns: 1.4fr repeat(2, 1fr); }
+.foot-grid { display: grid; gap: 28px; grid-template-columns: 1.4fr repeat(3, 1fr); }
 @media (max-width: 760px) { .foot-grid { grid-template-columns: 1fr 1fr; } .foot-grid > :first-child { grid-column: 1 / -1; } }
 .foot-grid h2 { font-size: 15px; color: #fff; margin-bottom: 12px; }
 .foot-grid ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
@@ -1557,3 +1557,77 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 .speed-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
 .speed-row:last-child { border-bottom: 0; }
 .speed-row > span { color: var(--muted); }
+
+
+/* =====================================================================
+   الرئيسية (أكتوبر 2026): هيرو بعمودين، لون موحّد للأزرار الأساسية، روابط نصية، صف «مسارات خاصة».
+   البطاقات نفسها (.pcard و.card.feature و.steps و.review) لم تتغير.
+   ===================================================================== */
+/* لون واحد للأزرار الأساسية: كحلي في الفاتح، سماوي في الداكن (.btn-cyan صار نفس الزر الأساسي) */
+:root { --btn-primary: var(--navy); --btn-on: #fff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --btn-primary: var(--cyan); --btn-on: var(--ink); } }
+:root[data-theme="dark"] { --btn-primary: var(--cyan); --btn-on: var(--ink); }
+.btn, .btn-cyan { --bg: var(--btn-primary); --fg: var(--btn-on); }
+.btn-ghost { --bg: transparent; --fg: var(--accent-text); --bd: var(--line); }
+.btn-danger { --bg: transparent; --fg: var(--err); --bd: #efc4bf; }
+.btn-slit::after { display: none; }
+.btn-slit { padding-inline-start: 24px; }
+.btn { white-space: nowrap; }
+
+/* رابط نصي بخط تحته (بدل الأزرار الثانوية) */
+.text-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent-text); font-weight: 600; text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1.5px; }
+.text-link:hover { text-decoration-thickness: 2.5px; }
+
+/* الهيرو: خطوط الشعار المائلة فقط (بدون شبكة النقاط)، والنص يمين والمعاينة يسار فوق 960px */
+.hero.hero-v2.hero-split { background: linear-gradient(180deg, transparent 60%, var(--pub-bg)), var(--pub-bg); text-align: start; }
+.hero-cols { position: relative; display: grid; gap: clamp(28px, 4vw, 56px); align-items: center; }
+@media (min-width: 961px) { .hero-cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); } }
+.hero.hero-v2.hero-split h1 { margin: 0; max-width: none; font-size: clamp(32px, 4.6vw, 56px); line-height: 1.6; }
+.hero.hero-v2.hero-split h1 .hl { display: table; margin: 0; font-size: 1em; font-weight: inherit; color: var(--hl); }
+.hero.hero-v2.hero-split .lead { margin: 14px 0 0; }
+.hero-split .hero-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: 26px; }
+.trust-line { display: flex; flex-wrap: wrap; gap: 4px 0; margin: 22px 0 0; color: var(--muted); font-size: 15px; line-height: 1.7; }
+.trust-line i { font-style: normal; margin-inline: 10px; color: var(--logo-cyan); font-weight: 700; }
+.hero-frame { margin: 0; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--surface); }
+.hero-frame img { width: 100%; height: auto; }
+.hero-frame img.l-light { display: var(--logo-light); }
+.hero-frame img.l-dark { display: var(--logo-dark); }
+.hero-frame img.hero-upload { display: block; }
+.hero-frame figcaption { display: flex; gap: 8px; align-items: center; padding: 10px 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13.5px; }
+@media (max-width: 960px) { .hero.hero-v2.hero-split h1 { font-size: clamp(30px, 8vw, 44px); } }
+
+/* البرامج: 3 بطاقات في الصف، و«مسارات خاصة» تحتها بنفس عرض البطاقة */
+.pub #programs .grid.g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 900px) { .pub #programs .grid.g3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .pub #programs .grid.g3 { grid-template-columns: minmax(0, 1fr); } }
+.sub-head { display: flex; align-items: center; gap: 10px; margin: 40px 0 16px; font-size: 18px; color: var(--heading); }
+.sub-head::before { content: ""; width: 16px; height: 8px; background: var(--logo-cyan); transform: skewX(var(--slant)); }
+.programs-quiz { margin: 28px 0 0; color: var(--text); }
+.programs-note { margin: 6px 0 0; }
+
+/* ليش Nav: البطاقة الأولى بعرض كامل والباقي نصفين، وسطر الخصوصية تحتها */
+.bento .c6 { grid-column: 1 / -1; }
+.bento .c3 { grid-column: span 3; }
+@media (max-width: 900px) { .bento .c3 { grid-column: span 1; } }
+@media (max-width: 560px) { .bento .c3 { grid-column: auto; } }
+.flow i { color: var(--accent-text); }
+.flow li:first-child i { color: var(--ink); }
+.why-note { display: flex; align-items: flex-start; gap: 8px; margin: 22px 0 0; color: var(--muted); font-size: 15px; }
+.why-note svg { flex: none; margin-top: 3px; color: var(--logo-cyan); }
+
+/* خلفية أوضح: الأقسام الملوّنة بدرجة زرقاء أعمق قليلاً + خطوط الشعار المائلة بشفافية خفيفة في زاويتها */
+:root { --pub-soft: #eef3fa; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --pub-soft: #0e1b28; } }
+:root[data-theme="dark"] { --pub-soft: #0e1b28; }
+.pub .section.deco { position: relative; overflow: hidden; }
+.pub .section.deco::before {
+  content: ""; position: absolute; top: -10%; height: 120%; inset-inline-start: -90px; width: 340px; pointer-events: none;
+  background: repeating-linear-gradient(90deg, var(--logo-cyan) 0 50px, transparent 50px 100px); transform: skewX(var(--slant)); opacity: 0.07;
+}
+.pub .section.deco.alt::before { inset-inline-start: auto; inset-inline-end: -90px; }
+.pub .section.deco > .wrap { position: relative; z-index: 1; }
+@media (max-width: 700px) { .pub .section.deco::before { width: 180px; opacity: 0.05; } }
+
+/* أيقونات قائمة الحساب الخطية */
+.account-side .nav-ico { display: inline-grid; place-items: center; color: var(--primary); }
+.account-side .nav-ico svg { display: block; }

@@ -1,8 +1,13 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { IconBook, IconClipboard, IconDumbbell, IconReceipt, IconSalad, IconTrend } from "../Icons";
 
-export type AccountLink = { href: string | null; label: string; icon: string; exact?: boolean };
+// أيقونات خطية موحدة بلون الهوية (بدل الإيموجي)
+const ICONS = { orders: IconReceipt, training: IconDumbbell, progress: IconTrend, nutrition: IconSalad, checkin: IconClipboard, guide: IconBook } as const;
+export type AccountIcon = keyof typeof ICONS;
+
+export type AccountLink = { href: string | null; label: string; icon: AccountIcon; exact?: boolean };
 
 /** قائمة حساب المتدرب: جانبية على الشاشات الكبيرة، وشريط أفقي على الجوال */
 export default function AccountNav({ links }: { links: AccountLink[] }) {
@@ -10,8 +15,9 @@ export default function AccountNav({ links }: { links: AccountLink[] }) {
   return (
     <nav className="account-side" aria-label="حسابي" data-testid="account-nav">
       {links.map((l) => {
+        const Icon = ICONS[l.icon];
         if (!l.href) {
-          return <span key={l.label} className="off" title="يظهر بعد تجهيز برنامجك"><span aria-hidden="true">{l.icon}</span> {l.label}</span>;
+          return <span key={l.label} className="off" title="يظهر بعد تجهيز برنامجك"><span className="nav-ico" aria-hidden="true"><Icon size={18} /></span> {l.label}</span>;
         }
         const target = l.href.split("#")[0];
         // الأطول تطابقاً يفوز (التغذية مقابل سجل الماكروز)
@@ -20,7 +26,7 @@ export default function AccountNav({ links }: { links: AccountLink[] }) {
         const current = !l.href.includes("#") && !longer && (l.exact ? path === target : matches(l.href));
         return (
           <Link key={l.label} href={l.href} aria-current={current ? "page" : undefined}>
-            <span aria-hidden="true">{l.icon}</span> {l.label}
+            <span className="nav-ico" aria-hidden="true"><Icon size={18} /></span> {l.label}
           </Link>
         );
       })}

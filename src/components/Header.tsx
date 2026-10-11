@@ -9,8 +9,7 @@ const LINKS: NavItem[] = [
   { href: "/programs", label: "البرامج" },
   { href: "/about", label: "عن المدربة" },
   { href: "/reviews", label: "التقييمات" },
-  { href: "/free-plans", label: "الجداول المجانية", highlight: true },
-  { href: "/calculator", label: "حاسبة السعرات", highlight: true },
+  { href: "/faq", label: "الأسئلة الشائعة" },
 ];
 
 // الهيدر ثابت (بدون قراءة الجلسة) حتى تبقى الصفحات العامة سريعة وقابلة للتخزين المؤقت.
@@ -27,14 +26,14 @@ export default function Header() {
           <NavLinks links={LINKS} />
           <ThemeToggle />
           <Link href={account.href} className="btn btn-ghost btn-sm"><IconUser size={18} />{account.label}</Link>
-          <Link href="/programs" className="btn btn-sm">ابدأ الآن</Link>
+          <Link href="/programs" className="btn btn-sm">البرامج والأسعار</Link>
         </nav>
         <MobileMenu summary={<IconMenu />}>
           <nav className="menu-panel" aria-label="القائمة">
             <NavLinks links={LINKS} />
             <Link href={account.href}>{account.label}</Link>
             <ThemeToggle withLabel />
-            <Link href="/programs" className="btn btn-block">ابدأ الآن</Link>
+            <Link href="/programs" className="btn btn-block">البرامج والأسعار</Link>
           </nav>
         </MobileMenu>
       </div>

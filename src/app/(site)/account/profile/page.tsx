@@ -21,9 +21,9 @@ export default async function ProfilePage() {
     <section className="section tight">
       <div className="wrap stack" style={{ ["--space" as string]: "16px", maxWidth: 820 }}>
         <nav className="small"><Link href="/account">حسابي</Link> / استبيان المتدرب</nav>
-        <h1 style={{ fontSize: "clamp(24px,4vw,32px)" }}>{row?.saved ? "تحديث استبيانك" : "عبّي استبيانك"}</h1>
+        <h1 style={{ fontSize: "clamp(24px,4vw,32px)" }}>{row?.saved ? "تحديث استبيانك" : "تعبئة استبيانك"}</h1>
         <p className="muted">
-          {row?.saved ? `آخر تحديث: ${fmtDate(row.updated_at)}. ` : row ? "عبّيناه من آخر طلب لك، عدّل ما تغيّر. " : ""}
+          {row?.saved ? `آخر تحديث: ${fmtDate(row.updated_at)}. ` : row ? "تعبّى من آخر طلب لك، والتعديل على ما تغيّر متاح. " : ""}
           يساعد المدربة تعرف هدفك ومستواك حتى لو ما طلبت باقة بعد. لا يُلزمك بأي شيء.
         </p>
         <div className="card"><ProfileForm initial={initial} /></div>

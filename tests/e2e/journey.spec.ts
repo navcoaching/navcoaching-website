@@ -66,7 +66,7 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   // ---------- 1) الزائر يتصفح ----------
   const page = await newUserPage(browser, project);
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("برامج تدريب وتغذية مخصصة لأهدافك");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("برنامج مبني عليك،");
   await expect(page.locator("#intro")).toHaveCount(0); // لا يوجد رابط فيديو بعد ← القسم مخفي
   await noHorizontalScroll(page);
   await page.goto("/programs");
@@ -120,7 +120,7 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await page.locator("#media").selectOption("لا، أفضّل الخصوصية");
   await page.locator('input[name="consent_terms"]').check();
   await page.locator('input[name="consent_wa"]').check();
-  await page.getByRole("button", { name: "أرسل الاستبيان وانتقل للدفع" }).click();
+  await page.getByRole("button", { name: "إرسال الاستبيان والانتقال للدفع" }).click();
 
   // ---------- 4) صفحة التأكيد ----------
   await expect(page).toHaveURL(/\/account\/orders\/NAV-\d{6}-[A-Z0-9]{5}\?new=1/);
@@ -383,7 +383,7 @@ test("قائمة الجوال تُغلق بعد اختيار صفحة", async ({
   await page.getByLabel("فتح القائمة").click();
   const panel = page.locator(".menu-panel");
   await expect(panel).toBeVisible();
-  await panel.getByRole("link", { name: "البرامج" }).click();
+  await panel.getByRole("link", { name: "البرامج", exact: true }).click();
   await expect(page).toHaveURL(/\/programs$/);
   await expect(panel).toBeHidden();
   // الضغط خارج القائمة يغلقها أيضاً

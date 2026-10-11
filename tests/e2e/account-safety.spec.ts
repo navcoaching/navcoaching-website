@@ -139,11 +139,11 @@ test("الاستبيان باسم شخص غير صاحب الحساب: يوقف 
   await page.locator("#media").selectOption("لا، أفضّل الخصوصية");
   await page.locator('input[name="consent_terms"]').check();
   await page.locator('input[name="consent_wa"]').check();
-  await page.getByRole("button", { name: "أرسل الاستبيان وانتقل للدفع" }).click();
+  await page.getByRole("button", { name: "إرسال الاستبيان والانتقال للدفع" }).click();
   await expect(page.locator(".alert.err")).toContainText("والطلب باسم «غيداء»");
   expect((await db.query(`SELECT count(*)::int n FROM orders o JOIN "user" u ON u.id = o.user_id WHERE u.email = $1`, [email])).rows[0].n).toBe(0);
   await page.getByTestId("for-me").locator("input").check();
-  await page.getByRole("button", { name: "أرسل الاستبيان وانتقل للدفع" }).click();
+  await page.getByRole("button", { name: "إرسال الاستبيان والانتقال للدفع" }).click();
   await expect(page).toHaveURL(/\/account\/orders\/NAV-\d{6}-[A-Z0-9]{5}\?new=1/);
   await noHorizontalScroll(page);
 });

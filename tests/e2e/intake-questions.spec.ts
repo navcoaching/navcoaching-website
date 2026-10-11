@@ -111,7 +111,7 @@ test("أسئلة الاستبيان: المدربة تعدّل وتخفي وتض
     await page.locator('input[name="consent_terms"]').check();
     await page.locator('input[name="consent_wa"]').check();
     await noHorizontalScroll(page);
-    await page.getByRole("button", { name: "أرسل الاستبيان وانتقل للدفع" }).click();
+    await page.getByRole("button", { name: "إرسال الاستبيان والانتقال للدفع" }).click();
     await expect(page).toHaveURL(/\/account\/orders\/NAV-\d{6}-[A-Z0-9]{5}\?new=1/);
     const orderNo = page.url().match(/NAV-\d{6}-[A-Z0-9]{5}/)![0];
 
