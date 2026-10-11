@@ -3,7 +3,7 @@
 // الاختيار آلي بقاعدة واضحة لكل قالب (نفس الوصفة ما تتكرر في اليوم).
 // آمن للتكرار: القالب الموجود بنفس الاسم تُستبدل وجباته بالنسخة الحالية (نسخ المتدربين المُسندة ما تتأثر).
 import { readFileSync } from "node:fs";
-import { foodDetailsSql } from "./foods-sql.mjs";
+import { foodDetailsSql, foodsSql } from "./foods-sql.mjs";
 
 const KIND = { b: "breakfast", l: "lunch", s: "snack" };
 export const kcalOf = (r) => 4 * r.protein + 4 * r.carbs + 9 * r.fat;
@@ -149,14 +149,18 @@ function migrationStatements(file) {
 }
 
 if (import.meta.url === `file://${process.argv[1]}` && process.argv[2] === "library-add") {
-  const set = process.argv[3] ?? "arabic";
-  process.stdout.write(`-- وصفات عربية جديدة في «مكتبة الوجبات» (كبسة لحم، مندي، مقلوبة، برياني، مسقعة، محشي، سليق، شاورما، فتوش، فتة، بيض بالطماطم، معصوب، تمر بالطحينة).
--- القيم محسوبة من المكونات بقاعدة الأكل (USDA). يضيف الجديد فقط ولا يغيّر الوجبات الموجودة ولا سجلات المتدربين. آمن لو انشغّل مرتين.
+  // node scripts/recipes-sql.mjs library-add arabic,shody  ← أصناف قاعدة الأكل الجديدة + وصفات المجموعات
+  const sets = (process.argv[3] ?? "arabic").split(",");
+  const { NEW } = await import("./usda-add-foods.mjs");
+  const titles = loadRecipes().filter((r) => sets.includes(r.set)).map((r) => `'${r.name.replace(/'/g, "''")}'`);
+  process.stdout.write(`-- وصفات جديدة في «مكتبة الوجبات» (${sets.join(" + ")}) + أصناف جديدة في قاعدة الأكل (USDA).
+-- يضيف الجديد فقط ولا يغيّر الوجبات أو الأصناف الموجودة ولا سجلات المتدربين. آمن لو انشغّل مرتين.
 BEGIN;
-${libraryAddSql(set)}
+${foodsSql(NEW.map((n) => n[0]))}
+${sets.map((s) => libraryAddSql(s)).join("\n")}
 SELECT m.title, round(sum(i.protein*4 + i.carbs*4 + i.fat*9)) AS kcal
   FROM plan_meals m JOIN nutrition_plans p ON p.id = m.plan_id JOIN plan_items i ON i.meal_id = m.id
- WHERE p.is_library AND p.order_id IS NULL AND m.title IN (${loadRecipes().filter((r) => r.set === set).map((r) => `'${r.name.replace(/'/g, "''")}'`).join(", ")})
+ WHERE p.is_library AND p.order_id IS NULL AND m.title IN (${titles.join(", ")})
  GROUP BY m.title, m.position ORDER BY m.position;
 COMMIT;
 `);

@@ -2,10 +2,11 @@
 // آمن للتكرار: لا يستبدل صنفاً موجوداً بنفس الاسم العربي (حتى لا تضيع تعديلات المدربة).
 import { existsSync, readFileSync } from "node:fs";
 
-export function foodsSql() {
+export function foodsSql(onlyNames = null) {
   const path = new URL("../db/seed/foods.json", import.meta.url);
   if (!existsSync(path)) return "";
-  const json = JSON.stringify(JSON.parse(readFileSync(path, "utf8")));
+  // onlyNames: أصناف محددة فقط (لإضافة الجديد في ملف Neon صغير)
+  const json = JSON.stringify(JSON.parse(readFileSync(path, "utf8")).filter((f) => !onlyNames || onlyNames.includes(f.name_ar)));
   if (json.includes("$fd$")) throw new Error("foods.json يحتوي $fd$");
   return `INSERT INTO foods (name_ar, name_en, category, kcal_100, protein_100, carbs_100, fat_100, serving_g, serving_label, source, source_ref,
                    source_type, fiber_100, micros)

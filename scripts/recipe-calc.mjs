@@ -4,6 +4,9 @@ import { readFileSync } from "node:fs";
 
 const foods = JSON.parse(readFileSync(new URL("../db/seed/foods.json", import.meta.url), "utf8"));
 const byName = new Map(foods.map((f) => [f.name_ar, f]));
+// منتجات تجارية بقيمها من موقع الشركة لكل 100 مل/غ (db/seed/brand-foods.json، مثل حليب بروتين ندى والمراعي)
+for (const x of JSON.parse(readFileSync(new URL("../db/seed/brand-foods.json", import.meta.url), "utf8")))
+  if (!byName.has(x.n)) byName.set(x.n, { protein_100: x.p, carbs_100: x.c, fat_100: x.f, fiber_100: 0 });
 const r1 = (v) => Math.round(v * 10) / 10;
 
 export function calcRecipe(basis) {

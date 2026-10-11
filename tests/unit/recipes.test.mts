@@ -7,9 +7,9 @@ import { buildPlans, loadRecipes, kcalOf, recipeTemplatesSql } from "../../scrip
 
 type R = { id: string; slot: string; set?: string; original?: { kcal: number }; protein: number; carbs: number; fat: number; kcal_book: number; basis?: { food: string; g: number }[]; ingredients: string[]; steps: string[] };
 
-test("26 وصفة من الكتيب (9 فطور، 9 غداء وعشاء، 8 سناك) + 9 مضادات أكسدة + 17 وصفة إضافية + 13 عربية، بأرقام ضمن حدود الجدول", () => {
+test("26 وصفة من الكتيب (9 فطور، 9 غداء وعشاء، 8 سناك) + 9 مضادات أكسدة + 17 وصفة إضافية + 13 عربية + 15 من حساب الصحية شهد، بأرقام ضمن حدود الجدول", () => {
   const rs = loadRecipes() as R[];
-  assert.equal(rs.length, 73);
+  assert.equal(rs.length, 88);
   const book = rs.filter((r) => !r.set), ao = rs.filter((r) => r.set === "antioxidant"), ex = rs.filter((r) => r.set === "extra");
   assert.deepEqual(["b", "l", "s"].map((s) => ex.filter((r) => r.slot === s).length), [4, 9, 4]);
   assert.deepEqual(["b", "l", "s"].map((s) => book.filter((r) => r.slot === s).length), [9, 9, 8]);
@@ -20,7 +20,8 @@ test("26 وصفة من الكتيب (9 فطور، 9 غداء وعشاء، 8 سن
     assert.ok(r.protein >= 0 && r.protein <= 500 && r.carbs >= 0 && r.carbs <= 500 && r.fat >= 0 && r.fat <= 300, r.id);
     assert.ok(r.ingredients.length > 0 && r.steps.length > 0, r.id);
   }
-  assert.equal(new Set(rs.map((r) => r.id)).size, 73);
+  assert.equal(new Set(rs.map((r) => r.id)).size, 88);
+  assert.deepEqual(["b", "l", "s"].map((s) => rs.filter((r) => r.set === "shody" && r.slot === s).length), [4, 5, 6]);
 });
 
 test("كل قالب: فطور وغداء وعشاء وسناك بوصفات مختلفة، والمجاميع صحيحة", () => {
@@ -55,8 +56,11 @@ test("كل وصفة لها مكونات محسوبة (مضادات الأكسد�
   const byName = new Map(foods.map((f) => [f.name_ar as string, f]));
   // سكوب الواي من ملف تغذية المدربة: 25غ بروتين، 3 كارب، 2 دهون لكل سكوب (30غ)
   byName.set("سكوب واي بروتين (ملف المدربة)", { protein_100: 2500 / 30, carbs_100: 300 / 30, fat_100: 200 / 30 });
+  // منتجات تجارية (حليب بروتين ندى…) بقيمها من موقع الشركة لكل 100 مل
+  for (const x of JSON.parse(readFileSync(new URL("../../db/seed/brand-foods.json", import.meta.url), "utf8")) as { n: string; p: number; c: number; f: number }[])
+    if (!byName.has(x.n)) byName.set(x.n, { protein_100: x.p, carbs_100: x.c, fat_100: x.f });
   const ao = (loadRecipes() as R[]).filter((r) => r.basis);
-  assert.equal(ao.length, 9 + 17 + 10 + 8 + 13);
+  assert.equal(ao.length, 9 + 17 + 10 + 8 + 13 + 15);
   for (const r of ao) {
     assert.ok(r.basis && r.basis.length > 0, r.id);
     const t = { p: 0, c: 0, f: 0 };
@@ -102,11 +106,11 @@ test("وصفات الألياف: كل وجبة رئيسية 8غ ألياف أو 
   assert.match(p.notes, /ألياف \d+غ/);
 });
 
-test("مكتبة الوجبات: كل الوصفات (73) كوجبات، وSQL المكتبة يضع is_library ولا يمس القوالب الخمسة", () => {
+test("مكتبة الوجبات: كل الوصفات (88) كوجبات، وSQL المكتبة يضع is_library ولا يمس القوالب الخمسة", () => {
   const [lib] = buildPlans(loadRecipes(), "library");
   assert.equal(lib.name, "مكتبة الوجبات");
-  assert.equal(lib.meals.length, 73);
-  assert.equal(new Set(lib.meals.map((m: { title: string }) => m.title)).size, 73);
+  assert.equal(lib.meals.length, 88);
+  assert.equal(new Set(lib.meals.map((m: { title: string }) => m.title)).size, 88);
   assert.ok(lib.meals.every((m: { kind: string; items: unknown[] }) => ["breakfast", "lunch", "snack"].includes(m.kind) && m.items.length === 1));
   assert.match(recipeTemplatesSql("library") as string, /is_library/);
   assert.doesNotMatch(recipeTemplatesSql("main") as string, /is_library/); // الملف الرئيسي يعمل قبل migration 030
