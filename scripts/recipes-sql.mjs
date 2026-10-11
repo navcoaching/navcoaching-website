@@ -112,10 +112,11 @@ END $do$;
  * لا يحذف شيئاً: سجلات أكل المتدربين مربوطة بوجبات المكتبة، والاستبدال الكامل يفصلها عن تفاصيلها.
  * الوجبة الموجودة بنفس الاسم تُتجاوز، فالملف آمن لو انشغّل مرتين.
  */
-export function libraryAddSql(set) {
+export function libraryAddSql(set, ids = null) {
   const kind = { b: "breakfast", l: "lunch", s: "snack" };
   const recipes = loadRecipes();
-  const meals = recipes.filter((r) => r.set === set).map((r) => mealOf(kind[r.slot], r));
+  // ids: جزء من المجموعة فقط (لتقسيم ملف Neon الطويل على أجزاء تنلصق من الجوال)
+  const meals = recipes.filter((r) => r.set === set && (!ids || ids.includes(r.id))).map((r) => mealOf(kind[r.slot], r));
   if (!meals.length) throw new Error(`لا توجد وصفات بالمجموعة ${set}`);
   return `DO $do$
 DECLARE
