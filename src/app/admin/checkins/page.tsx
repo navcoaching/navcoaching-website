@@ -54,10 +54,9 @@ export default async function CheckinsPage({ searchParams }: { searchParams: Pro
           <ActionForm action={replyCheckinAction} submit={c.replied_at ? "تحديث الرد" : "إرسال الرد"}>
             <input type="hidden" name="id" value={c.id} /><input type="hidden" name="order_no" value={c.order_no} />
             <div className="field"><label htmlFor={`r-${c.id}`}>ردك</label><textarea id={`r-${c.id}`} name="reply" defaultValue={c.coach_reply ?? ""} maxLength={2000} /></div>
-            {(c.video_review || c.coach_video_url) && (
-              <div className="field"><label htmlFor={`v-${c.id}`}>🎥 رابط فيديو شرح المراجعة (اختياري)</label>
-                <input id={`v-${c.id}`} name="video_url" type="url" dir="ltr" placeholder="https://youtu.be/…" defaultValue={c.coach_video_url ?? ""} maxLength={500} /></div>
-            )}
+            {/* المراجعات لباقات المتابعة فقط، وكلها تقبل فيديو مع الرد */}
+            <div className="field"><label htmlFor={`v-${c.id}`}>🎥 فيديو المراجعة (اختياري)</label>
+              <input id={`v-${c.id}`} name="video_url" type="url" dir="ltr" placeholder="https://youtu.be/… أو رابط Google Drive" defaultValue={c.coach_video_url ?? ""} maxLength={500} /></div>
           </ActionForm>
         </Details>
         </div>

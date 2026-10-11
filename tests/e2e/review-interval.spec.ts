@@ -76,6 +76,8 @@ test("الأساسية: المراجعة كل أسبوعين للمتدرب وا
   await noHorizontalScroll(coach);
 
   await coach.goto(`/admin/orders/${orderNo}`);
+  await expect(coach.getByTestId("sub-line")).toContainText("كل أسبوعين");
+  await coach.locator("summary", { hasText: "الاشتراك والتواريخ" }).click();
   await expect(coach.getByTestId("subscription-card").getByTestId("review-day")).toContainText("كل أسبوعين");
   await expect(coach.getByRole("heading", { name: "المراجعات (كل أسبوعين)" })).toBeVisible();
   await noHorizontalScroll(coach);

@@ -2,6 +2,12 @@
 // تصفح ← دخول ← استبيان وطلب ← رفع إيصال ← اعتماد المدربة ← ملفات ← مراجعة أسبوعية ← تقييم ← نشر التقييم.
 import { test, expect, type Page, type Browser } from "@playwright/test";
 import pg from "pg";
+
+/** يفتح قسماً مطوياً في صفحة المتدرب (لوحة الإدارة) إذا كان مغلقاً */
+async function openFold(page: Page, title: string) {
+  const d = page.locator("details.fold", { has: page.locator(":scope > summary", { hasText: title }) }).first();
+  if (!(await d.evaluate((e) => (e as HTMLDetailsElement).open))) await d.locator(":scope > summary").click();
+}
 import sharp from "sharp";
 
 const OWNER = process.env.E2E_DATABASE_URL_OWNER ?? "postgres://nav_owner:nav_owner_dev@localhost:5432/nav_e2e";
@@ -188,6 +194,7 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await expect(coach.locator(".status").first()).toHaveText("قيد الإعداد");
   await expect(bar.getByLabel("تغيير الحالة إلى")).not.toContainText("قيد الإعداد (تأكيد الدفع)");
 
+  await openFold(coach, "ملفات وروابط البرنامج");
   const add = coach.locator("form", { has: coach.getByRole("button", { name: "إضافة", exact: true }) });
   await add.locator('input[name="title"]').fill("ملف البرنامج — الشهر الأول");
   await add.locator('input[name="url"]').fill("https://example.com/program-file");
@@ -208,6 +215,9 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   expect(sub.sub_start_at).not.toBeNull();
   const months = (new Date(sub.sub_end_at).getUTCFullYear() - new Date(sub.sub_start_at).getUTCFullYear()) * 12 + new Date(sub.sub_end_at).getUTCMonth() - new Date(sub.sub_start_at).getUTCMonth();
   expect(months).toBe(sub.months);
+  // سطر الاشتراك في رأس الصفحة، والتواريخ الكاملة في «الاشتراك والتواريخ»
+  await expect(coach.getByTestId("sub-line")).toContainText("الأسبوع 1 من 4");
+  await openFold(coach, "الاشتراك والتواريخ");
   await expect(coach.getByRole("term").filter({ hasText: "تاريخ البدء" })).toBeVisible();
   // إشعار تغيّر الحالة مسجّل، والملف المضاف قبل التفعيل لم يُرسل عنه إشعار
   const logs = (await db.query(
@@ -341,6 +351,7 @@ test("المدربة تخفي طلباً من القائمة وتحذف المل
   await expect(coach.locator("tr", { hasText: orderNo })).toHaveCount(1);
 
   await coach.goto(`/admin/orders/${orderNo}`);
+  await openFold(coach, "إدارة الطلب");
   await expect(coach.getByText("الحذف النهائي متاح للطلبات الملغاة فقط.")).toBeVisible();
   const cancel = coach.getByTestId("status-bar");
   await cancel.getByLabel("تغيير الحالة إلى").selectOption({ label: "تم إلغاء الطلب" });
@@ -355,6 +366,7 @@ test("المدربة تخفي طلباً من القائمة وتحذف المل
   await coach.goto(`/account/orders/${orderNo}`); // الطلب باسم نفس الحساب
   await expect(coach.getByTestId("cancel-reason")).toContainText("طلب تجريبي");
   await coach.goto(`/admin/orders/${orderNo}`);
+  await openFold(coach, "إدارة الطلب");
   await coach.getByText("حذف نهائي").first().click();
   const del = coach.locator("form", { has: coach.getByRole("button", { name: "حذف نهائي" }) });
   await del.locator('input[name="confirm"]').fill(orderNo);

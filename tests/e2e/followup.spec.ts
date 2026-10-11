@@ -3,6 +3,12 @@
 // دليل الإضافة للشاشة الرئيسية، ومسميات «الاستبيان». كل البيانات في قاعدة nav_e2e المنفصلة.
 import { test, expect, type Page, type Browser } from "@playwright/test";
 import pg from "pg";
+
+/** يفتح قسماً مطوياً في صفحة المتدرب (لوحة الإدارة) إذا كان مغلقاً */
+async function openFold(page: Page, title: string) {
+  const d = page.locator("details.fold", { has: page.locator(":scope > summary", { hasText: title }) }).first();
+  if (!(await d.evaluate((e) => (e as HTMLDetailsElement).open))) await d.locator(":scope > summary").click();
+}
 import { readFileSync } from "node:fs";
 
 const OWNER = process.env.E2E_DATABASE_URL_OWNER ?? "postgres://nav_owner:nav_owner_dev@localhost:5432/nav_e2e";
@@ -86,8 +92,9 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   await coach.goto(`/admin/orders/${orderNo}`);
   await noHorizontalScroll(coach); // صفحة الطلب (مع جدول الأسابيع) لا تتجاوز عرض الجوال
   const notes = coach.getByTestId("admin-notes");
-  // الملاحظات أعلى الصفحة قبل الإجراءات
-  const [notesY, actionY] = await Promise.all([notes.boundingBox(), coach.getByRole("heading", { name: "الإجراء التالي" }).boundingBox()]);
+  // الملاحظات قبل الأقسام المطوية (الاستبيان والطلب)، وخانة «الإجراء التالي» انحذفت
+  await expect(coach.getByRole("heading", { name: "الإجراء التالي" })).toHaveCount(0);
+  const [notesY, actionY] = await Promise.all([notes.boundingBox(), coach.getByRole("heading", { name: "الاستبيان والطلب" }).boundingBox()]);
   expect(notesY!.y).toBeLessThan(actionY!.y);
   await notes.getByLabel("ملاحظة جديدة").fill("ملاحظة أولى: بداية جيدة");
   await notes.getByRole("button", { name: "إضافة ملاحظة" }).click();
@@ -132,6 +139,7 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   await coach.getByTestId("intake").locator("summary").click();
   await expect(coach.getByText("(نطاق من الاستبيان القديم)")).toBeVisible();
   await expect(coach.getByRole("button", { name: "اطلبي منه تحديثهما" })).toBeVisible();
+  await openFold(coach, "جدول المواعيد");
   const week1 = coach.locator("tr", { has: coach.locator("td", { hasText: /^1$/ }) });
   await week1.getByRole("button", { name: "تعليم كمكتمل" }).click();
   await expect(week1).toContainText("(يدوي)");
@@ -203,6 +211,7 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   await expect(coach.getByText("62 كغ")).toBeVisible();
 
   // ---------- 10) «إرسال تنبيه المراجعة الآن»: معاينة، تأكيد بالنص، نتيجة لكل قناة، مهلة ----------
+  await openFold(coach, "جدول المواعيد");
   const preview = (await coach.getByTestId("review-preview").textContent())!.trim();
   expect(preview).toContain("المراجعة مفتوحة من");
   let dialogText = "";
@@ -230,6 +239,7 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
 
   // ---------- 12) إشعار إضافة رابط ورد على المراجعة ----------
   await coach.reload();
+  await openFold(coach, "ملفات وروابط البرنامج");
   const add = coach.locator("form", { has: coach.getByRole("button", { name: "إضافة", exact: true }) });
   await add.locator('input[name="title"]').fill("فيديو تصحيح التكنيك");
   await add.locator('input[name="url"]').fill("https://example.com/technique");
@@ -253,16 +263,15 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   await noHorizontalScroll(coach);
   await coach.goto(coachUrl);
   await expect(coach.getByTestId("pending-checkin")).toBeVisible();
-  // الباقة مفعّل فيها «مراجعة بالفيديو» ← تظهر خانة رابط الفيديو مع الرد
-  await db.query(`UPDATE products SET video_review = true WHERE slug = 'intensive'`);
+  // خانة فيديو المراجعة تظهر مع الرد في كل باقات المتابعة
   await coach.reload();
   await coach.getByText(/بانتظار الرد|مراجعة/).first().click().catch(() => {});
   const reply = coach.locator("form", { has: coach.getByRole("button", { name: "إرسال الرد" }) }).first();
   await reply.locator('textarea[name="reply"]').fill("ممتاز! نزيد الأوزان الأسبوع الجاي.");
-  await reply.getByLabel("🎥 رابط فيديو شرح المراجعة (اختياري)").fill("http://youtu.be/bad");
+  await reply.getByLabel("🎥 فيديو المراجعة (اختياري)").fill("http://youtu.be/bad");
   await reply.getByRole("button", { name: "إرسال الرد" }).click();
   await expect(reply.getByText("رابط الفيديو لازم يبدأ بـ https://")).toBeVisible();
-  await reply.getByLabel("🎥 رابط فيديو شرح المراجعة (اختياري)").fill("https://youtu.be/rvWeek1abcd");
+  await reply.getByLabel("🎥 فيديو المراجعة (اختياري)").fill("https://youtu.be/rvWeek1abcd");
   await reply.getByRole("button", { name: "إرسال الرد" }).click();
   await expect(coach.getByText(/الإشعار:/).first()).toBeVisible();
   logs = await logRows(orderNo);

@@ -2,6 +2,12 @@
 import { test, expect, type Page, type Browser } from "@playwright/test";
 import pg from "pg";
 
+/** يفتح قسماً مطوياً في صفحة المتدرب (لوحة الإدارة) إذا كان مغلقاً */
+async function openFold(page: Page, title: string) {
+  const d = page.locator("details.fold", { has: page.locator(":scope > summary", { hasText: title }) }).first();
+  if (!(await d.evaluate((e) => (e as HTMLDetailsElement).open))) await d.locator(":scope > summary").click();
+}
+
 const OWNER = process.env.E2E_DATABASE_URL_OWNER ?? "postgres://nav_owner:nav_owner_dev@localhost:5432/nav_e2e";
 const db = new pg.Pool({ connectionString: OWNER, max: 2 });
 test.afterAll(async () => { await db.end(); });
@@ -94,6 +100,7 @@ test("موعد البداية: تغيير المتدرب، تاق الأولوي
   expect(o.ok).toBe(true);
   // المدربة تعدّل تاريخ البدء مع «احسبي تلقائياً»: الانتهاء بعد 12 أسبوع (3 أشهر × 4)، ويوم المراجعة = يوم البدء
   await coach.goto(`/admin/orders/${later}`);
+  await openFold(coach, "الاشتراك والتواريخ");
   await coach.getByText("تعديل التواريخ ويوم المراجعة").click();
   const dates = coach.locator("form", { has: coach.locator('input[name="auto"]') });
   await dates.locator('input[name="start"]').fill("2026-09-29");

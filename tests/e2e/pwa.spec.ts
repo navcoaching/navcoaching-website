@@ -2,6 +2,12 @@
 import { test, expect, type Page, type Browser } from "@playwright/test";
 import pg from "pg";
 
+/** يفتح قسماً مطوياً في صفحة المتدرب (لوحة الإدارة) إذا كان مغلقاً */
+async function openFold(page: Page, title: string) {
+  const d = page.locator("details.fold", { has: page.locator(":scope > summary", { hasText: title }) }).first();
+  if (!(await d.evaluate((e) => (e as HTMLDetailsElement).open))) await d.locator(":scope > summary").click();
+}
+
 const OWNER = process.env.E2E_DATABASE_URL_OWNER ?? "postgres://nav_owner:nav_owner_dev@localhost:5432/nav_e2e";
 const db = new pg.Pool({ connectionString: OWNER, max: 2 });
 test.afterAll(async () => { await db.end(); });
@@ -70,6 +76,7 @@ test("إشعارات الجوال: التفعيل، التجربة، وصول ت
   await login(coach, coachEmail, "/admin");
   await db.query(`UPDATE "user" SET role = 'coach' WHERE email = $1`, [coachEmail]);
   await coach.goto(`/admin/orders/${orderNo}`);
+  await openFold(coach, "جدول المواعيد");
   coach.once("dialog", (d) => d.accept());
   await coach.getByRole("button", { name: "إرسال تنبيه المراجعة الآن" }).click();
   await expect.poll(async () => (await db.query(

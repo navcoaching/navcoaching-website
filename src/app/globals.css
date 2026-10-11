@@ -1501,3 +1501,53 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
   .admin-theme .theme-row > span { display: none; }
   .admin-theme .theme-btn { width: 44px; height: 44px; }
 }
+
+/* ---------- صفحة المتدرب في لوحة الإدارة: رأس، تنقّل الأقسام، لوحة التطور، أقسام مطوية ---------- */
+.trainee-head .who { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px; align-items: flex-start; }
+.trainee-head .who > div { min-width: 0; flex: 1 1 280px; }
+.trainee-head .who h1 { font-size: clamp(24px, 4vw, 32px); margin: 6px 0 2px; }
+.trainee-head .quick { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; flex: 0 1 auto; }
+.trainee-head .quick .btn { min-height: 44px; }
+.prog-line { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; margin: 8px 0 0; color: var(--muted); }
+.prog-line b { color: var(--heading); }
+.secnav { position: sticky; top: 0; z-index: 15; display: flex; gap: 6px; overflow-x: auto; padding: 8px 0; background: var(--paper); border-bottom: 1px solid var(--line); scrollbar-width: none; }
+.secnav a { flex: none; display: flex; align-items: center; min-height: 40px; padding: 6px 14px; border-radius: 999px; font-size: 14px; font-weight: 600; color: var(--muted); text-decoration: none; }
+.secnav a:hover, .secnav a:focus-visible { background: var(--cyan-soft); color: var(--cyan-ink); }
+@media (max-width: 900px) { .secnav { top: calc(62px + env(safe-area-inset-top)); } }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 12px; }
+.kpi { display: grid; gap: 4px; align-content: start; padding: 14px 16px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); }
+.kpi-l { font-size: 13px; color: var(--muted); }
+.kpi-v { font: 700 26px/1.15 var(--f-display); color: var(--heading); }
+.kpi-s { font-size: 13px; color: var(--muted); }
+.kpi.good .kpi-s { color: var(--ok); }
+.kpi.warn .kpi-s { color: var(--warn); }
+.kpi.sun { background: var(--warn-bg); border-color: transparent; }
+.charts { grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); }
+.adh-bars { display: grid; gap: 10px; align-items: end; height: 190px; padding-top: 6px; }
+.adh-col { display: grid; grid-template-rows: auto 1fr auto auto; justify-items: center; gap: 4px; height: 100%; min-width: 0; }
+.adh-val, .adh-wk { font-size: 12px; color: var(--muted); }
+.adh-rv { font-size: 13px; }
+.adh-track { width: 100%; max-width: 34px; background: var(--surface-2); border-radius: 10px; display: flex; align-items: flex-end; overflow: hidden; }
+.adh-fill { width: 100%; background: var(--leaf, #22c55e); border-radius: 10px; }
+.adh-fill.hi { background: var(--leaf-deep, #15803d); }
+.adh-fill.lo { background: var(--coral, #f87171); }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 16px; align-items: start; }
+.qa { display: grid; gap: 10px; margin: 0; }
+.qa > div { padding: 10px 12px; border-radius: 14px; background: var(--surface-2); }
+.qa dt { font-size: 13px; color: var(--muted); }
+.qa dd { margin: 2px 0 0; font-weight: 500; white-space: pre-wrap; }
+.folds { display: grid; gap: 10px; }
+.fold { border: 1px solid var(--line); border-radius: 18px; background: var(--surface); }
+.fold > summary { cursor: pointer; min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 16px; font-weight: 700; font-family: var(--f-display); list-style: none; }
+.fold > summary::-webkit-details-marker { display: none; }
+.fold > summary::after { content: "▾"; color: var(--muted); transition: transform .2s; }
+.fold[open] > summary::after { transform: rotate(180deg); }
+.fold > summary > span { flex: 1; }
+.fold > summary small { font-weight: 500; color: var(--muted); font-family: var(--f-body); font-size: 13px; }
+.fold-body { padding: 0 16px 16px; }
+.fold-body > .card { box-shadow: none; }
+@media (prefers-reduced-motion: reduce) { .fold > summary::after { transition: none; } }
+/* صفحة المتدرب: عمود flex حتى ينتقل شريط الحالة لآخر الصفحة بعد التفعيل بدون إعادة إنشائه */
+.order-page { display: flex; flex-direction: column; gap: 18px; }
+.order-page > * { min-width: 0; }
+.status-slot .status-bar { position: static; }
