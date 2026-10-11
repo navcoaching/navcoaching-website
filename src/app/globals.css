@@ -1551,3 +1551,9 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 .order-page { display: flex; flex-direction: column; gap: 18px; }
 .order-page > * { min-width: 0; }
 .status-slot .status-bar { position: static; }
+
+/* فحص السرعة: صف لكل قياس (العنوان ثم القيمة، وينزلان سطرين على الجوال) */
+.speed-list { display: grid; padding-block: 6px; }
+.speed-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.speed-row:last-child { border-bottom: 0; }
+.speed-row > span { color: var(--muted); }
