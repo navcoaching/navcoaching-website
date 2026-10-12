@@ -371,7 +371,7 @@ bdi, .ltr { unicode-bidi: isolate; direction: ltr; }
 .shot button:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
 .shot img { width: 100%; height: auto; transition: transform 0.5s var(--ease); }
 .shot button:hover img { transform: scale(1.03); }
-.shot .sample { position: absolute; inset-inline-start: 10px; top: 10px; }
+.shot .sample { margin-inline-start: 6px; vertical-align: middle; font-family: var(--f-body); font-weight: 500; }
 .shot figcaption b { display: block; font-family: var(--f-display); }
 .shot figcaption span { color: var(--muted); font-size: 15px; }
 dialog.lightbox { border: 0; padding: 0; background: transparent; max-width: min(96vw, 1400px); max-height: 92vh; }
@@ -1663,3 +1663,36 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 @media (max-width: 700px) { .pub .page-hero + .section:not(.white)::before { width: 180px; opacity: 0.05; } }
 /* على الجوال: صندوق المدة يأتي مباشرة بعد العنوان، والشريط الثابت يكفي، فلا نكرر السعر والزر في الهيرو */
 @media (max-width: 760px) { .hero-buy { display: none; } }
+
+/* ---------- قراءة ولمس أوضح على الجوال (الصفحات العامة) ---------- */
+.theme-btn { flex: none; min-width: 44px; }
+.site-footer li a { display: inline-flex; align-items: center; min-height: 44px; }
+.crumbs a { display: inline-flex; align-items: center; min-height: 44px; }
+.review-text .link-btn { min-height: 44px; }
+.pub .eyebrow { font-size: 14px; }
+.tag { font-size: 13.5px; }
+.pcard .kicker { font-size: 14px; }
+.review .verified { font-size: 13.5px; }
+/* النجوم بلون كهرماني أغمق (تباين أعلى من 3:1 على الأبيض)، وأفتح في الداكن */
+.stars { color: #a56c00; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .stars { color: #f5b82e; } }
+:root[data-theme="dark"] .stars { color: #f5b82e; }
+/* الآيبان: سطر واحد مجمّع كل 4 أرقام */
+.bank .iban { word-break: normal; overflow-wrap: normal; white-space: normal; letter-spacing: 0.02em; text-align: start; }
+
+/* جدول المقارنة على الجوال: العمود الأول ثابت وتلاشٍ يدل على التمرير */
+@media (max-width: 760px) {
+  .pub .table-wrap { position: relative; }
+  .pub .table-wrap .t th[scope="row"], .pub .table-wrap .t thead th:first-child {
+    position: sticky; inset-inline-start: 0; z-index: 1; background: var(--surface); box-shadow: -1px 0 0 var(--line) inset;
+  }
+  .pub .compare-hint { display: block; }
+}
+.compare-hint { display: none; margin: 0 0 8px; color: var(--muted); font-size: 14px; }
+
+/* عن المدربة: الصورة في الهيرو بعمودين */
+.about-hero { display: grid; gap: clamp(24px, 4vw, 48px); align-items: center; }
+@media (min-width: 961px) { .about-hero { grid-template-columns: minmax(0, 1fr) minmax(0, 380px); } }
+.about-photo { margin: 0; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--surface); max-width: 420px; }
+.about-photo img { display: block; width: 100%; height: auto; }
+.about-quotes { margin-top: 8px; }

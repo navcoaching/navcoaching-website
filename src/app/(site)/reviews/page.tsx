@@ -14,13 +14,17 @@ export default async function Reviews() {
         <div className="wrap">
           <span className="eyebrow">التقييمات</span>
           <h1 style={{ fontSize: "clamp(30px,5vw,50px)", marginTop: 12 }}>تقييمات المتدربين</h1>
-          <p className="lead">{s.testimonials_disclaimer}</p>
+          <p className="lead">تجارب متدربين حقيقية، تُنشر بموافقتهم وبدون أي تعديل على النص.</p>
         </div>
       </section>
       <section className="section tight">
         <div className="wrap">
           <div className="reviews">{reviews.map((r) => <ReviewCard key={r.id} r={r} />)}</div>
-          <p className="small muted">كل تقييم يُراجع قبل النشر ولا يُعدّل نصه. <Link href="/policies#reviews">سياسة التقييمات</Link></p>
+          <p className="small muted">{s.testimonials_disclaimer} كل تقييم يُراجع قبل النشر ولا يُعدّل نصه. <Link href="/policies#reviews">سياسة التقييمات</Link></p>
+          <div className="row" style={{ marginTop: 24, gap: "8px 24px" }}>
+            <Link href="/programs" className="btn">البرامج والأسعار</Link>
+            <Link href="/faq" className="text-link">الأسئلة الشائعة ←</Link>
+          </div>
         </div>
       </section>
     </div>

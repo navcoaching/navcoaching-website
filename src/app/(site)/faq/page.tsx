@@ -36,7 +36,7 @@ export default async function Faq() {
               <div className="bank">
                 <div><span className="muted small">اسم الحساب</span><div>{s.bank.accountName}</div></div>
                 <div><span className="muted small">البنك</span><div>{s.bank.bankName}</div></div>
-                <div><span className="muted small">الآيبان</span><div className="iban"><bdi>{s.bank.iban}</bdi></div></div>
+                <div><span className="muted small">الآيبان</span><div className="iban" dir="ltr">{s.bank.iban.replace(/\s+/g, "").replace(/(.{4})/g, "$1 ").trim()}</div></div>
                 <CopyButton value={s.bank.iban} label="نسخ الآيبان" />
               </div>
               <p className="small muted" style={{ marginTop: 10 }}>التحويل يكون بعد إرسال الاستبيان فقط، وظهور رقم الطلب والمبلغ.</p>

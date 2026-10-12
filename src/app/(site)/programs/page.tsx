@@ -65,6 +65,7 @@ export default async function Programs() {
         <section className="section tight white">
           <div className="wrap">
             <div className="sec-head"><span className="eyebrow">مقارنة</span><h2>مقارنة باقات المتابعة</h2></div>
+            <p className="compare-hint">سحب الجدول جانبياً يعرض باقي الباقات ←</p>
             <div className="table-wrap">
               <table className="t">
                 <thead>

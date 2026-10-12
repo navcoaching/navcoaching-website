@@ -15,9 +15,8 @@ export default function Shots({ shots }: { shots: Settings["program_shots"] }) {
             <button type="button" onClick={() => { setCur(i); dlg.current?.showModal(); }} aria-label={`تكبير: ${sh.title}`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={shotSrc(sh.src)} alt={sh.alt} width={sh.w} height={sh.h} loading="eager" decoding="async" />
-              <span className="tag soft sample">نموذج توضيحي</span>
             </button>
-            <figcaption><b>{sh.title}</b><span>{sh.caption}</span></figcaption>
+            <figcaption><b>{sh.title} <span className="tag soft sample">نموذج توضيحي</span></b><span>{sh.caption}</span></figcaption>
           </figure>
         ))}
       </div>
