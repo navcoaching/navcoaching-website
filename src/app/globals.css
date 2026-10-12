@@ -1786,6 +1786,7 @@ fieldset:has(> .stars-row) { min-inline-size: 0; }
 
 /* الرئيسية للإدارة: أرقام اليوم مختصرة بصف واحد، والمهام قبل الرسوم */
 .stat-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 10px; }
+@media (max-width: 640px) { .stat-chips { grid-template-columns: repeat(2, minmax(0, 1fr)); } .app .stat-chips .card.stat b { font-size: 22px; } }
 .app .stat-chips .card.stat { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 2px 10px; padding: 12px 16px; min-height: 64px; }
 .app .stat-chips .card.stat b { grid-column: 2; grid-row: 1 / span 2; font-size: 26px; line-height: 1; }
 .stat-chips .stat > span { grid-column: 1; }
@@ -1821,3 +1822,4 @@ body:has(.account-shell) .site-footer .foot-legal { margin-top: 0; padding-top: 
 .setup-fold > summary::-webkit-details-marker { display: none; }
 .setup-fold > summary::after { content: ""; margin-inline-start: auto; width: 8px; height: 8px; border: solid currentColor; border-width: 0 0 2px 2px; transform: rotate(-45deg); transition: transform .2s; color: var(--muted); }
 .setup-fold[open] > summary::after { transform: rotate(135deg); }
+@media (max-width: 640px) { .dash-lists, [data-testid="monthly-stats"] .grid { grid-template-columns: minmax(0, 1fr) !important; } }
