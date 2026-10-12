@@ -298,12 +298,13 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
         <p className="small muted">الطلبات بدون المجانية والتجريبية. المبالغ لطلبات تأكد دفعها (حسب شهر الدفع)، بدون الملغاة والمجانية.</p>
       </section>
       <div className="grid g2" style={{ alignItems: "start" }}>
-        <div className="card" id="setup" style={{ scrollMarginTop: 90 }}>
-          <h2 style={{ fontSize: 18, marginBottom: 12 }}>حالة الإعداد</h2>
-          <ul className="checklist">
+        {/* مطوية افتراضياً، وتنفتح تلقائياً إذا حماية البيانات غير مفعّلة */}
+        <details className="card setup-fold" id="setup" style={{ scrollMarginTop: 90 }} open={!rlsOk || undefined} data-testid="setup-fold">
+          <summary><h2 style={{ fontSize: 18 }}>حالة الإعداد</h2><span className="small muted">{setup.filter((x) => x.ok).length} من {setup.length} مفعّل</span></summary>
+          <ul className="checklist" style={{ marginTop: 12 }}>
             {setup.map((x) => <li key={x.label} className={x.ok ? "" : "no"}><b>{x.label}</b> — {x.ok ? "مفعّل" : "غير مفعّل"}<br /><span className="small muted">{x.hint}</span></li>)}
           </ul>
-        </div>
+        </details>
       </div>
     </div>
   );

@@ -1817,3 +1817,7 @@ body:has(.account-shell) .site-footer .foot-legal { margin-top: 0; padding-top: 
 .chart-table table.t { min-width: 0; }
 .chart-table td { white-space: nowrap; }
 .chg-down, .chg-up { color: inherit; }
+.setup-fold > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; min-height: 44px; }
+.setup-fold > summary::-webkit-details-marker { display: none; }
+.setup-fold > summary::after { content: ""; margin-inline-start: auto; width: 8px; height: 8px; border: solid currentColor; border-width: 0 0 2px 2px; transform: rotate(-45deg); transition: transform .2s; color: var(--muted); }
+.setup-fold[open] > summary::after { transform: rotate(135deg); }

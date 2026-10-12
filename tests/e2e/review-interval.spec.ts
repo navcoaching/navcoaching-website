@@ -73,6 +73,10 @@ test("الأساسية: المراجعة كل أسبوعين للمتدرب وا
   await expect(summary).toContainText("حماية البيانات بين الحسابات");
   await summary.getByRole("link", { name: /حالة الإعداد/ }).click();
   await expect(coach.getByRole("heading", { name: "حالة الإعداد" })).toBeInViewport();
+  // «حالة الإعداد» قائمة مطوية: الضغط على العنوان يفتحها
+  const fold = coach.getByTestId("setup-fold");
+  if ((await fold.getAttribute("open")) === null) await fold.locator("summary").click();
+  await expect(fold.locator(".checklist")).toBeVisible();
   await noHorizontalScroll(coach);
 
   await coach.goto(`/admin/orders/${orderNo}`);
