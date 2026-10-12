@@ -37,7 +37,7 @@ export default function VideoButton({ url, label = "▶ فيديو", title, clas
                 title={title ?? "فيديو"} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen data-testid="video-iframe" />
             )}
           </div>
-          <a className="small muted" href={url} target="_blank" rel="noopener noreferrer">{tt ? "ما اشتغل؟ افتحه في تيك توك" : "ما اشتغل؟ افتحه في يوتيوب"}</a>
+          <a className="small muted" href={url} target="_blank" rel="noopener noreferrer">{tt ? "ما اشتغل؟ الفتح في تيك توك" : "ما اشتغل؟ الفتح في يوتيوب"}</a>
         </div>
       </dialog>
     </>

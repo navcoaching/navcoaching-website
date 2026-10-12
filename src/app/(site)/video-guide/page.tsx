@@ -29,7 +29,7 @@ export default async function VideoGuide() {
         <div className={vertical ? "wrap short" : "wrap guide-video"}>
           {id ? <YouTubeShort id={id} title={title} wide={!vertical} />
             : <p className="muted">الفيديو قريباً.</p>}
-          <p className="muted small" style={{ marginTop: 16 }}>الفيديو لا يعمل تلقائياً: تشغيل المقطع من الصورة، أو فتحه في تطبيق يوتيوب. <Link href="/program-preview">نظرة داخل البرنامج ←</Link></p>
+          <p className="muted small" style={{ marginTop: 16 }}>{id && "الفيديو لا يعمل تلقائياً: تشغيل المقطع من الصورة، أو فتحه في تطبيق يوتيوب. "}<Link href="/program-preview">نظرة داخل البرنامج ←</Link></p>
         </div>
       </section>
     </div>

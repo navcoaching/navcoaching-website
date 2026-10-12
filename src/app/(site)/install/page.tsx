@@ -48,7 +48,7 @@ const AppIcon = ({ y = 120 }: { y?: number }) => (
 const IosShare = () => (
   <Phone label="زر المشاركة أسفل شاشة Safari">
     <Lines y={70} />
-    <Tap x={110} y={230} text="اضغط هنا ↓" />
+    <Tap x={110} y={230} text="هنا ↓" />
     <rect x="16" y="282" width="188" height="60" fill={C.bar} />
     <g stroke={C.ink} strokeWidth="3.2" fill="none" strokeLinecap="round" strokeLinejoin="round">
       <path d="M100 300 h-6 v24 h32 v-24 h-6" /><line x1="110" y1="290" x2="110" y2="314" /><polyline points="102,297 110,289 118,297" />
@@ -100,7 +100,7 @@ const AndroidMenu = () => (
     <text x="128" y="51" fontSize="11" fill={C.muted} textAnchor="middle" fontFamily="Arial, sans-serif">navcoaching.com</text>
     <g fill={C.ink}><circle cx="36" cy="37" r="3.6" /><circle cx="36" cy="46" r="3.6" /><circle cx="36" cy="55" r="3.6" /></g>
     <Ring cx={36} cy={46} r={20} />
-    <Tap x={78} y={104} text="↑ اضغط هنا" />
+    <Tap x={78} y={104} text="↑ هنا" />
     <Lines y={150} />
   </Phone>
 );
@@ -122,25 +122,28 @@ const AndroidAdd = () => (
 );
 
 const IOS = [
-  { art: <IosShare />, text: <>افتح <b>navcoaching.com</b> في متصفح <b>Safari</b>، ثم اضغط زر <b>المشاركة</b> (مربع وسهم للأعلى) أسفل الشاشة. في iPad تجده أعلى الشاشة.</> },
+  { art: <IosShare />, text: <>فتح <b>navcoaching.com</b> في متصفح <b>Safari</b>، ثم الضغط على زر <b>المشاركة</b> (مربع وسهم للأعلى) أسفل الشاشة. في iPad يكون أعلى الشاشة.</> },
   { art: <IosAdd />, text: <>النزول في القائمة واختيار <b>«إضافة إلى الشاشة الرئيسية»</b>. إذا ما ظهر: «تعديل الإجراءات» ثم تفعيله.</> },
-  { art: <Confirm label="زر «إضافة» في أعلى الشاشة" add="إضافة" cancel="إلغاء" />, text: <>اضغط <b>«إضافة»</b> أعلى الشاشة. بتلقى أيقونة Nav على شاشتك الرئيسية، ويفتح منها حسابك مباشرة.</> },
+  { art: <Confirm label="زر «إضافة» في أعلى الشاشة" add="إضافة" cancel="إلغاء" />, text: <>الضغط على <b>«إضافة»</b> أعلى الشاشة. تظهر أيقونة Nav على الشاشة الرئيسية، ويفتح منها حسابك مباشرة.</> },
 ];
 const ANDROID = [
-  { art: <AndroidMenu />, text: <>افتح <b>navcoaching.com</b> في متصفح <b>Chrome</b>، ثم اضغط زر <b>القائمة ⋮</b> (ثلاث نقاط) أعلى الشاشة.</> },
+  { art: <AndroidMenu />, text: <>فتح <b>navcoaching.com</b> في متصفح <b>Chrome</b>، ثم الضغط على زر <b>القائمة ⋮</b> (ثلاث نقاط) أعلى الشاشة.</> },
   { art: <AndroidAdd />, text: <>اختيار <b>«تثبيت التطبيق»</b> أو <b>«إضافة إلى الشاشة الرئيسية»</b> (الاسم يختلف حسب إصدار الجوال).</> },
-  { art: <AndroidConfirm />, text: <>أكّد بالضغط على <b>«تثبيت»</b> أو <b>«إضافة»</b>. تظهر أيقونة Nav على الشاشة الرئيسية أو قائمة التطبيقات.</> },
+  { art: <AndroidConfirm />, text: <>التأكيد بالضغط على <b>«تثبيت»</b> أو <b>«إضافة»</b>. تظهر أيقونة Nav على الشاشة الرئيسية أو قائمة التطبيقات.</> },
 ];
 
 export default function InstallGuide() {
   return (
-    <section className="section tight pub">
+    <div className="pub">
+    <section className="page-hero">
+      <div className="wrap">
+        <span className="eyebrow">دليل سريع</span>
+        <h1 style={{ fontSize: "clamp(30px,5vw,50px)", marginTop: 12 }}>إضافة الموقع كتطبيق على الجوال</h1>
+        <p className="lead">أيقونة على الشاشة الرئيسية تفتح حسابك بضغطة، بدون تحميل من المتجر. يفتح بملء الشاشة ويحتاج اتصال إنترنت.</p>
+      </div>
+    </section>
+    <section className="section tight">
       <div className="wrap stack" style={{ ["--space" as string]: "20px", maxWidth: 900 }}>
-        <div>
-          <span className="eyebrow">دليل سريع</span>
-          <h1 style={{ fontSize: "clamp(26px,4vw,36px)", marginTop: 8 }}>أضف الموقع كتطبيق على جوالك</h1>
-          <p className="muted">أيقونة على شاشتك الرئيسية تفتح حسابك بضغطة، بدون تحميل من المتجر. يفتح بملء الشاشة ويحتاج اتصال إنترنت.</p>
-        </div>
         {[["ios", "iPhone و iPad (متصفح Safari)", IOS], ["android", "أندرويد (متصفح Chrome)", ANDROID]].map(([id, title, steps]) => (
           <div key={id as string} className="card stack" aria-labelledby={`${id}-h`}>
             <h2 id={`${id}-h`} style={{ fontSize: 22 }}>{title as string}</h2>
@@ -158,14 +161,15 @@ export default function InstallGuide() {
         <section className="card stack" aria-labelledby="after-h" data-testid="install-after">
           <h2 id="after-h" style={{ fontSize: 20 }}>بعد التثبيت</h2>
           <ul className="stack" style={{ ["--space" as string]: "8px", margin: 0, paddingInlineStart: 20 }}>
-            <li><b>🔔 إشعارات الجوال:</b> من التطبيق: «حسابي» ← «إشعارات الجوال» ← «تفعيل الإشعارات على هذا الجهاز». يوصلك تنبيه عند رد المدربة، وتحديث برنامجك، وموعد المراجعة. على الآيفون المطلوب iOS 16.4 أو أحدث، وتشتغل فقط من التطبيق المضاف للشاشة الرئيسية.</li>
-            <li><b>اختصارات:</b> الضغط المطوّل على أيقونة التطبيق يفتح مباشرة: جدول التمرين، سجّل أكلك، المراجعة الأسبوعية، أو التقدم.</li>
-            <li><b>📶 بدون نت:</b> تظهر صفحة تنبيه بدل صفحة خطأ، وترجع لحسابك أول ما يرجع الاتصال.</li>
+            <li><b>إشعارات الجوال:</b> من التطبيق: «حسابي» ← «إشعارات الجوال» ← «تفعيل الإشعارات على هذا الجهاز». يوصل تنبيه عند رد المدربة، وتحديث برنامجك، وموعد المراجعة. على الآيفون المطلوب iOS 16.4 أو أحدث، وتشتغل فقط من التطبيق المضاف للشاشة الرئيسية.</li>
+            <li><b>اختصارات:</b> الضغط المطوّل على أيقونة التطبيق يفتح مباشرة: جدول التمرين، تسجيل الأكل، المراجعة الأسبوعية، أو التقدم.</li>
+            <li><b>بدون نت:</b> تظهر صفحة تنبيه بدل صفحة خطأ، والحساب يرجع أول ما يرجع الاتصال.</li>
           </ul>
         </section>
         <p className="small muted">في iPhone تعمل الإضافة من Safari فقط. الرسومات توضيحية، وقد يختلف شكل القوائم حسب إصدار النظام.</p>
-        <Link href="/account" className="btn" style={{ width: "fit-content" }}>رجوع لحسابي</Link>
+        <Link href="/account" className="text-link">حسابي ←</Link>
       </div>
     </section>
+    </div>
   );
 }

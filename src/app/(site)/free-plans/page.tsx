@@ -21,7 +21,8 @@ export default async function FreePlans() {
           <span className="eyebrow">الجداول المجانية</span>
           <h1 style={{ fontSize: "clamp(30px,5vw,50px)", marginTop: 12 }}>جداول تدريب مجانية</h1>
           <p className="lead" style={{ maxWidth: 720 }}>
-            جداول تدريب مجانية تساعد على تنظيم التمارين والبدء بخطوات واضحة حسب الهدف. إنشاء حساب وطلب الجدول المناسب، ثم تحميل ملف PDF من لوحة التحكم في الحساب.
+            {plans.length ? "جداول تدريب مجانية تساعد على تنظيم التمارين والبدء بخطوات واضحة حسب الهدف. إنشاء حساب وطلب الجدول المناسب، ثم تحميل ملف PDF من لوحة التحكم في الحساب."
+              : "الجداول المجانية قيد الإعداد. إلى ذلك الحين، حاسبة السعرات متاحة مجاناً."}
           </p>
         </div>
       </section>
@@ -29,8 +30,11 @@ export default async function FreePlans() {
         <div className="wrap stack" style={{ ["--space" as string]: "22px" }}>
           {plans.length === 0 ? (
             <div className="card stack">
-              <p>ما فيه جداول مجانية منشورة حالياً. تابعونا، وبنضيفها قريباً.</p>
-              <Link href="/programs" className="btn btn-ghost" style={{ width: "fit-content" }}>تصفّح البرامج</Link>
+              <p>الجداول المجانية قيد الإعداد.</p>
+              <div className="row" style={{ gap: "8px 24px" }}>
+                <Link href="/calculator" className="btn" style={{ width: "fit-content" }}>حاسبة السعرات</Link>
+                <Link href="/programs" className="text-link">البرامج والأسعار ←</Link>
+              </div>
             </div>
           ) : (
             <ul className="fp-grid" data-testid="free-plans">

@@ -73,7 +73,7 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await expect(page.getByRole("link", { name: /المكثفة/ }).first()).toBeVisible();
   await noHorizontalScroll(page);
   await page.goto("/programs/intensive");
-  await expect(page.getByText("599").first()).toBeVisible();
+  await expect(page.locator("#offers").getByText("599").first()).toBeVisible();
   await expect(page.getByText("ماذا يشمل؟")).toBeVisible();
   await noHorizontalScroll(page);
 

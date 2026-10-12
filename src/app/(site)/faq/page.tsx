@@ -7,7 +7,7 @@ import { waLink } from "@/lib/format";
 import JsonLd, { plain, siteUrl } from "@/components/JsonLd";
 
 export const revalidate = 3600; // ساعة. تعديلات الإدارة تُحدّث الصفحات فوراً (revalidatePath)، فلا حاجة لإعادة توليد كل 5 دقائق (وهي ما تسبب بطء أول زائر)
-export const metadata: Metadata = { title: "الأسئلة الشائعة عن برامج التدريب والتغذية", description: "إجابات عن الاشتراك والدفع والمتابعة والمراجعة الأسبوعية وبرامج التدريب والتغذية مع الكوتش ساره قبل ما تشترك." };
+export const metadata: Metadata = { title: "الأسئلة الشائعة عن برامج التدريب والتغذية", description: "إجابات عن الاشتراك والدفع والمتابعة والمراجعة الأسبوعية وبرامج التدريب والتغذية مع الكوتش ساره قبل الاشتراك." };
 
 export default async function Faq() {
   const [faqs, s] = await Promise.all([getFaqs(), getSettings()]);
@@ -17,7 +17,7 @@ export default async function Faq() {
       <section className="page-hero">
         <div className="wrap">
           <span className="eyebrow">الأسئلة الشائعة</span>
-          <h1 style={{ fontSize: "clamp(30px,5vw,50px)", marginTop: 12 }}>قبل ما تشترك</h1>
+          <h1 style={{ fontSize: "clamp(30px,5vw,50px)", marginTop: 12 }}>قبل الاشتراك</h1>
         </div>
       </section>
       <section className="section tight">
@@ -43,8 +43,8 @@ export default async function Faq() {
             </div>
             <div className="card flat">
               <p>لم يظهر الجواب؟</p>
-              <a className="btn btn-block" style={{ marginTop: 10 }} href={waLink(s.contact.whatsapp)} target="_blank" rel="noopener">راسلنا على واتساب</a>
-              <Link className="btn btn-ghost btn-block" style={{ marginTop: 8 }} href="/policies">السياسات الكاملة</Link>
+              <a className="btn btn-block" style={{ marginTop: 10 }} href={waLink(s.contact.whatsapp)} target="_blank" rel="noopener">التواصل عبر واتساب</a>
+              <Link className="text-link" style={{ marginTop: 8 }} href="/policies">السياسات الكاملة ←</Link>
             </div>
           </aside>
         </div>

@@ -4,7 +4,7 @@ import type { Settings } from "@/lib/data";
 import { waLink } from "@/lib/format";
 import { IconInstagram, IconWhatsApp } from "./Icons";
 
-export default function Footer({ s }: { s: Settings }) {
+export default function Footer({ s, hasFreePlans = true }: { s: Settings; hasFreePlans?: boolean }) {
   return (
     <>
       <footer className="site-footer">
@@ -33,7 +33,7 @@ export default function Footer({ s }: { s: Settings }) {
               <h2>أدوات مجانية</h2>
               <ul>
                 <li><Link href="/calculator">حاسبة السعرات</Link></li>
-                <li><Link href="/free-plans">الجداول المجانية</Link></li>
+                {hasFreePlans && <li><Link href="/free-plans">الجداول المجانية</Link></li>}
                 {s.guide_video?.url && <li><Link href="/video-guide">فيديو شرح استخدام الموقع</Link></li>}
                 <li><Link href="/program-preview">نظرة داخل البرنامج</Link></li>
               </ul>

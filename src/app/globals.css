@@ -1283,12 +1283,9 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 .how-shot img { width: 100%; height: auto; border-radius: 10px; background: #fff; }
 @media (max-width: 900px) { .how-grid { grid-template-columns: minmax(0, 1fr); } }
 
-/* ---------- رأس الصفحات الداخلية: فاتح بشبكة نقاط وخطوط مائلة ---------- */
+/* ---------- رأس الصفحات الداخلية: فاتح بخطوط الشعار المائلة فقط (بدون شبكة نقاط، مثل الرئيسية) ---------- */
 .pub .page-hero {
-  background:
-    linear-gradient(180deg, transparent 40%, var(--pub-bg)),
-    radial-gradient(circle at 1px 1px, var(--dot) 1.2px, transparent 0) 0 0 / 56px 56px,
-    var(--pub-bg);
+  background: var(--pub-bg);
   color: var(--text); border-bottom: 1px solid var(--line);
 }
 .pub .page-hero::after {
@@ -1619,7 +1616,7 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 :root { --pub-soft: #eef3fa; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --pub-soft: #0e1b28; } }
 :root[data-theme="dark"] { --pub-soft: #0e1b28; }
-.pub .section.deco { position: relative; overflow: hidden; }
+.pub .section.deco { position: relative; overflow: clip; }
 .pub .section.deco::before {
   content: ""; position: absolute; top: -10%; height: 120%; inset-inline-start: -90px; width: 340px; pointer-events: none;
   background: repeating-linear-gradient(90deg, var(--logo-cyan) 0 50px, transparent 50px 100px); transform: skewX(var(--slant)); opacity: 0.07;
@@ -1631,3 +1628,38 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 /* أيقونات قائمة الحساب الخطية */
 .account-side .nav-ico { display: inline-grid; place-items: center; color: var(--primary); }
 .account-side .nav-ico svg { display: block; }
+
+/* صفحة الباقة: السعر وزر الاشتراك في الهيرو، صندوق المدة أولاً على الجوال، وشريط ثابت أسفل الشاشة */
+.hero-buy { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 22px; }
+.hero-buy .price { margin: 0; }
+.hero-buy .price b { font-size: 34px; }
+.offers-card { position: sticky; top: calc(var(--header-h) + 16px); scroll-margin-top: calc(var(--header-h) + 16px); }
+.offers-card .save { color: var(--ok); font-weight: 600; }
+.product-layout .timeline li { color: var(--text); }
+@media (max-width: 960px) {
+  .product-layout > .offers-card { order: -1; position: static; }
+}
+.buy-bar { display: none; }
+@media (max-width: 760px) {
+  .buy-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    position: fixed; inset-inline: 0; bottom: 0; z-index: 40;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    background: var(--surface); border-top: 1px solid var(--line); box-shadow: 0 -8px 24px rgba(7, 20, 42, 0.08);
+  }
+  .buy-bar .price { margin: 0; }
+  .buy-bar .price b { font-size: 22px; }
+  .pub:has(.buy-bar) { padding-bottom: 72px; }
+}
+.crumbs a { color: var(--accent-text); }
+
+/* الأقسام الملوّنة تحت رأس الصفحات الداخلية: نفس خطوط الشعار المائلة الخفيفة في الرئيسية */
+.pub .page-hero + .section:not(.white) { position: relative; overflow: clip; }
+.pub .page-hero + .section:not(.white)::before {
+  content: ""; position: absolute; top: -10%; height: 120%; inset-inline-start: -90px; width: 340px; pointer-events: none;
+  background: repeating-linear-gradient(90deg, var(--logo-cyan) 0 50px, transparent 50px 100px); transform: skewX(var(--slant)); opacity: 0.07;
+}
+.pub .page-hero + .section:not(.white) > .wrap { position: relative; z-index: 1; }
+@media (max-width: 700px) { .pub .page-hero + .section:not(.white)::before { width: 180px; opacity: 0.05; } }
+/* على الجوال: صندوق المدة يأتي مباشرة بعد العنوان، والشريط الثابت يكفي، فلا نكرر السعر والزر في الهيرو */
+@media (max-width: 760px) { .hero-buy { display: none; } }

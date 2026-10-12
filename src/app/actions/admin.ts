@@ -711,9 +711,8 @@ export async function saveFreePlanAction(_: ActionState, fd: FormData): Promise<
     if ((err as { code?: string }).code === "23505") return { error: "هذا الرابط مستخدم لجدول آخر. اختاري رابطاً مختلفاً." };
     return fail(err);
   }
-  revalidatePath("/free-plans");
-  revalidatePath(`/free-plans/${v.slug}`);
-  revalidatePath("/admin/free-plans");
+  // التذييل يعرض رابط «الجداول المجانية» فقط إذا فيه جدول منشور، فنحدّث كل الصفحات
+  revalidatePath("/", "layout");
   if (!v.id) redirect(`/admin/free-plans/${id}?created=1`);
   return { ok: true, message: uploaded ? "تم الحفظ ورفع ملف PDF الجديد." : "تم الحفظ." };
 }

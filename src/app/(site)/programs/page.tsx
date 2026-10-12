@@ -64,7 +64,7 @@ export default async function Programs() {
       {showCompare && (
         <section className="section tight white">
           <div className="wrap">
-            <div className="sec-head"><span className="eyebrow">مقارنة</span><h2>قارن بين باقات المتابعة</h2></div>
+            <div className="sec-head"><span className="eyebrow">مقارنة</span><h2>مقارنة باقات المتابعة</h2></div>
             <div className="table-wrap">
               <table className="t">
                 <thead>

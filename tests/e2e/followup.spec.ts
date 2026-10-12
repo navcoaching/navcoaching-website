@@ -332,7 +332,7 @@ test("الاستبيان: العمر والقياسات وسؤال التوقع�
 test("دليل إضافة الموقع للشاشة الرئيسية وملف التطبيق", async ({ browser }, info) => {
   const page = await newPage(browser, info.project.name + "-i");
   await page.goto("/install");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("أضف الموقع كتطبيق على جوالك");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("إضافة الموقع كتطبيق على الجوال");
   await expect(page.getByRole("heading", { name: /iPhone/ })).toBeVisible();
   await expect(page.getByRole("heading", { name: /أندرويد/ })).toBeVisible();
   await expect(page.locator(".install-steps li")).toHaveCount(6);

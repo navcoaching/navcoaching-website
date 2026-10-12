@@ -44,7 +44,9 @@ test("الرئيسية: الترتيب والهيرو والهيدر والتذ�
   const foot = page.locator(".site-footer");
   await expect(foot.getByRole("heading", { name: "أدوات مجانية" })).toBeVisible();
   await expect(foot.getByRole("link", { name: "حاسبة السعرات" })).toHaveAttribute("href", "/calculator");
-  await expect(foot.getByRole("link", { name: "الجداول المجانية" })).toHaveAttribute("href", "/free-plans");
+  // رابط الجداول المجانية يظهر فقط إذا فيه جدول منشور
+  const fp = foot.getByRole("link", { name: "الجداول المجانية" });
+  if (await fp.count()) await expect(fp).toHaveAttribute("href", "/free-plans");
   await expect(foot.getByRole("link", { name: "نظرة داخل البرنامج" })).toHaveAttribute("href", "/program-preview");
   await expect(page.getByText("الانتقال إلى المحتوى")).toHaveCount(1);
 });
@@ -65,4 +67,29 @@ test("نظرة داخل البرنامج: صفحة مستقلة", async ({ page 
   await page.goto("/program-preview");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("كيف يبدو البرنامج من الداخل؟");
   await expect(page.locator("img").first()).toBeVisible();
+});
+
+test("صفحة الباقة: السعر وزر الاشتراك في أول الشاشة، وشريط ثابت على الجوال", async ({ page }, info) => {
+  await page.goto("/programs/intensive");
+  const offers = page.locator("#offers");
+  const top = await offers.evaluate((e) => e.getBoundingClientRect().top + scrollY);
+  const phone = (page.viewportSize()?.width ?? 1440) <= 760;
+  if (phone) {
+    // صندوق المدة مباشرة بعد العنوان، والشريط الثابت ظاهر
+    expect(top).toBeLessThan(900);
+    await expect(page.getByTestId("buy-bar")).toBeVisible();
+    await expect(page.getByTestId("hero-buy")).toBeHidden();
+  } else {
+    await expect(page.getByTestId("hero-buy")).toBeVisible();
+    await expect(page.getByTestId("buy-bar")).toBeHidden();
+  }
+  // توفير عرض الـ 3 أشهر محسوب من سعر الشهر
+  await expect(offers).toContainText("توفير");
+  // خط «وش يصير بعد الطلب؟» بدون خطوات مكتملة
+  await expect(page.locator(".timeline li.done")).toHaveCount(0);
+  // رأس الصفحات الداخلية بدون شبكة النقاط
+  expect(await page.locator(".page-hero").evaluate((e) => getComputedStyle(e).backgroundImage)).not.toContain("radial-gradient");
+  const [sw, iw] = await page.evaluate(() => [document.documentElement.scrollWidth, window.innerWidth]);
+  expect(sw).toBeLessThanOrEqual(iw);
+  void info;
 });
