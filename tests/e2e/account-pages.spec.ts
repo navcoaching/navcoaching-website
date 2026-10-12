@@ -85,6 +85,11 @@ test("حساب المتدرب: التقدم، سجل الماكروز، التع
   await expect(page.getByTestId("progress-stats")).toContainText("69.8 كغ");
   await expect(page.getByTestId("progress-stats")).toContainText("-0.6");
   await expect(page.getByTestId("prs")).toContainText("Mid Leg Press");
+  // الضغط على رسم الوزن يفتح جدول القراءات بالتاريخ واسم اليوم والقيمة
+  const wt = page.locator("section[aria-labelledby=wt-h]").getByTestId("chart-details");
+  await wt.getByText("عرض الأرقام بالتفصيل").click();
+  await expect(wt.locator("table")).toBeVisible();
+  await expect(wt.locator("tbody tr").first()).toContainText("69.8");
   await expect(page.locator(".account-side a[aria-current=page]")).toHaveText(/التقدم/);
   await noHorizontalScroll(page);
 

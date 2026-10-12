@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { withUser } from "@/lib/db";
-import { fmtDate } from "@/lib/format";
+import { fmtDate, fmtDay } from "@/lib/format";
 import { loadAllLifts, loadBodyData } from "@/lib/program-data";
 import { personalRecords } from "@/lib/training";
 import { kcalOf } from "@/lib/nutrition";
@@ -56,7 +56,7 @@ export default async function ProgressOverview({ coachId, o, adherence, weeks, i
   const reviewsDone = reviewsDue.filter((x) => x.status === "done").length;
   const lastMissed = reviewsDue.filter((x) => x.status === "missed").at(-1);
   const goal = Number(d.steps[0]?.goal ?? 0);
-  const stepPts = d.steps.filter((s) => s.week_no != null).map((s) => ({ x: `أ${s.week_no}`, y: Number(s.total) }));
+  const stepPts = d.steps.filter((s) => s.week_no != null).map((s) => ({ x: `الأسبوع ${s.week_no}`, y: Number(s.total) }));
   const prs = personalRecords(d.lifts).filter((p) => p.status !== "first").sort((a, b) => b.best_at.localeCompare(a.best_at)).slice(0, 5);
   const bars = adherence?.weeks.slice(-8) ?? [];
 
@@ -99,17 +99,17 @@ export default async function ProgressOverview({ coachId, o, adherence, weeks, i
         </section>
         <section className="card stack" style={{ ["--space" as string]: "8px" }}>
           <h3 style={{ fontSize: 17 }}>الوزن</h3>
-          <LineChart title="الوزن بالكيلو" unit=" كغ" series={[{ label: "الوزن", points: w.slice(-30).map((x) => ({ x: short(x.logged_on), y: x.kg })) }]} />
+          <LineChart title="الوزن بالكيلو" unit=" كغ" series={[{ label: "الوزن", points: w.slice(-30).map((x) => ({ x: short(x.logged_on), y: x.kg, full: fmtDay(x.logged_on) })) }]} />
         </section>
         <section className="card stack" style={{ ["--space" as string]: "8px" }}>
           <h3 style={{ fontSize: 17 }}>القياسات (سم)</h3>
           <LineChart title="القياسات بالسنتيمتر" unit=" سم" series={([["waist", "الخصر", "var(--navy)"], ["hips", "الحوض", "#c77d00"], ["chest", "الصدر", "#7a4cc2"], ["thigh", "الفخذ", "var(--ok)"]] as const).map(([k, l, color]) => ({
-            label: l, color, points: d.body.measurements.filter((m) => m[k] != null).map((m) => ({ x: short(m.measured_on), y: m[k] as number })),
+            label: l, color, points: d.body.measurements.filter((m) => m[k] != null).map((m) => ({ x: short(m.measured_on), y: m[k] as number, full: fmtDay(m.measured_on) })),
           })).filter((s) => s.points.length)} />
         </section>
         <section className="card stack" style={{ ["--space" as string]: "8px" }}>
           <h3 style={{ fontSize: 17 }}>الخطوات الأسبوعية</h3>
-          {stepPts.length ? <LineChart title="الخطوات الأسبوعية مقابل الهدف" goal={goal || null} series={[{ label: "الخطوات", points: stepPts }]} />
+          {stepPts.length ? <LineChart title="الخطوات الأسبوعية مقابل الهدف" xLabel="الأسبوع" goal={goal || null} series={[{ label: "الخطوات", points: stepPts }]} />
             : <p className="small muted">ما سجّل خطواته في البرنامج الحالي.</p>}
         </section>
       </div>

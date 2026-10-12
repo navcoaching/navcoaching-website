@@ -1,9 +1,9 @@
 /** رسم خطي بسيط SVG (بدون مكتبات). يعرض من اليسار لليمين زمنياً مع تسميات واضحة.
  *  الخطوط داخل SVG يتمدد بعرض البطاقة، والتسميات HTML بحجم ثابت، فالنص ما يكبر ولا يصغر مع عرض الشاشة. */
-export type Series = { label: string; color?: string; points: { x: string; y: number }[] };
+export type Series = { label: string; color?: string; points: { x: string; y: number; full?: string }[] };
 
-export default function LineChart({ series, goal, unit = "", height = 200, title }: {
-  series: Series[]; goal?: number | null; unit?: string; height?: number; title: string;
+export default function LineChart({ series, goal, unit = "", height = 200, title, details = true, xLabel = "التاريخ" }: {
+  series: Series[]; goal?: number | null; unit?: string; height?: number; title: string; details?: boolean; xLabel?: string;
 }) {
   const xs = [...new Set(series.flatMap((s) => s.points.map((p) => p.x)))];
   const ys = series.flatMap((s) => s.points.map((p) => p.y)).concat(goal ? [goal] : []);
@@ -31,7 +31,7 @@ export default function LineChart({ series, goal, unit = "", height = 200, title
   const fmt = (v: number) => (Math.abs(max - min) > 50 ? Math.round(v).toLocaleString("en-US") : v.toFixed(1));
   const every = Math.ceil(xs.length / 7);
   const plotH = Math.round(height * 0.7);
-  return (
+  const figure = (
     <figure className="chart" dir="ltr">
       <div className="chart-plot" style={{ height: plotH }}>
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" role="img" aria-label={title}>
@@ -61,5 +61,47 @@ export default function LineChart({ series, goal, unit = "", height = 200, title
         </figcaption>
       )}
     </figure>
+  );
+  if (!details) return figure;
+  // الضغط على الرسم يفتح جدولاً بكل القراءات: التاريخ والقيمة، والتغيّر عن القراءة السابقة
+  const single = series.length === 1 ? series[0] : null;
+  const val = (s: Series, x: string) => s.points.find((p) => p.x === x);
+  const fmtN = (v: number) => (Number.isInteger(v) ? v.toLocaleString("en-US") : v.toFixed(1));
+  const rows = xs.map((x, i) => {
+    const full = series.map((s) => val(s, x)?.full).find(Boolean) ?? x;
+    let change: number | null = null;
+    if (single && i > 0) {
+      const cur = val(single, x)?.y, prev = val(single, xs[i - 1])?.y;
+      if (cur != null && prev != null) change = Math.round((cur - prev) * 10) / 10;
+    }
+    return { x, full, change };
+  }).reverse();
+  return (
+    <details className="chart-details" data-testid="chart-details">
+      <summary aria-label={`${title}: عرض الأرقام بالتفصيل`}>
+        {figure}
+        <span className="chart-more">عرض الأرقام بالتفصيل</span>
+      </summary>
+      <div className="table-wrap chart-table">
+        <table className="t">
+          <thead><tr>
+            <th>{xLabel}</th>
+            {series.map((s) => <th key={s.label} className="num">{single ? `${s.label}${unit ? ` (${unit.trim()})` : ""}` : s.label}</th>)}
+            {single && <th className="num">التغيّر</th>}
+            {single && goal ? <th className="num">من الهدف</th> : null}
+          </tr></thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.x}>
+                <td>{r.full}</td>
+                {series.map((s) => { const p = val(s, r.x); return <td key={s.label} className="num">{p ? <bdi dir="ltr">{fmtN(p.y)}</bdi> : "—"}</td>; })}
+                {single && <td className="num">{r.change == null ? "—" : <bdi dir="ltr" className={r.change < 0 ? "chg-down" : r.change > 0 ? "chg-up" : ""}>{r.change > 0 ? "+" : ""}{fmtN(r.change)}</bdi>}</td>}
+                {single && goal ? <td className="num">{(() => { const p = val(single, r.x); return p ? `${Math.round((p.y / goal) * 100)}%` : "—"; })()}</td> : null}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
   );
 }

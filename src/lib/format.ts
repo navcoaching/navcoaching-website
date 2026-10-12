@@ -39,3 +39,7 @@ export function waLink(number: string, text?: string) {
 export function localPhone(international: string) {
   return international.startsWith("966") ? `0${international.slice(3)}` : `+${international}`;
 }
+
+const dayFmt = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", { timeZone: "UTC", weekday: "long", day: "numeric", month: "long" });
+/** تاريخ بصيغة YYYY-MM-DD مع اسم اليوم: «الخميس 9 أكتوبر» */
+export const fmtDay = (ymd: string) => dayFmt.format(new Date(`${ymd.slice(0, 10)}T12:00:00Z`));

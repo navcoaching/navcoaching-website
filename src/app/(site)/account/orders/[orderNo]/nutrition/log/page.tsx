@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/session";
 import { withUser } from "@/lib/db";
-import { fmtDate } from "@/lib/format";
+import { fmtDate, fmtDay } from "@/lib/format";
 import { addDays, riyadhDate } from "@/lib/schedule";
 import { kcalOf, type Target } from "@/lib/nutrition";
 import LineChart from "@/components/LineChart";
@@ -68,11 +68,11 @@ export default async function MacroLogPage({ params }: { params: Promise<{ order
             <div className="grid g2">
               <section className="card stack">
                 <h2 style={{ fontSize: 17 }}>السعرات اليومية</h2>
-                <LineChart title="السعرات اليومية مقابل الهدف" goal={target?.kcal ?? null} series={[{ label: "السعرات", points: rows.map((r) => ({ x: short(r.log_date), y: Math.round(r.kcal) })) }]} />
+                <LineChart title="السعرات اليومية مقابل الهدف" goal={target?.kcal ?? null} series={[{ label: "السعرات", points: rows.map((r) => ({ x: short(r.log_date), y: Math.round(r.kcal), full: fmtDay(r.log_date) })) }]} />
               </section>
               <section className="card stack">
                 <h2 style={{ fontSize: 17 }}>البروتين اليومي</h2>
-                <LineChart title="البروتين اليومي مقابل الهدف" unit=" غ" goal={target?.protein ?? null} series={[{ label: "البروتين", points: rows.map((r) => ({ x: short(r.log_date), y: Math.round(r.protein) })) }]} />
+                <LineChart title="البروتين اليومي مقابل الهدف" unit=" غ" goal={target?.protein ?? null} series={[{ label: "البروتين", points: rows.map((r) => ({ x: short(r.log_date), y: Math.round(r.protein), full: fmtDay(r.log_date) })) }]} />
               </section>
             </div>
             {target && <p className="small muted" style={{ margin: 0 }}>الخط المتقطع الأخضر = هدفك.</p>}

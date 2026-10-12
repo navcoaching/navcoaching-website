@@ -1803,3 +1803,17 @@ body:has(.account-shell) .site-footer .foot-legal { margin-top: 0; padding-top: 
   .ex-filters .field, .more-filters-body .field { min-width: calc(50% - 5px); flex: 1 1 calc(50% - 5px); }
   .ex-filters .field:first-child { flex-basis: 100%; }
 }
+
+/* الرسوم: الضغط على الرسم يفتح جدول القراءات بالتفصيل */
+.chart-details > summary { display: block; list-style: none; cursor: pointer; border-radius: 12px; }
+.chart-details > summary::-webkit-details-marker { display: none; }
+.chart-details > summary:focus-visible { outline: 3px solid var(--cyan); outline-offset: 4px; }
+.chart-more { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--accent-text); font-weight: 600; text-decoration: underline; text-underline-offset: 5px; }
+.chart-more::after { content: ""; width: 7px; height: 7px; border: solid currentColor; border-width: 0 0 2px 2px; transform: rotate(-45deg); margin-top: -4px; transition: transform .2s; }
+.chart-details[open] .chart-more::after { transform: rotate(135deg); margin-top: 4px; }
+.chart-details[open] .chart-more { font-size: 0; }
+.chart-details[open] .chart-more::before { content: "إخفاء التفاصيل"; font-size: 15px; }
+.chart-table { margin-top: 6px; max-height: 360px; overflow-y: auto; }
+.chart-table table.t { min-width: 0; }
+.chart-table td { white-space: nowrap; }
+.chg-down, .chg-up { color: inherit; }

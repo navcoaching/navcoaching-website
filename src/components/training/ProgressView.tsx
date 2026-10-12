@@ -1,5 +1,5 @@
 import LineChart from "@/components/LineChart";
-import { fmtDate } from "@/lib/format";
+import { fmtDate, fmtDay } from "@/lib/format";
 import { personalRecords, weeklyAverages, weeklySummary, type LiftLog } from "@/lib/training";
 import type { BlockData, BodyData } from "@/lib/program-data";
 
@@ -43,13 +43,13 @@ export default function ProgressView({ data, body, lifts }: {
       <div className="grid g2">
         <section className="card stack" aria-labelledby="wt-h">
           <h2 id="wt-h" style={{ fontSize: 17 }}>الوزن</h2>
-          <LineChart title="الوزن بالكيلو" unit=" كغ" series={[{ label: "الوزن", points: recentW.map((w) => ({ x: short(w.logged_on), y: w.kg })) }]} />
+          <LineChart title="الوزن بالكيلو" unit=" كغ" series={[{ label: "الوزن", points: recentW.map((w) => ({ x: short(w.logged_on), y: w.kg, full: fmtDay(w.logged_on) })) }]} />
           {avgW.length > 1 && <p className="small muted">متوسط أول أسبوع {avgW[0].avg.toFixed(1)} ← آخر أسبوع {avgW[avgW.length - 1].avg.toFixed(1)} كغ</p>}
         </section>
         <section className="card stack" aria-labelledby="ms-h">
           <h2 id="ms-h" style={{ fontSize: 17 }}>القياسات (سم)</h2>
           <LineChart title="القياسات بالسنتيمتر" unit=" سم" series={M.map(([k, l]) => ({
-            label: l, points: body.measurements.filter((m) => m[k] != null).map((m) => ({ x: short(m.measured_on), y: m[k] as number })),
+            label: l, points: body.measurements.filter((m) => m[k] != null).map((m) => ({ x: short(m.measured_on), y: m[k] as number, full: fmtDay(m.measured_on) })),
           })).filter((s) => s.points.length)} />
         </section>
       </div>
@@ -57,7 +57,7 @@ export default function ProgressView({ data, body, lifts }: {
       {data && data.block.steps_goal_week > 0 && (
         <section className="card stack" aria-labelledby="st-h">
           <h2 id="st-h" style={{ fontSize: 17 }}>الخطوات الأسبوعية</h2>
-          <LineChart title="الخطوات الأسبوعية مقابل الهدف" goal={data.block.steps_goal_week}
+          <LineChart title="الخطوات الأسبوعية مقابل الهدف" xLabel="الأسبوع" goal={data.block.steps_goal_week}
             series={[{ label: "الخطوات", points: data.steps.map((s) => ({ x: `الأسبوع ${s.week_no}`, y: s.total })) }]} />
         </section>
       )}

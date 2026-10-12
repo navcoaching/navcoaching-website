@@ -290,7 +290,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
                 <span className={`small trend ${diff > 0 ? "up" : diff < 0 ? "down" : ""}`} data-testid={`trend-${k}`}>
                   هذا الشهر {cur.toLocaleString("en-US")}{unit} · {diff === 0 ? "مثل الشهر الماضي" : `${diff > 0 ? "↑" : "↓"} ${Math.abs(diff).toLocaleString("en-US")} عن الشهر الماضي`}
                 </span>
-                <LineChart title={title} unit={unit} height={160} series={[{ label: title, color, points: data.monthly.map((m) => ({ x: m.ym.slice(2), y: m[k] })) }]} />
+                <LineChart title={title} unit={unit} height={160} xLabel="الشهر" series={[{ label: title, color, points: data.monthly.map((m) => ({ x: m.ym.slice(2), y: m[k] })) }]} />
               </div>
             );
           })}
