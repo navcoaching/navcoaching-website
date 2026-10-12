@@ -78,8 +78,14 @@ export default async function Home() {
       <section className="section white" id="about">
         <div className="wrap grid g2" style={{ alignItems: "center" }}>
           <div className="stack reveal">
-            <span className="eyebrow">عن المدربة</span>
-            <h2>{s.about.name}</h2>
+            <div className="coach-head">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/coach-sara-portrait.webp" alt="" width={640} height={800} loading="lazy" />
+              <div>
+                <span className="eyebrow">عن المدربة</span>
+                <h2>{s.about.name}</h2>
+              </div>
+            </div>
             <p className="lead">{s.about.home_bio || s.about.bio}</p>
             <Link href="/about" className="text-link">القصة كاملة ←</Link>
           </div>

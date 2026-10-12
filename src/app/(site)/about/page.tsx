@@ -25,18 +25,17 @@ export default async function About() {
   return (
     <div className="pub">
       <section className="page-hero">
-        <div className={`wrap${photos[0] ? " about-hero" : ""}`}>
+        <div className="wrap about-hero">
           <div>
             <span className="eyebrow">عن المدربة</span>
             <h1 style={{ fontSize: "clamp(32px,6vw,56px)", marginTop: 12 }}>{a.name}</h1>
             <p className="lead">{a.bio}</p>
           </div>
-          {photos[0] && (
-            <figure className="about-photo">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/api/files/media/${photos[0].id}`} alt={photos[0].alt} fetchPriority="high" />
-            </figure>
-          )}
+          {/* الصورة المعتمدة من «الصور» إن وُجدت، وإلا صورة المدربة الافتراضية */}
+          <figure className="about-photo">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={photos[0] ? `/api/files/media/${photos[0].id}` : "/brand/coach-sara.webp"} alt={photos[0]?.alt || a.name} fetchPriority="high" />
+          </figure>
         </div>
       </section>
 

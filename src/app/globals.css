@@ -1696,3 +1696,9 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 .about-photo { margin: 0; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--surface); max-width: 420px; }
 .about-photo img { display: block; width: 100%; height: auto; }
 .about-quotes { margin-top: 8px; }
+
+/* صورة المدربة المصغّرة بجانب الاسم في الرئيسية */
+.coach-head { display: flex; align-items: center; gap: 16px; }
+.coach-head img { width: 96px; height: 96px; flex: none; border-radius: 50%; object-fit: cover; object-position: 50% 8%; border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--line); }
+.coach-head h2 { margin-top: 6px; }
+@media (max-width: 960px) { .about-photo img { aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 12%; } }
