@@ -53,7 +53,7 @@ export default function RenewalPopup({ offer, today }: { offer: Offer; today: st
   return (
     <div className="modal-backdrop" onClick={(e) => { if (e.target === e.currentTarget) later(); }}>
       <div className="modal card stack" role="dialog" aria-modal="true" aria-labelledby="renew-h" data-testid="renewal-popup" style={{ ["--space" as string]: "12px" }}>
-        <h2 id="renew-h" style={{ fontSize: 21 }}>اشتراكك ينتهي {leftText(offer.left)} ⏳</h2>
+        <h2 id="renew-h" style={{ fontSize: 21 }}>اشتراكك ينتهي {leftText(offer.left)}</h2>
         <p style={{ margin: 0 }}>
           إذا حاب تجدد اشتراكك في <b>{offer.product}</b>، لك خصم <b>10%</b> من سعر الباقة للحفاظ على مستواك وتطورك.
         </p>

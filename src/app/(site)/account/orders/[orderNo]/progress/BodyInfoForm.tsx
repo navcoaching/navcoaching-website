@@ -19,7 +19,7 @@ export default function BodyInfoForm({ orderNo, height, paf, days, minutes }: { 
         <div className="field"><label htmlFor="bi-min">مدة جلسة التمرين</label>
           <select id="bi-min" name="minutes" defaultValue={String(minutes)}>{[30, 45, 60, 75, 90, 120].map((m) => <option key={m} value={m}>{m} دقيقة</option>)}</select></div>
       </div>
-      <span className="hint">وزنك يتحدث تلقائياً من «سجّل وزنك». أي تغيير في سعراتك تراجعه المدربة قبل ما يتعدّل هدفك.</span>
+      <span className="hint">وزنك يتحدث تلقائياً من «تسجيل الوزن». أي تغيير في سعراتك تراجعه المدربة قبل ما يتعدّل هدفك.</span>
       <FormMessage state={state} />
       <Submit pending={pending} className="btn btn-sm">حفظ بياناتي</Submit>
     </form>

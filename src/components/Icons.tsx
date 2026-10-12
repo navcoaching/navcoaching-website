@@ -38,3 +38,7 @@ export const IconLock = (p: P) => <S {...p}><rect x="4.5" y="10.5" width="15" he
 export const IconReceipt = (p: P) => <S {...p}><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z" /><path d="M9 8h6M9 12h6M9 16h3" /></S>;
 export const IconSalad = (p: P) => <S {...p}><path d="M3.5 12h17a8.5 8.5 0 0 1-17 0z" /><path d="M8 12c0-3 1.5-5 4-6M12 12c0-2.5 1.2-4.5 3.5-5.5M7 21h10" /></S>;
 export const IconBook = (p: P) => <S {...p}><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z" /><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5" /></S>;
+export const IconHome = (p: P) => <S {...p}><path d="M4 11l8-7 8 7" /><path d="M6 10v10h12V10" /><path d="M10 20v-6h4v6" /></S>;
+export const IconClose = (p: P) => <S {...p}><path d="M6 6l12 12M18 6L6 18" /></S>;
+export const IconChevron = (p: P) => <S {...p}><path d="M15 6l-6 6 6 6" /></S>;
+export const IconClock = (p: P) => <S {...p}><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></S>;

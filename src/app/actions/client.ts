@@ -247,7 +247,7 @@ export async function submitExitSurveyAction(_: ActionState, fd: FormData): Prom
     `رد ${who} على استبيان نهاية البرنامج (${orderNo}):\n\nرغبة بالتجديد: ${wants === "yes" ? "نعم" : "لا"}\nالسبب: ${reason}\n\nتجربته: ${experience}\n\nNav Coaching`);
   revalidatePath("/account");
   revalidatePath(`/account/orders/${orderNo}`);
-  return { ok: true, message: "شكراً لك، وصلني ردك 🤍" };
+  return { ok: true, message: "شكراً لك، وصلني ردك." };
 }
 
 // ---------- موعد بداية البرنامج (قبل التفعيل) ----------

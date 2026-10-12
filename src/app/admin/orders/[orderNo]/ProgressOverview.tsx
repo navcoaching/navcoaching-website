@@ -7,6 +7,7 @@ import { kcalOf } from "@/lib/nutrition";
 import { addDays, riyadhDate } from "@/lib/schedule";
 import { pct, type Adherence } from "@/lib/adherence";
 import LineChart from "@/components/LineChart";
+import { IconCheck } from "@/components/Icons";
 
 type Week = { no: number; status: "done" | "current" | "missed" | "upcoming" };
 const short = (d: string) => d.slice(5).replace("-", "/");
@@ -65,7 +66,7 @@ export default async function ProgressOverview({ coachId, o, adherence, weeks, i
       <div className="kpis">
         <Kpi label="الالتزام" value={adherence?.avg != null ? pct(adherence.avg) : "—"} testId="kpi-adherence"
           sub={adherence?.scored ? `متوسط ${adherence.scored} أسابيع مكتملة` : "يبدأ بعد أول أسبوع كامل"} />
-        <Kpi label="🔥 أسابيع متتالية" value={String(adherence?.streak ?? 0)} sub="بالتزام 90% فأكثر" tone="sun" />
+        <Kpi label="أسابيع متتالية" value={String(adherence?.streak ?? 0)} sub="بالتزام 90% فأكثر" tone="sun" />
         <Kpi label="الوزن" value={lastW != null ? `${lastW} كغ` : "—"} testId="kpi-weight"
           tone={startW != null && lastW != null && lastW !== startW ? "good" : ""}
           sub={startW != null && lastW != null ? `${signed(lastW - startW, "كغ")} من البداية (${startW})` : "لم يسجّل وزنه بعد"} />
@@ -88,11 +89,11 @@ export default async function ProgressOverview({ coachId, o, adherence, weeks, i
                     <span className="adh-val">{pct(b.score)}</span>
                     <div className="adh-track"><div className={`adh-fill${b.score == null ? "" : b.score >= 0.9 ? " hi" : b.score < 0.7 ? " lo" : ""}`} style={{ height: `${Math.round((b.score ?? 0) * 100)}%` }} /></div>
                     <span className="adh-wk">أ{b.no}</span>
-                    <span className="adh-rv">{b.review == null ? "·" : b.review ? "✅" : "•"}</span>
+                    <span className="adh-rv">{b.review == null ? "·" : b.review ? <IconCheck size={14} /> : "•"}</span>
                   </div>
                 ))}
               </div>
-              <p className="small muted" style={{ margin: 0 }}>العمود = متوسط تسجيل التمرين والمراجعة. ✅ وصلت المراجعة · • لم تصل · · ما فيه موعد.</p>
+              <p className="small muted" style={{ margin: 0 }}>العمود = متوسط تسجيل التمرين والمراجعة. ✓ وصلت المراجعة · • لم تصل · · ما فيه موعد.</p>
             </>
           )}
         </section>

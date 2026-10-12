@@ -91,12 +91,12 @@ export const startPrefRange = (today = riyadhDate()) => ({ min: addDays(today, 1
 export const validStartPref = (d: string, today = riyadhDate()) =>
   /^\d{4}-\d{2}-\d{2}$/.test(d) && d >= startPrefRange(today).min && d <= startPrefRange(today).max;
 
-/** نص تاق موعد البداية للمدربة: «⚡ بأقرب وقت» أو «📅 يبدأ 12 أكتوبر · بعد 14 يوم» */
+/** نص تاق موعد البداية للمدربة: «بأقرب وقت» أو «يبدأ 12 أكتوبر · بعد 14 يوم» */
 export function startPrefLabel(pref: string | null | undefined, today = riyadhDate()): { asap: boolean; text: string } {
-  if (!pref) return { asap: true, text: "⚡ بأقرب وقت" };
+  if (!pref) return { asap: true, text: "بأقرب وقت" };
   const n = daysBetween(today, pref);
   const when = n > 1 ? `بعد ${n} يوم` : n === 1 ? "بكرة" : n === 0 ? "اليوم" : "فات الموعد";
-  return { asap: false, text: `📅 يبدأ ${fmtYMD(pref)} · ${when}` };
+  return { asap: false, text: `يبدأ ${fmtYMD(pref)} · ${when}` };
 }
 
 export type Reminders = {

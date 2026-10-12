@@ -64,7 +64,7 @@ export default async function ProgressPage({ params }: { params: Promise<{ order
         </div>
         {active && data && (
           <div className="grid g3 progress-forms" data-testid="progress-forms">
-            <section className="card stack"><h2 style={{ fontSize: 17 }}>سجّل وزنك</h2><WeightForm orderNo={o.order_no} today={today} /></section>
+            <section className="card stack"><h2 style={{ fontSize: 17 }}>تسجيل الوزن</h2><WeightForm orderNo={o.order_no} today={today} /></section>
             <section className="card stack"><h2 style={{ fontSize: 17 }}>القياسات</h2><MeasureForm orderNo={o.order_no} today={today} /></section>
             <section className="card stack"><h2 style={{ fontSize: 17 }}>الخطوات</h2>
               <p className="small muted" style={{ margin: 0 }}>هدفك الأسبوعي: {data.block.steps_goal_week.toLocaleString("en-US")} خطوة</p>
@@ -74,8 +74,8 @@ export default async function ProgressPage({ params }: { params: Promise<{ order
         <ProgressView data={data} body={body} lifts={lifts} />
         {cal && (
           <section className="card stack" aria-labelledby="bi-h">
-            <h2 id="bi-h" style={{ fontSize: 18 }}>حدّث بياناتك</h2>
-            <p className="small muted" style={{ margin: 0 }}>إذا تغيّر نشاطك أو أيام تمرينك، حدّثها هنا عشان تكون سعراتك مناسبة لك.</p>
+            <h2 id="bi-h" style={{ fontSize: 18 }}>تحديث البيانات</h2>
+            <p className="small muted" style={{ margin: 0 }}>إذا تغيّر نشاطك أو أيام تمرينك، تحديثها هنا يخلي سعراتك مناسبة لك.</p>
             <BodyInfoForm orderNo={o.order_no} height={cal.profile.height_cm} paf={cal.profile.paf} days={cal.profile.training_days} minutes={cal.profile.minutes} />
           </section>
         )}

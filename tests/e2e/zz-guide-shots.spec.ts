@@ -145,7 +145,7 @@ test("صور الدليل المصوّر", async ({ browser }) => {
     card.getByRole("button", { name: "تحديث" }), card.locator(".swap-form"),
   ]);
   await page.goBack();
-  await page.getByText("قيّم تمرين اليوم").click();
+  await page.locator("summary", { hasText: "تقييم تمرين اليوم" }).click();
   await capture(page, "rate", page.getByTestId("rate-day"), page.getByTestId("rate-day"), [page.getByTestId("rate-day")]);
 
   await page.goto(`${base}/progress`);

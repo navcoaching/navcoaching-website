@@ -49,10 +49,10 @@ export default async function MacroLogPage({ params }: { params: Promise<{ order
             <h1 style={{ fontSize: "clamp(24px,4vw,32px)", margin: 0 }}>سجل الماكروز</h1>
             <p className="small muted" style={{ margin: "4px 0 0" }}>آخر {DAYS} يوم، من الأكل الذي سجّلته في صفحة التغذية.</p>
           </div>
-          <Link className="btn btn-ghost btn-sm" href={base}>سجّل أكل اليوم ←</Link>
+          <Link className="btn btn-ghost btn-sm" href={base}>تسجيل أكل اليوم ←</Link>
         </div>
 
-        {rows.length === 0 ? <p className="card muted">ما فيه تسجيلات في آخر {DAYS} يوم. سجّل أكلك من صفحة التغذية ويظهر هنا مجموع كل يوم.</p> : (
+        {rows.length === 0 ? <p className="card muted">ما فيه تسجيلات في آخر {DAYS} يوم. الأكل المسجّل في صفحة التغذية يظهر هنا بمجموع كل يوم.</p> : (
           <>
             <div className="today-macros progress-stats" data-testid="macro-avg">
               {cols.map(([k, label, unit]) => (

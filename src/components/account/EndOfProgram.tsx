@@ -40,12 +40,12 @@ export function EndOfProgramCard({ orderNo, product, name, survey, review }: { o
   return (
     <section className="card stack end-program" aria-labelledby={`end-h-${orderNo}`} data-testid="exit-survey" style={{ ["--space" as string]: "14px" }}>
       <div className="stack" style={{ ["--space" as string]: "6px" }}>
-        <h2 id={`end-h-${orderNo}`} style={{ fontSize: 21 }}>انتهى برنامجك 🌱</h2>
+        <h2 id={`end-h-${orderNo}`} style={{ fontSize: 21 }}>انتهى برنامجك</h2>
         <p className="small muted" style={{ margin: 0 }}>{product}</p>
       </div>
       <p style={{ margin: 0 }}>ولله الحمد انتهى البرنامج، لكن لم تنتهِ رحلتك في التطور النفسي والجسدي.</p>
       {survey ? (
-        <p className="alert ok" role="status" style={{ margin: 0 }}>شكراً لك، وصلني ردك 🤍</p>
+        <p className="alert ok" role="status" style={{ margin: 0 }}>شكراً لك، وصلني ردك</p>
       ) : (
         <>
           <p style={{ margin: 0 }}>عندي بعض الأسئلة، والإجابة عليها اختيارية:</p>
@@ -53,7 +53,7 @@ export function EndOfProgramCard({ orderNo, product, name, survey, review }: { o
         </>
       )}
       <div className="stack end-review" style={{ ["--space" as string]: "10px" }} data-testid="exit-review">
-        <h3 style={{ fontSize: 18 }}>قيّم تجربتك</h3>
+        <h3 style={{ fontSize: 18 }}>تقييم التجربة</h3>
         {review ? (
           <>
             <p className="alert ok" role="status" style={{ margin: 0 }}>شكراً لك! وصل تقييمك.</p>

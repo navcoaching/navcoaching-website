@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 type Mode = "auto" | "light" | "dark";
 const KEY = "nav_theme";
 const NEXT: Record<Mode, Mode> = { auto: "light", light: "dark", dark: "auto" };
-const LABEL: Record<Mode, string> = { auto: "تلقائي (حسب الجهاز)", light: "فاتح", dark: "داكن" };
+const LABEL: Record<Mode, string> = { auto: "تلقائي", light: "فاتح", dark: "داكن" };
 
 function apply(mode: Mode) {
   const root = document.documentElement;

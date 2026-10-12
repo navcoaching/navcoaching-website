@@ -96,10 +96,10 @@ describe("موعد بداية البرنامج", () => {
     assert.equal(validStartPref("29/09/2026", t), false);
   });
   test("نص التاق", () => {
-    assert.deepEqual(startPrefLabel(null, "2026-09-28"), { asap: true, text: "⚡ بأقرب وقت" });
+    assert.deepEqual(startPrefLabel(null, "2026-09-28"), { asap: true, text: "بأقرب وقت" });
     const l = startPrefLabel("2026-10-12", "2026-09-28");
     assert.equal(l.asap, false);
-    assert.match(l.text, /^📅 يبدأ .*12.*أكتوبر.* · بعد 14 يوم$/);
+    assert.match(l.text, /^يبدأ .*12.*أكتوبر.* · بعد 14 يوم$/);
     assert.match(startPrefLabel("2026-09-29", "2026-09-28").text, /بكرة$/);
   });
   test("الاستبيان: «في تاريخ أحدده» يتطلب تاريخاً صالحاً، و«بأقرب وقت» افتراضي", () => {

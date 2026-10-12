@@ -12,7 +12,7 @@ export default function AdherenceBar({ a, rewarded, compact, coach }: { a: Adher
     <div className={`adherence stack${compact ? " compact" : ""}`} data-testid="adherence" style={{ ["--space" as string]: "8px" }}>
       <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
         <b>{coach ? "الالتزام" : "التزامك"} {p == null ? "" : <span className="num" data-testid="adherence-pct">{p}%</span>}</b>
-        {a.streak > 0 && <span className="streak" data-testid="streak" title="أسابيع متتالية بالتزام 90% فأكثر">🔥 {weeksText(a.streak)} متتالية</span>}
+        {a.streak > 0 && <span className="streak" data-testid="streak" title="أسابيع متتالية بالتزام 90% فأكثر">{weeksText(a.streak)} متتالية</span>}
       </div>
       {p == null ? (
         <p className="small muted" style={{ margin: 0 }}>{coach ? "لا يوجد أسبوع مكتمل بعد." : "يبدأ حساب التزامك بعد أول أسبوع كامل: تسجيل تمارينك + مراجعتك الأسبوعية."}</p>
@@ -24,17 +24,17 @@ export default function AdherenceBar({ a, rewarded, compact, coach }: { a: Adher
       )}
       {a.rewardable && coach && (
         <p className="small" style={{ margin: 0 }} data-testid="reward-progress">
-          {got ? "🎁 مُنحت مكافأة الالتزام لهذا الاشتراك."
-            : a.eligible ? "🎉 مستحق لمكافأة 3 أشهر مجاناً (90% فأكثر خلال 12 أسبوعاً)."
+          {got ? "مُنحت مكافأة الالتزام لهذا الاشتراك."
+            : a.eligible ? "مستحق لمكافأة 3 أشهر مجاناً (90% فأكثر خلال 12 أسبوعاً)."
             : `أسابيع محسوبة: ${a.scored} من ${REWARD_WEEKS} المطلوبة للمكافأة.`}
         </p>
       )}
       {a.rewardable && !coach && (
         <p className="small" style={{ margin: 0 }} data-testid="reward-progress">
-          {got ? "🎁 حصلت على مكافأة الالتزام: 3 أشهر مجاناً. استمر!"
-            : a.eligible ? "🎉 أحسنت! التزامك 90% فأكثر خلال 3 أشهر، واستحققت اشتراكاً مجانياً لـ 3 أشهر. ستتواصل معك المدربة."
-            : a.weeksLeft > 0 ? `المحافظة على التزام 90% فأكثر، وباقي ${weeksText(a.weeksLeft)} على 3 أشهر مجاناً 🎁`
-            : `التزام 90% فأكثر خلال ${REWARD_WEEKS} أسبوعاً يمنحك 3 أشهر مجاناً. رفع الالتزام في الأسابيع الجاية يقرّبك منها 💪`}
+          {got ? "مكافأة الالتزام مُنحت لك: 3 أشهر مجاناً."
+            : a.eligible ? "التزامك 90% فأكثر خلال 3 أشهر، وهذا يمنحك اشتراكاً مجانياً لـ 3 أشهر. المدربة بتتواصل معك."
+            : a.weeksLeft > 0 ? `المحافظة على التزام 90% فأكثر، وباقي ${weeksText(a.weeksLeft)} على 3 أشهر مجاناً.`
+            : `التزام 90% فأكثر خلال ${REWARD_WEEKS} أسبوعاً يمنحك 3 أشهر مجاناً. رفع الالتزام في الأسابيع الجاية يقرّبك منها.`}
         </p>
       )}
     </div>

@@ -2,7 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import { FormMessage, Submit, useFormAction } from "@/components/FormBits";
 import { deleteFoodLogAction, logFoodAction, logFoodGramsAction } from "@/app/actions/nutrition";
-import { MEAL_ICON, MEAL_KINDS, scaleFood, type MealKind } from "@/lib/nutrition";
+import { MEAL_KINDS, scaleFood, type MealKind } from "@/lib/nutrition";
+import { IconClose } from "@/components/Icons";
 
 type LocalFood = { id: string; name_ar: string; name_en: string | null; kcal_100: number; protein_100: number; carbs_100: number; fat_100: number; serving_g: number | null; serving_label: string | null };
 type ExtFood = { id: string; name: string; brand: string | null; description: string };
@@ -63,7 +64,7 @@ function FoodSearch({ orderNo, date, kind, onDone }: { orderNo: string; date: st
         <input id="fs-q" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="ابحث عن أكل: رز، دجاج، تمر…" autoComplete="off" />
       </div>
       {loading && <p className="small muted">جارٍ البحث…</p>}
-      {res && !loading && res.local.length === 0 && res.external.length === 0 && <p className="small muted">لا توجد نتائج. جرّب كلمة أخرى أو «أكلة أخرى».</p>}
+      {res && !loading && res.local.length === 0 && res.external.length === 0 && <p className="small muted">لا توجد نتائج. البحث بكلمة أخرى ممكن، أو «أكلة أخرى».</p>}
       {res && (res.local.length > 0 || res.external.length > 0) && (
         <ul className="food-results" data-testid="food-results">
           {res.local.map((f) => (
@@ -98,7 +99,7 @@ function MealRow({ m, orderNo, date, kind, onDone }: { m: MealOption; orderNo: s
         <input type="hidden" name="kind" value={kind} /><input type="hidden" name="meal" value={m.id} />
         <span className="meal-pick-main">
           <b>{m.label}</b>
-          <span className="small muted"><span className="meal-kind">{MEAL_ICON[m.kind]} {MEAL_KINDS[m.kind]}</span>{m.own ? " · من جدولي" : ""} · {Math.round(m.kcal)} سعرة{m.protein != null ? ` · ب ${Math.round(m.protein)} ك ${Math.round(m.carbs ?? 0)} د ${Math.round(m.fat ?? 0)}` : ""}</span>
+          <span className="small muted"><span className="meal-kind">{MEAL_KINDS[m.kind]}</span>{m.own ? " · من جدولي" : ""} · {Math.round(m.kcal)} سعرة{m.protein != null ? ` · ب ${Math.round(m.protein)} ك ${Math.round(m.carbs ?? 0)} د ${Math.round(m.fat ?? 0)}` : ""}</span>
           {state.error && <span className="err-msg">{state.error}</span>}
         </span>
         <button type="submit" className="btn btn-sm" disabled={pending} aria-label={`إضافة ${m.label}`}>{pending ? "…" : "إضافة"}</button>
@@ -139,7 +140,7 @@ function QuickAdd({ orderNo, date, kind, onDone }: { orderNo: string; date: stri
           <div key={k} className="field"><label htmlFor={`fl-${k}`}>{l}</label><input id={`fl-${k}`} name={k} type="number" inputMode="decimal" step="0.1" min={0} dir="ltr" /></div>
         ))}
       </div>
-      <p className="hint" style={{ margin: 0 }}>السعرات تُحسب تلقائياً من الماكروز. اكتب الأرقام من غلاف المنتج أو تطبيق حساب السعرات.</p>
+      <p className="hint" style={{ margin: 0 }}>السعرات تُحسب تلقائياً من الماكروز. الأرقام من غلاف المنتج أو تطبيق حساب السعرات.</p>
       <FormMessage state={state} />
       <div><Submit pending={pending} className="btn btn-sm">إضافة</Submit></div>
     </form>
@@ -160,8 +161,8 @@ export function AddFoodSheet({ orderNo, date, kind, meals }: { orderNo: string; 
         {open && (
           <div className="sheet-box" data-testid="food-log-form">
             <div className="sheet-head">
-              <b>{MEAL_ICON[kind]} إضافة إلى {MEAL_KINDS[kind]}</b>
-              <button type="button" className="btn btn-ghost btn-sm" onClick={close} aria-label="إغلاق">✕</button>
+              <b>إضافة إلى {MEAL_KINDS[kind]}</b>
+              <button type="button" className="btn btn-ghost btn-sm" onClick={close} aria-label="إغلاق"><IconClose size={18} /></button>
             </div>
             <div className="sheet-tabs" role="tablist">
               {TABS.map(([k, l]) => <button key={k} type="button" role="tab" aria-selected={tab === k} className={tab === k ? "on" : ""} onClick={() => setTab(k as typeof tab)} data-testid={`tab-${k}`}>{l}</button>)}
@@ -183,7 +184,7 @@ export function DeleteFoodLog({ id, orderNo, name }: { id: number; orderNo: stri
   return (
     <form onSubmit={onSubmit} style={{ display: "inline" }}>
       <input type="hidden" name="id" value={id} /><input type="hidden" name="order_no" value={orderNo} />
-      <button type="submit" className="btn btn-ghost btn-sm danger" disabled={pending} aria-label={`حذف ${name}`}>✕</button>
+      <button type="submit" className="btn btn-ghost btn-sm danger" disabled={pending} aria-label={`حذف ${name}`}><IconClose size={18} /></button>
       {state.error && <span className="err-msg">{state.error}</span>}
     </form>
   );

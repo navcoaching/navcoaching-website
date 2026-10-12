@@ -106,7 +106,7 @@ test("حساب المتدرب: التقدم، سجل الماكروز، التع
 
   // المراجعة الأسبوعية: رابط «سجّلت تمرين هذا الأسبوع؟»
   await page.goto(`/account/orders/${orderNo}`);
-  await page.getByTestId("checkin-training").getByRole("link", { name: /افتح جدول التمرين/ }).click();
+  await page.getByTestId("checkin-training").getByRole("link", { name: /جدول التمرين/ }).click();
   await expect(page).toHaveURL(new RegExp(`/account/orders/${orderNo}/training$`));
 
   // الدليل المصوّر

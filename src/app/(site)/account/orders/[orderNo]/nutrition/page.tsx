@@ -6,7 +6,7 @@ import { requireUser } from "@/lib/session";
 import { withUser } from "@/lib/db";
 import { fmtDate } from "@/lib/format";
 import { addDays, riyadhDate } from "@/lib/schedule";
-import { MEAL_ICON, MEAL_KINDS, kcalOf, mealName, sumMacros, type MealKind, type Target } from "@/lib/nutrition";
+import { MEAL_KINDS, kcalOf, mealName, sumMacros, type MealKind, type Target } from "@/lib/nutrition";
 import { loadNutritionDay } from "@/lib/nutrition-data";
 import DaySummary from "@/components/nutrition/DaySummary";
 import { AddFoodSheet, DeleteFoodLog, type MealOption } from "./NutritionForms";
@@ -68,7 +68,7 @@ export default async function NutritionPage({ params, searchParams }: { params: 
                     return (
                       <section key={k} className="card meal-section" aria-label={MEAL_KINDS[k]} data-testid={`meal-${k}`}>
                         <header className="meal-head">
-                          <h2>{MEAL_ICON[k]} {MEAL_KINDS[k]}</h2>
+                          <h2>{MEAL_KINDS[k]}</h2>
                           <span className="small muted num">{kc} سعرة</span>
                         </header>
                         {kl.length > 0 && (
@@ -135,7 +135,7 @@ export default async function NutritionPage({ params, searchParams }: { params: 
                   {p.notes && <p className="alert info" style={{ whiteSpace: "pre-wrap" }}>{p.notes}</p>}
                   {p.meals.map((m) => (
                     <article key={m.id} className="card stack" style={{ ["--space" as string]: "8px" }}>
-                      <h3 style={{ fontSize: 17, margin: 0 }}>{MEAL_ICON[m.kind]} {m.title} <span className="small muted">— {Math.round(m.total.kcal)} سعرة</span></h3>
+                      <h3 style={{ fontSize: 17, margin: 0 }}>{m.title} <span className="small muted">— {Math.round(m.total.kcal)} سعرة</span></h3>
                       <div className="table-wrap">
                         <table className="t food-table">
                           <thead><tr><th>المكوّن</th><th>الكمية</th><th>السعرات</th><th>بروتين</th><th>كارب</th><th>دهون</th></tr></thead>

@@ -30,7 +30,7 @@ export function ExpiryAlert({ o, soonDays, whatsapp, renewal }: { o: O; soonDays
   if (renewal?.kind === "renewed") {
     return (
       <div className="alert ok expiry-alert" role="status" data-testid="expiry-alert">
-        <span>{renewal.reward ? "🎁 مكافأة التزامك (3 أشهر مجاناً) تبدأ بعد نهاية اشتراكك الحالي." : "✓ تم تجديد اشتراكك، ويبدأ بعد نهاية اشتراكك الحالي."}{" "}
+        <span>{renewal.reward ? "مكافأة التزامك (3 أشهر مجاناً) تبدأ بعد نهاية اشتراكك الحالي." : "تم تجديد اشتراكك، ويبدأ بعد نهاية اشتراكك الحالي."}{" "}
           <Link href={`/account/orders/${renewal.orderNo}`}>التفاصيل</Link></span>
       </div>
     );
@@ -58,7 +58,7 @@ export function ExpiryAlert({ o, soonDays, whatsapp, renewal }: { o: O; soonDays
             <span className="small">جدّد الآن بخصم 10% من سعر الباقة للحفاظ على مستواك وتطورك: <RenewPrice price={offer.price} discounted={offer.discounted} /></span>
             <div className="row" style={{ gap: 8, alignItems: "flex-start" }}>
               <RenewButton orderNo={o.order_no} />
-              <a className="btn btn-ghost btn-sm" href={wa} target="_blank" rel="noopener noreferrer">تواصل على واتساب</a>
+              <a className="btn btn-ghost btn-sm" href={wa} target="_blank" rel="noopener noreferrer">التواصل عبر واتساب</a>
             </div>
           </>
         ) : (
@@ -66,7 +66,7 @@ export function ExpiryAlert({ o, soonDays, whatsapp, renewal }: { o: O; soonDays
             <span className="small">{state === "expired" ? "جدّد الآن عشان تستمر المتابعة." : "قبل الانتهاء بـ 5 أيام يتاح لك التجديد بخصم 10% من سعر الباقة."}</span>
             <div className="row" style={{ gap: 8 }}>
               {state === "expired" && <Link className="btn btn-sm" href={renew}>تجديد الباقة</Link>}
-              <a className="btn btn-ghost btn-sm" href={wa} target="_blank" rel="noopener noreferrer">تواصل على واتساب</a>
+              <a className="btn btn-ghost btn-sm" href={wa} target="_blank" rel="noopener noreferrer">التواصل عبر واتساب</a>
             </div>
           </>
         )}
@@ -139,8 +139,8 @@ export default async function MyProgram({ userId, orders }: { userId: string; or
               {adherence && (!start || start <= today) && <AdherenceBar a={adherence} />}
               {(!start || start <= today) && info.todayPlan.get(o.id) && <ProgramTodayView orderNo={o.order_no} p={info.todayPlan.get(o.id)!} />}
               <div className="row my-program-links" style={{ gap: 8 }}>
-                {info.blocks.has(o.id) && <Link className="btn btn-sm" href={`/account/orders/${o.order_no}/training`}>🏋️ برنامج التمرين</Link>}
-                {info.nutrition.has(o.id) && <Link className="btn btn-sm" href={`/account/orders/${o.order_no}/nutrition`}>🥗 التغذية والمكملات</Link>}
+                {info.blocks.has(o.id) && <Link className="btn btn-sm" href={`/account/orders/${o.order_no}/training`}>برنامج التمرين</Link>}
+                {info.nutrition.has(o.id) && <Link className="btn btn-sm" href={`/account/orders/${o.order_no}/nutrition`}>التغذية والمكملات</Link>}
                 <Link className="btn btn-ghost btn-sm" href={`/account/orders/${o.order_no}`}>تفاصيل الطلب والمراجعات</Link>
               </div>
             </div>

@@ -95,7 +95,7 @@ test("الكتيبات: المدربة ترفع، والمتدرب المشتر�
     [orderNo, u.id, p.id, p.offer_id, p.name, p.label, p.price_halalas]);
   await trainee.goto("/account");
   const sec = trainee.getByTestId("booklets");
-  await expect(sec.getByRole("heading", { name: "📘 تحميل الكتيبات" })).toBeVisible();
+  await expect(sec.getByRole("heading", { name: "تحميل الكتيبات" })).toBeVisible();
   await expect(sec).toContainText(title);
   await expect(sec).not.toContainText(hidden);
   const [dl] = await Promise.all([

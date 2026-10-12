@@ -198,7 +198,7 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await card.getByLabel("وزن الجولة 5").fill("50");
   await card.getByLabel("تكرارات الجولة 5").fill("12");
   await card.getByRole("button", { name: "حفظ", exact: true }).click();
-  await expect(card.getByText("تم الحفظ ✅")).toBeVisible();
+  await expect(card.getByText("تم الحفظ.")).toBeVisible();
   await expect(trainee.getByLabel("مسجّل")).toBeVisible();
   const log = (await db.query(
     `SELECT l.weight::float, l.weights::float[], l.reps, l.week_no FROM item_logs l JOIN block_items i ON i.id = l.block_item_id JOIN block_days d ON d.id = i.day_id
@@ -207,10 +207,10 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await trainee.reload();
   await expect(card.getByLabel("وزن الجولة 3")).toHaveValue("65");
   await expect(card).toContainText("أعلى وزن تقديري (1RM): 82.5 كغ");
-  // القائمة: التمرين مسجّل، وتقييم اليوم داخل «قيّم تمرين اليوم»
+  // القائمة: التمرين مسجّل، وتقييم اليوم داخل «تقييم تمرين اليوم»
   await trainee.goto(`/account/orders/${orderNo}/training`);
   await expect(trainee.getByTestId("exercise-card").first().getByLabel("مسجّل")).toBeVisible();
-  await trainee.getByText("قيّم تمرين اليوم").click();
+  await trainee.locator("summary", { hasText: "تقييم تمرين اليوم" }).click();
   await trainee.getByTestId("rate-day").getByRole("radio", { name: "4", exact: true }).check();
   await trainee.getByRole("button", { name: "حفظ التقييم" }).click();
   await expect(trainee.getByText("تم حفظ تقييم اليوم")).toBeVisible();

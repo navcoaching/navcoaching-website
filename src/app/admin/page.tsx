@@ -131,7 +131,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           const left = daysBetween(today, riyadhDate(o.sub_end_at));
           const rn = renewals.get(o.id);
           ending.push({ order_no: o.order_no, name: o.contact_name, product: o.product_name, end: fmtYMD(riyadhDate(o.sub_end_at)), left,
-            renewal: rn?.kind === "renewed" ? (rn.reward ? "🎁 مكافأة مفعّلة" : "✓ جدّد")
+            renewal: rn?.kind === "renewed" ? (rn.reward ? "مكافأة مفعّلة" : "جدّد")
               : rn?.kind === "pending" ? (rn.status === "awaiting_payment" ? "طلب التجديد بانتظار الدفع" : "إيصال التجديد بانتظار التحقق")
               : rn?.kind === "offer" ? "عرض الخصم ظاهر له — لم يجدد بعد" : "لم يجدد بعد",
             tone: rn?.kind === "renewed" ? "ok" : left < 0 ? "bad" : "warn" });
@@ -141,7 +141,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           const a = await loadAdherence(tx, o, r.review_window_days, today);
           if (a?.eligible && !a.rewarded) {
             todos.unshift({ order_no: o.order_no, name: o.contact_name, tone: "info", href: `/admin/orders/${o.order_no}`, grant: true,
-              text: `🎉 التزام ${pct(a.avg)} خلال ${a.scored} أسبوعاً — مستحق 3 أشهر مجاناً` });
+              text: `التزام ${pct(a.avg)} خلال ${a.scored} أسبوعاً — مستحق 3 أشهر مجاناً` });
           }
         }
         const weeks = await loadWeekState(tx, o, r, today);
@@ -159,12 +159,12 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
       await autoFillTargets(tx);
       for (const a of await loadPendingAuto(tx)) {
         todos.push({ order_no: a.order_no, name: a.name, tone: "warn", href: `/admin/orders/${a.order_no}/nutrition`,
-          text: `⏳ سعرات محسوبة تلقائياً بانتظار تأكيدك: ${Number(a.kcal).toLocaleString("en-US")}` });
+          text: `سعرات محسوبة تلقائياً بانتظار تأكيدك: ${Number(a.kcal).toLocaleString("en-US")}` });
       }
       // سعرات مقترحة جديدة من بيانات المتدرب (وزن/نشاط) تنتظر اعتمادك
       for (const sg of await loadPendingSuggestions(tx)) {
         todos.push({ order_no: sg.order_no, name: sg.name, tone: "info", href: `/admin/orders/${sg.order_no}/nutrition`,
-          text: `🔥 سعرات مقترحة جديدة: ${sg.kcal.toLocaleString("en-US")} (${sg.diff > 0 ? "+" : ""}${sg.diff})` });
+          text: `سعرات مقترحة جديدة: ${sg.kcal.toLocaleString("en-US")} (${sg.diff > 0 ? "+" : ""}${sg.diff})` });
       }
       for (const o of noMeasure) alerts.push({ order_no: o.order_no, name: o.contact_name, tone: "warn", text: "الوزن أو الطول غير موجود في الاستبيان" });
       return { monthly, swaps, counts, newWeek, pendingReviews, incomplete, todos, ending, demo, alerts, today };
@@ -178,7 +178,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
             AND NOT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'orders' AND tableowner = current_user) AS ok
        FROM pg_roles r WHERE r.rolname = current_user`).then((r) => Boolean(r.rows[0]?.ok)).catch(() => false);
   const setup = [
-    { ok: rlsOk, label: "حماية البيانات بين الحسابات (RLS)", hint: rlsOk ? "اتصال الموقع بقاعدة البيانات بحساب التطبيق، وكل متدرب يشوف بياناته فقط." : "⚠️ الموقع متصل بقاعدة البيانات بحساب المالك، فالحماية على مستوى قاعدة البيانات معطّلة. غيّري DATABASE_URL في Netlify لحساب التطبيق (nav_app)." },
+    { ok: rlsOk, label: "حماية البيانات بين الحسابات (RLS)", hint: rlsOk ? "اتصال الموقع بقاعدة البيانات بحساب التطبيق، وكل متدرب يشوف بياناته فقط." : "الموقع متصل بقاعدة البيانات بحساب المالك، فالحماية على مستوى قاعدة البيانات معطّلة. غيّري DATABASE_URL في Netlify لحساب التطبيق (nav_app)." },
     { ok: mailConfigured(), label: "البريد (رمز الدخول والتنبيهات)", hint: "يحتاج RESEND_API_KEY و MAIL_FROM. بدونه لا يستطيع العملاء الدخول في الإنتاج." },
     { ok: process.env.STORAGE_DRIVER === "netlify", label: "التخزين الخاص للملفات (Netlify Blobs)", hint: "على جهاز التطوير يُستخدم مجلد محلي." },
     { ok: Boolean(process.env.COACH_NOTIFY_EMAIL), label: "بريد تنبيهات الطلبات للمدربة", hint: "COACH_NOTIFY_EMAIL" },
@@ -193,7 +193,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
       <h1>أهلاً {coach.name.split(" ")[0]}</h1>
       {/* حالة الحماية ظاهرة أعلى الصفحة دائماً، والتفاصيل في «حالة الإعداد» آخر الصفحة */}
       <p className={rlsOk ? "small" : "alert warn"} data-testid="setup-summary" style={{ margin: 0 }}>
-        {rlsOk ? "🛡️ حماية البيانات بين الحسابات: مفعّلة ✅" : "⚠️ حماية البيانات بين الحسابات غير مفعّلة."}
+        {rlsOk ? "حماية البيانات بين الحسابات: مفعّلة" : "حماية البيانات بين الحسابات غير مفعّلة."}
         {" · "}<a href="#setup">حالة الإعداد ({setup.filter((x) => x.ok).length} من {setup.length}) ↓</a>
       </p>
       {sp.granted && <GrantedAlert no={sp.granted} sent={sp.sent === "1"} />}
@@ -252,7 +252,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
                   </div>
                   <StartTag status={o.status} pref={o.preferred_start} today={data.today} />
                   <span className="small muted">
-                    {o.renewal_kind === "renewal" ? "🔁 تجديد · " : ""}{o.product_name} · {riyals(o.amount_due_halalas)} · {ago(o.created_at, data.today)}
+                    {o.renewal_kind === "renewal" ? "تجديد · " : ""}{o.product_name} · {riyals(o.amount_due_halalas)} · {ago(o.created_at, data.today)}
                   </span>
                 </li>
               ))}
@@ -261,7 +261,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
         </section>
         <section className="card" aria-labelledby="todo-h" data-testid="dash-todos">
           <h2 id="todo-h" style={{ fontSize: 18, marginBottom: 12 }}>تحتاج تعديل منكِ <span className="count">{data.todos.length}</span></h2>
-          {data.todos.length === 0 ? <p className="muted">لا شيء بانتظارك الآن 👌</p> : (
+          {data.todos.length === 0 ? <p className="muted">لا شيء بانتظارك الآن.</p> : (
             <ul className="dash-list">
               {data.todos.map((t, i) => (
                 <li key={i} className={t.tone} data-testid={t.grant ? "reward-eligible" : undefined}>

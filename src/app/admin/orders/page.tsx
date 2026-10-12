@@ -99,30 +99,30 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
         <button className="btn btn-sm">عرض</button>
       </form>
       <div className="table-wrap">
-        <table className="t">
+        <table className="t cards">
           <thead><tr><th>رقم الطلب</th><th>العميل</th><th>الباقة</th><th>المبلغ</th><th>الحالة</th><th>التاريخ</th><th><span className="sr-only">إجراء</span></th></tr></thead>
           <tbody>
             {rows.length === 0 && <tr><td colSpan={7} className="muted">لا توجد نتائج.</td></tr>}
             {rows.map((o) => (
               <tr key={o.order_no}>
-                <td>
+                <td data-label="رقم الطلب">
                   <Link href={`/admin/orders/${o.order_no}`}><bdi className="num">{o.order_no}</bdi></Link>
                   {o.has_note && <span className="note-dot" role="img" aria-label="توجد ملاحظة خاصة" title="توجد ملاحظة خاصة">✎</span>}
                   {o.is_demo && <span className="tag demo" style={{ marginInlineStart: 6 }}>تجريبي</span>}
                   {o.source === "manual" && <span className="tag soft" style={{ marginInlineStart: 6 }}>يدوي</span>}
                   <StartTag status={o.status} pref={o.preferred_start} />
                 </td>
-                <td>{o.contact_name}<div className="small muted"><bdi dir="ltr">{o.contact_phone}</bdi></div></td>
-                <td>
+                <td data-label="العميل">{o.contact_name}<div className="small muted"><bdi dir="ltr">{o.contact_phone}</bdi></div></td>
+                <td data-label="الباقة">
                   <Link href={link({ pkg: o.product_id ?? "" })} style={{ textDecoration: "none" }} aria-label={`تصفية حسب ${o.product_name}`}>
                     <PackageTag name={o.product_name} productId={o.product_id} currentName={o.current_name} />
                   </Link>
-                  <div className="small muted">{o.offer_label}{o.student_discount_requested ? " · طالب" : ""}{o.health_flag ? " · ⚠︎ ملاحظة صحية" : ""}</div>
+                  <div className="small muted">{o.offer_label}{o.student_discount_requested ? " · طالب" : ""}{o.health_flag ? " · ملاحظة صحية" : ""}</div>
                 </td>
-                <td className="num">{o.is_free ? <span className="status ok">مجاني</span> : o.amount_due_halalas == null ? "—" : riyals(o.amount_due_halalas)}</td>
-                <td><span className={`status ${statusTone(o.status)}`}>{statusLabel(o.status, o.category)}</span></td>
-                <td className="small">{fmtDate(o.created_at)}</td>
-                <td>
+                <td data-label="المبلغ" className="num">{o.is_free ? <span className="status ok">مجاني</span> : o.amount_due_halalas == null ? "—" : riyals(o.amount_due_halalas)}</td>
+                <td data-label="الحالة"><span className={`status ${statusTone(o.status)}`}>{statusLabel(o.status, o.category)}</span></td>
+                <td data-label="التاريخ" className="small">{fmtDate(o.created_at)}</td>
+                <td data-label="">
                   <ActionForm action={archiveOrderAction} submit={archived ? "إظهار" : "إخفاء"} submitClass="btn btn-ghost btn-sm" className="row">
                     <input type="hidden" name="order_no" value={o.order_no} />
                     <input type="hidden" name="archive" value={archived ? "0" : "1"} />

@@ -46,7 +46,7 @@ export default function PushCard({ publicKey, intro }: { publicKey: string; intr
         await sub.unsubscribe().catch(() => {});
         await deletePushSubscriptionAction(sub.endpoint).catch(() => {});
         sub = null;
-        setMsg({ ok: false, text: "تغيّرت مفاتيح الإشعارات. فعّلها من جديد على هذا الجهاز." });
+        setMsg({ ok: false, text: "تغيّرت مفاتيح الإشعارات، والمطلوب تفعيلها من جديد على هذا الجهاز." });
       }
       // مزامنة الاشتراك مع الموقع (لو انحذف من عندنا يرجع تلقائياً)
       if (sub) await savePushSubscriptionAction(JSON.parse(JSON.stringify(sub)), deviceName()).catch(() => {});
@@ -75,7 +75,7 @@ export default function PushCard({ publicKey, intro }: { publicKey: string; intr
       const e = (sub as { endpoint: string }).endpoint;
       if (mock) localStorage.setItem(MOCK_KEY, e);
       setEndpoint(e); setState("on");
-      setMsg({ ok: true, text: "تم تفعيل الإشعارات على هذا الجهاز ✅" });
+      setMsg({ ok: true, text: "تم تفعيل الإشعارات على هذا الجهاز." });
     } catch {
       setMsg({ ok: false, text: "تعذّر تفعيل الإشعارات على هذا الجهاز." });
     } finally { setBusy(false); }
@@ -97,20 +97,20 @@ export default function PushCard({ publicKey, intro }: { publicKey: string; intr
   async function test() {
     setBusy(true); setMsg(null);
     const r = await sendTestPushAction().catch(() => ({ ok: false, error: "تعذّر الإرسال." }));
-    setMsg(r.ok ? { ok: true, text: "أرسلنا إشعار تجربة. إذا ما ظهر خلال دقيقة، تأكد من إعدادات الإشعارات في جهازك." } : { ok: false, text: r.error ?? "تعذّر الإرسال." });
+    setMsg(r.ok ? { ok: true, text: "أرسلنا إشعار تجربة. إذا ما ظهر خلال دقيقة، فالحل في إعدادات الإشعارات بالجهاز." } : { ok: false, text: r.error ?? "تعذّر الإرسال." });
     setBusy(false);
   }
 
   return (
     <div className="card stack" aria-labelledby="push-h" data-testid="push-card" data-state={state}>
-      <h3 id="push-h" style={{ fontSize: 16 }}>🔔 إشعارات الجوال</h3>
+      <h3 id="push-h" style={{ fontSize: 16 }}>إشعارات الجوال</h3>
       <p className="small muted" style={{ margin: 0 }}>{intro ?? "تنبيه على جوالك عند رد المدربة، أو تحديث برنامجك، أو موعد المراجعة. بدون أي بيانات صحية."}</p>
       {state === "loading" && <p className="small muted" style={{ margin: 0 }}>…</p>}
-      {state === "unsupported" && <p className="small" style={{ margin: 0 }}>هذا المتصفح ما يدعم الإشعارات. جرّب Chrome على أندرويد، أو Safari على الآيفون بعد إضافة التطبيق للشاشة الرئيسية.</p>}
+      {state === "unsupported" && <p className="small" style={{ margin: 0 }}>هذا المتصفح ما يدعم الإشعارات. الإشعارات تعمل في Chrome على أندرويد، أو Safari على الآيفون بعد إضافة التطبيق للشاشة الرئيسية.</p>}
       {state === "ios-install" && (
         <p className="small" style={{ margin: 0 }}>على الآيفون تشتغل الإشعارات بعد إضافة التطبيق للشاشة الرئيسية (iOS 16.4 أو أحدث). <Link href="/install">طريقة الإضافة ←</Link></p>
       )}
-      {state === "denied" && <p className="small" style={{ margin: 0 }}>الإشعارات مرفوضة لهذا الموقع. فعّلها من إعدادات الجهاز أو المتصفح، ثم ارجع هنا.</p>}
+      {state === "denied" && <p className="small" style={{ margin: 0 }}>الإشعارات مرفوضة لهذا الموقع. تفعيلها من إعدادات الجهاز أو المتصفح، ثم الرجوع هنا.</p>}
       {state === "off" && <button type="button" className="btn btn-sm" onClick={enable} disabled={busy}>تفعيل الإشعارات على هذا الجهاز</button>}
       {state === "on" && (
         <div className="row" style={{ gap: 8 }}>

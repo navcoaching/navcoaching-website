@@ -74,19 +74,19 @@ export default async function Members({ searchParams }: { searchParams: Promise<
         <button className="btn btn-sm">عرض</button>
       </form>
       <div className="table-wrap">
-        <table className="t" data-testid="members">
+        <table className="t cards" data-testid="members">
           <thead><tr><th>العضو</th><th>التسجيل</th><th>آخر دخول</th><th>الطلبات</th><th><span className="sr-only">إجراء</span></th></tr></thead>
           <tbody>
             {rows.length === 0 && <tr><td colSpan={5} className="muted">لا توجد نتائج.</td></tr>}
             {rows.map((m) => (
               <tr key={m.id}>
-                <td>
+                <td data-label="العضو">
                   <b>{m.name && !m.name.includes("@") ? m.name : "—"}</b>
                   <div className="small"><bdi dir="ltr">{m.email}</bdi></div>
                   {m.phone && <div className="small muted"><bdi dir="ltr">{m.phone}</bdi></div>}
                   {m.profile && (
                     <details className="small" data-testid="member-profile">
-                      <summary style={{ cursor: "pointer", minHeight: 36 }}>استبيان العضو (بدون طلب){m.profile.flag ? " ⚠️" : ""}</summary>
+                      <summary style={{ cursor: "pointer", minHeight: 36 }}>استبيان العضو (بدون طلب){m.profile.flag ? " · ملاحظة صحية" : ""}</summary>
                       <dl className="kv small">
                         {Object.entries({ ...m.profile.answers, ...m.profile.health }).filter(([, v]) => v !== "" && v != null && !(Array.isArray(v) && !v.length)).map(([k, v]) => (
                           <span key={k} style={{ display: "contents" }}><dt>{ANSWER_LABELS[k] ?? k}</dt><dd>{Array.isArray(v) ? v.join("، ") : String(v)}</dd></span>
@@ -97,7 +97,7 @@ export default async function Members({ searchParams }: { searchParams: Promise<
                   )}
                   {m.swaps > 0 && (
                     <div className="swap-note" data-testid="member-swaps">
-                      <b>🔁 بدّل {m.swaps === 1 ? "تمريناً" : `${m.swaps} تمارين`}:</b>
+                      <b>بدّل {m.swaps === 1 ? "تمريناً" : `${m.swaps} تمارين`}:</b>
                       <ul>
                         {swapRows.filter((s) => s.user_id === m.id).slice(0, 5).map((s, i) => (
                           <li key={i}>{s.day_title}: <bdi dir="ltr">{s.from_name}</bdi> ← <bdi dir="ltr"><b>{s.to_name}</b></bdi> <span className="muted">· {fmtDateTime(s.created_at)}</span></li>
@@ -112,15 +112,15 @@ export default async function Members({ searchParams }: { searchParams: Promise<
                     </div>
                   )}
                 </td>
-                <td className="small">{fmtDate(m.created)}</td>
-                <td className="small">{m.last_seen ? fmtDate(m.last_seen) : <span className="muted">{m.verified ? "—" : "لم يدخل بعد"}</span>}</td>
-                <td>
+                <td data-label="التسجيل" className="small">{fmtDate(m.created)}</td>
+                <td data-label="آخر دخول" className="small">{m.last_seen ? fmtDate(m.last_seen) : <span className="muted">{m.verified ? "—" : "لم يدخل بعد"}</span>}</td>
+                <td data-label="الطلبات">
                   {m.orders > 0
                     ? <Link href={`/admin/orders?q=${encodeURIComponent(m.email)}`}>{m.orders} {m.orders === 1 ? "طلب" : "طلبات"}{m.active ? ` · ${m.active} فعّال` : ""}</Link>
                     : <span className="muted">لا يوجد</span>}
                   {m.manual_only && <div className="small muted">يدوي</div>}
                 </td>
-                <td>
+                <td data-label="">
                   <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
                     <Link className="btn btn-ghost btn-sm" href={`/admin/orders/new?email=${encodeURIComponent(m.email)}`}>إضافة برنامج</Link>
                     <span data-testid="delete-member">

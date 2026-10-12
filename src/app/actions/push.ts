@@ -39,7 +39,7 @@ export async function sendTestPushAction(): Promise<{ ok: boolean; error?: strin
   if (!user) return { ok: false, error: "سجّل الدخول أولاً." };
   if (!(await allow(`push-test:${user.id}`, 5, 3600))) return { ok: false, error: "جرّبت كثير. حاول بعد شوي." };
   const r = await withUser(user.id, (tx) => sendPush(tx, user.id, {
-    title: "Nav Coaching", body: "تمام! إشعارات الجوال شغّالة على هذا الجهاز ✅", url: "/account", tag: "test",
+    title: "Nav Coaching", body: "إشعارات الجوال شغّالة على هذا الجهاز.", url: "/account", tag: "test",
   }));
   if (r.sent) return { ok: true, sent: r.sent };
   if (!r.failed && !r.removed) return { ok: false, error: "ما لقينا اشتراك لهذا الجهاز. الحل: «إيقاف» ثم «تفعيل الإشعارات» من جديد." };

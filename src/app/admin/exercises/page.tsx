@@ -90,22 +90,22 @@ export default async function Exercises({ searchParams }: { searchParams: Promis
       </AutoSubmitForm>
       <p className="small muted" data-testid="ex-count">{rows.length} تمرين</p>
       <div className="table-wrap">
-        <table className="t" data-testid="admin-exercises">
+        <table className="t cards" data-testid="admin-exercises">
           <thead><tr><th>التمرين</th><th>العضلة الأساسية</th><th>العضلة الثانوية</th><th>المعدات</th><th>المستوى</th><th>المراجعة</th><th>بدائل</th><th><span className="sr-only">إجراء</span></th></tr></thead>
           <tbody>
             {rows.length === 0 && <tr><td colSpan={8} className="muted">لا توجد نتائج.</td></tr>}
             {rows.map((e) => (
               <tr key={e.id}>
-                <td><bdi dir="ltr"><b>{e.name}</b></bdi>{e.video_url && <> <a href={e.video_url} target="_blank" rel="noopener noreferrer" className="small" aria-label={`فيديو ${e.name}`}>▶</a></>}
+                <td data-label="التمرين"><bdi dir="ltr"><b>{e.name}</b></bdi>{e.video_url && <> <a href={e.video_url} target="_blank" rel="noopener noreferrer" className="small" aria-label={`فيديو ${e.name}`}>▶</a></>}
                   {e.pattern && <div className="small muted">{arPart(e.pattern)}{e.sub_pattern ? ` · ${arPart(e.sub_pattern)}` : ""}</div>}
                   {e.anatomical_action && <div className="small muted">{arPart(e.anatomical_action)}</div>}</td>
-                <td>{muscleAr(e.primary_muscle)}</td>
-                <td className="small" data-testid="ex-secondary">{e.secondary_muscles.length ? [...new Set(e.secondary_muscles)].map(muscleAr).join("، ") : "—"}</td>
-                <td className="small">{e.equipment ?? "—"}{e.place && <div className="muted">{e.place}</div>}</td>
-                <td className="small">{e.level ?? "—"}</td>
-                <td><span className={`status ${STATUS_CLASS[e.status]}`}>{EX_STATUS[e.status]}</span></td>
-                <td className="num">{e.alts}</td>
-                <td><Link className="btn btn-ghost btn-sm" href={`/admin/exercises/${e.id}`}>تعديل</Link></td>
+                <td data-label="العضلة الأساسية">{muscleAr(e.primary_muscle)}</td>
+                <td data-label="العضلة الثانوية" className="small" data-testid="ex-secondary">{e.secondary_muscles.length ? [...new Set(e.secondary_muscles)].map(muscleAr).join("، ") : "—"}</td>
+                <td data-label="المعدات" className="small">{e.equipment ?? "—"}{e.place && <div className="muted">{e.place}</div>}</td>
+                <td data-label="المستوى" className="small">{e.level ?? "—"}</td>
+                <td data-label="المراجعة"><span className={`status ${STATUS_CLASS[e.status]}`}>{EX_STATUS[e.status]}</span></td>
+                <td data-label="بدائل" className="num">{e.alts}</td>
+                <td data-label=""><Link className="btn btn-ghost btn-sm" href={`/admin/exercises/${e.id}`}>تعديل</Link></td>
               </tr>
             ))}
           </tbody>

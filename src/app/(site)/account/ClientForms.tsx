@@ -87,7 +87,7 @@ export function CheckinForm({ orderNo, questions }: { orderNo: string; questions
       ))}
       <p className="hint">لا تكتب تفاصيل طبية حساسة هنا إلا إذا كانت ضرورية لبرنامجك.</p>
       <FormMessage state={state} />
-      <Submit pending={pending} className="btn">أرسل المراجعة</Submit>
+      <Submit pending={pending} className="btn">إرسال المراجعة</Submit>
     </form>
   );
 }
@@ -109,7 +109,7 @@ export function ReviewForm({ orderNo, name }: { orderNo: string; name: string })
         </div>
       </fieldset>
       <div className="field">
-        <label htmlFor="rbody">اكتب تجربتك <span className="req">*</span></label>
+        <label htmlFor="rbody">وصف التجربة <span className="req">*</span></label>
         <textarea id="rbody" name="body" minLength={10} maxLength={1500} required aria-invalid={fe.body ? true : undefined} />
         <span className="hint">بدون أرقام هواتف أو روابط أو تفاصيل صحية خاصة. لا نعدّل نص تقييمك أبداً.</span>
         {fe.body && <span className="err-msg">{fe.body}</span>}
@@ -127,7 +127,7 @@ export function ReviewForm({ orderNo, name }: { orderNo: string; name: string })
         <span>أوافق على نشر تقييمي في موقع Nav Coaching بعد المراجعة (اختياري ومنفصل، وسحب الموافقة لاحقاً متاح).</span>
       </label>
       <FormMessage state={state} />
-      <Submit pending={pending} className="btn">أرسل التقييم</Submit>
+      <Submit pending={pending} className="btn">إرسال التقييم</Submit>
     </form>
   );
 }
@@ -200,7 +200,7 @@ export function ExitSurveyForm({ orderNo }: { orderNo: string }) {
         {fe.experience && <span className="err-msg">{fe.experience}</span>}
       </div>
       <FormMessage state={state} />
-      <Submit pending={pending} className="btn">أرسل ردك</Submit>
+      <Submit pending={pending} className="btn">إرسال الرد</Submit>
     </form>
   );
 }

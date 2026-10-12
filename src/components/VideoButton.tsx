@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { tiktokId, youtubeId } from "@/lib/youtube";
+import { IconClose } from "@/components/Icons";
 
 /**
  * زر «▶ فيديو» يشغّل مقطع يوتيوب داخل نافذة منبثقة في الموقع (بدل الخروج لتطبيق يوتيوب).
@@ -29,7 +30,7 @@ export default function VideoButton({ url, label = "▶ فيديو", title, clas
         <div className="video-modal-box">
           <div className="video-modal-head">
             {title && <b className="small"><bdi dir="ltr">{title}</bdi></b>}
-            <button type="button" className="btn btn-ghost btn-sm" onClick={close} aria-label="إغلاق الفيديو">✕</button>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={close} aria-label="إغلاق الفيديو"><IconClose size={18} /></button>
           </div>
           <div className="video-modal-frame">
             {open && (

@@ -16,7 +16,7 @@ export default async function GuidePage() {
     <section className="section tight">
       <div className="wrap stack guide" style={{ ["--space" as string]: "22px" }}>
         <div>
-          <h1 style={{ fontSize: "clamp(24px,4vw,32px)", margin: 0 }}>📖 دليل الاستخدام المصوّر</h1>
+          <h1 style={{ fontSize: "clamp(24px,4vw,32px)", margin: 0 }}>دليل الاستخدام المصوّر</h1>
           <p className="muted" style={{ margin: "6px 0 0" }}>الأرقام البرتقالية في الصور تطابق أرقام الخطوات. البيانات في الصور تجريبية للتوضيح فقط.</p>
         </div>
         <nav className="pill-nav" aria-label="أقسام الدليل">
@@ -61,7 +61,7 @@ export default async function GuidePage() {
                 </div>
               );
             })}
-            {sec.warn && <p className="alert warn" style={{ margin: 0 }}>⚠️ {sec.warn}</p>}
+            {sec.warn && <p className="alert warn" style={{ margin: 0 }}>{sec.warn}</p>}
           </section>
         ))}
       </div>

@@ -182,9 +182,9 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   await expect(trainee.getByTestId("sub-start")).toBeVisible();
   await expect(trainee.getByTestId("sub-end")).toBeVisible();
   const hist = trainee.getByTestId("review-history");
-  await expect(hist.locator("li.wk").nth(0)).toContainText("✅");
+  await expect(hist.locator("li.wk").nth(0)).toHaveClass(/done/);
   await expect(hist.locator("li.wk").nth(1)).toHaveClass(/missed/);
-  await expect(hist.locator("li.wk").nth(2)).toContainText("⏳");
+  await expect(hist.locator("li.wk").nth(2)).toHaveClass(/current/);
   await expect(trainee.getByTestId("review-window")).toContainText("المراجعة مفتوحة من");
   await expect(trainee.getByTestId("review-missed")).toBeVisible();
   expect(await trainee.content()).not.toContain(secretNote); // الملاحظات الخاصة لا تصل للمتدرب إطلاقاً
@@ -252,7 +252,7 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
 
   await trainee.goto(`/account/orders/${orderNo}`);
   await trainee.locator('textarea[name="a"]').first().fill("التزمت بالتمارين هذا الأسبوع");
-  await trainee.getByRole("button", { name: "أرسل المراجعة" }).click();
+  await trainee.getByRole("button", { name: "إرسال المراجعة" }).click();
   await expect(trainee.getByText("وصلت مراجعتك")).toBeVisible();
   // صفحة «المراجعات الأسبوعية» تجمع إجابات المتدربين اللي تنتظر الرد، وصفحة الطلب تنبّه لها
   const coachUrl = coach.url();
@@ -268,10 +268,10 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   await coach.getByText(/بانتظار الرد|مراجعة/).first().click().catch(() => {});
   const reply = coach.locator("form", { has: coach.getByRole("button", { name: "إرسال الرد" }) }).first();
   await reply.locator('textarea[name="reply"]').fill("ممتاز! نزيد الأوزان الأسبوع الجاي.");
-  await reply.getByLabel("🎥 فيديو المراجعة (اختياري)").fill("http://youtu.be/bad");
+  await reply.getByLabel("فيديو المراجعة (اختياري)").fill("http://youtu.be/bad");
   await reply.getByRole("button", { name: "إرسال الرد" }).click();
   await expect(reply.getByText("رابط الفيديو لازم يبدأ بـ https://")).toBeVisible();
-  await reply.getByLabel("🎥 فيديو المراجعة (اختياري)").fill("https://youtu.be/rvWeek1abcd");
+  await reply.getByLabel("فيديو المراجعة (اختياري)").fill("https://youtu.be/rvWeek1abcd");
   await reply.getByRole("button", { name: "إرسال الرد" }).click();
   await expect(coach.getByText(/الإشعار:/).first()).toBeVisible();
   logs = await logRows(orderNo);
@@ -279,9 +279,9 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   for (const l of logs) expect(l.body).not.toContain("الركبة");
 
   await trainee.goto(`/account/orders/${orderNo}`);
-  await expect(trainee.getByTestId("review-history").locator("li.wk").nth(2)).toContainText("✅"); // مراجعة من الموقع تُحتسب
+  await expect(trainee.getByTestId("review-history").locator("li.wk").nth(2)).toHaveClass(/done/); // مراجعة من الموقع تُحتسب
   // المتدرب يشوف رابط فيديو شرح المراجعة مع الرد
-  await trainee.getByText(/وصل الرد 🎥/).first().click();
+  await trainee.getByText(/وصل الرد · فيديو/).first().click();
   // الفيديو يشتغل داخل الموقع في نافذة منبثقة
   await trainee.getByTestId("checkin-video").first().click();
   await expect(trainee.getByTestId("video-iframe")).toHaveAttribute("src", /youtube-nocookie\.com\/embed\/rvWeek1abcd/);

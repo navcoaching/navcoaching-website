@@ -68,7 +68,7 @@ test("التغذية والمكملات: الأهداف، الجداول، ال�
   await login(trainee, traineeEmail);
   const orderNo = await activeOrder(traineeEmail, `ريم تغذية ${project}`);
   await coach.goto(`/admin/orders/${orderNo}`);
-  await coach.getByTestId("nutrition-card").getByRole("link", { name: "فتح" }).click();
+  await coach.getByTestId("nutrition-card").getByRole("link", { name: "التغذية والمكملات" }).click();
   const targets = coach.getByTestId("targets");
   await targets.getByLabel("السعرات").fill("1885");
   await targets.getByLabel("البروتين (غ)").fill("125");

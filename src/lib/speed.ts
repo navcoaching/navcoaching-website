@@ -32,7 +32,7 @@ export function verdict(fnRegion: string | null, db: DbInfo, rttMs: number | nul
   if (fn && db.region && fn !== db.region) {
     out.push({ tone: "bad", text: `الخادم في ${regionName(fn)} والقاعدة في ${regionName(db.region)}: كل استعلام يقطع هذي المسافة رايح وراجع. هذا أكبر سبب للبطء، والحل تغيير منطقة دوال Netlify إلى نفس منطقة القاعدة.` });
   } else if (fn && db.region) {
-    out.push({ tone: "ok", text: "الخادم والقاعدة في نفس المنطقة ✅" });
+    out.push({ tone: "ok", text: "الخادم والقاعدة في نفس المنطقة." });
   } else {
     out.push({ tone: "warn", text: "ما قدرت أحدد إحدى المنطقتين (يحدث في بيئة التطوير). قارنيها يدوياً من إعدادات Netlify وNeon." });
   }

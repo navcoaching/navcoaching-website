@@ -78,8 +78,8 @@ export function ItemLogForm({ orderNo, item, week, target, targetRir, log }: {
         <label htmlFor={`r-${p}`}>RIR</label>
         <input id={`r-${p}`} name="rir" type="number" inputMode="decimal" step="0.5" min={0} max={10} dir="ltr" placeholder={targetRir != null ? String(targetRir) : ""} defaultValue={log?.rir ?? ""} />
       </div>
-      <p className="hint" style={{ margin: 0 }}>اكتب وزن وعدّات الجولة الأولى وتتعبّى الجولات اللي بعدها تلقائياً، وعدّل أي جولة اختلفت. ⧉ يكرر الجولة.</p>
-      {est > 0 && <p className="small one-rm" data-testid="one-rm" style={{ margin: 0 }}>🏆 أعلى وزن تقديري لتكرار واحد (1RM): <b className="num">{est}</b> كغ</p>}
+      <p className="hint" style={{ margin: 0 }}>وزن وعدّات الجولة الأولى تتعبّى تلقائياً في الجولات اللي بعدها، وأي جولة اختلفت قابلة للتعديل. ⧉ يكرر الجولة.</p>
+      {est > 0 && <p className="small one-rm" data-testid="one-rm" style={{ margin: 0 }}>أعلى وزن تقديري لتكرار واحد (1RM): <b className="num">{est}</b> كغ</p>}
       <FormMessage state={state} />
       <div className="row" style={{ gap: 8 }}>
         <Submit pending={pending} className="btn btn-sm">{log ? "تحديث" : "حفظ"}</Submit>
@@ -205,7 +205,7 @@ export function ImportFromImage({ orderNo, day, week }: { orderNo: string; day: 
   const [round, setRound] = useState(0);
   return (
     <details className="card import-image" data-testid="import-image">
-      <summary style={{ cursor: "pointer", minHeight: 44, fontWeight: 700 }}>📷 تعبئة من صورة (Strong وغيره)</summary>
+      <summary style={{ cursor: "pointer", minHeight: 44, fontWeight: 700 }}>تعبئة من صورة (Strong وغيره)</summary>
       <ImportFlow key={round} orderNo={orderNo} day={day} week={week} again={() => setRound((r) => r + 1)} />
     </details>
   );
@@ -247,7 +247,7 @@ function ImportFlow({ orderNo, day, week, again }: { orderNo: string; day: strin
       // استدعاء مباشر مع التقاط الخطأ: انقطاع الاتصال أو طول القراءة يظهر كرسالة، لا صفحة خطأ
       setPreview(await readWorkoutImageAction({}, fd));
     } catch {
-      setPreview({ error: "طالت قراءة الصورة أو انقطع الاتصال. جرّب مرة ثانية بلقطة شاشة واضحة، أو سجّل يدوياً." });
+      setPreview({ error: "طالت قراءة الصورة أو انقطع الاتصال. المحاولة مرة ثانية بلقطة شاشة واضحة، أو التسجيل يدوياً." });
     } finally {
       setReading(false);
     }
@@ -271,7 +271,7 @@ function ImportFlow({ orderNo, day, week, again }: { orderNo: string; day: strin
                 <span className="hint">إذا التمرين طويل، اللقطات تكون بالترتيب. نقرأ التمارين والأوزان والتكرارات، وتراجعها قبل الحفظ. الصور لا تُحفظ في الموقع، وتُرسل لخدمة قراءة الصور (Anthropic) للقراءة فقط.</span>
               </div>
               {preview.error && <p className="alert err" role="alert">{preview.error}</p>}
-              <div><Submit className="btn btn-sm" pending={reading} pendingText="جارٍ قراءة الصور… (حتى 30 ثانية)">اقرأ الصورة</Submit></div>
+              <div><Submit className="btn btn-sm" pending={reading} pendingText="جارٍ قراءة الصور… (حتى 30 ثانية)">قراءة الصورة</Submit></div>
             </form>
 
             {rows.length > 0 && (

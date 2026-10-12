@@ -12,7 +12,7 @@ export default function VolumeTable({ items, weeks, limits, saved = {}, muscles 
   const all = muscles.filter((m) => !NOT_MUSCLES.some((x) => m.startsWith(x)));
   return (
     <details className="card stack volume" data-testid="volume" open>
-      <summary style={{ cursor: "pointer", minHeight: 40, fontWeight: 700 }}>📊 الجولات الأسبوعية لكل عضلة <span className="small muted">(لكِ فقط)</span></summary>
+      <summary style={{ cursor: "pointer", minHeight: 40, fontWeight: 700 }}>الجولات الأسبوعية لكل عضلة <span className="small muted">(لكِ فقط)</span></summary>
       {order.length === 0 ? <p className="small muted" style={{ margin: 0 }}>أضيفي تمارين وجولات ليظهر الحساب.</p> : (
         <div className="table-wrap">
           <table className="small">

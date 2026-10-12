@@ -7,7 +7,6 @@ export type Target = { kcal: number | null; protein: number | null; carbs: numbe
 
 export const MEAL_KINDS = { breakfast: "الفطور", lunch: "الغداء", dinner: "العشاء", snack: "سناك" } as const;
 export type MealKind = keyof typeof MEAL_KINDS;
-export const MEAL_ICON: Record<MealKind, string> = { breakfast: "🌅", lunch: "☀️", dinner: "🌙", snack: "🍎" };
 
 export const kcalOf = (m: Macros) => Number(m.protein) * 4 + Number(m.carbs) * 4 + Number(m.fat) * 9;
 const r1 = (v: number) => Math.round(v * 10) / 10;

@@ -14,7 +14,7 @@ import VideoButton from "@/components/VideoButton";
 import { fmtDate, fmtDateTime, riyals, waLink } from "@/lib/format";
 import { ENTITLED, PRE_ACTIVE, statusLabel, statusTone, stepIndex, timelineSteps } from "@/lib/status";
 import { CopyButton } from "@/components/FormBits";
-import { IconFile, IconLink } from "@/components/Icons";
+import { IconCheck, IconClock, IconFile, IconLink } from "@/components/Icons";
 import { CancelForm, CheckinForm, ClearDraft, MeasurementsForm, ReviewForm, UploadProofForm } from "../../ClientForms";
 
 type Ev = { from_status: string | null; to_status: string; actor_role: string; note: string | null };
@@ -65,7 +65,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
 
         {messages.length > 0 && (
           <section className="card stack" aria-labelledby="cm-h" data-testid="coach-messages" style={{ ["--space" as string]: "8px" }}>
-            <h2 id="cm-h" style={{ fontSize: 17, margin: 0 }}>📩 رسائل المدربة</h2>
+            <h2 id="cm-h" style={{ fontSize: 17, margin: 0 }}>رسائل المدربة</h2>
             {messages.slice(0, 3).map((m) => <CoachMsg key={m.id} at={m.created_at} note={m.note!} />)}
             {messages.length > 3 && (
               <details>
@@ -96,8 +96,8 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
           <div>
             <h1 style={{ fontSize: "clamp(24px,4vw,34px)" }}>{o.product_name}</h1>
             <p className="muted">{o.offer_label} · طلب رقم <bdi className="num">{o.order_no}</bdi> · {fmtDate(o.created_at)}</p>
-            {o.renewal_kind === "renewal" && <p className="small" style={{ margin: 0 }}>🔁 تجديد بخصم 10%: <s className="muted num">{riyals(o.list_price_halalas)}</s> ← <b className="num">{riyals(o.amount_due_halalas)}</b></p>}
-            {o.renewal_kind === "reward" && <p className="small" style={{ margin: 0 }}>🎁 مكافأة الالتزام: 3 أشهر مجاناً</p>}
+            {o.renewal_kind === "renewal" && <p className="small" style={{ margin: 0 }}>تجديد بخصم 10%: <s className="muted num">{riyals(o.list_price_halalas)}</s> ← <b className="num">{riyals(o.amount_due_halalas)}</b></p>}
+            {o.renewal_kind === "reward" && <p className="small" style={{ margin: 0 }}>مكافأة الالتزام: 3 أشهر مجاناً</p>}
           </div>
           <span className={`status ${statusTone(o.status)}`} data-testid="order-status">{statusLabel(o.status, o.category)}</span>
         </div>
@@ -105,7 +105,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
         {block && (
           <Link href={`/account/orders/${o.order_no}/training`} className="card program-link" data-testid="training-link">
             <span><b>برنامج التمرين</b><span className="small muted"> · {block.name}{block.status === "active" ? "" : " (منتهي)"}</span></span>
-            <span className="btn btn-sm">سجّل تمرينك ←</span>
+            <span className="btn btn-sm">تسجيل التمرين ←</span>
           </Link>
         )}
 
@@ -115,7 +115,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
         {hasNutrition && (
           <Link href={`/account/orders/${o.order_no}/nutrition`} className="card program-link" data-testid="nutrition-link">
             <span><b>التغذية والمكملات</b><span className="small muted"> · أهدافك وجداولك وسجل يومك</span></span>
-            <span className="btn btn-sm">سجّل أكلك ←</span>
+            <span className="btn btn-sm">تسجيل الأكل ←</span>
           </Link>
         )}
 
@@ -127,8 +127,8 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
 
               {o.status === "awaiting_quote" && (
                 <>
-                  <p>طلبت خصم الطالب. أرسل إثبات الطالب (مثل البطاقة الجامعية) على واتساب، وبنأكد لك المبلغ النهائي هنا قبل التحويل.</p>
-                  <a className="btn" href={waLink(s.contact.whatsapp, `مرحباً، هذا إثبات الطالب لطلبي رقم ${o.order_no}`)} target="_blank" rel="noopener">أرسل الإثبات على واتساب</a>
+                  <p>تم طلب خصم الطالب. المطلوب إرسال إثبات الطالب (مثل البطاقة الجامعية) عبر واتساب، وبعدها يتأكد المبلغ النهائي هنا قبل التحويل.</p>
+                  <a className="btn" href={waLink(s.contact.whatsapp, `مرحباً، هذا إثبات الطالب لطلبي رقم ${o.order_no}`)} target="_blank" rel="noopener">إرسال الإثبات عبر واتساب</a>
                   <p className="small muted">التحويل يكون بعد ظهور المبلغ المؤكد في هذه الصفحة.</p>
                 </>
               )}
@@ -143,7 +143,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                     <div><span className="muted small">الآيبان</span><div className="iban"><bdi>{s.bank.iban}</bdi></div></div>
                     <div className="row"><CopyButton value={s.bank.iban} label="نسخ الآيبان" /><CopyButton value={o.order_no} label="نسخ رقم الطلب" /></div>
                   </div>
-                  <p className="small muted">اكتب رقم الطلب في ملاحظة التحويل إن أمكن.</p>
+                  <p className="small muted">يُفضّل كتابة رقم الطلب في ملاحظة التحويل.</p>
                   <UploadProofForm orderNo={o.order_no} />
                 </>
               )}
@@ -185,12 +185,12 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                   <p className="alert info" data-testid="review-window">المراجعة مفتوحة من <b>{fmtYMD(currentWeek.windowStart)}</b> إلى <b>{fmtYMD(currentWeek.windowEnd)}</b>.</p>
                 )}
                 {lastMissed && o.status === "active" && (
-                  <p className="alert warn" data-testid="review-missed">ما وصلتنا {every > 1 ? `المراجعة ${lastMissed.no}` : `مراجعة الأسبوع ${lastMissed.no}`}. ولا يهمك، متى ما تيسّر لك أرسلها أو حدّث المدربة عشان نكمل متابعتك.</p>
+                  <p className="alert warn" data-testid="review-missed">ما وصلتنا {every > 1 ? `المراجعة ${lastMissed.no}` : `مراجعة الأسبوع ${lastMissed.no}`}. ولا يهمك، متى ما تيسّر الإرسال أو إبلاغ المدربة نكمل المتابعة.</p>
                 )}
                 <ol className="weeks">
                   {follow.weeks.map((w) => (
                     <li key={w.no} className={`wk ${w.status}`}>
-                      <span aria-hidden="true">{w.status === "done" ? "✅" : w.status === "current" ? "⏳" : w.status === "missed" ? "•" : "○"}</span>
+                      <span aria-hidden="true">{w.status === "done" ? <IconCheck size={16} /> : w.status === "current" ? <IconClock size={16} /> : w.status === "missed" ? "•" : "○"}</span>
                       <span>{every > 1 ? "المراجعة" : "الأسبوع"} {w.no} — {fmtYMD(w.due)}</span>
                       <span className="small muted">{w.status === "done" ? "تمت" : w.status === "current" ? (every > 1 ? "الحالية" : "الأسبوع الحالي") : w.status === "missed" ? "لم تصل" : "قادم"}</span>
                     </li>
@@ -226,21 +226,21 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                 <h2 style={{ fontSize: 20 }}>{reviewTitle(every)}</h2>
                 {o.status === "active" && block?.status === "active" && (
                   <p className="small alert info" style={{ margin: 0 }} data-testid="checkin-training">
-                    سجّلت تمرين هذا الأسبوع؟ <Link href={`/account/orders/${o.order_no}/training`}>افتح جدول التمرين ←</Link>
+                    تسجيل تمرين هذا الأسبوع: <Link href={`/account/orders/${o.order_no}/training`}>جدول التمرين ←</Link>
                   </p>
                 )}
                 {o.status === "active" && <CheckinForm orderNo={o.order_no} questions={s.checkins.questions} />}
                 {checkins.map((c) => (
                   <details key={c.id} className="card flat">
                     <summary style={{ cursor: "pointer", minHeight: 44 }}>
-                      مراجعة {fmtDate(c.created_at)} — {c.replied_at ? <span className="status ok">وصل الرد{c.coach_video_url ? " 🎥" : ""}</span> : <span className="status wait">بانتظار الرد</span>}
+                      مراجعة {fmtDate(c.created_at)} — {c.replied_at ? <span className="status ok">وصل الرد{c.coach_video_url ? " · فيديو" : ""}</span> : <span className="status wait">بانتظار الرد</span>}
                     </summary>
                     <dl className="kv small" style={{ marginTop: 10 }}>
                       {c.answers.map((a, i) => (<Fragment key={i}><dt>{a.topic || a.q}</dt><dd>{a.a || "—"}</dd></Fragment>))}
                     </dl>
                     {c.coach_reply && <p className="alert info" style={{ marginTop: 10 }}><b>رد المدربة:</b> {c.coach_reply}</p>}
                     {c.coach_video_url && (
-                      <div style={{ marginTop: 10 }}><VideoButton url={c.coach_video_url} title="شرح المراجعة" className="btn btn-sm" label="🎥 شاهد فيديو شرح المراجعة" testId="checkin-video" /></div>
+                      <div style={{ marginTop: 10 }}><VideoButton url={c.coach_video_url} title="شرح المراجعة" className="btn btn-sm" label="فيديو شرح المراجعة" testId="checkin-video" /></div>
                     )}
                   </details>
                 ))}
@@ -255,7 +255,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
             {/* ---------- التقييم ---------- */}
             {entitled && !endOfProgram && (
               <div className="card stack">
-                <h2 style={{ fontSize: 20 }}>قيّم تجربتك</h2>
+                <h2 style={{ fontSize: 20 }}>تقييم التجربة</h2>
                 {review ? (
                   <>
                     <p className="small muted">حالة تقييمك: {({ pending: "قيد المراجعة", published: "منشور", rejected: "لم يُنشر", hidden: "مخفي" } as Record<string, string>)[review.status]}{review.consent_publish ? "" : " (لم توافق على النشر، يظهر للمدربة فقط)"}</p>
@@ -286,7 +286,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                 <dt>البرنامج</dt><dd>{o.product_name}</dd>
                 <dt>المدة</dt><dd>{o.offer_label}</dd>
                 <dt>السعر</dt><dd className="num">{riyals(o.list_price_halalas)}</dd>
-                <dt>المطلوب</dt><dd className="num">{o.is_free ? "مجاني 🎁" : amount == null ? "بانتظار التأكيد" : riyals(amount)}</dd>
+                <dt>المطلوب</dt><dd className="num">{o.is_free ? "مجاني" : amount == null ? "بانتظار التأكيد" : riyals(amount)}</dd>
                 <dt>طريقة الدفع</dt><dd>تحويل بنكي</dd>
                 {o.paid_at && (<><dt>تأكيد الدفع</dt><dd>{fmtDate(o.paid_at)}</dd></>)}
                 {!o.sub_start_at && o.status !== "cancelled" && (<><dt>موعد البداية</dt><dd data-testid="start-pref-value">{o.preferred_start ? fmtYMD(o.preferred_start) : "بأقرب وقت"}</dd></>)}
@@ -312,7 +312,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
             )}
             <div className="card flat stack">
               <p className="small">عندك مشكلة أو سؤال عن هذا الطلب؟</p>
-              <a className="btn btn-ghost btn-block" href={waHelp} target="_blank" rel="noopener">اطلب المساعدة على واتساب</a>
+              <a className="btn btn-ghost btn-block" href={waHelp} target="_blank" rel="noopener">طلب المساعدة عبر واتساب</a>
             </div>
           </aside>
         </div>

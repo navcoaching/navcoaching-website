@@ -456,7 +456,7 @@ export async function logFoodAction(_: ActionState, fd: FormData): Promise<Actio
     return { error: m.startsWith("user:") ? m.slice(5) : dbErrorMessage(err) ?? T_GENERIC };
   }
   revalidatePath(`/account/orders/${orderNo}/nutrition`);
-  return { ok: true, message: "تمت الإضافة ✅" };
+  return { ok: true, message: "تمت الإضافة." };
 }
 
 export async function deleteFoodLogAction(_: ActionState, fd: FormData): Promise<ActionState> {
@@ -504,7 +504,7 @@ export async function logFoodGramsAction(_: ActionState, fd: FormData): Promise<
     return { error: m.startsWith("user:") ? m.slice(5) : dbErrorMessage(err) ?? T_GENERIC };
   }
   revalidatePath(`/account/orders/${orderNo}/nutrition`);
-  return { ok: true, message: "تمت الإضافة ✅" };
+  return { ok: true, message: "تمت الإضافة." };
 }
 
 // =====================================================================

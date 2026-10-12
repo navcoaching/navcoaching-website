@@ -11,6 +11,7 @@ import { loadAdherence, loadBlockData, type BlockRow } from "@/lib/program-data"
 import AdherenceBar from "@/components/account/AdherenceBar";
 import { ImportFromImage, RateDayForm } from "./TrainingForms";
 import { visionEnabled } from "@/lib/workout-vision";
+import { IconCheck } from "@/components/Icons";
 
 export const metadata: Metadata = { title: "برنامج التمرين", robots: { index: false } };
 
@@ -96,7 +97,7 @@ export default async function TrainingPage({ params, searchParams }: { params: P
         <>
             <nav className="pill-nav day-pills" aria-label="اليوم">
               {data.days.map((d) => (
-                <Link key={d.id} href={link({ day: d.id })} aria-current={d.id === day?.id ? "true" : undefined}>{dayDone(d) ? "✅ " : ""}{d.title}</Link>
+                <Link key={d.id} href={link({ day: d.id })} aria-current={d.id === day?.id ? "true" : undefined}>{dayDone(d) && <IconCheck size={16} className="ico-ok" />}{d.title}</Link>
               ))}
             </nav>
 
@@ -118,7 +119,7 @@ export default async function TrainingPage({ params, searchParams }: { params: P
                             <b><bdi dir="ltr">{ex?.name ?? "—"}</bdi></b>
                             <span className="small muted"><bdi dir="ltr">{planLabel(plan)}</bdi>{ex ? ` · ${muscleAr(ex.primary_muscle)}` : ""}</span>
                           </span>
-                          {log ? <span className="ex-done" aria-label="مسجّل">✅</span> : <span className="ex-go" aria-hidden="true">←</span>}
+                          {log ? <span className="ex-done" aria-label="مسجّل"><IconCheck size={20} /></span> : <span className="ex-go" aria-hidden="true">←</span>}
                         </Link>
                       </li>
                     );
@@ -126,7 +127,7 @@ export default async function TrainingPage({ params, searchParams }: { params: P
                 </ol>
                 {!readOnly && day.items.length > 0 && (
                   <details className="card flat more-tools">
-                    <summary>قيّم تمرين اليوم</summary>
+                    <summary>تقييم تمرين اليوم</summary>
                     <RateDayForm key={`${day.id}-${week}`} orderNo={o.order_no} day={day.id} week={week} rating={rating} />
                   </details>
                 )}
@@ -156,7 +157,7 @@ export default async function TrainingPage({ params, searchParams }: { params: P
                   <div><b className="small">تعليمات البرنامج</b><p style={{ whiteSpace: "pre-wrap", margin: "4px 0 0" }}>{block.instructions}</p></div>
                 )}
                 {!readOnly && day && day.items.length > 0 && visionEnabled() && <ImportFromImage orderNo={o.order_no} day={day.id} week={week} />}
-                <p className="small" style={{ margin: 0 }}><Link href={`/account/orders/${o.order_no}/progress`}>سجّل وزنك وقياساتك وخطواتك من صفحة «التقدم» ←</Link></p>
+                <p className="small" style={{ margin: 0 }}><Link href={`/account/orders/${o.order_no}/progress`}>تسجيل الوزن والقياسات والخطوات في صفحة «التقدم» ←</Link></p>
               </div>
             </details>
         </>

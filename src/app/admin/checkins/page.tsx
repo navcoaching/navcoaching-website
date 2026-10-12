@@ -38,7 +38,7 @@ export default async function CheckinsPage({ searchParams }: { searchParams: Pro
         <Link href="/admin/checkins?view=done" aria-current={done ? "true" : undefined}>تم الرد</Link>
       </nav>
       {rows.length === 0 ? (
-        <p className="muted card">{done ? "لا توجد مراجعات مردود عليها بعد." : "ما فيه مراجعات تنتظر ردك 👌"}</p>
+        <p className="muted card">{done ? "لا توجد مراجعات مردود عليها بعد." : "ما فيه مراجعات تنتظر ردك."}</p>
       ) : rows.map((c) => (
         <div key={c.id} data-testid="checkin">
         <Details className="card stack" defaultOpen={!done}>
@@ -55,7 +55,7 @@ export default async function CheckinsPage({ searchParams }: { searchParams: Pro
             <input type="hidden" name="id" value={c.id} /><input type="hidden" name="order_no" value={c.order_no} />
             <div className="field"><label htmlFor={`r-${c.id}`}>ردك</label><textarea id={`r-${c.id}`} name="reply" defaultValue={c.coach_reply ?? ""} maxLength={2000} /></div>
             {/* المراجعات لباقات المتابعة فقط، وكلها تقبل فيديو مع الرد */}
-            <div className="field"><label htmlFor={`v-${c.id}`}>🎥 فيديو المراجعة (اختياري)</label>
+            <div className="field"><label htmlFor={`v-${c.id}`}>فيديو المراجعة (اختياري)</label>
               <input id={`v-${c.id}`} name="video_url" type="url" dir="ltr" placeholder="https://youtu.be/… أو رابط Google Drive" defaultValue={c.coach_video_url ?? ""} maxLength={500} /></div>
           </ActionForm>
         </Details>

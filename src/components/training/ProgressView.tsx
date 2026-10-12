@@ -25,12 +25,12 @@ export default function ProgressView({ data, body, lifts }: {
         <section className="card stack" aria-labelledby="ws-h">
           <h2 id="ws-h" style={{ fontSize: 18 }}>الملخص الأسبوعي — {data.block.name}</h2>
           <div className="table-wrap">
-            <table className="t" data-testid="weekly-summary">
-              <thead><tr><th>المؤشر</th>{summary.map((s) => <th key={s.week} className="num">أ{s.week}</th>)}</tr></thead>
+            <table className="t sticky-first" data-testid="weekly-summary">
+              <thead><tr><th>المؤشر</th>{summary.map((s) => <th key={s.week} className="num">الأسبوع {s.week}</th>)}</tr></thead>
               <tbody>
                 <tr><th scope="row">الالتزام (تمارين مسجّلة)</th>{summary.map((s) => <td key={s.week} className="num">{s.logged ? pct(s.adherence) : "—"}</td>)}</tr>
                 <tr><th scope="row">الحجم التدريبي (VLU)</th>{summary.map((s) => <td key={s.week} className="num">{s.logged ? num(s.vlu) : "—"}</td>)}</tr>
-                <tr><th scope="row">التغيّر عن الأسبوع السابق</th>{summary.map((s) => <td key={s.week} className="num" dir="ltr">{s.change == null ? "—" : `${s.change > 0 ? "+" : ""}${Math.round(s.change * 100)}%`}</td>)}</tr>
+                <tr><th scope="row">التغيّر عن الأسبوع السابق</th>{summary.map((s) => <td key={s.week} className="num">{s.change == null ? "—" : <bdi dir="ltr">{`${s.change > 0 ? "+" : ""}${Math.round(s.change * 100)}%`}</bdi>}</td>)}</tr>
                 <tr><th scope="row">متوسط الوزن (كغ)</th>{summary.map((s) => { const a = avgW.find((w) => w.week === s.week); return <td key={s.week} className="num">{a ? a.avg.toFixed(1) : "—"}</td>; })}</tr>
                 <tr><th scope="row">الخطوات / الهدف {num(data.block.steps_goal_week)}</th>{summary.map((s) => { const t = steps.get(s.week); return <td key={s.week} className="num">{t == null ? "—" : <>{num(t)}{data.block.steps_goal_week > 0 && <div className="small muted">{pct(t / data.block.steps_goal_week)}</div>}</>}</td>; })}</tr>
               </tbody>
@@ -58,7 +58,7 @@ export default function ProgressView({ data, body, lifts }: {
         <section className="card stack" aria-labelledby="st-h">
           <h2 id="st-h" style={{ fontSize: 17 }}>الخطوات الأسبوعية</h2>
           <LineChart title="الخطوات الأسبوعية مقابل الهدف" goal={data.block.steps_goal_week}
-            series={[{ label: "الخطوات", points: data.steps.map((s) => ({ x: `أ${s.week_no}`, y: s.total })) }]} />
+            series={[{ label: "الخطوات", points: data.steps.map((s) => ({ x: `الأسبوع ${s.week_no}`, y: s.total })) }]} />
         </section>
       )}
 

@@ -173,7 +173,7 @@ test("السعرات التلقائية: تنحسب لمتدرب جديد بشا
 
   await coach.goto(`/admin/orders/${orderNo}/nutrition`);
   const auto = coach.getByTestId("auto-kcal");
-  await expect(auto.getByTestId("auto-badge")).toHaveText("⏳ بانتظار تأكيدك");
+  await expect(auto.getByTestId("auto-badge")).toHaveText("بانتظار تأكيدك");
   await expect(auto).toContainText(`${fmt} سعرة`);
   for (const t of ["Ten Haaf", "74 كغ (من الاستبيان)", "165 سم", "4 أيام × 60 دقيقة"]) await expect(auto).toContainText(t);
   await expect(coach.getByTestId("targets").getByLabel("السعرات")).toHaveValue(String(expected));

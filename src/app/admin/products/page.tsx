@@ -15,15 +15,15 @@ export default async function AdminProducts() {
       <div className="row" style={{ justifyContent: "space-between" }}><h1>المنتجات</h1><Link className="btn btn-sm" href="/admin/products/new">منتج جديد</Link></div>
       <p className="small muted" style={{ marginBottom: 14 }}>تعديل السعر لا يغيّر مبلغ الطلبات السابقة؛ كل طلب يحتفظ بسعره وقت الطلب.</p>
       <div className="table-wrap">
-        <table className="t">
+        <table className="t cards">
           <thead><tr><th>المنتج</th><th>القسم</th><th>الأسعار</th><th>الحالة</th></tr></thead>
           <tbody>
             {rows.map((p) => (
               <tr key={p.id}>
-                <td><Link href={`/admin/products/${p.id}`}>{p.name}</Link>{p.is_demo && <span className="tag demo" style={{ marginInlineStart: 6 }}>تجريبي</span>}<div className="small muted ltr">/programs/{p.slug}</div></td>
-                <td>{CATEGORY_LABEL[p.category]}</td>
-                <td className="small">{(p.offers as { label: string; price: number; active: boolean }[]).map((o) => <div key={o.label} className={o.active ? "" : "muted"}>{o.label}: {riyals(o.price)}{o.active ? "" : " (موقوف)"}</div>)}</td>
-                <td>{ST[p.status]}</td>
+                <td data-label="المنتج"><Link href={`/admin/products/${p.id}`}>{p.name}</Link>{p.is_demo && <span className="tag demo" style={{ marginInlineStart: 6 }}>تجريبي</span>}<div className="small muted ltr">/programs/{p.slug}</div></td>
+                <td data-label="القسم">{CATEGORY_LABEL[p.category]}</td>
+                <td data-label="الأسعار" className="small">{(p.offers as { label: string; price: number; active: boolean }[]).map((o) => <div key={o.label} className={o.active ? "" : "muted"}>{o.label}: {riyals(o.price)}{o.active ? "" : " (موقوف)"}</div>)}</td>
+                <td data-label="الحالة">{ST[p.status]}</td>
               </tr>
             ))}
           </tbody>

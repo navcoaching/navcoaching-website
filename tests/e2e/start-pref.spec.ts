@@ -84,13 +84,13 @@ test("موعد البداية: تغيير المتدرب، تاق الأولوي
   const list = coach.getByTestId("dash-incomplete");
   const asapLi = list.locator("li", { hasText: `عاجل ${project}` });
   const laterLi = list.locator("li", { hasText: `متأخر ${project}` });
-  await expect(asapLi.getByTestId("start-tag")).toHaveText("⚡ بأقرب وقت");
+  await expect(asapLi.getByTestId("start-tag")).toHaveText("بأقرب وقت");
   await expect(laterLi.getByTestId("start-tag")).toContainText("بعد 10 يوم");
   const names = await list.locator("li b").allTextContents();
   expect(names.indexOf(`عاجل ${project}`)).toBeLessThan(names.indexOf(`متأخر ${project}`));
   await noHorizontalScroll(coach);
   await coach.goto(`/admin/orders?q=${encodeURIComponent(later)}`);
-  await expect(coach.getByTestId("start-tag").first()).toContainText("📅 يبدأ");
+  await expect(coach.getByTestId("start-tag").first()).toContainText("يبدأ");
   await coach.goto(`/admin/orders/${later}`);
   await expect(coach.getByTestId("start-tag")).toContainText("بعد 10 يوم");
 

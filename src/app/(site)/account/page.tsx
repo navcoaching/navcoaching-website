@@ -42,7 +42,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
         <div className="stack" style={{ ["--space" as string]: "18px" }}>
           <div>
             <span className="eyebrow">حسابي</span>
-            <h1 style={{ fontSize: "clamp(26px,4vw,36px)", marginTop: 8 }}>أهلاً {user.name.includes("@") ? "" : user.name.split(" ")[0]} 👋</h1>
+            <h1 style={{ fontSize: "clamp(26px,4vw,36px)", marginTop: 8 }}>أهلاً {user.name.includes("@") ? "" : user.name.split(" ")[0]}</h1>
             <p className="muted" style={{ marginTop: 4 }}>{inProgram.length ? "برنامجك وتقدمك وكل المطلوب في مكان واحد." : "متابعة الطلبات وتجهيز الحساب من هنا."}</p>
             <p className="small muted account-who" data-testid="account-who">داخل بـ <bdi dir="ltr">{user.email}</bdi> · <SignOut label="لست أنت؟ تسجيل الخروج" className="link-btn" /></p>
           </div>
@@ -53,8 +53,8 @@ export default async function Account({ searchParams }: { searchParams: Promise<
           <EndOfProgramList userId={user.id} name={user.name} orders={orders} />
           <MyProgram userId={user.id} orders={orders} />
           {(booklets.length > 0 || bookletMsg) && <section id="booklets" className="card stack" aria-labelledby="bk-h" style={{ ["--space" as string]: "12px", scrollMarginTop: 90 }} data-testid="booklets">
-            <h2 id="bk-h" style={{ fontSize: 20 }}>📘 تحميل الكتيبات</h2>
-            {bookletMsg === "unavailable" && <p className="alert warn" role="alert">الملف غير متاح مؤقتاً. جرّب لاحقاً، وإذا استمرت المشكلة راسلنا على واتساب.</p>}
+            <h2 id="bk-h" style={{ fontSize: 20 }}>تحميل الكتيبات</h2>
+            {bookletMsg === "unavailable" && <p className="alert warn" role="alert">الملف غير متاح مؤقتاً. المحاولة لاحقاً ممكنة، وإذا استمرت المشكلة فالتواصل عبر واتساب.</p>}
             {bookletMsg === "notfound" && <p className="alert err" role="alert">تعذّر التحميل: الكتيب غير موجود أو غير متاح لحسابك.</p>}
             <ul className="stack" style={{ ["--space" as string]: "10px", listStyle: "none", margin: 0, padding: 0 }}>
               {booklets.map((b) => (
@@ -70,7 +70,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
           </section>}
           {reviewable && (
             <section className="card stack" style={{ ["--space" as string]: "10px" }} aria-labelledby="rv-h" data-testid="review-card">
-              <h2 id="rv-h" style={{ fontSize: 20 }}>⭐ قيّم تجربتك</h2>
+              <h2 id="rv-h" style={{ fontSize: 20 }}>تقييم التجربة</h2>
               <p className="small muted">عن <b>{reviewable.product_name}</b>. تقييمك يساعدنا نتحسّن، وما ينشر إلا بموافقتك.</p>
               <ReviewForm orderNo={reviewable.order_no} name={user.name.includes("@") ? "" : user.name} />
             </section>
@@ -79,7 +79,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
           {orders.length === 0 ? (
             <div className="card stack">
               <p>ما عندك طلبات حتى الآن.</p>
-              <Link href="/programs" className="btn" style={{ width: "fit-content" }}>تصفّح البرامج</Link>
+              <Link href="/programs" className="btn" style={{ width: "fit-content" }}>البرامج والأسعار</Link>
             </div>
           ) : (
             <>
@@ -101,7 +101,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
           )}
           {(freePlans.length > 0 || planMsg) && <section id="free-plans" className="stack" aria-labelledby="fp-h" style={{ ["--space" as string]: "12px", scrollMarginTop: 90 }}>
             <h2 id="fp-h" style={{ fontSize: 22 }}>جداولي المجانية</h2>
-            {planMsg === "unavailable" && <p className="alert warn" role="alert">ملف هذا الجدول غير متاح مؤقتاً. حاول لاحقاً، وإذا استمرت المشكلة راسلنا على واتساب.</p>}
+            {planMsg === "unavailable" && <p className="alert warn" role="alert">ملف هذا الجدول غير متاح مؤقتاً. المحاولة لاحقاً ممكنة، وإذا استمرت المشكلة فالتواصل عبر واتساب.</p>}
             {planMsg === "notfound" && <p className="alert err" role="alert">تعذّر تحميل الملف: الرابط غير صالح أو لا يخص حسابك.</p>}
             {freePlans.length === 0 ? null : (
               <ul className="fp-mine" data-testid="my-free-plans">
@@ -129,7 +129,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
           </div>
           {pushPublicKey() && <PushCard publicKey={pushPublicKey()} />}
           <Link href="/install" className="card flat install-cta" data-testid="install-link">
-            <b>📱 أضف الموقع كتطبيق على جوالك</b>
+            <b>إضافة الموقع كتطبيق على الجوال</b>
             <span className="small muted">خطوات مصوّرة لـ iPhone وأندرويد</span>
           </Link>
           <div className="card flat stack">

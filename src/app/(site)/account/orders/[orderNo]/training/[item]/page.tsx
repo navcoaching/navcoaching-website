@@ -9,6 +9,7 @@ import { muscleAr } from "@/lib/exercises";
 import { loadBlockData, type BlockRow } from "@/lib/program-data";
 import VideoButton from "@/components/VideoButton";
 import { ItemLogForm, SwapForm } from "../TrainingForms";
+import { IconCheck } from "@/components/Icons";
 
 export const metadata: Metadata = { title: "تمرين", robots: { index: false } };
 
@@ -58,7 +59,7 @@ export default async function ExercisePage({ params, searchParams }: { params: P
         <nav className="small"><Link href={back}>← {day.title} · الأسبوع {week}</Link></nav>
         <div className="row" style={{ justifyContent: "space-between", alignItems: "start", gap: 10 }}>
           <div>
-            <h1 style={{ fontSize: "clamp(22px,4vw,30px)", margin: 0 }}><span className="muted">{idx + 1}. </span><bdi dir="ltr">{ex?.name ?? "—"}</bdi> {log && <span aria-label="مسجّل">✅</span>}</h1>
+            <h1 style={{ fontSize: "clamp(22px,4vw,30px)", margin: 0 }}><span className="muted">{idx + 1}. </span><bdi dir="ltr">{ex?.name ?? "—"}</bdi> {log && <span className="ex-done" aria-label="مسجّل"><IconCheck size={22} /></span>}</h1>
             <p className="small muted" style={{ margin: "4px 0 0" }}>{ex ? muscleAr(ex.primary_muscle) : ""}</p>
           </div>
           {ex?.video_url && <VideoButton url={ex.video_url} title={ex.name} testId="exercise-video" />}
@@ -68,7 +69,7 @@ export default async function ExercisePage({ params, searchParams }: { params: P
         {ex?.instructions && <details className="small card flat"><summary style={{ cursor: "pointer", minHeight: 36 }}>طريقة الأداء</summary><p style={{ whiteSpace: "pre-wrap", margin: "6px 0 0" }}>{ex.instructions}</p></details>}
         <div data-testid="exercise-log" className="stack" style={{ ["--space" as string]: "12px" }}>
           {eff && <p className="small muted" style={{ margin: 0 }}>{eff.oneRm > 0 && <>أعلى وزن تقديري (1RM): <b className="num">{eff.oneRm}</b> كغ · </>}<bdi dir="ltr">VLU {Math.round(eff.vlu).toLocaleString("en-US")}</bdi></p>}
-          {readOnly ? (log && eff ? <p className="small">سجّلت: <bdi dir="ltr">{formatSets(eff.weights, eff.reps)}</bdi></p> : <p className="small muted">برنامج منتهي (للقراءة فقط).</p>) : (
+          {readOnly ? (log && eff ? <p className="small">المسجّل: <bdi dir="ltr">{formatSets(eff.weights, eff.reps)}</bdi></p> : <p className="small muted">برنامج منتهي (للقراءة فقط).</p>) : (
             <>
               <ItemLogForm key={`${it.id}-${week}`} orderNo={o.order_no} item={it.id} week={week} target={plan?.reps ?? []} targetRir={plan?.rir ?? null}
                 log={log ? { weight: log.weight, weights: log.weights, reps: log.reps, rir: log.rir } : null} />

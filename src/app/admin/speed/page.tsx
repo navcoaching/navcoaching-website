@@ -62,7 +62,7 @@ export default async function AdminSpeed() {
   const rows: [string, string, string][] = [
     ["منطقة الخادم (دوال Netlify)", regionName(normRegion(fnRegion)), "speed-fn-region"],
     ["منطقة قاعدة البيانات (Neon)", regionName(db.region), "speed-db-region"],
-    ["رابط القاعدة مجمّع (pooler)؟", db.neon ? (db.pooled ? "نعم ✅" : "لا ⚠️") : "—", "speed-pooled"],
+    ["رابط القاعدة مجمّع (pooler)؟", db.neon ? (db.pooled ? "نعم" : "لا") : "—", "speed-pooled"],
     ["رحلة واحدة للقاعدة (المتوسط من 5)", ms(rtt), "speed-rtt"],
     ["اتصال جديد بالقاعدة (أول طلب بعد خمول)", ms(fresh), "speed-fresh"],
     ["3 استعلامات متتالية (مثل صفحة عادية)", ms(page), "speed-page"],

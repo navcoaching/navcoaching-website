@@ -6,6 +6,7 @@ import { CHANNEL_LABEL, RESULT_LABEL } from "@/lib/notify";
 import ActionForm from "@/components/admin/ActionForm";
 import { addNoteAction, deleteNoteAction, markWeekAction, sendReviewNowAction, setSubscriptionAction } from "@/app/actions/admin";
 import type { OrderRow } from "@/lib/data";
+import { IconCheck, IconClock, IconLock } from "@/components/Icons";
 
 type O = OrderRow & { user_id: string; id: string };
 const STATUS_TXT: Record<string, string> = { pending: "قيد الإرسال", ...RESULT_LABEL };
@@ -18,7 +19,7 @@ export async function AdminNotes({ coachId, o }: { coachId: string; o: O }) {
   return (
     <section className="card stack notes-card" aria-labelledby="notes-h" data-testid="admin-notes">
       <div className="row" style={{ justifyContent: "space-between" }}>
-        <h2 id="notes-h" style={{ fontSize: 19 }}>ملاحظات المدربة الخاصة 🔒 {notes.length > 0 && <span className="small muted">({notes.length})</span>}</h2>
+        <h2 id="notes-h" style={{ fontSize: 19 }}><IconLock size={18} /> ملاحظات المدربة الخاصة {notes.length > 0 && <span className="small muted">({notes.length})</span>}</h2>
         <span className="small muted">لا تظهر للمتدرب أبداً</span>
       </div>
       <ActionForm action={addNoteAction} submit="إضافة ملاحظة" className="form note-form" resetOnSuccess>
@@ -110,7 +111,7 @@ export function ReviewWeeks({ o, d }: { o: O; d: SubData }) {
               <tr key={w.no}>
                 <td>{w.no}</td>
                 <td className="small">{fmtYMD(w.windowStart)} → {fmtYMD(w.windowEnd)}</td>
-                <td><span className={`wk ${w.status}`}>{w.status === "done" ? "✅" : w.status === "missed" ? "⚠︎" : w.status === "current" ? "⏳" : "·"} {WEEK_LABEL[w.status]}{w.source === "manual" ? " (يدوي)" : w.source === "site" ? " (من الموقع)" : ""}</span></td>
+                <td><span className={`wk ${w.status}`}>{w.status === "done" ? <IconCheck size={14} /> : w.status === "missed" ? "•" : w.status === "current" ? <IconClock size={14} /> : "·"} {WEEK_LABEL[w.status]}{w.source === "manual" ? " (يدوي)" : w.source === "site" ? " (من الموقع)" : ""}</span></td>
                 <td>
                   {w.source !== "site" && (w.status !== "upcoming" || w.source === "manual") && (
                     <ActionForm action={markWeekAction} submit={w.source === "manual" ? "إلغاء العلامة" : "تعليم كمكتمل"} submitClass="btn btn-ghost btn-sm" className="row">

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Tx } from "@/lib/db";
 import { currentWeek } from "@/lib/training";
 import { sumMacros } from "@/lib/nutrition";
+import { IconCheck, IconDumbbell, IconSalad } from "@/components/Icons";
 
 export type ProgramToday = {
   block: { name: string; week: number; weeks: number; steps_goal_week: number; days: { id: string; day_no: number; title: string; items: number; logged: number }[] } | null;
@@ -44,7 +45,7 @@ export default function ProgramTodayView({ orderNo, p }: { orderNo: string; p: P
       {p.block && (
         <section className="stack" style={{ ["--space" as string]: "8px" }} data-testid="today-training">
           <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
-            <h3 style={{ fontSize: 17 }}>🏋️ برنامجك الحالي</h3>
+            <h3 className="ico-head" style={{ fontSize: 17 }}><IconDumbbell size={20} />برنامجك الحالي</h3>
             <span className="small muted">{p.block.name} · الأسبوع {p.block.week} من {p.block.weeks}</span>
           </div>
           <ul className="today-days">
@@ -54,7 +55,7 @@ export default function ProgramTodayView({ orderNo, p }: { orderNo: string; p: P
                 <li key={d.id}>
                   <Link href={`${base}/training?week=${p.block!.week}&day=${d.id}`} className={done ? "done" : ""}>
                     <span><b>اليوم {d.day_no}:</b> <bdi dir="auto">{d.title}</bdi></span>
-                    <span className="small">{done ? "✅ تم" : `${d.logged} من ${d.items}`}</span>
+                    <span className="small">{done ? <><IconCheck size={16} className="ico-ok" /> تم</> : `${d.logged} من ${d.items}`}</span>
                   </Link>
                 </li>
               );
@@ -66,8 +67,8 @@ export default function ProgramTodayView({ orderNo, p }: { orderNo: string; p: P
       {hasNutrition && (
         <section className="stack" style={{ ["--space" as string]: "8px" }} data-testid="today-nutrition">
           <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
-            <h3 style={{ fontSize: 17 }}>🥗 التغذية اليوم</h3>
-            <Link className="small" href={`${base}/nutrition`}>سجّل أكلك ←</Link>
+            <h3 className="ico-head" style={{ fontSize: 17 }}><IconSalad size={20} />التغذية اليوم</h3>
+            <Link className="small" href={`${base}/nutrition`}>تسجيل الأكل ←</Link>
           </div>
           {p.target && (
             <div className="today-macros">

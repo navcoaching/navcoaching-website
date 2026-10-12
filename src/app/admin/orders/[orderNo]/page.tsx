@@ -26,6 +26,7 @@ import {
   moveOrderAction, renameMemberAction,
 } from "@/app/actions/admin";
 import { differentPerson } from "@/lib/names";
+import { IconDumbbell, IconSalad, IconWhatsApp } from "@/components/Icons";
 
 const show = (v: unknown) => (Array.isArray(v) ? v.join("، ") : v == null || v === "" ? "—" : String(v));
 
@@ -91,7 +92,7 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
     <ActionForm action={replyCheckinAction} submit={c.replied_at ? "تحديث الرد" : "إرسال الرد"}>
       <input type="hidden" name="id" value={c.id} /><input type="hidden" name="order_no" value={o.order_no} />
       <div className="field"><label htmlFor={`rp-${c.id}`} className="sr-only">ردك</label><textarea id={`rp-${c.id}`} name="reply" defaultValue={c.coach_reply ?? ""} maxLength={2000} rows={4} placeholder="ردك وتوجيهاتك للفترة الجاية…" /></div>
-      <div className="field"><label htmlFor={`cv-${c.id}`}>🎥 فيديو المراجعة (اختياري)</label>
+      <div className="field"><label htmlFor={`cv-${c.id}`}>فيديو المراجعة (اختياري)</label>
         <input id={`cv-${c.id}`} name="video_url" type="url" dir="ltr" placeholder="https://youtu.be/… أو رابط Google Drive" defaultValue={c.coach_video_url ?? ""} maxLength={500} />
         <span className="hint">ارفعي الفيديو على YouTube (غير مدرج) أو Google Drive والصقي الرابط. يظهر للمتدرب زر «شاهد فيديو شرح المراجعة».</span></div>
     </ActionForm>
@@ -128,11 +129,11 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
             )}
           </div>
           <div className="quick" data-testid="program-card">
-            <a className="btn btn-sm" href={waLink(phoneDigits, `مرحباً ${o.contact_name}، بخصوص طلبك رقم ${o.order_no}`)} target="_blank" rel="noopener">💬 واتساب</a>
+            <a className="btn btn-sm" href={waLink(phoneDigits, `مرحباً ${o.contact_name}، بخصوص طلبك رقم ${o.order_no}`)} target="_blank" rel="noopener"><IconWhatsApp size={18} /> واتساب</a>
             {o.category !== "consult" && (
-              <Link className="btn btn-ghost btn-sm" href={`/admin/orders/${o.order_no}/program`}>🏋️ {program.active ? "البرنامج والسجلات" : "إسناد برنامج"}</Link>
+              <Link className="btn btn-ghost btn-sm" href={`/admin/orders/${o.order_no}/program`}><IconDumbbell size={18} /> {program.active ? "البرنامج والسجلات" : "إسناد برنامج"}</Link>
             )}
-            {o.category !== "consult" && <span data-testid="nutrition-card"><Link className="btn btn-ghost btn-sm" href={`/admin/orders/${o.order_no}/nutrition`}>🥗 فتح التغذية والمكملات</Link></span>}
+            {o.category !== "consult" && <span data-testid="nutrition-card"><Link className="btn btn-ghost btn-sm" href={`/admin/orders/${o.order_no}/nutrition`}><IconSalad size={18} /> التغذية والمكملات</Link></span>}
             <p className="small muted" style={{ margin: 0, flexBasis: "100%" }}>
               {program.active ? <>البرنامج الحالي: <b>{program.active}</b></> : program.blocks ? "لا يوجد برنامج نشط." : o.category !== "consult" ? "لم يُسند برنامج بعد." : ""}
               {program.unseen > 0 && <> · <span className="status action">{program.unseen} تبديل تمرين جديد</span></>}
@@ -167,7 +168,7 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
       )}
       {checkins.some((c) => !c.replied_at) && (
         <p className="alert warn" data-testid="pending-checkin">
-          📝 عند المتدرب مراجعة بانتظار ردك. <a href="#checkins">اقرئي إجاباته وردّي ←</a>
+          عند المتدرب مراجعة بانتظار ردك. <a href="#checkins">اقرئي إجاباته وردّي ←</a>
         </p>
       )}
       {mismatch && (
@@ -228,7 +229,7 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
           )}
           {sub.weeks.length > 0 && (
             <details className="fold">
-              <summary>جدول المواعيد <small>✅ {sub.weeks.filter((w) => w.status === "done").length} · • {sub.weeks.filter((w) => w.status === "missed").length} · من {sub.weeks.length}</small></summary>
+              <summary>جدول المواعيد <small>تمت {sub.weeks.filter((w) => w.status === "done").length} · • {sub.weeks.filter((w) => w.status === "missed").length} · من {sub.weeks.length}</small></summary>
               <div className="fold-body stack" style={{ ["--space" as string]: "12px" }}><ReviewWeeks o={o} d={sub} /><SendReview o={o} d={sub} /></div>
             </details>
           )}
@@ -268,7 +269,7 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
           )}
           {retention.links.map((l) => (
             <p key={l.order_no} className="small" style={{ margin: 0 }}>
-              {l.dir === "prev" ? "امتداد للاشتراك " : l.renewal_kind === "reward" ? "🎁 مكافأة الالتزام: " : "🔁 طلب تجديد: "}
+              {l.dir === "prev" ? "امتداد للاشتراك " : l.renewal_kind === "reward" ? "مكافأة الالتزام: " : "طلب تجديد: "}
               <Link href={`/admin/orders/${l.order_no}`}><bdi className="num">{l.order_no}</bdi></Link> · {statusLabel(l.status, "follow")}
             </p>
           ))}
@@ -280,7 +281,7 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
         <AdminNotes coachId={coach.id} o={o} />
         {o.status !== "cancelled" && (
           <div className="card stack" data-testid="coach-message">
-            <h2 style={{ fontSize: 19 }}>✉️ رسالة للمتدرب</h2>
+            <h2 style={{ fontSize: 19 }}>رسالة للمتدرب</h2>
             <ActionForm action={coachMessageAction} submit="إرسال للمتدرب" resetOnSuccess>
               <input type="hidden" name="order_no" value={o.order_no} />
               <div className="field"><label htmlFor="cm-text">الرسالة</label>

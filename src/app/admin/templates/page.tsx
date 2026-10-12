@@ -22,16 +22,16 @@ export default async function Templates() {
       </div>
       <p className="muted">ابني القالب (الأيام والتمارين وخطة كل أسبوع) مرة واحدة، ثم أسنديه لأي متدرب من صفحة طلبه ← «برنامج التمرين». الإسناد ينسخ القالب، فتعديل القالب لاحقاً لا يغيّر برامج المتدربين الحالية.</p>
       <div className="table-wrap">
-        <table className="t" data-testid="admin-templates">
+        <table className="t cards" data-testid="admin-templates">
           <thead><tr><th>القالب</th><th>الأسابيع</th><th>الأيام</th><th>التمارين</th><th>أُسند</th><th>آخر تعديل</th><th><span className="sr-only">إجراء</span></th></tr></thead>
           <tbody>
             {rows.length === 0 && <tr><td colSpan={7} className="muted">لا توجد قوالب بعد. ابدئي من «+ قالب جديد».</td></tr>}
             {rows.map((t) => (
               <tr key={t.id}>
-                <td><b>{t.name}</b>{t.archived && <> <span className="status muted">مؤرشف</span></>}</td>
-                <td className="num">{t.weeks}</td><td className="num">{t.days}</td><td className="num">{t.items}</td><td className="num">{t.blocks}</td>
-                <td className="small">{fmtDate(t.updated_at)}</td>
-                <td><Link className="btn btn-ghost btn-sm" href={`/admin/templates/${t.id}`}>فتح</Link></td>
+                <td data-label="القالب"><b>{t.name}</b>{t.archived && <> <span className="status muted">مؤرشف</span></>}</td>
+                <td data-label="الأسابيع" className="num">{t.weeks}</td><td data-label="الأيام" className="num">{t.days}</td><td data-label="التمارين" className="num">{t.items}</td><td data-label="أُسند" className="num">{t.blocks}</td>
+                <td data-label="آخر تعديل" className="small">{fmtDate(t.updated_at)}</td>
+                <td data-label=""><Link className="btn btn-ghost btn-sm" href={`/admin/templates/${t.id}`}>فتح</Link></td>
               </tr>
             ))}
           </tbody>

@@ -601,7 +601,7 @@ export async function logItemAction(_: ActionState, fd: FormData): Promise<Actio
     return tFail(err);
   }
   const p = orderPath(fd); if (p) revalidatePath(p);
-  return { ok: true, message: clear ? "تم حذف التسجيل." : "تم الحفظ ✅" };
+  return { ok: true, message: clear ? "تم حذف التسجيل." : "تم الحفظ." };
 }
 
 export async function rateDayAction(_: ActionState, fd: FormData): Promise<ActionState> {
@@ -767,7 +767,7 @@ export async function saveImportedLogsAction(_: ActionState, fd: FormData): Prom
     });
   } catch (err) { return tFail(err); }
   const p = orderPath(fd); if (p) revalidatePath(p);
-  return { ok: true, message: `تم حفظ ${entries.length} ${entries.length === 1 ? "تمرين" : "تمارين"} ✅` };
+  return { ok: true, message: `تم حفظ ${entries.length} ${entries.length === 1 ? "تمرين" : "تمارين"}.` };
 }
 
 // ---------- حدود الجولات الأسبوعية لكل عضلة (للمدربة) ----------

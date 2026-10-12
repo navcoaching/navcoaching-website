@@ -69,13 +69,13 @@ test("تعبئة التسجيل من صورة: قراءة، ربط يدوي، ح
   // أكثر من 4 صور ← رسالة، وحتى 4 صور (منها صورة كبيرة) تنقرأ بطلب واحد
   const five = Array.from({ length: 5 }, (_, i) => ({ name: `s${i}.png`, mimeType: "image/png", buffer: image }));
   await box.locator('input[type="file"]').setInputFiles(five);
-  await box.getByRole("button", { name: "اقرأ الصورة" }).click();
+  await box.getByRole("button", { name: "قراءة الصورة" }).click();
   await expect(box.getByText("الحد 4 صور.")).toBeVisible();
   await box.locator('input[type="file"]').setInputFiles([
     { name: "strong-1.png", mimeType: "image/png", buffer: big },
     { name: "strong-2.png", mimeType: "image/png", buffer: image },
   ]);
-  await box.getByRole("button", { name: "اقرأ الصورة" }).click();
+  await box.getByRole("button", { name: "قراءة الصورة" }).click();
   const review = box.getByTestId("import-review");
   await expect(review.locator("fieldset")).toHaveCount(3);
   await expect(review.locator("fieldset").nth(0)).toContainText("مطابقة تقريبية");
@@ -104,7 +104,7 @@ test("تعبئة التسجيل من صورة: قراءة، ربط يدوي، ح
   const box2 = page.getByTestId("import-image");
   await box2.locator("summary").click();
   await box2.locator('input[type="file"]').setInputFiles({ name: "strong.png", mimeType: "image/png", buffer: image });
-  await box2.getByRole("button", { name: "اقرأ الصورة" }).click();
+  await box2.getByRole("button", { name: "قراءة الصورة" }).click();
   await expect(box2.getByTestId("import-review").locator("fieldset").nth(2)).toContainText("مربوط سابقاً");
   await expect(box2.getByTestId("import-review").locator('select[name="item_2"]')).toHaveValue(rowOpt!);
 });

@@ -14,12 +14,12 @@ export default function VideoCheck() {
   return (
     <section className="card stack" data-testid="video-check" style={{ ["--space" as string]: "10px" }}>
       <div className="row" style={{ justifyContent: "space-between", gap: 8 }}>
-        <b>🎬 فحص روابط الفيديو</b>
+        <b>فحص روابط الفيديو</b>
         <button type="button" className="btn btn-ghost btn-sm" onClick={run} disabled={busy}>{busy ? "جارٍ الفحص… (حتى دقيقة)" : "افحص الآن"}</button>
       </div>
       {res?.error && <p className="alert err small" style={{ margin: 0 }}>{res.error}</p>}
       {res?.bad && (res.bad.length === 0
-        ? <p className="alert ok small" style={{ margin: 0 }}>كل المقاطع ({res.total}) تشتغل داخل الموقع ✅</p>
+        ? <p className="alert ok small" style={{ margin: 0 }}>كل المقاطع ({res.total}) تشتغل داخل الموقع.</p>
         : (
           <>
             <p className="small" style={{ margin: 0 }}>{res.ok} من {res.total} تشتغل. تحتاج مراجعة:</p>

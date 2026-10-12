@@ -24,16 +24,16 @@ export default async function NutritionLibrary() {
       <section className="card stack">
         <h2 style={{ fontSize: 19 }}>الجداول الغذائية</h2>
         <div className="table-wrap">
-          <table className="t" data-testid="nutrition-templates">
+          <table className="t cards" data-testid="nutrition-templates">
             <thead><tr><th>الجدول</th><th>الوجبات</th><th>السعرات</th><th>بروتين</th><th>كارب</th><th>دهون</th><th><span className="sr-only">إجراء</span></th></tr></thead>
             <tbody>
               {templates.length === 0 && <tr><td colSpan={7} className="muted">لا توجد جداول بعد.</td></tr>}
               {templates.map((p) => (
                 <tr key={p.id}>
-                  <td><b>{p.name}</b>{p.archived && <> <span className="status muted">مؤرشف</span></>}</td>
-                  <td className="num">{p.meals.length}</td><td className="num">{Math.round(p.total.kcal)}</td>
-                  <td className="num">{p.total.protein}</td><td className="num">{p.total.carbs}</td><td className="num">{p.total.fat}</td>
-                  <td><Link className="btn btn-ghost btn-sm" href={`/admin/nutrition/plans/${p.id}`}>فتح</Link></td>
+                  <td data-label="الجدول"><b>{p.name}</b>{p.archived && <> <span className="status muted">مؤرشف</span></>}</td>
+                  <td data-label="الوجبات" className="num">{p.meals.length}</td><td data-label="السعرات" className="num">{Math.round(p.total.kcal)}</td>
+                  <td data-label="بروتين" className="num">{p.total.protein}</td><td data-label="كارب" className="num">{p.total.carbs}</td><td data-label="دهون" className="num">{p.total.fat}</td>
+                  <td data-label=""><Link className="btn btn-ghost btn-sm" href={`/admin/nutrition/plans/${p.id}`}>فتح</Link></td>
                 </tr>
               ))}
             </tbody>

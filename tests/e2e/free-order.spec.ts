@@ -76,7 +76,7 @@ test("مجاني: المدربة تقبل الطلب بمدة تحددها، و�
 
   // المتدرب: الطلب نشط ومجاني
   await trainee.goto(`/account/orders/${orderNo}`);
-  await expect(trainee.getByText("مجاني 🎁")).toBeVisible();
+  await expect(trainee.getByText("مجاني", { exact: true })).toBeVisible();
   await expect(trainee.getByText("البرنامج نشط").first()).toBeVisible();
   await noHorizontalScroll(trainee);
 

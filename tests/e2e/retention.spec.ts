@@ -84,7 +84,7 @@ test("التجديد بخصم 10%، الالتزام والـ streak، لوحة 
   const mine = trainee.getByTestId("my-program");
   await expect(mine.getByTestId("adherence-pct")).toHaveText("100%");
   await expect(mine.getByTestId("streak")).toContainText("12 أسبوعاً متتالية");
-  await expect(mine.getByTestId("reward-progress")).toContainText("استحققت");
+  await expect(mine.getByTestId("reward-progress")).toContainText("يمنحك اشتراكاً مجانياً");
 
   // «لاحقاً» تخفيها لبقية اليوم
   await popup.getByRole("button", { name: "لاحقاً" }).click();
@@ -142,7 +142,7 @@ test("التجديد بخصم 10%، الالتزام والـ streak، لوحة 
 
   // المتدرب يرى المكافأة
   await trainee.goto("/account");
-  await expect(trainee.getByTestId("my-program")).toContainText("حصلت على مكافأة الالتزام");
+  await expect(trainee.getByTestId("my-program")).toContainText("مكافأة الالتزام مُنحت لك");
   await noHorizontalScroll(trainee);
 
   // مستخدم آخر لا يجدد طلب غيره (قاعدة البيانات ترفض)
@@ -169,15 +169,15 @@ test("استبيان نهاية البرنامج وتحته التقييم، و�
   const card = trainee.getByTestId("exit-survey");
   await expect(card).toContainText("ولله الحمد انتهى البرنامج، لكن لم تنتهِ رحلتك في التطور النفسي والجسدي.");
   await expect(card).toContainText("عندك رغبة بالتجديد؟");
-  await expect(card.getByTestId("exit-review").getByRole("button", { name: "أرسل التقييم" })).toBeVisible();
+  await expect(card.getByTestId("exit-review").getByRole("button", { name: "إرسال التقييم" })).toBeVisible();
   await noHorizontalScroll(trainee);
   await card.getByRole("radio", { name: "نعم" }).check();
   await card.getByLabel(/وضّح لي الله يعافيك السبب/).fill("حابة أكمل على نفس المستوى");
   await card.getByLabel(/كيف كانت تجربتك معي/).fill("تجربة ممتازة ومتابعة دقيقة كل أسبوع");
-  await card.getByRole("button", { name: "أرسل ردك" }).click();
+  await card.getByRole("button", { name: "إرسال الرد" }).click();
   await expect(card).toContainText("شكراً لك، وصلني ردك");
   await card.locator("#rbody").fill("برنامج رائع ومتابعة مستمرة، أنصح فيه بقوة");
-  await card.getByRole("button", { name: "أرسل التقييم" }).click();
+  await card.getByRole("button", { name: "إرسال التقييم" }).click();
   await expect(card).toContainText("وصل تقييمك");
   expect((await db.query("SELECT count(*)::int n FROM dev_mailbox WHERE recipient = 'coach-notify@e2e.test' AND subject = $1", [`استبيان نهاية البرنامج — ${name}`])).rows[0].n).toBe(1);
 

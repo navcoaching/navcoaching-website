@@ -26,7 +26,7 @@ export default function FilePicker({ maxMb = 5, hint, ...props }: React.InputHTM
             props.onChange?.(e);
           }} />
         <span className="file-picker-face" aria-hidden="true">
-          <b>{names.length ? `📎 ${names.join("، ")}` : "📎 اضغط لاختيار ملف"}</b>
+          <b>{names.length ? names.join("، ") : "اختيار ملف"}</b>
           <span className="small muted">{names.length ? "اضغط للتغيير" : hint ?? `حتى ${maxMb} ميجابايت`}</span>
         </span>
       </div>

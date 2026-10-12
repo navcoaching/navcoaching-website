@@ -9,7 +9,7 @@ export default function DayLogTable({ data, dayId }: { data: BlockData; dayId: s
   const rating = (w: number) => data.ratings.find((r) => r.block_day_id === dayId && r.week_no === w)?.rating;
   return (
     <div className="table-wrap">
-      <table className="t log-table">
+      <table className="t log-table sticky-first">
         <thead><tr><th>التمرين</th>{weeks.map((w) => <th key={w}>الأسبوع {w}</th>)}</tr></thead>
         <tbody>
           {day.items.map((it) => (

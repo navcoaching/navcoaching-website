@@ -234,16 +234,16 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await expect(page.getByTestId("sub-start")).toBeVisible();
   await expect(page.getByTestId("sub-end")).toBeVisible();
   await page.locator('textarea[name="a"]').first().fill("الحركة اليومية أفضل والنوم أحسن");
-  await page.getByRole("button", { name: "أرسل المراجعة" }).click();
+  await page.getByRole("button", { name: "إرسال المراجعة" }).click();
   await expect(page.getByText("وصلت مراجعتك")).toBeVisible();
 
   const reviewText = `تجربة ممتازة ومتابعة دقيقة كل أسبوع (${project})`;
   await page.locator("#rbody").fill("اتصلوا علي 0555 123 456");
   await page.locator('input[name="consent"]').check();
-  await page.getByRole("button", { name: "أرسل التقييم" }).click();
+  await page.getByRole("button", { name: "إرسال التقييم" }).click();
   await expect(page.getByText("احذف أرقام الهواتف")).toBeVisible();
   await page.locator("#rbody").fill(reviewText);
-  await page.getByRole("button", { name: "أرسل التقييم" }).click();
+  await page.getByRole("button", { name: "إرسال التقييم" }).click();
   await expect(page.getByText("حالة تقييمك: قيد المراجعة")).toBeVisible();
 
   await page.goto("/reviews");

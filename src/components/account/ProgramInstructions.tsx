@@ -40,7 +40,7 @@ export default function ProgramInstructions({ o, p }: { o: O; p: ProgramToday | 
   return (
     <section id="instructions" className="card stack instructions" style={{ ["--space" as string]: "14px" }} aria-labelledby="ins-h" data-testid="instructions">
       <div>
-        <h2 id="ins-h" style={{ fontSize: 19, margin: 0 }}>📋 التعليمات</h2>
+        <h2 id="ins-h" style={{ fontSize: 19, margin: 0 }}>التعليمات</h2>
         <p className="small muted" style={{ margin: "2px 0 0" }}>المعلومات الأساسية وقواعد البرنامج</p>
       </div>
       <dl className="ins-info">
@@ -57,9 +57,9 @@ export default function ProgramInstructions({ o, p }: { o: O; p: ProgramToday | 
         </div>
       )}
       <div className="rules-grid">
-        <Rules id="rules-nutrition" title="🥗 قواعد التغذية" rules={nutritionRules} />
-        <Rules id="rules-contact" title="💬 قواعد التواصل والمراجعة" rules={CONTACT_RULES} />
-        <Rules id="rules-training" title="🏋️ تعليمات التمرين" rules={trainingRules(p?.block?.steps_goal_week)} />
+        <Rules id="rules-nutrition" title="قواعد التغذية" rules={nutritionRules} />
+        <Rules id="rules-contact" title="قواعد التواصل والمراجعة" rules={CONTACT_RULES} />
+        <Rules id="rules-training" title="تعليمات التمرين" rules={trainingRules(p?.block?.steps_goal_week)} />
       </div>
     </section>
   );
