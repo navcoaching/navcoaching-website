@@ -16,7 +16,7 @@ export default function FreePlanButton({ slug, loggedIn, owned }: { slug: string
     return (
       <div className="stack" style={{ ["--space" as string]: "8px" }}>
         {s.needLogin && <p className="alert warn" role="alert">{s.error}</p>}
-        <Link className="btn btn-block" href={`/login?next=${encodeURIComponent(back)}`}>اطلب الجدول مجانًا</Link>
+        <Link className="btn btn-block" href={`/login?next=${encodeURIComponent(back)}`}>طلب الجدول مجانًا</Link>
         <span className="small muted">يلزم حساب مجاني: سجّل ببريدك وبترجع لهذا الجدول مباشرة.</span>
       </div>
     );
@@ -33,7 +33,7 @@ export default function FreePlanButton({ slug, loggedIn, owned }: { slug: string
     <form onSubmit={onSubmit} className="stack" style={{ ["--space" as string]: "8px" }}>
       <input type="hidden" name="slug" value={slug} />
       {s.error && <p className="alert err" role="alert">{s.error}</p>}
-      <Submit pending={pending} className="btn btn-block" pendingText="جارٍ الطلب…">اطلب الجدول مجانًا</Submit>
+      <Submit pending={pending} className="btn btn-block" pendingText="جارٍ الطلب…">طلب الجدول مجانًا</Submit>
     </form>
   );
 }

@@ -4,6 +4,7 @@ import { withUser } from "@/lib/db";
 import { getCurrentUser, getFreshUser } from "@/lib/session";
 import { allow } from "@/lib/rate";
 import { pushConfigured, sendPush } from "@/lib/push";
+import { LOGIN_REQUIRED } from "@/lib/messages";
 
 const subSchema = z.object({
   endpoint: z.string().url().startsWith("https://").max(1000),
@@ -13,7 +14,7 @@ const subSchema = z.object({
 /** حفظ اشتراك هذا الجهاز في إشعارات الجوال */
 export async function savePushSubscriptionAction(sub: unknown, device: string): Promise<{ ok: boolean; error?: string }> {
   const user = await getCurrentUser();
-  if (!user) return { ok: false, error: "سجّل الدخول أولاً." };
+  if (!user) return { ok: false, error: LOGIN_REQUIRED };
   if (!pushConfigured()) return { ok: false, error: "إشعارات الجوال غير مفعّلة حالياً." };
   const parsed = subSchema.safeParse(sub);
   if (!parsed.success) return { ok: false, error: "تعذّر تفعيل الإشعارات على هذا الجهاز." };
@@ -36,15 +37,15 @@ export async function deletePushSubscriptionAction(endpoint: string): Promise<{ 
 /** إشعار تجربة لكل أجهزة المستخدم (حد: 5 بالساعة) */
 export async function sendTestPushAction(): Promise<{ ok: boolean; error?: string; sent?: number }> {
   const user = await getCurrentUser();
-  if (!user) return { ok: false, error: "سجّل الدخول أولاً." };
-  if (!(await allow(`push-test:${user.id}`, 5, 3600))) return { ok: false, error: "جرّبت كثير. حاول بعد شوي." };
+  if (!user) return { ok: false, error: LOGIN_REQUIRED };
+  if (!(await allow(`push-test:${user.id}`, 5, 3600))) return { ok: false, error: "محاولات كثيرة. يُرجى المحاولة بعد قليل." };
   const r = await withUser(user.id, (tx) => sendPush(tx, user.id, {
     title: "Nav Coaching", body: "إشعارات الجوال شغّالة على هذا الجهاز.", url: "/account", tag: "test",
   }));
   if (r.sent) return { ok: true, sent: r.sent };
   if (!r.failed && !r.removed) return { ok: false, error: "ما لقينا اشتراك لهذا الجهاز. الحل: «إيقاف» ثم «تفعيل الإشعارات» من جديد." };
   if (r.removed && !r.failed) return { ok: false, error: "اشتراك هذا الجهاز انتهى. الحل: «إيقاف» ثم «تفعيل الإشعارات» من جديد." };
-  return { ok: false, error: `رفض خادم الإشعارات الإرسال (${r.errors[0] ?? "بدون تفاصيل"}). أرسل هذي الرسالة للدعم.` };
+  return { ok: false, error: `رفض خادم الإشعارات الإرسال (${r.errors[0] ?? "بدون تفاصيل"}). يُرجى إرسال هذي الرسالة للدعم.` };
 }
 
 /** للمدربة: مفتاحا VAPID جديدان تضعهما في Netlify. لا يُحفظان في الموقع ولا يُسجَّلان */

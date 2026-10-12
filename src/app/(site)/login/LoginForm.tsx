@@ -19,7 +19,7 @@ export default function LoginForm({ next }: { next: string }) {
     e?.preventDefault();
     setError("");
     const clean = email.trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(clean)) { setError("اكتب بريداً إلكترونياً صحيحاً."); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(clean)) { setError("البريد الإلكتروني غير صحيح."); return; }
     setBusy(true);
     const { error } = await authClient.emailOtp.sendVerificationOtp({ email: clean, type: "sign-in" });
     setBusy(false);

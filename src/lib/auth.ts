@@ -83,9 +83,9 @@ export const auth = betterAuth({
         await sendMail(
           email,
           `رمز الدخول إلى Nav Coaching: ${otp}`,
-          `رمز الدخول: ${otp}\n\nصالح لمدة 10 دقائق. إذا لم تطلب الدخول تجاهل هذه الرسالة.\n\nNav Coaching`,
-          renderEmail({ headline: "رمز الدخول 🔐", code: otp, brand,
-            message: "اكتب هذا الرمز في صفحة الدخول. صالح لمدة 10 دقائق، وإذا لم تطلب الدخول تجاهل هذه الرسالة." }),
+          `رمز الدخول: ${otp}\n\nصالح لمدة 10 دقائق. إذا لم يكن طلب الدخول منك فلا حاجة لأي إجراء.\n\nNav Coaching`,
+          renderEmail({ headline: "رمز الدخول", code: otp, brand,
+            message: "هذا الرمز يُكتب في صفحة الدخول. صالح لمدة 10 دقائق، وإذا لم يكن طلب الدخول منك فلا حاجة لأي إجراء." }),
         );
       },
     }),

@@ -188,7 +188,7 @@ export async function coachMessageAction(_: ActionState, fd: FormData): Promise<
       const o = await orderTarget(tx, orderNo);
       if (!o) return [];
       return notifyTrainee(tx, { orderId: o.id, orderNo, userId: o.user_id }, {
-        kind: "coach_message", subject: `رسالة من المدربة — ${orderNo}`, text: "وصلتك رسالة من المدربة. افتح صفحة طلبك لقراءتها." });
+        kind: "coach_message", subject: `رسالة من المدربة — ${orderNo}`, text: "وصلتك رسالة من المدربة، وتجدها في صفحة طلبك." });
     });
   } catch (err) { return fail(err); }
   revalidatePath(`/admin/orders/${orderNo}`);
@@ -291,7 +291,7 @@ export async function requestMeasurementsAction(_: ActionState, fd: FormData): P
       const o = await orderTarget(tx, orderNo);
       if (!o) return [];
       return notifyTrainee(tx, { orderId: o.id, orderNo, userId: o.user_id }, {
-        kind: "measurements", subject: "طلب تحديث بياناتك", text: "نحتاج وزنك وطولك الحاليين لتحديث برنامجك. تقدر تضيفها من صفحة طلبك." });
+        kind: "measurements", subject: "طلب تحديث بياناتك", text: "نحتاج وزنك وطولك الحاليين لتحديث برنامجك، وإضافتها تكون من صفحة طلبك." });
     });
   } catch (err) { return fail(err); }
   return { ok: true, message: "أُرسل الطلب." + summarize(results) };
@@ -659,7 +659,7 @@ export async function createManualOrderAction(_: ActionState, fd: FormData): Pro
         const o = await orderTarget(tx, no);
         if (o) res = await notifyTrainee(tx, { orderId: o.id, orderNo: no, userId: o.user_id }, {
           kind: "status", subject: "برنامجك في Nav Coaching", channels: ["email"],
-          text: "أضافت المدربة برنامجك إلى حسابك في Nav Coaching. ادخل ببريدك هذا لتشوف التفاصيل والملفات." });
+          text: "أضافت المدربة برنامجك إلى حسابك في Nav Coaching. الدخول يكون ببريدك هذا، وفيه التفاصيل والملفات." });
       }
       return { orderNo: no, results: res };
     }));
@@ -775,7 +775,7 @@ export async function grantRewardAction(_: ActionState, fd: FormData): Promise<A
       if (!a?.eligible || a.avg == null) return { error: "المتدرب غير مستحق حالياً (يلزم التزام 90% فأكثر خلال 12 أسبوعاً مكتملاً)." };
       const no = (await tx.query("SELECT app.coach_grant_reward($1, $2) AS no", [orderNo, a.avg])).rows[0].no as string;
       const results = await notifyTrainee(tx, { orderId: o.id, orderNo: no, userId: o.user_id }, {
-        kind: "reward", subject: "مكافأة التزامك 🎁",
+        kind: "reward", subject: "مكافأة التزامك",
         text: "مبروك! بسبب التزامك خلال اشتراكك، أضفنا لك 3 أشهر مجاناً تبدأ بعد نهاية اشتراكك الحالي." });
       return { no, results };
     });

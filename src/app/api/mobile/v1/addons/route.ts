@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/session";
 import { createAddonOrder, listAddons } from "@/lib/addons";
 import { riyals } from "@/lib/format";
 import { APP_ORDERING_OFF, appOrderingOn, getSettings } from "@/lib/data";
+import { LOGIN_REQUIRED } from "@/lib/messages";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const user = await getCurrentUser().catch(() => null);
-  if (!user) return Response.json({ error: "سجّل الدخول أولاً." }, { status: 401 });
+  if (!user) return Response.json({ error: LOGIN_REQUIRED }, { status: 401 });
   if (!appOrderingOn(await getSettings())) return Response.json({ error: APP_ORDERING_OFF }, { status: 403 });
   let fd: FormData;
   try { fd = await req.formData(); } catch { return Response.json({ error: "الملف كبير جداً أو الطلب غير صالح." }, { status: 400 }); }

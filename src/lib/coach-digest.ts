@@ -43,10 +43,10 @@ export function digestText(d: Digest, today: string, site: string): string {
     list.length ? [`${title} (${list.length}):`, ...list.map((l) => `• ${l.name} — ${l.note}\n  ${site}/admin/orders/${l.order_no}${path}`), ""] : [];
   return [
     `مراجعات اليوم — ${fmtYMD(today)}`, "",
-    ...sec("📅 مراجعات تبدأ اليوم", d.startsToday),
-    ...sec("⏳ مراجعات مفتوحة ولم تصل بعد", d.open),
-    ...sec("💬 مراجعات وصلت وتنتظر ردك", d.awaitingReply),
-    ...sec("🔥 سعرات مقترحة جديدة", d.calories, "/nutrition"),
+    ...sec("مراجعات تبدأ اليوم", d.startsToday),
+    ...sec("مراجعات مفتوحة ولم تصل بعد", d.open),
+    ...sec("مراجعات وصلت وتنتظر ردك", d.awaitingReply),
+    ...sec("سعرات مقترحة جديدة", d.calories, "/nutrition"),
     "تقدرين توقفين هذا الإيميل من لوحة الإدارة ← المحتوى والإعدادات ← التنبيهات.",
   ].join("\n");
 }
@@ -59,10 +59,10 @@ export function digestEmail(d: Digest, today: string, site: string) {
     headline: "مراجعات اليوم",
     message: `${fmtYMD(today)}\nعندك ${n} ${n === 1 ? "بند" : n === 2 ? "بندان" : n <= 10 ? "بنود" : "بنداً"} اليوم.`,
     sections: [
-      { title: "📅 مراجعات تبدأ اليوم", items: items(d.startsToday) },
-      { title: "⏳ مراجعات مفتوحة ولم تصل بعد", items: items(d.open) },
-      { title: "💬 مراجعات وصلت وتنتظر ردك", items: items(d.awaitingReply, "#checkins") },
-      { title: "🔥 سعرات مقترحة جديدة", items: items(d.calories, "/nutrition") },
+      { title: "مراجعات تبدأ اليوم", items: items(d.startsToday) },
+      { title: "مراجعات مفتوحة ولم تصل بعد", items: items(d.open) },
+      { title: "مراجعات وصلت وتنتظر ردك", items: items(d.awaitingReply, "#checkins") },
+      { title: "سعرات مقترحة جديدة", items: items(d.calories, "/nutrition") },
     ],
     cta: { label: "فتح لوحة الإدارة", url: `${site}/admin` },
     footnote: "تقدرين توقفين هذا الإيميل من لوحة الإدارة ← المحتوى والإعدادات ← التنبيهات.",

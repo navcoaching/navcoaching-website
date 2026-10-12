@@ -90,7 +90,7 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await noHorizontalScroll(page);
   await expect(page.locator('fieldset[data-step="2"]')).toBeHidden();
   await page.getByRole("button", { name: "التالي" }).click();
-  await expect(page.getByText("اكتب اسمك (حرفين على الأقل).")).toBeVisible(); // التحقق من الحقول
+  await expect(page.getByText("الاسم مطلوب (حرفين على الأقل).")).toBeVisible(); // التحقق من الحقول
   await page.getByLabel("الاسم").fill("سارة الاختبار");
   await page.locator("#phone").fill("512345678");
   await pickRadio(page, "gender", "أنثى");

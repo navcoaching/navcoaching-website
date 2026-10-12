@@ -5,6 +5,7 @@ import { createRenewal } from "@/lib/renew";
 import { createOrder } from "@/lib/create-order";
 import { APP_ORDERING_OFF, appOrderingOn, getSettings } from "@/lib/data";
 import { getCurrentUser } from "@/lib/session";
+import { LOGIN_REQUIRED } from "@/lib/messages";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,7 @@ const ACTIONS: Record<string, (s: ActionState, fd: FormData) => Promise<ActionSt
   // الطلب بالاستبيان: الموقع ينتهي بتحويل لصفحة الطلب؛ التطبيق يأخذ رقم الطلب في الرسالة وأخطاء الحقول
   "create-order": async (_, fd) => {
     const user = await getCurrentUser();
-    if (!user) return { error: "سجّل الدخول أولاً." };
+    if (!user) return { error: LOGIN_REQUIRED };
     if (!appOrderingOn(await getSettings())) return { error: APP_ORDERING_OFF };
     const r = await createOrder(user.id, fd);
     return "error" in r ? r : { ok: true, message: r.orderNo };
@@ -40,7 +41,7 @@ const ACTIONS: Record<string, (s: ActionState, fd: FormData) => Promise<ActionSt
   // التجديد في الموقع ينتهي بتحويل لصفحة الطلب؛ التطبيق يأخذ رقم الطلب الجديد في الرسالة
   renew: async (_, fd) => {
     const user = await getCurrentUser();
-    if (!user) return { error: "سجّل الدخول أولاً." };
+    if (!user) return { error: LOGIN_REQUIRED };
     const r = await createRenewal(user.id, String(fd.get("order_no") ?? ""));
     return "error" in r ? { error: r.error } : { ok: true, message: r.no };
   },
@@ -52,5 +53,5 @@ export async function POST(req: Request, { params }: { params: Promise<{ name: s
   let fd: FormData;
   try { fd = await req.formData(); } catch { return Response.json({ error: "طلب غير صالح." }, { status: 400 }); }
   const res = await action({}, fd);
-  return Response.json(res, { status: res.error === "سجّل الدخول أولاً." ? 401 : res.error ? 422 : 200, headers: { "Cache-Control": "no-store" } });
+  return Response.json(res, { status: res.error === LOGIN_REQUIRED ? 401 : res.error ? 422 : 200, headers: { "Cache-Control": "no-store" } });
 }

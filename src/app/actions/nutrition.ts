@@ -8,6 +8,7 @@ import { dbErrorMessage, withUser, type Tx } from "@/lib/db";
 import { getCurrentUser, getFreshUser } from "@/lib/session";
 import { MEAL_KINDS } from "@/lib/nutrition";
 import type { ActionState } from "./client";
+import { LOGIN_REQUIRED } from "@/lib/messages";
 
 const GENERIC = "تعذّر الحفظ. حاولي مرة أخرى.";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -432,10 +433,10 @@ export async function assignSupplementsAction(_: ActionState, fd: FormData): Pro
 // =====================================================================
 // المتدرب: سجل الأكل اليومي (من وجبات جداوله أو إدخال حر)
 // =====================================================================
-const T_GENERIC = "تعذّر الحفظ. حاول مرة أخرى.";
+const T_GENERIC = "تعذّر الحفظ. يُرجى المحاولة مرة أخرى.";
 export async function logFoodAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const u = await getCurrentUser();
-  if (!u) return { error: "سجّل الدخول أولاً." };
+  if (!u) return { error: LOGIN_REQUIRED };
   const orderNo = s(fd, "order_no");
   const date = s(fd, "date");
   const kind = kindOf(s(fd, "kind"));
@@ -461,7 +462,7 @@ export async function logFoodAction(_: ActionState, fd: FormData): Promise<Actio
 
 export async function deleteFoodLogAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const u = await getCurrentUser();
-  if (!u) return { error: "سجّل الدخول أولاً." };
+  if (!u) return { error: LOGIN_REQUIRED };
   const logId = Number(fd.get("id"));
   const orderNo = s(fd, "order_no");
   if (!Number.isSafeInteger(logId) || !ORDER_NO.test(orderNo)) return { error: T_GENERIC };
@@ -475,21 +476,21 @@ export async function deleteFoodLogAction(_: ActionState, fd: FormData): Promise
 /** من قاعدة الأكل بالغرامات: قاعدة البيانات تحسب الماكروز من قيم 100غ */
 export async function logFoodGramsAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const u = await getCurrentUser();
-  if (!u) return { error: "سجّل الدخول أولاً." };
+  if (!u) return { error: LOGIN_REQUIRED };
   const orderNo = s(fd, "order_no"), date = s(fd, "date");
   const kind = kindOf(s(fd, "kind"));
   const grams = toNum(s(fd, "grams"));
   const source = s(fd, "source");
   if (!ORDER_NO.test(orderNo) || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return { error: T_GENERIC };
   if (!kind) return { error: "اختيار الوجبة مطلوب (فطور، غداء، عشاء، سناك)." };
-  if (grams == null || !Number.isFinite(grams) || grams < 1 || grams > 3000) return { error: "اكتب الكمية بالغرام (من 1 إلى 3000)." };
+  if (grams == null || !Number.isFinite(grams) || grams < 1 || grams > 3000) return { error: "الكمية بالغرام مطلوبة (من 1 إلى 3000)." };
   try {
     if (source === "fatsecret") {
       const { fatsecretEnabled, fatsecretGet } = await import("@/lib/fatsecret");
       if (!fatsecretEnabled()) throw bad("البحث الخارجي غير مفعّل.");
       // القيم تُجلب من FatSecret هنا على الخادم، لا من المتصفح
       const f = await fatsecretGet(s(fd, "food"));
-      if (!f) throw bad("تعذّر جلب بيانات هذا الصنف. جرّب صنفاً آخر.");
+      if (!f) throw bad("تعذّر جلب بيانات هذا الصنف. يُرجى اختيار صنف آخر.");
       const name = f.brand ? `${f.name} (${f.brand})` : f.name;
       await withUser(u.id, (tx) => tx.query("SELECT app.log_food_external($1,$2,$3,$4,$5,$6,$7,$8)",
         [orderNo, date, kind, name, grams, f.protein_100, f.carbs_100, f.fat_100]));

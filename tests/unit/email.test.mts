@@ -42,9 +42,9 @@ test("رابط فيه رقم طلب يبقى سليماً (كان يُكسر ←
 });
 test("أقسام الإيميل اليومي: عنوان بعدد، واسم، وزر فتح لكل بند، وتهريب النصوص", () => {
   const html = renderEmail({ headline: "مراجعات اليوم", message: "", brand, footnote: "إيقاف من الإعدادات",
-    sections: [{ title: "🔥 سعرات مقترحة جديدة", items: [{ name: "Sarah <b>", note: "1,535 سعرة (+70)", url: "https://navcoaching.com/admin/orders/NAV-260927-6K64X/nutrition" }] },
+    sections: [{ title: "سعرات مقترحة جديدة", items: [{ name: "Sarah <b>", note: "1,535 سعرة (+70)", url: "https://navcoaching.com/admin/orders/NAV-260927-6K64X/nutrition" }] },
       { title: "فارغ", items: [] }] });
-  assert.ok(html.includes("🔥 سعرات مقترحة جديدة"));
+  assert.ok(html.includes("سعرات مقترحة جديدة"));
   assert.ok(html.includes("Sarah &lt;b&gt;"));
   assert.ok(html.includes('href="https://navcoaching.com/admin/orders/NAV-260927-6K64X/nutrition"'));
   assert.ok(html.includes("فتح ←"));

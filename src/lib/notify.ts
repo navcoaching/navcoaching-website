@@ -83,7 +83,7 @@ export async function notifyTrainee(
       const c = statusCopy(info.status, info.category);
       return renderEmail({ name: first, headline: c.headline, message: [c.message || opts.text, note].filter(Boolean).join("\n\n"), order, brand });
     }
-    return renderEmail({ name: first, headline: opts.subject, message: opts.text, brand, cta: { label: "افتح حسابك", url: link } });
+    return renderEmail({ name: first, headline: opts.subject, message: opts.text, brand, cta: { label: "فتح الحساب", url: link } });
   };
 
   const results: ChannelResult[] = [];

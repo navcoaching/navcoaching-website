@@ -17,6 +17,7 @@ import { DEFAULT_VOLUME_LIMIT } from "@/lib/volume";
 import { cleanUpload, UploadError } from "@/lib/uploads";
 import { matchExercises, type DayItem, type ExtractedExercise } from "@/lib/workout-import";
 import { MAX_IMAGES, readWorkoutImages, visionEnabled, VisionError } from "@/lib/workout-vision";
+import { LOGIN_REQUIRED } from "@/lib/messages";
 
 const GENERIC = "تعذّر الحفظ. حاولي مرة أخرى.";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -538,14 +539,14 @@ export async function markSwapsSeenAction(_: ActionState, fd: FormData): Promise
 // =====================================================================
 // المتدرب: التسجيل والتبديل والتقدم (الكتابة عبر دوال قاعدة البيانات فقط)
 // =====================================================================
-const T_GENERIC = "تعذّر الحفظ. حاول مرة أخرى.";
+const T_GENERIC = "تعذّر الحفظ. يُرجى المحاولة مرة أخرى.";
 async function asTrainee<T>(fn: (tx: Tx, user: { id: string; name: string }) => Promise<T>): Promise<T> {
   const u = await getCurrentUser();
   if (!u) throw new Error("login");
   return withUser(u.id, (tx) => fn(tx, u));
 }
 const tFail = (err: unknown): ActionState =>
-  ({ error: (err as Error).message === "login" ? "سجّل الدخول أولاً." : dbErrorMessage(err) ?? T_GENERIC });
+  ({ error: (err as Error).message === "login" ? LOGIN_REQUIRED : dbErrorMessage(err) ?? T_GENERIC });
 const orderPath = (fd: FormData) => {
   const no = String(fd.get("order_no") ?? "");
   return ORDER_NO.test(no) ? `/account/orders/${no}/training` : null;
@@ -690,7 +691,7 @@ export type ImportPreview = ActionState & {
 /** يقرأ الصورة ويطابق التمارين ويرجع معاينة للمراجعة. لا يحفظ شيئاً ولا يخزّن الصورة. */
 export async function readWorkoutImageAction(_: ImportPreview, fd: FormData): Promise<ImportPreview> {
   const u = await getCurrentUser();
-  if (!u) return { error: "سجّل الدخول أولاً." };
+  if (!u) return { error: LOGIN_REQUIRED };
   const orderNo = String(fd.get("order_no") ?? "");
   const day = idOf(fd, "day");
   if (!ORDER_NO.test(orderNo) || !day) return { error: T_GENERIC };

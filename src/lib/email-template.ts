@@ -71,15 +71,15 @@ export const PAYMENT_LABEL: Record<string, string> = { bank_transfer: "تحوي�
 /** عنوان ونص البريد لكل حالة طلب */
 export function statusCopy(status: string, category: string): { headline: string; message: string } {
   switch (status) {
-    case "awaiting_quote": return { headline: "وصلنا طلبك 🙌", message: "طلبت خصم الطالب. أرسل إثبات الطالب على واتساب، ونأكد لك المبلغ النهائي في حسابك قبل التحويل." };
-    case "awaiting_payment": return { headline: "وصلنا طلبك 🙌", message: "خطوة وحدة وتبدأ رحلتك: تحويل المبلغ على الحساب الموضح في صفحة طلبك، ثم رفع صورة الإيصال." };
-    case "payment_review": return { headline: "وصلنا إيصالك 🧾", message: "نتحقق الآن من وصول المبلغ، ونحدّث حالة طلبك بعد التأكد مباشرة." };
-    case "preparing": return { headline: "نبشرك بتأكيد الطلب 😍", message: `ونعمل في هذه اللحظة على ${category === "consult" ? "تنسيق موعد جلستك" : "تجهيز برنامجك"}. سنوافيك بتحديث حالة الطلب قريباً. يومك سعيد ❤️` };
-    case "active": return { headline: "برنامجك جاهز 💪", message: "برنامجك صار نشط. برنامج التمرين، والتغذية، والمراجعة الأسبوعية كلها في حسابك." };
-    case "delivered": return { headline: "ملفاتك جاهزة 🎉", message: "ملفات برنامجك متاحة الآن في حسابك، وهي لك مدى الحياة." };
+    case "awaiting_quote": return { headline: "وصلنا طلبك", message: "تم طلب خصم الطالب. المطلوب إرسال إثبات الطالب عبر واتساب، وبعدها يتأكد المبلغ النهائي في حسابك قبل التحويل." };
+    case "awaiting_payment": return { headline: "وصلنا طلبك", message: "خطوة وحدة وتبدأ رحلتك: تحويل المبلغ على الحساب الموضح في صفحة طلبك، ثم رفع صورة الإيصال." };
+    case "payment_review": return { headline: "وصلنا إيصالك", message: "نتحقق الآن من وصول المبلغ، ونحدّث حالة طلبك بعد التأكد مباشرة." };
+    case "preparing": return { headline: "نبشرك بتأكيد الطلب", message: `ونعمل في هذه اللحظة على ${category === "consult" ? "تنسيق موعد جلستك" : "تجهيز برنامجك"}. سنوافيك بتحديث حالة الطلب قريباً. يومك سعيد.` };
+    case "active": return { headline: "برنامجك جاهز", message: "برنامجك صار نشط. برنامج التمرين، والتغذية، والمراجعة الأسبوعية كلها في حسابك." };
+    case "delivered": return { headline: "ملفاتك جاهزة", message: "ملفات برنامجك متاحة الآن في حسابك، وهي لك مدى الحياة." };
     case "completed": return category === "follow"
-      ? { headline: "انتهى برنامجك 🌱", message: "ولله الحمد انتهى البرنامج، لكن لم تنتهِ رحلتك في التطور النفسي والجسدي. يسعدنا نسمع رأيك من حسابك." }
-      : { headline: "شكراً لك 🌱", message: "اكتمل طلبك. يسعدنا نسمع رأيك من حسابك." };
+      ? { headline: "انتهى برنامجك", message: "ولله الحمد انتهى البرنامج، لكن لم تنتهِ رحلتك في التطور النفسي والجسدي. يسعدنا نسمع رأيك من حسابك." }
+      : { headline: "شكراً لك", message: "اكتمل طلبك. يسعدنا نسمع رأيك من حسابك." };
     case "cancelled": return { headline: "تم إلغاء طلبك", message: "للمساعدة أو إذا كان الإلغاء بالخطأ: التواصل عبر واتساب." };
     default: return { headline: "تحديث على طلبك", message: "" };
   }
@@ -111,7 +111,7 @@ function summary(order: EmailOrder, link: string) {
     `<tr><td style="padding:10px 0 2px;font:400 14px ${FONT};color:${C.muted}">${label}</td></tr><tr><td style="padding:0 0 6px;font:500 16px ${FONT};color:${C.text}">${value}</td></tr>`;
   return `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:26px">
-    <tr><td style="font:700 20px ${FONT};color:${C.text};padding-bottom:10px;border-bottom:1px solid ${C.line}">🛍️ ملخص طلبك</td></tr>
+    <tr><td style="font:700 20px ${FONT};color:${C.text};padding-bottom:10px;border-bottom:1px solid ${C.line}">ملخص طلبك</td></tr>
     ${row("رقم الطلب", `<a href="${esc(link)}" style="color:${C.cyanInk};font-weight:700;text-decoration:underline" dir="ltr">#${esc(order.orderNo)}</a>`)}
     ${row("تاريخ الطلب", esc(fmtOrderDate(order.createdAt)))}
     ${row("طريقة الدفع", `<span style="display:inline-block;background:${C.soft};border-radius:999px;padding:6px 14px;font-size:14px;color:${C.text}">${esc(PAYMENT_LABEL[order.paymentMethod] ?? order.paymentMethod)}</span>`)}
@@ -158,7 +158,7 @@ export function renderEmail(input: EmailInput): string {
   const link = o ? `${b.site}/account/orders/${o.orderNo}` : input.cta?.url ?? `${b.site}/account`;
   const greeting = input.name?.trim()
     ? `<table role="presentation" align="center" cellpadding="0" cellspacing="0" style="margin:22px auto 0;border:1px solid ${C.line};border-radius:14px"><tr>
-        <td style="padding:14px 22px;font:700 16px/1.7 ${FONT};color:${C.text};text-align:center">👤 يا هلا وسهلا ${esc(input.name.trim())}</td></tr></table>`
+        <td style="padding:14px 22px;font:700 16px/1.7 ${FONT};color:${C.text};text-align:center">يا هلا وسهلا ${esc(input.name.trim())}</td></tr></table>`
     : "";
   const statusLine = o
     ? `<p style="margin:18px 0 0;font:400 16px/1.9 ${FONT};color:${C.text};text-align:center">[ Nav Coaching ] أصبحت حالة طلبك

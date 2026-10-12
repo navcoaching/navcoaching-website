@@ -6,8 +6,9 @@ import { loadCalorieState } from "@/lib/calorie-data";
 import { profileFromIntake } from "@/lib/calorie-suggest";
 import { PROTEIN_LEVELS } from "@/lib/calories";
 import type { ActionState } from "./client";
+import { LOGIN_REQUIRED } from "@/lib/messages";
 
-const GENERIC = "تعذّر الحفظ. حاول مرة أخرى.";
+const GENERIC = "تعذّر الحفظ. يُرجى المحاولة مرة أخرى.";
 const ORDER_NO = /^[A-Z]{2,5}-\d{6}-[A-Z0-9]{3,8}$/;
 const PAFS = [1.0, 1.1, 1.2, 1.3, 1.4];
 const s = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
@@ -36,7 +37,7 @@ const orderOf = async (tx: Tx, orderNo: string) => {
 /** المتدرب: تحديث الطول والنشاط وأيام التمرين ومدته (الاقتراح يظهر للمدربة، والهدف لا يتغير إلا بموافقتها) */
 export async function saveMyBodyInfoAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const user = await getCurrentUser();
-  if (!user) return { error: "سجّل الدخول أولاً." };
+  if (!user) return { error: LOGIN_REQUIRED };
   const orderNo = s(fd, "order_no");
   if (!ORDER_NO.test(orderNo)) return { error: GENERIC };
   const height = n(s(fd, "height")), paf = n(s(fd, "paf")), days = n(s(fd, "days")), minutes = n(s(fd, "minutes"));

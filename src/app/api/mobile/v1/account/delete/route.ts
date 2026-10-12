@@ -3,13 +3,14 @@ import { getCurrentUser } from "@/lib/session";
 import { storage } from "@/lib/storage";
 import { notifySafe } from "@/lib/mail";
 import { allow } from "@/lib/rate";
+import { LOGIN_REQUIRED } from "@/lib/messages";
 
 export const dynamic = "force-dynamic";
 
 // حذف الحساب من التطبيق (شرط Apple). يتطلب تأكيداً صريحاً من الواجهة، ويُبلَّغ المدربة بأرقام الطلبات المحذوفة.
 export async function POST(req: Request) {
   const user = await getCurrentUser().catch(() => null);
-  if (!user) return Response.json({ error: "سجّل الدخول أولاً." }, { status: 401 });
+  if (!user) return Response.json({ error: LOGIN_REQUIRED }, { status: 401 });
   const body = (await req.json().catch(() => ({}))) as { confirm?: string };
   if (body.confirm !== "حذف") return Response.json({ error: "اكتب «حذف» للتأكيد." }, { status: 422 });
   if (!(await allow(`self-delete:u:${user.id}`, 3, 3600))) return Response.json({ error: "محاولات كثيرة. حاول لاحقاً." }, { status: 429 });

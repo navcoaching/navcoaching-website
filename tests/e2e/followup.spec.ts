@@ -566,14 +566,14 @@ test("الجداول المجانية: عرض، طلب بعد الدخول، ت�
 
   // ---------- الطلب يعيد المستخدم لنفس الجدول بعد الدخول ----------
   await page.goto("/free-plans");
-  await list.locator(".fp-card", { hasText: `جدول تجريبي ${project}` }).getByRole("link", { name: "اطلب الجدول مجانًا" }).click();
+  await list.locator(".fp-card", { hasText: `جدول تجريبي ${project}` }).getByRole("link", { name: "طلب الجدول مجانًا" }).click();
   await expect(page).toHaveURL(new RegExp(`/login\\?next=%2Ffree-plans%2F${slug}`));
   await page.getByLabel("البريد الإلكتروني").fill(userEmail);
   await page.getByRole("button", { name: "أرسل رمز الدخول" }).click();
   await page.getByLabel("رمز الدخول").fill(await latestOtp(userEmail));
   await page.getByRole("button", { name: "دخول" }).click();
   await expect(page).toHaveURL(new RegExp(`/free-plans/${slug}$`));
-  await page.getByRole("button", { name: "اطلب الجدول مجانًا" }).dblclick();
+  await page.getByRole("button", { name: "طلب الجدول مجانًا" }).dblclick();
   await expect(page.getByText("أُضيف الجدول إلى «جداولي المجانية»")).toBeVisible();
   await page.reload();
   await expect(page.getByTestId("plan-owned")).toContainText("موجود في جداولي");

@@ -123,7 +123,7 @@ export default function CheckoutForm({ sku, offers, defaultName, responseTime, i
           </div>
           <div className="field">
             <label htmlFor="name">{lab("name")} <span className="req">*</span></label>
-            <input id="name" name="name" type="text" autoComplete="name" defaultValue={d("name")} required minLength={2} maxLength={80} data-err="اكتب اسمك (حرفين على الأقل)." {...inv("name")} />
+            <input id="name" name="name" type="text" autoComplete="name" defaultValue={d("name")} required minLength={2} maxLength={80} data-err="الاسم مطلوب (حرفين على الأقل)." {...inv("name")} />
             {hint("name")}<ErrText n="name" errors={errors} />
           </div>
           <div className="field">
@@ -132,7 +132,7 @@ export default function CheckoutForm({ sku, offers, defaultName, responseTime, i
               <select name="cc" aria-label="رمز الدولة" defaultValue={d("cc") || "+966"}>{OPT.cc.map((c) => <option key={c}>{c}</option>)}</select>
               <input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel-national" defaultValue={d("phone")} required
                 pattern={val("cc") === "+966" || !val("cc") ? "0?5[0-9]{8}" : "[0-9]{6,14}"}
-                data-err={val("cc") === "+966" || !val("cc") ? "الرقم السعودي يبدأ بـ 5 ويتكون من 9 أرقام، مثل 512345678." : "اكتب رقماً صحيحاً."} {...inv("phone")} />
+                data-err={val("cc") === "+966" || !val("cc") ? "الرقم السعودي يبدأ بـ 5 ويتكون من 9 أرقام، مثل 512345678." : "رقم الجوال غير صحيح."} {...inv("phone")} />
             </div>
             <span className="hint">الرقم اللي تستخدمه في واتساب — نتواصل معك عليه.</span>{hint("phone")}
             <ErrText n="phone" errors={errors} />
@@ -194,8 +194,8 @@ export default function CheckoutForm({ sku, offers, defaultName, responseTime, i
         {/* 4 */}
         <fieldset data-step="4" hidden={step !== 4} className="form">
           <div className="grid g2">
-            <div className="field"><label htmlFor="weight">{lab("weight")} <span className="req">*</span></label><input id="weight" name="weight" type="number" inputMode="decimal" min={30} max={250} step="0.1" required data-err="اكتب وزناً بين 30 و 250 كغ." {...inv("weight")} />{hint("weight")}<ErrText n="weight" errors={errors} /></div>
-            <div className="field"><label htmlFor="height">{lab("height")} <span className="req">*</span></label><input id="height" name="height" type="number" inputMode="numeric" min={120} max={230} step="0.1" required data-err="اكتب طولاً بين 120 و 230 سم." {...inv("height")} />{hint("height")}<ErrText n="height" errors={errors} /></div>
+            <div className="field"><label htmlFor="weight">{lab("weight")} <span className="req">*</span></label><input id="weight" name="weight" type="number" inputMode="decimal" min={30} max={250} step="0.1" required data-err="الوزن المطلوب بين 30 و 250 كغ." {...inv("weight")} />{hint("weight")}<ErrText n="weight" errors={errors} /></div>
+            <div className="field"><label htmlFor="height">{lab("height")} <span className="req">*</span></label><input id="height" name="height" type="number" inputMode="numeric" min={120} max={230} step="0.1" required data-err="الطول المطلوب بين 120 و 230 سم." {...inv("height")} />{hint("height")}<ErrText n="height" errors={errors} /></div>
           </div>
           {show("bodyfat") && <div className="field"><label htmlFor="bodyfat">{lab("bodyfat")}</label>
             <select id="bodyfat" name="bodyfat" defaultValue=""><option value="">اختيار</option>{bodyfat.map((o) => <option key={o}>{o}</option>)}</select>{hint("bodyfat")}

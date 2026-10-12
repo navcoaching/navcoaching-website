@@ -44,7 +44,7 @@ export const intakeSchema = z
   .object({
     idempotency_key: z.string().min(16).max(80),
     sku: z.string().min(1).max(40),
-    name: z.string().trim().min(2, "اكتب اسمك (حرفين على الأقل).").max(80),
+    name: z.string().trim().min(2, "الاسم مطلوب (حرفين على الأقل).").max(80),
     cc: oneOf(OPT.cc, "اختيار رمز الدولة مطلوب"),
     phone: z.string().trim().max(20),
     gender: oneOf(OPT.gender, "اختيار الجنس مطلوب"),
@@ -64,8 +64,8 @@ export const intakeSchema = z
     pregnancy: optionalOneOf(OPT.pregnancy),
     health_notes: text(600),
     health_ack: z.literal("on", { message: "نحتاج موافقتك على هذه النقطة للمتابعة." }),
-    weight: z.coerce.number({ message: "اكتب وزنك بالكيلوغرام." }).min(30, "اكتب وزناً بين 30 و 250 كغ.").max(250, "اكتب وزناً بين 30 و 250 كغ."),
-    height: z.coerce.number({ message: "اكتب طولك بالسنتيمتر." }).min(120, "اكتب طولاً بين 120 و 230 سم.").max(230, "اكتب طولاً بين 120 و 230 سم."),
+    weight: z.coerce.number({ message: "الوزن بالكيلوغرام مطلوب." }).min(30, "الوزن المطلوب بين 30 و 250 كغ.").max(250, "الوزن المطلوب بين 30 و 250 كغ."),
+    height: z.coerce.number({ message: "الطول بالسنتيمتر مطلوب." }).min(120, "الطول المطلوب بين 120 و 230 سم.").max(230, "الطول المطلوب بين 120 و 230 سم."),
     bodyfat: optionalOneOf([...new Set([...OPT.bodyfat_male, ...OPT.bodyfat_female])]),
     steps: optionalOneOf(OPT.steps),
     sleep: optionalOneOf(OPT.sleep),
@@ -93,7 +93,7 @@ export const intakeSchema = z
       ctx.addIssue({ code: "custom", path: ["calories"], message: "الخبرة في حساب السعرات مطلوبة، لأن باقتك تشمل تغذية." });
     const digits = v.phone.replace(/[^\d]/g, "").replace(/^0+/, "");
     if (v.cc === "+966" ? !/^5\d{8}$/.test(digits) : !/^\d{6,14}$/.test(digits))
-      ctx.addIssue({ code: "custom", path: ["phone"], message: v.cc === "+966" ? "الرقم السعودي يبدأ بـ 5 ويتكون من 9 أرقام، مثل 512345678." : "اكتب رقماً صحيحاً." });
+      ctx.addIssue({ code: "custom", path: ["phone"], message: v.cc === "+966" ? "الرقم السعودي يبدأ بـ 5 ويتكون من 9 أرقام، مثل 512345678." : "رقم الجوال غير صحيح." });
   });
 
 export type IntakeInput = z.infer<typeof intakeSchema>;

@@ -106,11 +106,11 @@ export type Reminders = {
 };
 export const DEFAULT_REMINDERS: Reminders = {
   sub_expiry_days: [7, 3],
-  sub_expiry_text: "مرحباً {name}، اشتراكك في {product} ينتهي بتاريخ {end_date}. للتجديد أو الاستفسار تواصل معنا.",
+  sub_expiry_text: "مرحباً {name}، اشتراكك في {product} ينتهي بتاريخ {end_date}. للتجديد أو الاستفسار: التواصل عبر واتساب.",
   review_lead_days: 1,
   review_window_days: 2,
   review_text: "مرحباً {name}، تذكير بموعد مراجعتك: المراجعة مفتوحة من {window_start} إلى {window_end}.",
-  missed_review_text: "مرحباً {name}، ما وصلتنا مراجعتك اللي انتهى موعدها في {window_end}. متى ما تيسّر لك، حدّثها عشان نتابع تقدمك.",
+  missed_review_text: "مرحباً {name}، ما وصلتنا مراجعتك اللي انتهى موعدها في {window_end}. متى ما تيسّر، إرسالها يساعدنا نتابع تقدمك.",
   manual_cooldown_minutes: 10,
   coach_digest: true,
 };
