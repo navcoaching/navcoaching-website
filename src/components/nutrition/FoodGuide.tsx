@@ -48,7 +48,7 @@ export default function FoodGuide({ foods, sp, base }: { foods: GuideFood[]; sp:
               <option value="">الكل</option>
               {TAG_FILTERS.map((t) => <option key={t.v} value={t.v}>{t.l}</option>)}
             </select></div>
-          <div className="field"><label htmlFor="fg-q">بحث بالاسم</label><input id="fg-q" name="q" defaultValue={q} maxLength={60} /></div>
+          <div className="field"><label htmlFor="fg-q">بحث بالاسم</label><input id="fg-q" name="q" type="search" defaultValue={q} maxLength={60} /></div>
         </div>
         <div className="row" style={{ gap: 8 }}>
           <button className="btn btn-sm" type="submit">عرض</button>

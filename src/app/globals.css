@@ -626,7 +626,7 @@ input[type="file"] { width: 100%; padding: 14px; border: 1.5px dashed var(--line
 .filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 18px; }
 .filters .field { min-width: 180px; flex: 1; }
 .pill-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
-.pill-nav a { padding: 8px 14px; min-height: 40px; display: inline-flex; align-items: center; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); text-decoration: none; color: var(--text); font-size: 14px; }
+.pill-nav a { padding: 8px 14px; min-height: 44px; display: inline-flex; align-items: center; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); text-decoration: none; color: var(--text); font-size: 14px; }
 .pill-nav a[aria-current="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
 .health { border: 2px solid #f0c36d; }
 .log { font-size: 14px; }
@@ -1823,3 +1823,16 @@ body:has(.account-shell) .site-footer .foot-legal { margin-top: 0; padding-top: 
 .setup-fold > summary::after { content: ""; margin-inline-start: auto; width: 8px; height: 8px; border: solid currentColor; border-width: 0 0 2px 2px; transform: rotate(-45deg); transition: transform .2s; color: var(--muted); }
 .setup-fold[open] > summary::after { transform: rotate(135deg); }
 @media (max-width: 640px) { .dash-lists, [data-testid="monthly-stats"] .grid { grid-template-columns: minmax(0, 1fr) !important; } }
+
+/* الطلبات على الجوال: فلاتر الحالة بصف واحد يُسحب جانبياً بدل ثلاثة أسطر */
+@media (max-width: 640px) {
+  .admin-main .pill-nav { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-inline: calc(-1 * var(--gutter, 16px)); padding-inline: var(--gutter, 16px); }
+  .admin-main .pill-nav::-webkit-scrollbar { display: none; }
+  .admin-main .pill-nav a { flex: none; white-space: nowrap; }
+}
+/* جدول الجولات للمدربة: بعرض محتواه، والشرح بعرض قراءة مريح */
+.volume .table-wrap { width: fit-content; max-width: 100%; }
+.volume > p, .volume .small.muted { max-width: 70ch; }
+.unsaved-bar { position: sticky; bottom: 12px; z-index: 30; margin: 0; padding: 12px 16px; border-radius: 14px; background: var(--warn-bg); color: var(--warn); border: 1px solid currentColor; font-size: 14.5px; box-shadow: var(--shadow-1); }
+@media (max-width: 900px) { .unsaved-bar { bottom: calc(80px + env(safe-area-inset-bottom)); } }
+@media (max-width: 640px) { .t.cards tbody td > .status, .t.cards tbody td > .tag, .t.cards tbody td > .ptag { justify-self: start; width: fit-content; } }

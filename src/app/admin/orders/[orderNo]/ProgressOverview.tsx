@@ -121,11 +121,11 @@ export default async function ProgressOverview({ coachId, o, adherence, weeks, i
         </div>
         {prs.length === 0 ? <p className="small muted">تظهر هنا التمارين اللي زاد فيها وزنه.</p> : (
           <div className="table-wrap">
-            <table className="t" data-testid="recent-prs">
+            <table className="t cards" data-testid="recent-prs">
               <thead><tr><th>التمرين</th><th className="num">أعلى وزن</th><th className="num">السابق</th><th>التاريخ</th></tr></thead>
               <tbody>
                 {prs.map((p) => (
-                  <tr key={p.exercise_id}><td><bdi dir="ltr">{p.name}</bdi></td><td className="num"><b>{p.best}</b> كغ</td><td className="num">{p.previous ?? "—"}</td><td className="small">{fmtDate(p.best_at)}</td></tr>
+                  <tr key={p.exercise_id}><td data-label="التمرين"><bdi dir="ltr">{p.name}</bdi></td><td data-label="أعلى وزن" className="num"><b>{p.best}</b> كغ</td><td data-label="السابق" className="num">{p.previous ?? "—"}</td><td data-label="التاريخ" className="small">{fmtDate(p.best_at)}</td></tr>
                 ))}
               </tbody>
             </table>

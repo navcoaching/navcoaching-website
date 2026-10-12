@@ -66,17 +66,17 @@ export default function ProgressView({ data, body, lifts }: {
         <h2 id="pr-h" style={{ fontSize: 18 }}>الأرقام القياسية</h2>
         {prs.length === 0 ? <p className="small muted">تظهر هنا أعلى أوزانك لكل تمرين بعد ما تسجّل تمارينك.</p> : (
           <div className="table-wrap">
-            <table className="t" data-testid="prs">
+            <table className="t cards" data-testid="prs">
               <thead><tr><th>التمرين</th><th className="num">أعلى وزن</th><th className="num">1RM تقديري</th><th className="num">السابق</th><th>الحالة</th><th>التاريخ</th></tr></thead>
               <tbody>
                 {prs.map((p) => (
                   <tr key={p.exercise_id}>
-                    <td><bdi dir="ltr">{p.name}</bdi></td>
-                    <td className="num"><b>{p.best}</b> كغ</td>
-                    <td className="num">{p.oneRm > 0 ? `${p.oneRm} كغ` : "—"}</td>
-                    <td className="num">{p.previous ?? "—"}</td>
-                    <td>{p.status === "new" ? <span className="status ok">رقم قياسي جديد</span> : p.status === "first" ? <span className="status muted">أول تسجيل</span> : <span className="status muted">ثابت</span>}</td>
-                    <td className="small">{fmtDate(p.best_at)}</td>
+                    <td data-label="التمرين"><bdi dir="ltr">{p.name}</bdi></td>
+                    <td data-label="أعلى وزن" className="num"><b>{p.best}</b> كغ</td>
+                    <td data-label="1RM تقديري" className="num">{p.oneRm > 0 ? `${p.oneRm} كغ` : "—"}</td>
+                    <td data-label="السابق" className="num">{p.previous ?? "—"}</td>
+                    <td data-label="الحالة">{p.status === "new" ? <span className="status ok">رقم قياسي جديد</span> : p.status === "first" ? <span className="status muted">أول تسجيل</span> : <span className="status muted">ثابت</span>}</td>
+                    <td data-label="التاريخ" className="small">{fmtDate(p.best_at)}</td>
                   </tr>
                 ))}
               </tbody>

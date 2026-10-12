@@ -8,6 +8,7 @@ import { saveFaqAction, savePolicyAction, saveSettingAction } from "@/app/action
 import VapidKeys from "@/components/admin/VapidKeys";
 import { pushConfigured, pushMock, pushPublicKey } from "@/lib/push";
 import PushCard from "@/components/account/PushCard";
+import UnsavedGuard from "@/components/admin/UnsavedGuard";
 
 export default async function AdminContent() {
   const coach = await requireCoach();
@@ -237,6 +238,7 @@ export default async function AdminContent() {
           </details>
         ))}
       </section>
+      <UnsavedGuard />
     </div>
   );
 }
