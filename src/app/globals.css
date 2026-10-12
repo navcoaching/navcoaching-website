@@ -1695,7 +1695,8 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
 @media (min-width: 961px) { .about-hero { grid-template-columns: minmax(0, 1fr) minmax(0, 380px); } }
 .about-photo { margin: 0; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--surface); max-width: 420px; }
 .about-photo img { display: block; width: 100%; height: auto; }
-.about-quotes { margin-top: 8px; }
+.stack > .about-quotes { margin-top: clamp(24px, 3vw, 36px); }
+.stack > .about-quotes + .row { margin-top: clamp(20px, 3vw, 32px); }
 
 /* صورة المدربة المصغّرة بجانب الاسم في الرئيسية */
 .coach-head { display: flex; align-items: center; gap: 16px; }
