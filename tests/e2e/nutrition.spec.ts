@@ -180,7 +180,7 @@ test("التغذية والمكملات: الأهداف، الجداول، ال�
   await expect(mine.getByTestId("today-nutrition")).toContainText("السعرات");
   await expect(mine.getByTestId("today-supplements")).toHaveCount(0); // المكملات في صفحة التغذية والمكملات فقط
   await expect(mine.getByTestId("expiry-alert")).toContainText("ينتهي خلال 3 أيام");
-  await expect(mine.getByTestId("expiry-alert").getByRole("button", { name: "جدّد بخصم 10%" })).toBeVisible();
+  await expect(mine.getByTestId("expiry-alert").getByRole("button", { name: "التجديد بخصم 10%" })).toBeVisible();
   await trainee.getByTestId("renewal-popup").getByRole("button", { name: "لاحقاً" }).click();
   await noHorizontalScroll(trainee);
   await trainee.goto(`/account/orders/${orderNo}`);

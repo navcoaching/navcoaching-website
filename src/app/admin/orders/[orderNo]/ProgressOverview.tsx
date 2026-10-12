@@ -66,7 +66,7 @@ export default async function ProgressOverview({ coachId, o, adherence, weeks, i
       <div className="kpis">
         <Kpi label="الالتزام" value={adherence?.avg != null ? pct(adherence.avg) : "—"} testId="kpi-adherence"
           sub={adherence?.scored ? `متوسط ${adherence.scored} أسابيع مكتملة` : "يبدأ بعد أول أسبوع كامل"} />
-        <Kpi label="أسابيع متتالية" value={String(adherence?.streak ?? 0)} sub="بالتزام 90% فأكثر" tone="sun" />
+        <Kpi label="أسابيع متتالية" value={String(adherence?.streak ?? 0)} sub="بالتزام 90% فأكثر" />
         <Kpi label="الوزن" value={lastW != null ? `${lastW} كغ` : "—"} testId="kpi-weight"
           tone={startW != null && lastW != null && lastW !== startW ? "good" : ""}
           sub={startW != null && lastW != null ? `${signed(lastW - startW, "كغ")} من البداية (${startW})` : "لم يسجّل وزنه بعد"} />

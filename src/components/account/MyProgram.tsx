@@ -55,7 +55,7 @@ export function ExpiryAlert({ o, soonDays, whatsapp, renewal }: { o: O; soonDays
           : `اشتراكك في ${o.product_name} ينتهي خلال ${left === 1 ? "يوم واحد" : left === 2 ? "يومين" : `${left} أيام`} (${fmtYMD(end)}).`}</b>
         {offer ? (
           <>
-            <span className="small">جدّد الآن بخصم 10% من سعر الباقة للحفاظ على مستواك وتطورك: <RenewPrice price={offer.price} discounted={offer.discounted} /></span>
+            <span className="small">التجديد الآن بخصم 10% من سعر الباقة يحافظ على مستواك وتطورك: <RenewPrice price={offer.price} discounted={offer.discounted} /></span>
             <div className="row" style={{ gap: 8, alignItems: "flex-start" }}>
               <RenewButton orderNo={o.order_no} />
               <a className="btn btn-ghost btn-sm" href={wa} target="_blank" rel="noopener noreferrer">التواصل عبر واتساب</a>
@@ -63,7 +63,7 @@ export function ExpiryAlert({ o, soonDays, whatsapp, renewal }: { o: O; soonDays
           </>
         ) : (
           <>
-            <span className="small">{state === "expired" ? "جدّد الآن عشان تستمر المتابعة." : "قبل الانتهاء بـ 5 أيام يتاح لك التجديد بخصم 10% من سعر الباقة."}</span>
+            <span className="small">{state === "expired" ? "التجديد يكمل المتابعة." : "قبل الانتهاء بـ 5 أيام يتاح لك التجديد بخصم 10% من سعر الباقة."}</span>
             <div className="row" style={{ gap: 8 }}>
               {state === "expired" && <Link className="btn btn-sm" href={renew}>تجديد الباقة</Link>}
               <a className="btn btn-ghost btn-sm" href={wa} target="_blank" rel="noopener noreferrer">التواصل عبر واتساب</a>

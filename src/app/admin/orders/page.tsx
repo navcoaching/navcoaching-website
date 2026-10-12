@@ -68,7 +68,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
         <h1>{archived ? "الطلبات المخفية" : "الطلبات"}</h1>
         <div className="row">
           <Link className="btn btn-sm" href="/admin/orders/new">+ طلب يدوي</Link>
-          <Link className="btn btn-ghost btn-sm" href={archived ? "/admin/orders" : "/admin/orders?view=archived"}>{archived ? "رجوع للطلبات" : "الطلبات المخفية"}</Link>
+          <Link className="text-link" href={archived ? "/admin/orders" : "/admin/orders?view=archived"}>{archived ? "رجوع للطلبات" : "الطلبات المخفية"}</Link>
         </div>
       </div>
       {sp.deleted && <p className="alert ok" style={{ marginBottom: 14 }}>تم حذف الطلب نهائياً.</p>}

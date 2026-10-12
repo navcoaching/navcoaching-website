@@ -198,28 +198,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
       </p>
       {sp.granted && <GrantedAlert no={sp.granted} sent={sp.sent === "1"} />}
       {data.demo > 0 && <p className="alert warn">توجد بيانات تجريبية ({data.demo}) في قاعدة البيانات. لا تُنشر في الإنتاج — احذفيها قبل الإطلاق.</p>}
-      <section className="stack" style={{ ["--space" as string]: "10px" }} aria-labelledby="stats-h" data-testid="monthly-stats">
-        <h2 id="stats-h" style={{ fontSize: 20 }}>الأرقام الشهرية (آخر 6 أشهر)</h2>
-        <div className="grid g3">
-          {([["orders", "عدد الطلبات", "", "var(--navy)"], ["members", "عدد الأعضاء الجدد", "", "var(--cyan)"], ["revenue", "مجموع المبالغ المدفوعة", " ريال", "#c77d00"]] as const).map(([k, title, unit, color]) => {
-            const total = data.monthly.reduce((a, m) => a + m[k], 0);
-            // هذا الشهر مقابل الشهر الماضي (آخر عنصرين في السلسلة)
-            const cur = data.monthly.at(-1)?.[k] ?? 0, prev = data.monthly.at(-2)?.[k] ?? 0, diff = cur - prev;
-            return (
-              <div key={k} className="card stack" style={{ ["--space" as string]: "6px" }}>
-                <span className="muted">{title}</span>
-                <b className="num" style={{ fontSize: 24 }}>{total.toLocaleString("en-US")}{unit}</b>
-                <span className={`small trend ${diff > 0 ? "up" : diff < 0 ? "down" : ""}`} data-testid={`trend-${k}`}>
-                  هذا الشهر {cur.toLocaleString("en-US")}{unit} · {diff === 0 ? "مثل الشهر الماضي" : `${diff > 0 ? "↑" : "↓"} ${Math.abs(diff).toLocaleString("en-US")} عن الشهر الماضي`}
-                </span>
-                <LineChart title={title} unit={unit} height={160} series={[{ label: title, color, points: data.monthly.map((m) => ({ x: m.ym.slice(2), y: m[k] })) }]} />
-              </div>
-            );
-          })}
-        </div>
-        <p className="small muted">الطلبات بدون المجانية والتجريبية. المبالغ لطلبات تأكد دفعها (حسب شهر الدفع)، بدون الملغاة والمجانية.</p>
-      </section>
-      <div className="grid g4">
+      <div className="stat-chips">
         <Link href="/admin/orders?status=awaiting_payment" className="card stat" style={{ textDecoration: "none", color: "inherit" }} data-testid="stat-new-orders"><span className="muted">طلبات جديدة بانتظار الدفع</span><b>{c("awaiting_payment")}</b><span className="small muted">{data.newWeek} طلب خلال آخر 7 أيام</span></Link>
         <Link href="/admin/orders?status=payment_review" className="card stat" style={{ textDecoration: "none", color: "inherit" }}><span className="muted">إيصالات بانتظار التحقق</span><b>{c("payment_review")}</b></Link>
         <Link href="/admin/orders?status=awaiting_quote" className="card stat" style={{ textDecoration: "none", color: "inherit" }}><span className="muted">بانتظار تأكيد المبلغ</span><b>{c("awaiting_quote")}</b></Link>
@@ -297,6 +276,27 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           )}
         </section>
       </div>
+      <section className="stack" style={{ ["--space" as string]: "10px" }} aria-labelledby="stats-h" data-testid="monthly-stats">
+        <h2 id="stats-h" style={{ fontSize: 20 }}>الأرقام الشهرية (آخر 6 أشهر)</h2>
+        <div className="grid g3">
+          {([["orders", "عدد الطلبات", "", "var(--navy)"], ["members", "عدد الأعضاء الجدد", "", "var(--cyan)"], ["revenue", "مجموع المبالغ المدفوعة", " ريال", "#c77d00"]] as const).map(([k, title, unit, color]) => {
+            const total = data.monthly.reduce((a, m) => a + m[k], 0);
+            // هذا الشهر مقابل الشهر الماضي (آخر عنصرين في السلسلة)
+            const cur = data.monthly.at(-1)?.[k] ?? 0, prev = data.monthly.at(-2)?.[k] ?? 0, diff = cur - prev;
+            return (
+              <div key={k} className="card stack" style={{ ["--space" as string]: "6px" }}>
+                <span className="muted">{title}</span>
+                <b className="num" style={{ fontSize: 24 }}>{total.toLocaleString("en-US")}{unit}</b>
+                <span className={`small trend ${diff > 0 ? "up" : diff < 0 ? "down" : ""}`} data-testid={`trend-${k}`}>
+                  هذا الشهر {cur.toLocaleString("en-US")}{unit} · {diff === 0 ? "مثل الشهر الماضي" : `${diff > 0 ? "↑" : "↓"} ${Math.abs(diff).toLocaleString("en-US")} عن الشهر الماضي`}
+                </span>
+                <LineChart title={title} unit={unit} height={160} series={[{ label: title, color, points: data.monthly.map((m) => ({ x: m.ym.slice(2), y: m[k] })) }]} />
+              </div>
+            );
+          })}
+        </div>
+        <p className="small muted">الطلبات بدون المجانية والتجريبية. المبالغ لطلبات تأكد دفعها (حسب شهر الدفع)، بدون الملغاة والمجانية.</p>
+      </section>
       <div className="grid g2" style={{ alignItems: "start" }}>
         <div className="card" id="setup" style={{ scrollMarginTop: 90 }}>
           <h2 style={{ fontSize: 18, marginBottom: 12 }}>حالة الإعداد</h2>

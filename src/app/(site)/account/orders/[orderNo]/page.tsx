@@ -105,7 +105,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
         {block && (
           <Link href={`/account/orders/${o.order_no}/training`} className="card program-link" data-testid="training-link">
             <span><b>برنامج التمرين</b><span className="small muted"> · {block.name}{block.status === "active" ? "" : " (منتهي)"}</span></span>
-            <span className="btn btn-sm">تسجيل التمرين ←</span>
+            <span className="text-link">تسجيل التمرين ←</span>
           </Link>
         )}
 
@@ -115,7 +115,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
         {hasNutrition && (
           <Link href={`/account/orders/${o.order_no}/nutrition`} className="card program-link" data-testid="nutrition-link">
             <span><b>التغذية والمكملات</b><span className="small muted"> · أهدافك وجداولك وسجل يومك</span></span>
-            <span className="btn btn-sm">تسجيل الأكل ←</span>
+            <span className="text-link">تسجيل الأكل ←</span>
           </Link>
         )}
 
@@ -182,20 +182,34 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
               <div className="card stack" aria-labelledby="weeks-h" data-testid="review-history">
                 <h2 id="weeks-h" style={{ fontSize: 20 }}>{every > 1 ? `سجل المراجعات (${reviewEveryLabel(every)})` : "سجل المراجعات الأسبوعية"}</h2>
                 {currentWeek && o.status === "active" && (
-                  <p className="alert info" data-testid="review-window">المراجعة مفتوحة من <b>{fmtYMD(currentWeek.windowStart)}</b> إلى <b>{fmtYMD(currentWeek.windowEnd)}</b>.</p>
+                  <p className="alert info" data-testid="review-window"><span>المراجعة مفتوحة من <b>{fmtYMD(currentWeek.windowStart)}</b> إلى <b>{fmtYMD(currentWeek.windowEnd)}</b>.</span></p>
                 )}
                 {lastMissed && o.status === "active" && (
                   <p className="alert warn" data-testid="review-missed">ما وصلتنا {every > 1 ? `المراجعة ${lastMissed.no}` : `مراجعة الأسبوع ${lastMissed.no}`}. ولا يهمك، متى ما تيسّر الإرسال أو إبلاغ المدربة نكمل المتابعة.</p>
                 )}
-                <ol className="weeks">
-                  {follow.weeks.map((w) => (
+                {(() => {
+                  // الظاهر: كل ما مضى + الحالي + أول موعد قادم، والباقي القادم مطوي حتى ما تطول الصفحة
+                  const firstUp = follow.weeks.findIndex((w) => w.status === "upcoming");
+                  const cut = firstUp < 0 ? follow.weeks.length : firstUp + 1;
+                  const item = (w: (typeof follow.weeks)[number]) => (
                     <li key={w.no} className={`wk ${w.status}`}>
                       <span aria-hidden="true">{w.status === "done" ? <IconCheck size={16} /> : w.status === "current" ? <IconClock size={16} /> : w.status === "missed" ? "•" : "○"}</span>
                       <span>{every > 1 ? "المراجعة" : "الأسبوع"} {w.no} — {fmtYMD(w.due)}</span>
                       <span className="small muted">{w.status === "done" ? "تمت" : w.status === "current" ? (every > 1 ? "الحالية" : "الأسبوع الحالي") : w.status === "missed" ? "لم تصل" : "قادم"}</span>
                     </li>
-                  ))}
-                </ol>
+                  );
+                  return (
+                    <>
+                      <ol className="weeks">{follow.weeks.slice(0, cut).map(item)}</ol>
+                      {cut < follow.weeks.length && (
+                        <details className="more-tools weeks-more">
+                          <summary>كل المواعيد القادمة ({follow.weeks.length - cut})</summary>
+                          <ol className="weeks" start={cut + 1}>{follow.weeks.slice(cut).map(item)}</ol>
+                        </details>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
             )}
 

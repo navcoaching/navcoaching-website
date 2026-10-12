@@ -94,7 +94,7 @@ test("التجديد بخصم 10%، الالتزام والـ streak، لوحة 
   await expect(trainee.getByTestId("renewal-popup")).toHaveCount(0);
 
   // التجديد من تنبيه الانتهاء: طلب جديد بـ 90% من السعر
-  await mine.getByTestId("expiry-alert").getByRole("button", { name: "جدّد بخصم 10%" }).click();
+  await mine.getByTestId("expiry-alert").getByRole("button", { name: "التجديد بخصم 10%" }).click();
   await trainee.waitForURL(/\/account\/orders\/NAV-.*\?renewed=1/);
   await expect(trainee.getByTestId("renewed-alert")).toBeVisible();
   await expect(trainee.getByTestId("order-status")).toHaveText("بانتظار الدفع");

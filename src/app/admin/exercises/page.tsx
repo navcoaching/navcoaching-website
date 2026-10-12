@@ -77,6 +77,10 @@ export default async function Exercises({ searchParams }: { searchParams: Promis
               {options[key].map((o) => <option key={o.value} value={o.value}>{o.value} ({o.count})</option>)}
             </select></div>
         ))}
+        {/* فلاتر إضافية مطوية (تنفتح تلقائياً إذا فيها اختيار) حتى ما تطول الصفحة على الجوال */}
+        <details className="more-filters" open={Boolean(sec || f.equipment || f.place || f.level || f.status) || undefined}>
+          <summary>فلاتر إضافية{[sec, f.equipment, f.place, f.level, f.status].filter(Boolean).length ? ` (${[sec, f.equipment, f.place, f.level, f.status].filter(Boolean).length})` : ""}</summary>
+          <div className="more-filters-body">
         <div className="field"><label htmlFor="ex-secondary">العضلة الثانوية</label>
           <select id="ex-secondary" name="secondary" defaultValue={sec}>
             <option value="">الكل</option>
@@ -86,6 +90,8 @@ export default async function Exercises({ searchParams }: { searchParams: Promis
         {sel("place", "المكان", ["نادي", "منزل", "بدون معدات"])}
         {sel("level", "المستوى", LEVELS)}
         {sel("status", "المراجعة", Object.entries(EX_STATUS) as [string, string][])}
+          </div>
+        </details>
         <button className="btn btn-sm">عرض</button>
       </AutoSubmitForm>
       <p className="small muted" data-testid="ex-count">{rows.length} تمرين</p>

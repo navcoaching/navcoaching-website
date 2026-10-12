@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
 import { IconBook, IconClipboard, IconDumbbell, IconReceipt, IconSalad, IconTrend } from "../Icons";
 
 // أيقونات خطية موحدة بلون الهوية (بدل الإيموجي)
@@ -12,8 +13,16 @@ export type AccountLink = { href: string | null; label: string; icon: AccountIco
 /** قائمة حساب المتدرب: جانبية على الشاشات الكبيرة، وشريط أفقي على الجوال */
 export default function AccountNav({ links }: { links: AccountLink[] }) {
   const path = usePathname();
+  const nav = useRef<HTMLElement>(null);
+  // على الجوال القائمة شريط أفقي: الصفحة الحالية تظهر في الوسط بدل ما تكون مقصوصة على الطرف
+  useEffect(() => {
+    const el = nav.current;
+    const cur = el?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (!el || !cur || el.scrollWidth <= el.clientWidth) return;
+    el.scrollLeft += cur.getBoundingClientRect().left - el.getBoundingClientRect().left - (el.clientWidth - cur.offsetWidth) / 2;
+  }, [path]);
   return (
-    <nav className="account-side" aria-label="حسابي" data-testid="account-nav">
+    <nav ref={nav} className="account-side" aria-label="حسابي" data-testid="account-nav">
       {links.map((l) => {
         const Icon = ICONS[l.icon];
         if (!l.href) {

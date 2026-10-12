@@ -83,7 +83,7 @@ export function ItemLogForm({ orderNo, item, week, target, targetRir, log }: {
       <FormMessage state={state} />
       <div className="row" style={{ gap: 8 }}>
         <Submit pending={pending} className="btn btn-sm">{log ? "تحديث" : "حفظ"}</Submit>
-        {log && <button type="submit" name="clear" value="1" className="btn btn-ghost btn-sm" formNoValidate disabled={pending}>حذف التسجيل</button>}
+        {log && <button type="submit" name="clear" value="1" className="text-link danger-link" formNoValidate disabled={pending}>حذف التسجيل</button>}
       </div>
     </form>
   );

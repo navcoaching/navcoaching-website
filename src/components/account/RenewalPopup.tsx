@@ -9,13 +9,13 @@ type Offer = { orderNo: string; product: string; left: number; price: number; di
 
 const leftText = (n: number) => (n === 0 ? "اليوم" : n === 1 ? "خلال يوم واحد" : n === 2 ? "خلال يومين" : `خلال ${n} أيام`);
 
-/** زر «جدّد بخصم 10%»: ينشئ طلب التجديد وينقل المتدرب لصفحة الدفع */
+/** زر «التجديد بخصم 10%»: ينشئ طلب التجديد وينقل المتدرب لصفحة الدفع */
 export function RenewButton({ orderNo, className = "btn btn-sm" }: { orderNo: string; className?: string }) {
   const { state, onSubmit, pending } = useFormAction(renewAction);
   return (
     <form onSubmit={onSubmit} className="renew-form">
       <input type="hidden" name="order_no" value={orderNo} />
-      <Submit className={className} pending={pending} pendingText="جارٍ إنشاء طلب التجديد…">جدّد بخصم 10%</Submit>
+      <Submit className={className} pending={pending} pendingText="جارٍ إنشاء طلب التجديد…">التجديد بخصم 10%</Submit>
       <FormMessage state={state} />
     </form>
   );

@@ -102,9 +102,9 @@ export function ReviewForm({ orderNo, name }: { orderNo: string; name: string })
       <input type="hidden" name="order_no" value={orderNo} />
       <fieldset className="field">
         <legend>تقييمك (اختياري)</legend>
-        <div className="choices">
-          {[5, 4, 3, 2, 1].map((n) => (
-            <label className="choice" key={n}><input type="radio" name="rating" value={n} /><span aria-label={`${n} من 5`}>{"★".repeat(n)}</span></label>
+        <div className="choices rating-choices stars-row">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <label className="choice" key={n}><input type="radio" name="rating" value={n} /><span aria-label={`${n} من 5`}>{n} <span aria-hidden="true" className="star">★</span></span></label>
           ))}
         </div>
       </fieldset>

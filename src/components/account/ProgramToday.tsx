@@ -68,7 +68,7 @@ export default function ProgramTodayView({ orderNo, p }: { orderNo: string; p: P
         <section className="stack" style={{ ["--space" as string]: "8px" }} data-testid="today-nutrition">
           <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
             <h3 className="ico-head" style={{ fontSize: 17 }}><IconSalad size={20} />التغذية اليوم</h3>
-            <Link className="small" href={`${base}/nutrition`}>تسجيل الأكل ←</Link>
+            <Link className="text-link" href={`${base}/nutrition`}>تسجيل الأكل ←</Link>
           </div>
           {p.target && (
             <div className="today-macros">

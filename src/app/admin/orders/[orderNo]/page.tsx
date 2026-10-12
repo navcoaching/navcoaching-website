@@ -119,7 +119,7 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
               {subState === "ending_soon" || subState === "expired" ? <span className="status action">{SUB_LABEL[subState]}</span> : null}
             </div>
             <h1>{o.contact_name}</h1>
-            <p className="small muted" style={{ margin: 0 }}><bdi dir="ltr">{o.contact_phone}</bdi> · <bdi dir="ltr">{o.user_email}</bdi></p>
+            <p className="small muted contact-line" style={{ margin: 0 }}><bdi dir="ltr">{o.contact_phone}</bdi> <span aria-hidden="true">·</span> <bdi dir="ltr">{o.user_email}</bdi></p>
             {follow && start && (
               <p className="prog-line" data-testid="sub-line">
                 <span>الأسبوع <b>{weekNo}</b> من {totalWeeks}</span>
