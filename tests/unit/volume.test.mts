@@ -37,3 +37,17 @@ describe("الجولات الأسبوعية لكل عضلة", () => {
     assert.equal(muscleLabel("Chest / الصدر"), "Chest");
   });
 });
+
+test("جولات اليوم لكل عضلة: الأساسية جولة والثانوية نصف، مرتبة من الأكثر", async () => {
+  const { dayMuscleSets } = await import("../../src/lib/volume.ts");
+  const p = (sets: number) => ({ sets, reps: Array(sets).fill(10), rir: 2 });
+  const items = [
+    { primary_muscle: "Quadriceps / الأمامية", secondary_muscles: ["Glutes / المؤخرة"], plan: [p(3), p(4)] },
+    { primary_muscle: "Glutes / المؤخرة", secondary_muscles: [], plan: [p(3), p(3)] },
+    { primary_muscle: "Stretching / الإطالات", secondary_muscles: [], plan: [p(2), p(2)] },
+  ];
+  assert.deepEqual(dayMuscleSets(items, 2), [
+    { muscle: "Glutes / المؤخرة", values: [4.5, 5] },
+    { muscle: "Quadriceps / الأمامية", values: [3, 4] },
+  ]);
+});

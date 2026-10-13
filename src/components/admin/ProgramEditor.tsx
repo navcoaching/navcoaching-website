@@ -3,8 +3,10 @@ import ExercisePicker, { ExercisesProvider, type PickerExercise } from "@/compon
 import { addDayAction, addItemAction, deleteDayAction, deleteItemAction, saveDayAction, saveItemAction } from "@/app/actions/training";
 import { dayTotalSets, formatReps, planLabel, type PlanWeek } from "@/lib/training";
 import { muscleAr } from "@/lib/exercises";
+import { dayMuscleSets, muscleLabel } from "@/lib/volume";
 
-export type EditorItem = { id: string; exercise_id?: string; name: string; plan: PlanWeek[]; note: string | null; coach_name?: string | null; logs?: number };
+export type EditorItem = { id: string; exercise_id?: string; name: string; plan: PlanWeek[]; note: string | null; coach_name?: string | null; logs?: number;
+  primary_muscle?: string | null; secondary_muscles?: string[] | null; pattern?: string | null; sub_pattern?: string | null };
 export type EditorDay = { id: string; day_no: number; title: string; items: EditorItem[] };
 export type ExOption = PickerExercise;
 
@@ -29,12 +31,20 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
             <b>اليوم {d.day_no}: <bdi dir="ltr">{d.title}</bdi></b>
             <span className="small muted">{d.items.length} تمارين</span>
             {d.items.length > 0 && (() => {
-              // مجموع جولات اليوم (للمدربة فقط): رقم واحد إذا تساوت الأسابيع، وإلا لكل أسبوع
+              // جولات اليوم لكل عضلة (للمدربة فقط): الأساسية جولة والثانوية نصف، مثل جدول الجولات الأسبوعية.
+              // رقم واحد إذا تساوت الأسابيع، وإلا من–إلى
+              const n = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(1));
+              const val = (vs: number[]) => { const lo = Math.min(...vs), hi = Math.max(...vs); return lo === hi ? n(lo) : `${n(lo)}–${n(hi)}`; };
               const t = dayTotalSets(d.items, weeks);
+              const muscles = dayMuscleSets(d.items, weeks);
               return (
                 <span className="day-sets" data-testid={`day-sets-${d.day_no}`}>
-                  {t.every((n) => n === t[0]) ? <>مجموع الجولات: <b className="num">{t[0]}</b></>
-                    : <>مجموع الجولات: {t.map((n, w) => <span key={w} className="wk-sets">الأسبوع {w + 1}: <b className="num">{n}</b></span>)}</>}
+                  {muscles.map((m) => (
+                    <span key={m.muscle} className="m-sets" title={m.values.map((v, w) => `الأسبوع ${w + 1}: ${n(v)}`).join(" · ")}>
+                      <bdi dir="ltr">{muscleLabel(m.muscle)}</bdi> <b className="num">{val(m.values)}</b>
+                    </span>
+                  ))}
+                  <span className="m-sets total">المجموع <b className="num">{val(t)}</b></span>
                 </span>
               );
             })()}

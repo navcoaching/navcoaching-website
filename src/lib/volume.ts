@@ -68,3 +68,12 @@ export function volumeStatus(sets: number, l?: { min?: number | null; max?: numb
 
 /** «Chest / الصدر» ← «Chest» (أسماء العضلات بالإنجليزي في جدول المدربة) */
 export const muscleLabel = (m: string) => m.split("/")[0].trim() || m;
+
+/** جولات اليوم لكل عضلة (للمدربة في محرر البرنامج): نفس حسبة الجدول الأسبوعي (الأساسية جولة، والثانوية نصف)
+ *  لكل عضلة قيمة لكل أسبوع، مرتبة من الأكثر */
+export function dayMuscleSets(items: VolumeItem[], weeks: number): { muscle: string; values: number[] }[] {
+  const vol = weeklyVolume(items, weeks);
+  const keys = new Set(vol.flatMap((m) => [...m.keys()]));
+  return [...keys].map((muscle) => ({ muscle, values: vol.map((m) => m.get(muscle) ?? 0) }))
+    .sort((a, b) => b.values.reduce((x, y) => x + y, 0) - a.values.reduce((x, y) => x + y, 0) || a.muscle.localeCompare(b.muscle));
+}

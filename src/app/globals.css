@@ -1847,5 +1847,6 @@ body:has(.account-shell) .site-footer .foot-legal { margin-top: 0; padding-top: 
 td.empty-cta { display: table-cell; }
 td.empty-cta > * { margin-inline-start: 10px; vertical-align: middle; }
 /* محرر البرنامج: مجموع جولات اليوم بجانب عنوانه (للمدربة فقط) */
-.day-sets { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 13.5px; color: var(--accent-text); background: var(--cyan-soft, var(--paper)); padding: 4px 10px; border-radius: 999px; }
-.day-sets .wk-sets { white-space: nowrap; }
+.day-sets { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; flex-basis: 100%; font-size: 13.5px; }
+.day-sets .m-sets { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; padding: 3px 10px; border-radius: 999px; background: var(--cyan-soft, var(--paper)); color: var(--accent-text); }
+.day-sets .m-sets.total { background: none; border: 1px solid var(--line); color: var(--muted); }
