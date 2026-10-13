@@ -47,7 +47,10 @@ test("جولات اليوم لكل عضلة: الأساسية جولة والث�
     { primary_muscle: "Stretching / الإطالات", secondary_muscles: [], plan: [p(2), p(2)] },
   ];
   assert.deepEqual(dayMuscleSets(items, 2), [
-    { muscle: "Glutes / المؤخرة", values: [4.5, 5] },
-    { muscle: "Quadriceps / الأمامية", values: [3, 4] },
+    { muscle: "Glutes / المؤخرة", values: [4.5, 5], primary: [3, 3] },
+    { muscle: "Quadriceps / الأمامية", values: [3, 4], primary: [3, 4] },
   ]);
+  // عضلة جاتها جولات ثانوية فقط: primary صفر
+  const only2 = dayMuscleSets([{ primary_muscle: "Quadriceps / الأمامية", secondary_muscles: ["Calves / البطات"], plan: [p(4)] }], 1);
+  assert.deepEqual(only2.find((m) => m.muscle.startsWith("Calves")), { muscle: "Calves / البطات", values: [2], primary: [0] });
 });

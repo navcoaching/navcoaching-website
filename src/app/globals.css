@@ -1849,4 +1849,8 @@ td.empty-cta > * { margin-inline-start: 10px; vertical-align: middle; }
 /* محرر البرنامج: مجموع جولات اليوم بجانب عنوانه (للمدربة فقط) */
 .day-sets { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; flex-basis: 100%; font-size: 13.5px; }
 .day-sets .m-sets { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; padding: 3px 10px; border-radius: 999px; background: var(--cyan-soft, var(--paper)); color: var(--accent-text); }
-.day-sets .m-sets.total { background: none; border: 1px solid var(--line); color: var(--muted); }
+.day-sets .m-sets.over { background: #fff1e0; color: #8a3a00; box-shadow: inset 0 0 0 1px #f2b56b; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .day-sets .m-sets.over { background: #3a2410; color: #ffc98a; box-shadow: inset 0 0 0 1px #7a4a17; } }
+:root[data-theme="dark"] .day-sets .m-sets.over { background: #3a2410; color: #ffc98a; box-shadow: inset 0 0 0 1px #7a4a17; }
+.day-sets-minor { flex-basis: 100%; font-size: 13px; }
+.day-sets-minor > span { white-space: nowrap; }

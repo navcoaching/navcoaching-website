@@ -149,9 +149,9 @@ export default async function OrderProgram({ params, searchParams }: { params: P
           <section className="stack" style={{ ["--space" as string]: "10px" }}>
             <h2 style={{ fontSize: 19 }}>الأيام والتمارين</h2>
             <p className="small muted">التعديل هنا لهذا المتدرب فقط. تغيير التمرين يجعله اختيارك الجديد، وتظهر للمتدرب بدائله.</p>
-            <ProgramEditor kind="block" ownerId={active.id} weeks={active.weeks}
+            <ProgramEditor kind="block" ownerId={active.id} weeks={active.weeks} sessionCap={volume.sessionCap}
               days={days.map((d) => ({ ...d, items: d.items.map((i) => ({ ...i, plan: normalizePlan(i.plan, active.weeks) })) }))} exercises={exercises} />
-            <VolumeTable items={days.flatMap((d) => d.items.map((i) => ({ ...i, plan: normalizePlan(i.plan, active.weeks) })))} weeks={active.weeks} limits={volume.limits} saved={volume.saved} muscles={volume.muscles} />
+            <VolumeTable items={days.flatMap((d) => d.items.map((i) => ({ ...i, plan: normalizePlan(i.plan, active.weeks) })))} weeks={active.weeks} limits={volume.limits} saved={volume.saved} muscles={volume.muscles} sessionCap={volume.sessionCap} />
           </section>
 
           <section className="card stack">

@@ -13,7 +13,7 @@ import { DEFAULT_WEEK_RIR, MAX_SETS, parseReps, parseRir, type PlanWeek } from "
 import { ANATOMICAL_ACTIONS, EQUIPMENT, EX_STATUS, KINDS, LEVELS, MOVEMENT_SUBCATEGORIES, MUSCLES, PATTERNS, REHAB_CATEGORIES, REHAB_LOADS, REHAB_PHASES, REHAB_REVIEW, SECONDARY_MUSCLES, SUB_PATTERNS, placeFor, type RehabReview } from "@/lib/exercises";
 import type { ActionState } from "./client";
 import { allow } from "@/lib/rate";
-import { DEFAULT_VOLUME_LIMIT } from "@/lib/volume";
+import { DEFAULT_VOLUME_LIMIT, DEFAULT_SESSION_CAP, SESSION_KEY } from "@/lib/volume";
 import { cleanUpload, UploadError } from "@/lib/uploads";
 import { matchExercises, type DayItem, type ExtractedExercise } from "@/lib/workout-import";
 import { MAX_IMAGES, readWorkoutImages, visionEnabled, VisionError } from "@/lib/workout-vision";
@@ -786,6 +786,13 @@ export async function saveVolumeLimitsAction(_: ActionState, fd: FormData): Prom
     if (min != null && max != null && min > max) return { error: `الحد الأدنى أكبر من الأعلى (${m.split("/")[0].trim()}).` };
     if (min === DEFAULT_VOLUME_LIMIT.min && max === DEFAULT_VOLUME_LIMIT.max) continue; // نفس الافتراضي، ما يحتاج حفظ
     limits[m] = { min, max };
+  }
+  // حد الجلسة الواحدة لكل عضلة (يُحفظ فقط إذا اختلف عن الافتراضي)
+  const capRaw = String(fd.get("session_cap") ?? "").trim();
+  if (capRaw) {
+    const cap = Number(capRaw);
+    if (!Number.isFinite(cap) || cap < 1 || cap > 40) return { error: "حد الجلسة الواحدة بين 1 و 40 جولة." };
+    if (cap !== DEFAULT_SESSION_CAP) limits[SESSION_KEY] = { min: null, max: cap };
   }
   try {
     await asCoach((tx, uid) => tx.query(

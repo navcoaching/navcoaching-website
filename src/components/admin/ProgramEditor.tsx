@@ -3,7 +3,7 @@ import ExercisePicker, { ExercisesProvider, type PickerExercise } from "@/compon
 import { addDayAction, addItemAction, deleteDayAction, deleteItemAction, saveDayAction, saveItemAction } from "@/app/actions/training";
 import { dayTotalSets, formatReps, planLabel, type PlanWeek } from "@/lib/training";
 import { muscleAr } from "@/lib/exercises";
-import { dayMuscleSets, muscleLabel } from "@/lib/volume";
+import { DEFAULT_SESSION_CAP, dayMuscleSets, muscleLabel } from "@/lib/volume";
 
 export type EditorItem = { id: string; exercise_id?: string; name: string; plan: PlanWeek[]; note: string | null; coach_name?: string | null; logs?: number;
   primary_muscle?: string | null; secondary_muscles?: string[] | null; pattern?: string | null; sub_pattern?: string | null };
@@ -11,8 +11,8 @@ export type EditorDay = { id: string; day_no: number; title: string; items: Edit
 export type ExOption = PickerExercise;
 
 /** محرر البرنامج: نفس الواجهة للقالب ولبلوك المتدرب (kind) */
-export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }: {
-  kind: "template" | "block"; ownerId: string; weeks: number; days: EditorDay[]; exercises: ExOption[];
+export default function ProgramEditor({ kind, ownerId, weeks, days, exercises, sessionCap = DEFAULT_SESSION_CAP }: {
+  kind: "template" | "block"; ownerId: string; weeks: number; days: EditorDay[]; exercises: ExOption[]; sessionCap?: number;
 }) {
   const hidden = (extra: Record<string, string>) => (
     <><input type="hidden" name="kind" value={kind} />{Object.entries(extra).map(([k, v]) => <input key={k} type="hidden" name={k} value={v} />)}</>
@@ -29,23 +29,41 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
           <details className="day-fold">
           <summary className="day-toggle" data-testid={`fold-${d.day_no}`}>
             <b>اليوم {d.day_no}: <bdi dir="ltr">{d.title}</bdi></b>
-            <span className="small muted">{d.items.length} تمارين</span>
-            {d.items.length > 0 && (() => {
-              // جولات اليوم لكل عضلة (للمدربة فقط): الأساسية جولة والثانوية نصف، مثل جدول الجولات الأسبوعية.
-              // رقم واحد إذا تساوت الأسابيع، وإلا من–إلى
+            {(() => {
+              // جولات اليوم (للمدربة فقط): عدد التمارين وجولاتها نصاً، ثم العضلات الأساسية بطاقات (برتقالي إذا تعدّت حد الجلسة)،
+              // والعضلات اللي جاتها جولات ثانوية فقط سطر صغير تحتها. رقم واحد إذا تساوت الأسابيع، وإلا من–إلى
               const n = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(1));
               const val = (vs: number[]) => { const lo = Math.min(...vs), hi = Math.max(...vs); return lo === hi ? n(lo) : `${n(lo)}–${n(hi)}`; };
               const t = dayTotalSets(d.items, weeks);
+              // تمييز العدد بالعربي: جولة، جولتين، 3–10 جولات، 11+ جولة
+              const setsWord = (vs: number[]) => {
+                const lo = Math.min(...vs), hi = Math.max(...vs);
+                if (lo !== hi) return `${val(vs)} جولات`;
+                return lo === 1 ? "جولة واحدة" : lo === 2 ? "جولتين" : lo >= 3 && lo <= 10 ? `${n(lo)} جولات` : `${n(lo)} جولة`;
+              };
               const muscles = dayMuscleSets(d.items, weeks);
+              const main = muscles.filter((m) => m.primary.some((v) => v > 0));
+              const minor = muscles.filter((m) => !m.primary.some((v) => v > 0));
               return (
-                <span className="day-sets" data-testid={`day-sets-${d.day_no}`}>
-                  {muscles.map((m) => (
-                    <span key={m.muscle} className="m-sets" title={m.values.map((v, w) => `الأسبوع ${w + 1}: ${n(v)}`).join(" · ")}>
-                      <bdi dir="ltr">{muscleLabel(m.muscle)}</bdi> <b className="num">{val(m.values)}</b>
+                <>
+                  <span className="small muted" data-testid={`day-count-${d.day_no}`}>{d.items.length} تمارين{d.items.length > 0 && <> · {setsWord(t)}</>}</span>
+                  {main.length > 0 && (
+                    <span className="day-sets" data-testid={`day-sets-${d.day_no}`}>
+                      {main.map((m) => {
+                        const over = Math.max(...m.values) > sessionCap;
+                        return (
+                          <span key={m.muscle} className={`m-sets${over ? " over" : ""}`} title={m.values.map((v, w) => `الأسبوع ${w + 1}: ${n(v)}`).join(" · ")}>
+                            <bdi dir="ltr">{muscleLabel(m.muscle)}</bdi> <b className="num">{val(m.values)}</b>
+                            {over && <span className="sr-only"> (أعلى من حد الجلسة {n(sessionCap)})</span>}
+                          </span>
+                        );
+                      })}
                     </span>
-                  ))}
-                  <span className="m-sets total">المجموع <b className="num">{val(t)}</b></span>
-                </span>
+                  )}
+                  {minor.length > 0 && (
+                    <span className="day-sets-minor small muted">ثانوية: {minor.map((m, i) => <span key={m.muscle}>{i > 0 && " · "}<bdi dir="ltr">{muscleLabel(m.muscle)}</bdi> <span className="num">{val(m.values)}</span></span>)}</span>
+                  )}
+                </>
               );
             })()}
             <span className="btn btn-ghost btn-sm day-toggle-btn" aria-hidden="true"><span className="when-open">طيّ اليوم ▴</span><span className="when-closed">فتح اليوم ▾</span></span>

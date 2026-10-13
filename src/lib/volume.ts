@@ -8,6 +8,11 @@ export type Limits = Record<string, { min?: number | null; max?: number | null }
 /** الحد الافتراضي لكل عضلة (من المدربة): 6 إلى 20 جولة أسبوعياً، ويتعدّل لكل عضلة من «تعديل الحدود» */
 export const DEFAULT_VOLUME_LIMIT = { min: 6, max: 20 };
 
+/** حد الجولات للعضلة في الجلسة الواحدة (اليوم): الافتراضي 10، والمدربة تغيّره مع حدود العضلات.
+ *  يُحفظ داخل نفس إعداد volume_limits بمفتاح محجوز */
+export const SESSION_KEY = "__session";
+export const DEFAULT_SESSION_CAP = 10;
+
 /** تصنيفات في المكتبة ليست عضلات، فلا تُحسب في الحجم */
 export const NOT_MUSCLES = ["Functional", "Stretching", "Plyometrics", "CrossFit"];
 const isMuscle = (m: string | null | undefined): m is string => Boolean(m) && !NOT_MUSCLES.some((x) => m!.startsWith(x));
@@ -70,10 +75,11 @@ export function volumeStatus(sets: number, l?: { min?: number | null; max?: numb
 export const muscleLabel = (m: string) => m.split("/")[0].trim() || m;
 
 /** جولات اليوم لكل عضلة (للمدربة في محرر البرنامج): نفس حسبة الجدول الأسبوعي (الأساسية جولة، والثانوية نصف)
- *  لكل عضلة قيمة لكل أسبوع، مرتبة من الأكثر */
-export function dayMuscleSets(items: VolumeItem[], weeks: number): { muscle: string; values: number[] }[] {
+ *  values = المجموع لكل أسبوع، primary = الجولات اللي العضلة فيها أساسية. مرتبة من الأكثر */
+export function dayMuscleSets(items: VolumeItem[], weeks: number): { muscle: string; values: number[]; primary: number[] }[] {
   const vol = weeklyVolume(items, weeks);
+  const prim = weeklyVolume(items.map((it) => ({ ...it, secondary_muscles: [] })), weeks);
   const keys = new Set(vol.flatMap((m) => [...m.keys()]));
-  return [...keys].map((muscle) => ({ muscle, values: vol.map((m) => m.get(muscle) ?? 0) }))
+  return [...keys].map((muscle) => ({ muscle, values: vol.map((m) => m.get(muscle) ?? 0), primary: prim.map((m) => m.get(muscle) ?? 0) }))
     .sort((a, b) => b.values.reduce((x, y) => x + y, 0) - a.values.reduce((x, y) => x + y, 0) || a.muscle.localeCompare(b.muscle));
 }

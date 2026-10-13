@@ -53,7 +53,8 @@ test("محرر البرنامج: ترتيب بالأرقام، قوائم الت
   await coach.goto(`/admin/templates/${t.id}`);
   const day1 = coach.getByTestId("day-1");
   // جولات اليوم لكل عضلة + المجموع، ظاهرة بجانب العنوان حتى وهو مطوي (3 تمارين × 3 جولات = 9)
-  await expect(day1.getByTestId("day-sets-1")).toContainText(/المجموع\s*9/);
+  // عدد التمارين وجولاتها نصاً، والعضلات الأساسية بطاقات (3 تمارين × 3 جولات = 9)
+  await expect(day1.getByTestId("day-count-1")).toHaveText(/3 تمارين · 9 جولات/);
   await expect(day1.getByTestId("day-sets-1")).toContainText(/Quadriceps\s*6/);
   // مطوي تلقائياً
   await expect(day1.getByLabel("اليوم 1")).toBeHidden();

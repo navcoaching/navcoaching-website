@@ -3,7 +3,7 @@ import type { EditorDay, ExOption } from "@/components/admin/ProgramEditor";
 import { normalizePlan, type LiftLog, type PlanWeek } from "@/lib/training";
 import { computeAdherence, type Adherence, type TrainingWeek } from "@/lib/adherence";
 import { addDays, daysBetween, reviewWeeks, riyadhDate, weekStatuses } from "@/lib/schedule";
-import { DEFAULT_VOLUME_LIMIT, SHOULDER_HEAD_LIST, isShoulders } from "@/lib/volume";
+import { DEFAULT_SESSION_CAP, DEFAULT_VOLUME_LIMIT, SESSION_KEY, SHOULDER_HEAD_LIST, isShoulders } from "@/lib/volume";
 import { loadOrderProgress } from "@/lib/order-prefetch";
 
 /** أيام وتمارين قالب أو بلوك (للمدربة) */
@@ -125,12 +125,13 @@ export async function loadAdherence(tx: Tx, o: AdherenceOrder, reviewWindowDays:
 }
 
 /** حدود الجولات الأسبوعية لكل عضلة (تضعها المدربة، site_settings.volume_limits) والعضلات المتاحة في المكتبة */
-export async function loadVolumeSetup(tx: Tx): Promise<{ limits: import("@/lib/volume").Limits; saved: import("@/lib/volume").Limits; muscles: string[] }> {
-  const saved = (await tx.query(`SELECT value FROM site_settings WHERE key = 'volume_limits'`)).rows[0]?.value ?? {};
+export async function loadVolumeSetup(tx: Tx): Promise<{ limits: import("@/lib/volume").Limits; saved: import("@/lib/volume").Limits; muscles: string[]; sessionCap: number }> {
+  const { [SESSION_KEY]: session, ...saved } = (await tx.query(`SELECT value FROM site_settings WHERE key = 'volume_limits'`)).rows[0]?.value ?? {};
+  const sessionCap = Number(session?.max) > 0 ? Number(session.max) : DEFAULT_SESSION_CAP;
   const muscles = (await tx.query(
     `SELECT DISTINCT m FROM (SELECT primary_muscle m FROM exercises UNION SELECT unnest(secondary_muscles) FROM exercises) x WHERE m IS NOT NULL ORDER BY m`)).rows.map((r) => r.m as string);
   // العضلة بدون حد محفوظ تأخذ الحد الافتراضي الذي حددته المدربة (6–20)
   const shown = [...muscles.filter((m) => !isShoulders(m)), ...SHOULDER_HEAD_LIST];
   const limits = Object.fromEntries(shown.map((m) => [m, saved[m] ?? DEFAULT_VOLUME_LIMIT]));
-  return { limits: { ...limits, ...saved }, saved, muscles: shown };
+  return { limits: { ...limits, ...saved }, saved, muscles: shown, sessionCap };
 }
