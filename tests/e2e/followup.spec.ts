@@ -251,6 +251,9 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   expect(del?.detail).toContain("أوقف");
 
   await trainee.goto(`/account/orders/${orderNo}`);
+  // نموذج المراجعة مطوي خارج نافذتها: يُفتح بالضغط
+  const ckFold = trainee.getByTestId("checkin-fold");
+  if ((await ckFold.getAttribute("open")) === null) await ckFold.locator("summary").click();
   await trainee.locator('textarea[name="a"]').first().fill("التزمت بالتمارين هذا الأسبوع");
   await trainee.getByRole("button", { name: "إرسال المراجعة" }).click();
   await expect(trainee.getByText("وصلت مراجعتك")).toBeVisible();

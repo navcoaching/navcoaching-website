@@ -243,7 +243,16 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                     تسجيل تمرين هذا الأسبوع: <Link href={`/account/orders/${o.order_no}/training`}>جدول التمرين ←</Link>
                   </p>
                 )}
-                {o.status === "active" && <CheckinForm orderNo={o.order_no} questions={s.checkins.questions} />}
+                {o.status === "active" && (() => {
+                  // النموذج مفتوح وقت نافذة المراجعة فقط؛ خارجها مطوي حتى ما تطول الصفحة بأسئلة ما وقتها
+                  const windowNow = !follow || !currentWeek || currentWeek.windowStart <= today;
+                  return (
+                    <details className="more-tools checkin-fold" open={windowNow || undefined} data-testid="checkin-fold">
+                      <summary>{windowNow ? "إرسال المراجعة" : `المراجعة القادمة تفتح ${fmtYMD(currentWeek!.windowStart)}`}</summary>
+                      <CheckinForm orderNo={o.order_no} questions={s.checkins.questions} />
+                    </details>
+                  );
+                })()}
                 {checkins.map((c) => (
                   <details key={c.id} className="card flat">
                     <summary style={{ cursor: "pointer", minHeight: 44 }}>

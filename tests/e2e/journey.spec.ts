@@ -233,6 +233,9 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await expect(page.getByRole("link", { name: "ملف البرنامج — الشهر الأول" })).toBeVisible();
   await expect(page.getByTestId("sub-start")).toBeVisible();
   await expect(page.getByTestId("sub-end")).toBeVisible();
+  // نموذج المراجعة مطوي خارج نافذتها: يُفتح بالضغط
+  const fold = page.getByTestId("checkin-fold");
+  if ((await fold.getAttribute("open")) === null) await fold.locator("summary").click();
   await page.locator('textarea[name="a"]').first().fill("الحركة اليومية أفضل والنوم أحسن");
   await page.getByRole("button", { name: "إرسال المراجعة" }).click();
   await expect(page.getByText("وصلت مراجعتك")).toBeVisible();
