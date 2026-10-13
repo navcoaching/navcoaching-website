@@ -62,3 +62,34 @@ test("لوحة الإدارة: الشريط السفلي و«المزيد» عل
   await expect(coach.getByTestId("unsaved-bar")).toBeVisible();
   await coach.context().close();
 });
+
+test("تنبيهات المتابعة: «تمت القراءة» يخفي التنبيه ويبقى مخفياً بعد إعادة التحميل", async ({ browser }, info) => {
+  const p = info.project.name;
+  const tEmail = `alert-t-${p}@e2e.test`, cEmail = `coach-alert-${p}@e2e.test`;
+  const trainee = await newPage(browser, p + "at");
+  await login(trainee, tEmail, "/account");
+  await db.query(`UPDATE "user" SET name = 'ريم الأولى' WHERE email = $1`, [tEmail]);
+  const { rows: [u] } = await db.query(`SELECT id FROM "user" WHERE email = $1`, [tEmail]);
+  const { rows: [pr] } = await db.query(`SELECT p.id, p.name, o.id AS offer_id, o.label, o.price_halalas FROM products p JOIN product_offers o ON o.product_id = p.id WHERE p.slug = 'intensive' AND o.months = 3`);
+  const no = (await db.query("SELECT app.new_order_no() AS no")).rows[0].no as string;
+  // الطلب باسم شخص آخر في حساب ريم ← تنبيه «الطلب في حساب…»
+  await db.query(
+    `INSERT INTO orders (order_no, user_id, product_id, offer_id, category, product_name, offer_label, months, list_price_halalas, amount_due_halalas, status, contact_name, contact_phone, idempotency_key)
+     VALUES ($1,$2,$3,$4,'follow',$5,$6,3,$7,$7,'awaiting_payment','سلمى الثانية','+966500000000',$1)`,
+    [no, u.id, pr.id, pr.offer_id, pr.name, pr.label, pr.price_halalas]);
+
+  const coach = await newPage(browser, p + "ac");
+  await login(coach, cEmail, "/admin");
+  await db.query(`UPDATE "user" SET role = 'coach' WHERE email = $1`, [cEmail]);
+  await coach.goto("/admin");
+  const alert = coach.getByTestId("coach-alert").filter({ hasText: no });
+  await expect(alert).toBeVisible();
+  await alert.getByRole("button", { name: "تمت القراءة" }).click();
+  await expect(alert).toHaveCount(0);
+  await coach.reload();
+  await expect(coach.getByTestId("coach-alerts")).not.toContainText(no);
+  await noHorizontalScroll(coach);
+  await db.query(`DELETE FROM orders WHERE order_no = $1`, [no]);
+  await trainee.context().close();
+  await coach.context().close();
+});

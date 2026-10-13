@@ -822,3 +822,14 @@ export async function saveIntakeQuestionsAction(_: ActionState, fd: FormData): P
   revalidatePath("/admin/content/intake");
   return { ok: true, message: "تم حفظ الأسئلة، وتظهر الآن في استبيان الموقع." };
 }
+
+/** «تمت القراءة» لتنبيهات المتابعة: يحفظ مفتاح التنبيه فيختفي من لوحة الإدارة (للمدربة فقط) */
+export async function markAlertsReadAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const keys = [...new Set(fd.getAll("key").map(String))].filter((k) => /^[a-z_]+:[A-Za-z0-9-]+(:\d+)?$/.test(k)).slice(0, 100);
+  if (!keys.length) return { error: "لا يوجد تنبيه محدد." };
+  try {
+    await asCoach((tx) => tx.query(`INSERT INTO coach_alert_reads (key) SELECT unnest($1::text[]) ON CONFLICT (key) DO NOTHING`, [keys]));
+  } catch (err) { return fail(err); }
+  revalidatePath("/admin");
+  return { ok: true, message: keys.length === 1 ? "تم." : `تم (${keys.length}).` };
+}

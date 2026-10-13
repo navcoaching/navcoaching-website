@@ -17,11 +17,11 @@ import { loadAdherence } from "@/lib/program-data";
 import { prefetchOrders } from "@/lib/order-prefetch";
 import { pct } from "@/lib/adherence";
 import ActionForm from "@/components/admin/ActionForm";
-import { grantRewardAction } from "@/app/actions/admin";
+import { grantRewardAction, markAlertsReadAction } from "@/app/actions/admin";
 import GrantedAlert from "@/components/admin/GrantedAlert";
 import { autoFillTargets, loadPendingAuto, loadPendingSuggestions } from "@/lib/calorie-data";
 
-type Alert = { order_no: string; name: string; text: string; tone: "warn" | "info" | "bad" };
+type Alert = { key: string; order_no: string; name: string; text: string; tone: "warn" | "info" | "bad" };
 type Todo = { order_no: string; name: string; text: string; href: string; tone: "warn" | "info" | "bad"; grant?: boolean };
 type Ending = { order_no: string; name: string; product: string; end: string; left: number; renewal: string; tone: "warn" | "bad" | "ok" };
 
@@ -99,7 +99,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
       ]);
       const subs = subsR.rows, noMeasure = noMeasureR.rows;
       for (const r of ownersR.rows) if (differentPerson(r.user_name, r.contact_name, r.email)) {
-        alerts.push({ order_no: r.order_no, name: r.contact_name, tone: "bad", text: `الطلب في حساب «${r.user_name}» (${r.email}). إذا الطلب لشخص آخر انقليه لحسابه من صفحة الطلب ← «صاحب الحساب»` });
+        alerts.push({ key: `owner:${r.order_no}`, order_no: r.order_no, name: r.contact_name, tone: "bad", text: `الطلب في حساب «${r.user_name}» (${r.email}). إذا الطلب لشخص آخر انقليه لحسابه من صفحة الطلب ← «صاحب الحساب»` });
       }
       const renewals = await loadRenewals(tx, subs, (o) => daysBetween(today, riyadhDate(o.sub_end_at)));
       // بيانات الالتزام والمراجعات لكل المشتركين دفعة واحدة (بدل 6 استعلامات لكل متدرب)
@@ -147,12 +147,12 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
         const weeks = await loadWeekState(tx, o, r, today);
         const next = weeks.find((w) => w.status !== "done" && w.windowEnd >= today);
         if (next && daysBetween(today, next.windowStart) <= r.review_lead_days) {
-          alerts.push({ order_no: o.order_no, name: o.contact_name, tone: "info",
+          alerts.push({ key: `review_open:${o.order_no}:${next.no}`, order_no: o.order_no, name: o.contact_name, tone: "info",
             text: `مراجعة الأسبوع ${next.no}: مفتوحة من ${fmtYMD(next.windowStart)} إلى ${fmtYMD(next.windowEnd)}` });
         }
         const missed = weeks.filter((w) => w.status === "missed").pop();
         if (missed && daysBetween(missed.windowEnd, today) <= 7) {
-          alerts.push({ order_no: o.order_no, name: o.contact_name, tone: "bad", text: `لم تصل مراجعة الأسبوع ${missed.no} (انتهت نافذتها ${fmtYMD(missed.windowEnd)})` });
+          alerts.push({ key: `review_missed:${o.order_no}:${missed.no}`, order_no: o.order_no, name: o.contact_name, tone: "bad", text: `لم تصل مراجعة الأسبوع ${missed.no} (انتهت نافذتها ${fmtYMD(missed.windowEnd)})` });
         }
       }
       // سعرات محسوبة تلقائياً تنتظر تأكيد الحسبة
@@ -166,8 +166,13 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
         todos.push({ order_no: sg.order_no, name: sg.name, tone: "info", href: `/admin/orders/${sg.order_no}/nutrition`,
           text: `سعرات مقترحة جديدة: ${sg.kcal.toLocaleString("en-US")} (${sg.diff > 0 ? "+" : ""}${sg.diff})` });
       }
-      for (const o of noMeasure) alerts.push({ order_no: o.order_no, name: o.contact_name, tone: "warn", text: "الوزن أو الطول غير موجود في الاستبيان" });
-      return { monthly, swaps, counts, newWeek, pendingReviews, incomplete, todos, ending, demo, alerts, today };
+      for (const o of noMeasure) alerts.push({ key: `measure:${o.order_no}`, order_no: o.order_no, name: o.contact_name, tone: "warn", text: "الوزن أو الطول غير موجود في الاستبيان" });
+      // التنبيهات اللي ضغطت عليها المدربة «تمت القراءة» ما تظهر مرة ثانية (المفتاح يتغيّر إذا تغيّر السبب)
+      // إذا ما انشغّل ملف Neon بعد (الجدول غير موجود) تظهر التنبيهات كلها بدل ما تتعطل الصفحة
+      const hasReads = (await tx.query(`SELECT to_regclass('public.coach_alert_reads') IS NOT NULL AS ok`)).rows[0].ok as boolean;
+      const read = new Set(hasReads ? (await tx.query(`SELECT key FROM coach_alert_reads WHERE key = ANY($1::text[])`, [alerts.map((a) => a.key)])).rows.map((x) => x.key as string) : []);
+      const unread = alerts.filter((a) => !read.has(a.key));
+      return { monthly, swaps, counts, newWeek, pendingReviews, incomplete, todos, ending, demo, alerts: unread, today };
     }),
     getSettings(),
   ]);
@@ -207,12 +212,22 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
         <Link href="/admin/members?view=swaps" className="card stat" style={{ textDecoration: "none", color: "inherit" }} data-testid="stat-swaps"><span className="muted">متدربون بدّلوا تمارين</span><b>{data.swaps}</b><span className="small muted">لم تطّلعي عليها بعد</span></Link>
       </div>
       <section className="card" aria-labelledby="alerts-h" data-testid="coach-alerts">
-        <h2 id="alerts-h" style={{ fontSize: 18, marginBottom: 12 }}>تنبيهات المتابعة <span className="small muted">(داخلية — لا تُرسل للمتدربين)</span></h2>
+        <div className="alerts-head">
+          <h2 id="alerts-h" style={{ fontSize: 18 }}>تنبيهات المتابعة <span className="count">{data.alerts.length}</span> <span className="small muted">(داخلية — لا تُرسل للمتدربين)</span></h2>
+          {data.alerts.length > 1 && (
+            <ActionForm action={markAlertsReadAction} className="alert-read" submit="تمت قراءة الكل" submitClass="text-link" confirm={`إخفاء كل التنبيهات (${data.alerts.length})؟`}>
+              {data.alerts.map((a) => <input key={a.key} type="hidden" name="key" value={a.key} />)}
+            </ActionForm>
+          )}
+        </div>
         {data.alerts.length === 0 ? <p className="muted">لا توجد تنبيهات حالياً.</p> : (
           <ul className="alert-list">
-            {data.alerts.map((a, i) => (
-              <li key={i} className={a.tone}>
-                <Link href={`/admin/orders/${a.order_no}`}><bdi className="num">{a.order_no}</bdi></Link> · {a.name} — {a.text}
+            {data.alerts.map((a) => (
+              <li key={a.key} className={a.tone} data-testid="coach-alert">
+                <span><Link href={`/admin/orders/${a.order_no}`}><bdi className="num">{a.order_no}</bdi></Link> · {a.name} — {a.text}</span>
+                <ActionForm action={markAlertsReadAction} className="alert-read" submit="تمت القراءة" submitClass="text-link">
+                  <input type="hidden" name="key" value={a.key} />
+                </ActionForm>
               </li>
             ))}
           </ul>

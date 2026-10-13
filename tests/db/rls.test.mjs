@@ -798,6 +798,13 @@ describe("السعرات المقترحة والإيميل اليومي", () => 
     await assert.rejects(as(A, "INSERT INTO coach_digests (day) VALUES ('2026-01-06')"), /row-level security/);
     assert.equal((await as(A, "SELECT 1 FROM coach_digests")).rowCount, 0);
   });
+  test("«تمت القراءة» لتنبيهات المتابعة: للمدربة فقط", async () => {
+    assert.equal((await as(COACH, "INSERT INTO coach_alert_reads (key) VALUES ('owner:NAV-TEST-1') ON CONFLICT (key) DO NOTHING")).rowCount, 1);
+    assert.equal((await as(COACH, "SELECT 1 FROM coach_alert_reads WHERE key = 'owner:NAV-TEST-1'")).rowCount, 1);
+    await assert.rejects(as(A, "INSERT INTO coach_alert_reads (key) VALUES ('owner:NAV-TEST-2')"), /row-level security/);
+    assert.equal((await as(A, "SELECT 1 FROM coach_alert_reads")).rowCount, 0);
+    assert.equal((await as(A, "DELETE FROM coach_alert_reads")).rowCount, 0);
+  });
 });
 
 describe("موعد بداية البرنامج", () => {
