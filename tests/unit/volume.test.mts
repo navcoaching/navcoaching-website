@@ -28,6 +28,8 @@ describe("الجولات الأسبوعية لكل عضلة", () => {
   test("الترتيب والحالة والحدود", () => {
     const v = [new Map([["A", 4], ["B", 10]])];
     assert.deepEqual(muscleOrder(v, { C: { min: 6 } }), ["B", "A", "C"]);
+    // عضلة مطلوب ظهورها دائماً تطلع بصفر في آخر الجدول
+    assert.deepEqual(muscleOrder(v, {}, ["Z"]), ["B", "A", "Z"]);
     assert.equal(volumeStatus(8, { min: 10, max: 20 }), "low");
     assert.equal(volumeStatus(22, { min: 10, max: 20 }), "high");
     assert.equal(volumeStatus(10, { min: 10, max: 20 }), "ok");

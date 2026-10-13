@@ -47,10 +47,14 @@ export function weeklyVolume(items: VolumeItem[], weeks: number): Map<string, nu
 }
 
 /** العضلات المرتبة: الأكثر جولات أولاً (حسب مجموع كل الأسابيع)، ثم العضلات اللي لها حدود ولم تُستهدف */
-export function muscleOrder(vol: Map<string, number>[], limits: Limits = {}): string[] {
+/** عضلات تظهر في جدول الجولات دائماً حتى لو صفر (طلب المدربة) */
+export const ALWAYS_SHOWN_MUSCLES = ["Abductors / مبعدات الفخذ"];
+
+export function muscleOrder(vol: Map<string, number>[], limits: Limits = {}, always: string[] = []): string[] {
   const total = new Map<string, number>();
   for (const m of vol) for (const [k, v] of m) total.set(k, (total.get(k) ?? 0) + v);
   for (const k of Object.keys(limits)) if (limits[k]?.min && !total.has(k)) total.set(k, 0);
+  for (const k of always) if (!total.has(k)) total.set(k, 0);
   return [...total.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([k]) => k);
 }
 

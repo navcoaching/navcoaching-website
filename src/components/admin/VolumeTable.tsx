@@ -1,6 +1,6 @@
 import ActionForm from "@/components/admin/ActionForm";
 import { saveVolumeLimitsAction } from "@/app/actions/training";
-import { NOT_MUSCLES, muscleLabel, muscleOrder, volumeStatus, weeklyVolume, type Limits, type VolumeItem } from "@/lib/volume";
+import { ALWAYS_SHOWN_MUSCLES, NOT_MUSCLES, muscleLabel, muscleOrder, volumeStatus, weeklyVolume, type Limits, type VolumeItem } from "@/lib/volume";
 
 const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 
@@ -8,12 +8,12 @@ const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 export default function VolumeTable({ items, weeks, limits, saved = {}, muscles }: { items: VolumeItem[]; weeks: number; limits: Limits; saved?: Limits; muscles: string[] }) {
   const vol = weeklyVolume(items, weeks);
   // الصفوف: العضلات المستهدفة، والعضلات اللي حطت لها المدربة حد أدنى بنفسها (مو الافتراضي)
-  const order = muscleOrder(vol, saved);
+  const order = muscleOrder(vol, saved, ALWAYS_SHOWN_MUSCLES);
   const all = muscles.filter((m) => !NOT_MUSCLES.some((x) => m.startsWith(x)));
   return (
     <details className="card stack volume" data-testid="volume" open>
       <summary style={{ cursor: "pointer", minHeight: 40, fontWeight: 700 }}>الجولات الأسبوعية لكل عضلة <span className="small muted">(لكِ فقط)</span></summary>
-      {order.length === 0 ? <p className="small muted" style={{ margin: 0 }}>أضيفي تمارين وجولات ليظهر الحساب.</p> : (
+      {vol.every((m) => m.size === 0) ? <p className="small muted" style={{ margin: 0 }}>أضيفي تمارين وجولات ليظهر الحساب.</p> : (
         <div className="table-wrap">
           <table className="small">
             <thead><tr><th scope="col">العضلة</th>{vol.map((_, w) => <th key={w} scope="col">أ{w + 1}</th>)}<th scope="col">الحد</th></tr></thead>
