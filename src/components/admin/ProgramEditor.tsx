@@ -1,7 +1,7 @@
 import ActionForm from "@/components/admin/ActionForm";
 import ExercisePicker, { ExercisesProvider, type PickerExercise } from "@/components/admin/ExercisePicker";
 import { addDayAction, addItemAction, deleteDayAction, deleteItemAction, saveDayAction, saveItemAction } from "@/app/actions/training";
-import { formatReps, planLabel, type PlanWeek } from "@/lib/training";
+import { dayTotalSets, formatReps, planLabel, type PlanWeek } from "@/lib/training";
 import { muscleAr } from "@/lib/exercises";
 
 export type EditorItem = { id: string; exercise_id?: string; name: string; plan: PlanWeek[]; note: string | null; coach_name?: string | null; logs?: number };
@@ -28,6 +28,16 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises }:
           <summary className="day-toggle" data-testid={`fold-${d.day_no}`}>
             <b>اليوم {d.day_no}: <bdi dir="ltr">{d.title}</bdi></b>
             <span className="small muted">{d.items.length} تمارين</span>
+            {d.items.length > 0 && (() => {
+              // مجموع جولات اليوم (للمدربة فقط): رقم واحد إذا تساوت الأسابيع، وإلا لكل أسبوع
+              const t = dayTotalSets(d.items, weeks);
+              return (
+                <span className="day-sets" data-testid={`day-sets-${d.day_no}`}>
+                  {t.every((n) => n === t[0]) ? <>مجموع الجولات: <b className="num">{t[0]}</b></>
+                    : <>مجموع الجولات: {t.map((n, w) => <span key={w} className="wk-sets">الأسبوع {w + 1}: <b className="num">{n}</b></span>)}</>}
+                </span>
+              );
+            })()}
             <span className="btn btn-ghost btn-sm day-toggle-btn" aria-hidden="true"><span className="when-open">طيّ اليوم ▴</span><span className="when-closed">فتح اليوم ▾</span></span>
           </summary>
           <div className="stack" style={{ ["--space" as string]: "12px", marginTop: 12 }}>

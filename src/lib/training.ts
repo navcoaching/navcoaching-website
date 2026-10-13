@@ -150,3 +150,8 @@ export function weeklyAverages(entries: { date: string; value: number }[], start
 
 /** RIR الافتراضي لكل أسبوع عند إضافة تمرين بدون كتابة RIR: الأسبوع 1 = 3، 2 = 2، 3 = 1، 4 فأكثر = 0 */
 export const DEFAULT_WEEK_RIR = [3, 2, 1, 0] as const;
+
+/** مجموع جولات اليوم لكل أسبوع (للمدربة في محرر البرنامج): عنصر لكل أسبوع */
+export function dayTotalSets(items: { plan: PlanWeek[] }[], weeks: number): number[] {
+  return Array.from({ length: weeks }, (_, w) => items.reduce((sum, it) => sum + (Number(it.plan[w]?.sets) || 0), 0));
+}
