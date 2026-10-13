@@ -25,7 +25,7 @@ export default async function Templates() {
         <table className="t cards" data-testid="admin-templates">
           <thead><tr><th>القالب</th><th>الأسابيع</th><th>الأيام</th><th>التمارين</th><th>أُسند</th><th>آخر تعديل</th><th><span className="sr-only">إجراء</span></th></tr></thead>
           <tbody>
-            {rows.length === 0 && <tr><td colSpan={7} className="muted">لا توجد قوالب بعد. ابدئي من «+ قالب جديد».</td></tr>}
+            {rows.length === 0 && <tr><td colSpan={7} className="muted empty-cta">لا توجد قوالب بعد. <Link className="btn btn-sm" href="/admin/templates/new">+ قالب جديد</Link></td></tr>}
             {rows.map((t) => (
               <tr key={t.id}>
                 <td data-label="القالب"><b>{t.name}</b>{t.archived && <> <span className="status muted">مؤرشف</span></>}</td>

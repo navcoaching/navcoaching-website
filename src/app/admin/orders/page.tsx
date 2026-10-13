@@ -102,7 +102,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
         <table className="t cards">
           <thead><tr><th>رقم الطلب</th><th>العميل</th><th>الباقة</th><th>المبلغ</th><th>الحالة</th><th>التاريخ</th><th><span className="sr-only">إجراء</span></th></tr></thead>
           <tbody>
-            {rows.length === 0 && <tr><td colSpan={7} className="muted">لا توجد نتائج.</td></tr>}
+            {rows.length === 0 && <tr><td colSpan={7} className="muted empty-cta">لا توجد نتائج. <Link className="text-link" href="/admin/orders">مسح البحث والفلاتر</Link></td></tr>}
             {rows.map((o) => (
               <tr key={o.order_no}>
                 <td data-label="رقم الطلب">

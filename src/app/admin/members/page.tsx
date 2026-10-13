@@ -77,7 +77,7 @@ export default async function Members({ searchParams }: { searchParams: Promise<
         <table className="t cards" data-testid="members">
           <thead><tr><th>العضو</th><th>التسجيل</th><th>آخر دخول</th><th>الطلبات</th><th><span className="sr-only">إجراء</span></th></tr></thead>
           <tbody>
-            {rows.length === 0 && <tr><td colSpan={5} className="muted">لا توجد نتائج.</td></tr>}
+            {rows.length === 0 && <tr><td colSpan={5} className="muted empty-cta">لا توجد نتائج. <Link className="text-link" href="/admin/members">مسح البحث والفلاتر</Link></td></tr>}
             {rows.map((m) => (
               <tr key={m.id}>
                 <td data-label="العضو">

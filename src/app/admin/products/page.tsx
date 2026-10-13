@@ -20,7 +20,7 @@ export default async function AdminProducts() {
           <tbody>
             {rows.map((p) => (
               <tr key={p.id}>
-                <td data-label="المنتج"><Link href={`/admin/products/${p.id}`}>{p.name}</Link>{p.is_demo && <span className="tag demo" style={{ marginInlineStart: 6 }}>تجريبي</span>}<div className="small muted ltr">/programs/{p.slug}</div></td>
+                <td data-label="المنتج"><Link href={`/admin/products/${p.id}`}>{p.name}</Link>{p.is_demo && <span className="tag demo" style={{ marginInlineStart: 6 }}>تجريبي</span>}<div><a className="small" href={`/programs/${p.slug}`} target="_blank" rel="noopener">عرض الصفحة ↗</a></div></td>
                 <td data-label="القسم">{CATEGORY_LABEL[p.category]}</td>
                 <td data-label="الأسعار" className="small">{(p.offers as { label: string; price: number; active: boolean }[]).map((o) => <div key={o.label} className={o.active ? "" : "muted"}>{o.label}: {riyals(o.price)}{o.active ? "" : " (موقوف)"}</div>)}</td>
                 <td data-label="الحالة">{ST[p.status]}</td>

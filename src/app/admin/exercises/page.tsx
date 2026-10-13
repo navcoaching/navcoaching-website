@@ -99,7 +99,7 @@ export default async function Exercises({ searchParams }: { searchParams: Promis
         <table className="t cards" data-testid="admin-exercises">
           <thead><tr><th>التمرين</th><th>العضلة الأساسية</th><th>العضلة الثانوية</th><th>المعدات</th><th>المستوى</th><th>المراجعة</th><th>بدائل</th><th><span className="sr-only">إجراء</span></th></tr></thead>
           <tbody>
-            {rows.length === 0 && <tr><td colSpan={8} className="muted">لا توجد نتائج.</td></tr>}
+            {rows.length === 0 && <tr><td colSpan={8} className="muted empty-cta">لا توجد نتائج. <Link className="text-link" href="/admin/exercises">مسح البحث والفلاتر</Link></td></tr>}
             {rows.map((e) => (
               <tr key={e.id}>
                 <td data-label="التمرين"><bdi dir="ltr"><b>{e.name}</b></bdi>{e.video_url && <> <a href={e.video_url} target="_blank" rel="noopener noreferrer" className="small" aria-label={`فيديو ${e.name}`}>▶</a></>}

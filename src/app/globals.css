@@ -1843,3 +1843,6 @@ body:has(.account-shell) .site-footer .foot-legal { margin-top: 0; padding-top: 
 .alert-list li > span { flex: 1 1 260px; min-width: 0; }
 .alert-read { display: flex; align-items: center; gap: 8px; }
 .alert-read .text-link { font-size: 14px; white-space: nowrap; }
+.empty-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+td.empty-cta { display: table-cell; }
+td.empty-cta > * { margin-inline-start: 10px; vertical-align: middle; }
