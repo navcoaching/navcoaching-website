@@ -834,6 +834,33 @@ describe("موعد بداية البرنامج", () => {
     const o = (await owner.query("SELECT abs(extract(epoch FROM sub_start_at - now())) < 60 AS now_start FROM orders WHERE order_no = $1", [no])).rows[0];
     assert.equal(o.now_start, true);
   });
+  test("قبل تاريخ البداية المختار: البرنامج والتغذية مقفولة عن المتدرب حتى لو أُسندت، والمدربة تشوفها", async () => {
+    const no = await newOrder(A, "k-start-00000000000003", "int1");
+    const in7 = (await owner.query(`SELECT (${riyadh} + 7)::text AS d`)).rows[0].d;
+    await as(A, "SELECT app.set_my_start_pref($1, $2::date)", [no, in7]);
+    await as(COACH, "SELECT app.coach_transition($1, 'active', NULL, true)", [no]);
+    const ex = (await owner.query("SELECT id FROM exercises WHERE status = 'approved' LIMIT 1")).rows[0].id;
+    const tpl = (await as(COACH, "INSERT INTO program_templates (name, weeks) VALUES ('قالب القفل', 4) RETURNING id")).rows[0].id;
+    const d = (await as(COACH, "INSERT INTO template_days (template_id, day_no, title) VALUES ($1, 1, 'DAY 1') RETURNING id", [tpl])).rows[0].id;
+    await as(COACH, "INSERT INTO template_items (day_id, position, exercise_id, plan) VALUES ($1,0,$2,$3)", [d, ex, JSON.stringify(Array(4).fill({ sets: 3, reps: [10, 10, 10], rir: 2 }))]);
+    const block = (await as(COACH, "SELECT app.coach_assign_template($1,$2,current_date,'Block lock') AS id", [no, tpl])).rows[0].id;
+    const item = (await owner.query("SELECT i.id FROM block_items i JOIN block_days d ON d.id = i.day_id WHERE d.block_id = $1", [block])).rows[0].id;
+    const { rows: [o] } = await owner.query("SELECT id FROM orders WHERE order_no = $1", [no]);
+    await owner.query("INSERT INTO nutrition_targets (order_id, kcal, protein, carbs, fat) VALUES ($1, 2000, 150, 200, 60)", [o.id]);
+    const seen = async (who) => [
+      (await as(who, "SELECT count(*)::int n FROM blocks WHERE id = $1", [block])).rows[0].n,
+      (await as(who, "SELECT count(*)::int n FROM block_items WHERE id = $1", [item])).rows[0].n,
+      (await as(who, "SELECT count(*)::int n FROM nutrition_targets WHERE order_id = $1", [o.id])).rows[0].n,
+    ];
+    assert.deepEqual(await seen(A), [0, 0, 0]);
+    assert.deepEqual(await seen(COACH), [1, 1, 1]);
+    await assert.rejects(as(A, "SELECT app.log_item($1, 1, 60, '{}', NULL)", [item]), /يبدأ من تاريخ بداية/);
+    // المدربة تقدّم تاريخ البداية لليوم ← ينفتح فوراً
+    await owner.query("UPDATE orders SET sub_start_at = now() WHERE id = $1", [o.id]);
+    assert.deepEqual(await seen(A), [1, 1, 1]);
+    await as(A, "SELECT app.log_item($1, 1, 60, '{}', NULL)", [item]);
+    assert.deepEqual(await seen(B), [0, 0, 0]);
+  });
 });
 
 describe("فيديو شرح المراجعة الأسبوعية", () => {

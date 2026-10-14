@@ -43,7 +43,7 @@ export type FoodLog = { id: number; kind: MealKind; name: string; protein: numbe
 
 /** يوم التغذية للمتدرب: الأهداف، الجداول، المكملات، أكل اليوم، ووجبات المكتبة الجاهزة (للموقع والتطبيق) */
 export async function loadNutritionDay(tx: Tx, userId: string, orderNo: string, date: string, withLibrary: boolean) {
-    const { rows: [o] } = await tx.query(`SELECT id, order_no, user_id, status FROM orders WHERE order_no = $1`, [orderNo]);
+    const { rows: [o] } = await tx.query(`SELECT id, order_no, user_id, status, preferred_start::text, sub_start_at FROM orders WHERE order_no = $1`, [orderNo]);
   if (!o || o.user_id !== userId) return null;
   // RLS: الأهداف والجداول والمكملات تظهر لصاحبها بعد تأكيد الدفع فقط
   const target = (await tx.query(`SELECT kcal, protein::float, carbs::float, fat::float, rules FROM nutrition_targets WHERE order_id = $1`, [o.id])).rows[0] as (Target & { rules: string | null }) | undefined;

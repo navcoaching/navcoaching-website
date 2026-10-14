@@ -114,3 +114,11 @@ export const DEFAULT_REMINDERS: Reminders = {
   manual_cooldown_minutes: 10,
   coach_digest: true,
 };
+
+/** إذا اختار المتدرب تاريخ بداية وما وصل بعد: تاريخ فتح البرنامج (YYYY-MM-DD)، وإلا null.
+ *  نفس شرط قاعدة البيانات app.program_started (migration 041) لعرض رسالة واضحة بدل «لم يُجهَّز» */
+export function programLockedUntil(o: { preferred_start?: string | null; sub_start_at?: string | null }, today = riyadhDate()): string | null {
+  if (!o.preferred_start || !o.sub_start_at) return null;
+  const start = riyadhDate(o.sub_start_at);
+  return start > today ? start : null;
+}

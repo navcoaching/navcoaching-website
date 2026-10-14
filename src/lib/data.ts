@@ -118,7 +118,7 @@ export type OrderRow = {
 export async function getMyOrders(userId: string): Promise<OrderRow[]> {
   return withUser(userId, async (tx) =>
     (await tx.query(
-      `SELECT o.*, p.slug AS product_slug FROM orders o LEFT JOIN products p ON p.id = o.product_id
+      `SELECT o.*, o.preferred_start::text AS preferred_start, p.slug AS product_slug FROM orders o LEFT JOIN products p ON p.id = o.product_id
         WHERE o.user_id = $1 ORDER BY o.created_at DESC`, [userId])).rows,
   );
 }

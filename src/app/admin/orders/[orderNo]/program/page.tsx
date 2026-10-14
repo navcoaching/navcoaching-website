@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { withUser } from "@/lib/db";
 import { requireCoach } from "@/lib/session";
 import { fmtDate, fmtDateTime } from "@/lib/format";
-import { riyadhDate } from "@/lib/schedule";
+import { fmtYMD, programLockedUntil, riyadhDate } from "@/lib/schedule";
 import { currentWeek, normalizePlan } from "@/lib/training";
 import ActionForm from "@/components/admin/ActionForm";
 import ProgramEditor from "@/components/admin/ProgramEditor";
@@ -28,7 +28,7 @@ export default async function OrderProgram({ params, searchParams }: { params: P
     .filter(([c, st]) => c in CHANNEL_LABEL && st in RESULT_LABEL).map(([c, st]) => `${CHANNEL_LABEL[c]} — ${RESULT_LABEL[st]}`);
   const data = await withUser(coach.id, async (tx) => {
     const { rows: [o] } = await tx.query(
-      `SELECT o.id, o.order_no, o.user_id, o.contact_name, o.product_name, o.status FROM orders o WHERE o.order_no = $1`, [orderNo]);
+      `SELECT o.id, o.order_no, o.user_id, o.contact_name, o.product_name, o.status, o.preferred_start::text, o.sub_start_at FROM orders o WHERE o.order_no = $1`, [orderNo]);
     if (!o) return null;
     const blocks = (await tx.query(
       `SELECT b.id, b.name, b.start_date::text, b.weeks, b.instructions, b.steps_goal_week, b.status, b.created_at, t.name AS template_name
@@ -64,7 +64,7 @@ export default async function OrderProgram({ params, searchParams }: { params: P
             {templates.map((t) => <option key={t.id} value={t.id}>{t.name} ({t.weeks} أسابيع)</option>)}
           </select></div>
         <div className="field"><label htmlFor="as-start">تاريخ البداية <span className="req">*</span></label>
-          <input id="as-start" name="start_date" type="date" required defaultValue={today} /></div>
+          <input id="as-start" name="start_date" type="date" required defaultValue={programLockedUntil(o, today) ?? today} /></div>
         <div className="field"><label htmlFor="as-name">اسم البرنامج (اختياري)</label>
           <input id="as-name" name="name" type="text" maxLength={120} placeholder="Block 2" /></div>
       </div>
@@ -80,6 +80,9 @@ export default async function OrderProgram({ params, searchParams }: { params: P
         <h1 style={{ marginBottom: 4 }}>برنامج التمرين — {o.contact_name}</h1>
         <p className="muted">{o.product_name}{active && <> · {active.name} · {week === 0 ? `يبدأ ${fmtDate(active.start_date)}` : `الأسبوع ${week} من ${active.weeks}`}</>}</p>
       </div>
+      {programLockedUntil(o, today) && (
+        <p className="alert info" data-testid="program-locked-coach"><span>المتدرب اختار يبدأ <b>{fmtYMD(programLockedUntil(o, today)!)}</b>، فالبرنامج والتغذية مقفولين عنده لين هذا اليوم حتى لو أسندتيهم الحين. لفتحه أبكر عدّلي «تاريخ البداية» من صفحة الطلب ← «الاشتراك والتواريخ».</span></p>
+      )}
       {sp.deleted && <p className="alert ok" role="status">تم حذف البرنامج.</p>}
       {sp.assigned && <p className="alert ok" role="status">تم إسناد البرنامج.{notified.length > 0 && ` الإشعار: ${notified.join("، ")}`}</p>}
       {!entitled && <p className="alert warn">المتدرب لا يرى البرنامج حتى تصبح حالة الطلب «نشط» أو «تم التسليم».</p>}

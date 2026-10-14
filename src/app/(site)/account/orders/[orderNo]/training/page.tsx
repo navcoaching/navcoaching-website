@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { requireUser } from "@/lib/session";
 import { withUser } from "@/lib/db";
 import { fmtDate, fmtDateTime } from "@/lib/format";
-import { DEFAULT_REMINDERS, riyadhDate } from "@/lib/schedule";
+import { DEFAULT_REMINDERS, fmtYMD, programLockedUntil, riyadhDate } from "@/lib/schedule";
 import { currentWeek, planLabel } from "@/lib/training";
 import { muscleAr } from "@/lib/exercises";
 import { loadAdherence, loadBlockData, type BlockRow } from "@/lib/program-data";
@@ -27,7 +27,7 @@ export default async function TrainingPage({ params, searchParams }: { params: P
 
   const res = await withUser(user.id, async (tx) => {
     const { rows: [o] } = await tx.query(
-      `SELECT id, order_no, user_id, product_name, status, category, months, sub_start_at, sub_end_at, review_weekday, renewal_kind FROM orders WHERE order_no = $1`, [orderNo]);
+      `SELECT id, order_no, user_id, product_name, status, category, months, sub_start_at, sub_end_at, review_weekday, renewal_kind, preferred_start::text FROM orders WHERE order_no = $1`, [orderNo]);
     if (!o || o.user_id !== user.id) return null;
     // RLS: البلوك يظهر لصاحبه فقط بعد تأكيد الدفع
     const blocks = (await tx.query(
@@ -57,7 +57,9 @@ export default async function TrainingPage({ params, searchParams }: { params: P
       <section className="section tight"><div className="wrap stack" style={{ ["--space" as string]: "18px" }}>
         <nav className="small"><Link href="/account">طلباتي</Link> / <Link href={`/account/orders/${o.order_no}`}><bdi className="num">{o.order_no}</bdi></Link> / برنامج التمرين</nav>
         <h1 style={{ fontSize: "clamp(24px,4vw,32px)" }}>برنامج التمرين</h1>
-        <p className="card muted">لم يُجهَّز برنامجك على الموقع بعد. يظهر هنا بعد تأكيد الاشتراك وإسناد المدربة للبرنامج، ويصلك إشعار.</p>
+        {programLockedUntil(o, today)
+          ? <p className="card alert info" data-testid="program-locked">يبدأ برنامجك <b>{fmtYMD(programLockedUntil(o, today)!)}</b> حسب موعد البداية المختار، وجدول التمرين يظهر هنا من هذا اليوم.</p>
+          : <p className="card muted">لم يُجهَّز برنامجك على الموقع بعد. يظهر هنا بعد تأكيد الاشتراك وإسناد المدربة للبرنامج، ويصلك إشعار.</p>}
       </div></section>
     );
   }

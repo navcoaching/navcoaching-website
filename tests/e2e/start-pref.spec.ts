@@ -98,6 +98,14 @@ test("موعد البداية: تغيير المتدرب، تاق الأولوي
   await db.query(`UPDATE orders SET status = 'active', paid_at = now() WHERE order_no = $1`, [later]);
   const o = (await db.query(`SELECT (sub_start_at AT TIME ZONE 'Asia/Riyadh')::date = ${riyadhToday} + 10 AS ok FROM orders WHERE order_no = $1`, [later])).rows[0];
   expect(o.ok).toBe(true);
+  // قفل البرنامج: المدربة أسندت جدولاً لكنه ما يظهر للمتدرب قبل تاريخ البداية
+  await db.query(`INSERT INTO blocks (order_id, user_id, name, start_date, weeks) SELECT id, user_id, 'Block قفل', current_date, 4 FROM orders WHERE order_no = $1`, [later]);
+  await trainee.goto(`/account/orders/${later}/training`);
+  await expect(trainee.getByTestId("program-locked")).toContainText("يبدأ برنامجك");
+  await expect(trainee.getByText("Block قفل")).toHaveCount(0);
+  await noHorizontalScroll(trainee);
+  await coach.goto(`/admin/orders/${later}/program`);
+  await expect(coach.getByTestId("program-locked-coach")).toContainText("مقفولين عنده");
   // المدربة تعدّل تاريخ البدء مع «احسبي تلقائياً»: الانتهاء بعد 12 أسبوع (3 أشهر × 4)، ويوم المراجعة = يوم البدء
   await coach.goto(`/admin/orders/${later}`);
   await openFold(coach, "الاشتراك والتواريخ");
@@ -112,6 +120,10 @@ test("موعد البداية: تغيير المتدرب، تاق الأولوي
   await trainee.goto(`/account/orders/${later}`);
   await expect(trainee.getByTestId("start-pref-form")).toHaveCount(0);
   await expect(trainee.getByTestId("sub-start")).toBeVisible();
+  // بعد تقديم تاريخ البداية (29 سبتمبر، فات) ينفتح البرنامج
+  await trainee.goto(`/account/orders/${later}/training`);
+  await expect(trainee.getByRole("heading", { name: "Block قفل" })).toBeVisible();
+  await expect(trainee.getByTestId("program-locked")).toHaveCount(0);
 
   // «طلباتي»: الطلبات المكتملة/الملغاة مطوية تحت «طلبات سابقة»
   await db.query(`UPDATE orders SET status = 'cancelled' WHERE order_no = $1`, [asap]);

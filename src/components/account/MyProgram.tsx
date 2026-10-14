@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { batch, litList, withUser } from "@/lib/db";
 import { getSettings } from "@/lib/data";
-import { DEFAULT_REMINDERS, daysBetween, fmtYMD, riyadhDate, subscriptionState } from "@/lib/schedule";
+import { DEFAULT_REMINDERS, daysBetween, fmtYMD, programLockedUntil, riyadhDate, subscriptionState } from "@/lib/schedule";
 import { waLink } from "@/lib/format";
 import { loadRenewals, type RenewalInfo } from "@/lib/renewal";
 import { loadAdherence } from "@/lib/program-data";
@@ -14,7 +14,7 @@ import RenewalPopup, { RenewButton, RenewPrice } from "./RenewalPopup";
 type O = {
   id: string; order_no: string; status: string; category: string; months: number; product_name: string; offer_label: string;
   offer_id?: string | null; list_price_halalas: number; review_weekday?: number | null; review_every_weeks?: number; renewal_kind?: string | null;
-  product_slug?: string | null; contact_name?: string | null; sub_start_at?: string | null; sub_end_at?: string | null;
+  product_slug?: string | null; contact_name?: string | null; sub_start_at?: string | null; sub_end_at?: string | null; preferred_start?: string | null;
 };
 
 /** تنبيه قرب انتهاء الباقة أو انتهائها (يُستخدم أعلى «حسابي» وصفحة الطلب) */
@@ -138,6 +138,9 @@ export default async function MyProgram({ userId, orders }: { userId: string; or
               )}
               {adherence && (!start || start <= today) && <AdherenceBar a={adherence} />}
               {(!start || start <= today) && info.todayPlan.get(o.id) && <ProgramTodayView orderNo={o.order_no} p={info.todayPlan.get(o.id)!} />}
+              {programLockedUntil(o, today) && (
+                <p className="small alert info" style={{ margin: 0 }} data-testid="program-locked">يبدأ برنامجك <b>{fmtYMD(programLockedUntil(o, today)!)}</b> حسب موعد البداية المختار، وجدول التمرين والتغذية يظهران من هذا اليوم.</p>
+              )}
               <div className="row my-program-links" style={{ gap: 8 }}>
                 {info.blocks.has(o.id) && <Link className="btn btn-sm" href={`/account/orders/${o.order_no}/training`}>برنامج التمرين</Link>}
                 {info.nutrition.has(o.id) && <Link className="btn btn-sm" href={`/account/orders/${o.order_no}/nutrition`}>التغذية والمكملات</Link>}

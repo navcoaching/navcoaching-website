@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/session";
 import { withUser } from "@/lib/db";
 import { fmtDate } from "@/lib/format";
-import { addDays, riyadhDate } from "@/lib/schedule";
+import { addDays, fmtYMD, programLockedUntil, riyadhDate } from "@/lib/schedule";
 import { MEAL_KINDS, kcalOf, mealName, sumMacros, type MealKind, type Target } from "@/lib/nutrition";
 import { loadNutritionDay } from "@/lib/nutrition-data";
 import DaySummary from "@/components/nutrition/DaySummary";
@@ -30,6 +30,8 @@ export default async function NutritionPage({ params, searchParams }: { params: 
   const shownPlan = plans.find((p) => p.id === sp.plan) ?? plans[0];
   const base = `/account/orders/${o.order_no}/nutrition`;
   const nothing = !target && plans.length === 0 && !routine;
+  // اشتراك بتاريخ بداية مختار وما وصل بعد: التغذية مقفولة لين ذاك اليوم (قاعدة البيانات تخفيها)
+  const lockedUntil = programLockedUntil(o);
   const t: Target = target ?? { kcal: null, protein: null, carbs: null, fat: null };
   const total = sumMacros(logs);
   // وجبات جاهزة: من جداولي ثم من قوالب التغذية (اسم الوجبة وماكروزها فقط)
@@ -43,7 +45,8 @@ export default async function NutritionPage({ params, searchParams }: { params: 
       <div className="wrap stack" style={{ ["--space" as string]: "18px" }}>
         <nav className="small"><Link href="/account">طلباتي</Link> / <Link href={`/account/orders/${o.order_no}`}><bdi className="num">{o.order_no}</bdi></Link> / التغذية والمكملات</nav>
         <h1 style={{ fontSize: "clamp(24px,4vw,32px)" }}>التغذية والمكملات</h1>
-        {nothing ? <p className="card muted">لم تُجهَّز تغذيتك على الموقع بعد. تظهر هنا بعد ما تضيفها المدربة.</p> : (
+        {lockedUntil ? <p className="card alert info" data-testid="program-locked">يبدأ برنامجك <b>{fmtYMD(lockedUntil)}</b> حسب موعد البداية المختار، والتغذية تظهر هنا من هذا اليوم.</p>
+          : nothing ? <p className="card muted">لم تُجهَّز تغذيتك على الموقع بعد. تظهر هنا بعد ما تضيفها المدربة.</p> : (
           <>
             <nav className="tabs" aria-label="أقسام التغذية">
               <Link href={`${base}?tab=today`} aria-current={tab === "today" ? "true" : undefined}>يومي</Link>

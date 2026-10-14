@@ -8,7 +8,7 @@ import { ExpiryAlert } from "@/components/account/MyProgram";
 import AdherenceBar from "@/components/account/AdherenceBar";
 import { EndOfProgramCard, loadEndOfProgram } from "@/components/account/EndOfProgram";
 import { getMyFollowUp, getOrderDetail, getSettings } from "@/lib/data";
-import { SUB_LABEL, WEEKDAYS, fmtYMD, reviewEveryLabel, reviewTitle, riyadhDate } from "@/lib/schedule";
+import { SUB_LABEL, WEEKDAYS, fmtYMD, programLockedUntil, reviewEveryLabel, reviewTitle, riyadhDate } from "@/lib/schedule";
 import StartPrefForm from "@/components/account/StartPrefForm";
 import VideoButton from "@/components/VideoButton";
 import { fmtDate, fmtDateTime, riyals, waLink } from "@/lib/format";
@@ -102,6 +102,9 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
           <span className={`status ${statusTone(o.status)}`} data-testid="order-status">{statusLabel(o.status, o.category)}</span>
         </div>
 
+        {programLockedUntil(o) && (
+          <p className="alert info" data-testid="program-locked"><span>يبدأ برنامجك <b>{fmtYMD(programLockedUntil(o)!)}</b> حسب موعد البداية المختار، وجدول التمرين والتغذية يظهران من هذا اليوم.</span></p>
+        )}
         {block && (
           <Link href={`/account/orders/${o.order_no}/training`} className="card program-link" data-testid="training-link">
             <span><b>برنامج التمرين</b><span className="small muted"> · {block.name}{block.status === "active" ? "" : " (منتهي)"}</span></span>
