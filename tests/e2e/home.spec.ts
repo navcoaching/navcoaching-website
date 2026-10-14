@@ -48,6 +48,8 @@ test("الرئيسية: الترتيب والهيرو والهيدر والتذ�
   const fp = foot.getByRole("link", { name: "الجداول المجانية" });
   if (await fp.count()) await expect(fp).toHaveAttribute("href", "/free-plans");
   await expect(foot.getByRole("link", { name: "نظرة داخل البرنامج" })).toHaveAttribute("href", "/program-preview");
+  // حسابات التواصل: تيك توك يظهر بجانب انستقرام
+  await expect(foot.getByRole("link", { name: "تيك توك" })).toHaveAttribute("href", "https://www.tiktok.com/@navcoaching");
   await expect(page.getByText("الانتقال إلى المحتوى")).toHaveCount(1);
 });
 

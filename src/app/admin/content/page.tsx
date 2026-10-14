@@ -125,6 +125,7 @@ export default async function AdminContent() {
           <input type="hidden" name="key" value="contact" />
           <div className="field"><label>رقم واتساب (دولي بدون +)</label><input name="whatsapp" type="text" dir="ltr" defaultValue={s.contact.whatsapp} /></div>
           <div className="field"><label>رابط انستقرام</label><input name="instagram" type="url" dir="ltr" defaultValue={s.contact.instagram} /></div>
+          <div className="field"><label>رابط تيك توك</label><input name="tiktok" type="url" dir="ltr" defaultValue={s.contact.tiktok} placeholder="https://www.tiktok.com/@navcoaching" /></div>
         </ActionForm>
       </section>
 

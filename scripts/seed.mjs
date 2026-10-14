@@ -86,7 +86,7 @@ try {
   // ---------- الإعدادات ----------
   const settings = {
     ...content.settings,
-    contact: { whatsapp: site.whatsapp, instagram: site.instagram },
+    contact: { whatsapp: site.whatsapp, instagram: site.instagram, tiktok: site.tiktok },
     response_time: site.responseTime,
     legal: { name: site.legalName, cr: site.crNumber },
     bank: site.bank,

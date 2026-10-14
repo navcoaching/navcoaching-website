@@ -1,4 +1,5 @@
 import "server-only";
+import { withTiktok } from "./social";
 import { DEFAULT_REMINDERS, daysBetween, riyadhDate, subscriptionState } from "./schedule";
 import { loadRenewals } from "./renewal";
 import { loadAdherence } from "./program-data";
@@ -37,7 +38,7 @@ export type Settings = {
   testimonials_disclaimer: string;
   prices_note: string;
   checkins: { enabled: boolean; questions: { topic: string; q: string }[] };
-  contact: { whatsapp: string; instagram: string };
+  contact: { whatsapp: string; instagram: string; tiktok?: string };
   response_time: string;
   legal: { name: string; cr: string };
   bank: { accountName: string; bankName: string; iban: string };
@@ -57,7 +58,9 @@ const PRODUCT_SQL = `
 export const getSettings = cache(async (): Promise<Settings> =>
   withAnon(async (tx) => {
     const { rows } = await tx.query("SELECT key, value FROM site_settings WHERE is_public");
-    return Object.fromEntries(rows.map((r) => [r.key, r.value])) as Settings;
+    const s = Object.fromEntries(rows.map((r) => [r.key, r.value])) as Settings;
+    if (s.contact) s.contact = withTiktok(s.contact);
+    return s;
   }),
 );
 

@@ -6,7 +6,7 @@ export type EmailOrder = {
   orderNo: string; createdAt: string; status: string; category: string;
   product: string; offer: string; amountHalalas: number | null; paymentMethod: string;
 };
-export type EmailBrand = { site: string; whatsapp?: string; instagram?: string; legalName?: string; cr?: string };
+export type EmailBrand = { site: string; whatsapp?: string; instagram?: string; tiktok?: string; legalName?: string; cr?: string };
 export type EmailInput = {
   name?: string | null;
   headline: string;
@@ -137,6 +137,7 @@ function footer(b: EmailBrand) {
   const icons = [
     b.whatsapp ? `<a href="https://wa.me/${esc(b.whatsapp.replace(/\D/g, ""))}" style="display:inline-block;margin:0 5px"><img src="${esc(b.site)}/email/whatsapp.png" width="40" height="40" alt="واتساب" style="display:block;border:0"></a>` : "",
     b.instagram ? `<a href="${esc(b.instagram)}" style="display:inline-block;margin:0 5px"><img src="${esc(b.site)}/email/instagram.png" width="40" height="40" alt="انستقرام" style="display:block;border:0"></a>` : "",
+    b.tiktok ? `<a href="${esc(b.tiktok)}" style="display:inline-block;margin:0 5px"><img src="${esc(b.site)}/email/tiktok.png" width="40" height="40" alt="تيك توك" style="display:block;border:0"></a>` : "",
   ].join("");
   return `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:30px;border-top:1px solid ${C.line}">

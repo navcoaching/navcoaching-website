@@ -1,4 +1,5 @@
 import "server-only";
+import { DEFAULT_TIKTOK, withTiktok } from "./social";
 import { Resend } from "resend";
 import { pool } from "./db";
 import { renderEmail, type EmailInput } from "./email-template";
@@ -65,7 +66,7 @@ export async function mailBrand(q: { query: (sql: string) => Promise<{ rows: { k
   const v = Object.fromEntries(rows.map((r) => [r.key, r.value]));
   return {
     site: (process.env.NEXT_PUBLIC_SITE_URL || "https://navcoaching.com").replace(/\/$/, ""),
-    whatsapp: v.contact?.whatsapp, instagram: v.contact?.instagram, legalName: v.legal?.name, cr: v.legal?.cr,
+    whatsapp: v.contact?.whatsapp, instagram: v.contact?.instagram, tiktok: v.contact ? withTiktok(v.contact).tiktok : DEFAULT_TIKTOK, legalName: v.legal?.name, cr: v.legal?.cr,
   };
 }
 

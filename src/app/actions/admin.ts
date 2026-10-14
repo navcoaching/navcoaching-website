@@ -1,6 +1,7 @@
 "use server";
 
 import { differentPerson } from "@/lib/names";
+import { TIKTOK_RE } from "@/lib/social";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -471,7 +472,9 @@ export async function saveSettingAction(_: ActionState, fd: FormData): Promise<A
       if (!/^\d{9,15}$/.test(wa)) return { error: "رقم واتساب بالصيغة الدولية بدون + مثل 9665XXXXXXXX" };
       const ig = g("instagram");
       if (ig && !/^https:\/\/(www\.)?instagram\.com\/\S+$/.test(ig)) return { error: "رابط انستقرام غير صالح." };
-      value = { whatsapp: wa, instagram: ig };
+      const tt = g("tiktok");
+      if (tt && !TIKTOK_RE.test(tt)) return { error: "رابط تيك توك غير صالح، مثل https://www.tiktok.com/@navcoaching" };
+      value = { whatsapp: wa, instagram: ig, tiktok: tt };
       break;
     }
     case "bank": {

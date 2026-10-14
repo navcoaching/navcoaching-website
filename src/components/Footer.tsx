@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Settings } from "@/lib/data";
 import { waLink } from "@/lib/format";
-import { IconInstagram, IconWhatsApp } from "./Icons";
+import { IconInstagram, IconTikTok, IconWhatsApp } from "./Icons";
 
 export default function Footer({ s, hasFreePlans = true }: { s: Settings; hasFreePlans?: boolean }) {
   return (
@@ -17,6 +17,7 @@ export default function Footer({ s, hasFreePlans = true }: { s: Settings; hasFre
               <div className="social" aria-label="حساباتنا">
                 <a href={waLink(s.contact.whatsapp)} target="_blank" rel="noopener" aria-label="واتساب" title="واتساب" className="wa"><IconWhatsApp size={24} /></a>
                 {s.contact.instagram && <a href={s.contact.instagram} target="_blank" rel="noopener" aria-label="انستقرام" title="انستقرام" className="ig"><IconInstagram size={24} /></a>}
+                {s.contact.tiktok && <a href={s.contact.tiktok} target="_blank" rel="noopener" aria-label="تيك توك" title="تيك توك" className="tt"><IconTikTok size={22} /></a>}
               </div>
             </div>
             <div>

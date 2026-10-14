@@ -30,7 +30,7 @@ export default async function Home() {
     <div className="pub">
       <JsonLd data={{ "@context": "https://schema.org", "@graph": [
         { "@type": "Organization", "@id": `${siteUrl()}/#org`, name: "Nav Coaching", url: siteUrl(), logo: `${siteUrl()}/brand/og-logo.png`,
-          description: "برامج تدريب وتغذية مخصصة حسب الهدف مع الكوتش ساره: خطة منظمة ومتابعة أسبوعية.", ...(s.contact?.instagram ? { sameAs: [s.contact.instagram] } : {}) },
+          description: "برامج تدريب وتغذية مخصصة حسب الهدف مع الكوتش ساره: خطة منظمة ومتابعة أسبوعية.", sameAs: [s.contact?.instagram, s.contact?.tiktok].filter(Boolean) },
         { "@type": "WebSite", "@id": `${siteUrl()}/#site`, url: siteUrl(), name: "Nav Coaching", inLanguage: "ar", publisher: { "@id": `${siteUrl()}/#org` } },
       ] }} />
       {/* ---------- 1. الهيرو: النص يمين والمعاينة يسار (عمود واحد على الجوال)، وخطوط الشعار المائلة في الخلفية ---------- */}
