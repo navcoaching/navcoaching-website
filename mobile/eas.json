@@ -1,0 +1,15 @@
+{
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "production": {
+      "autoIncrement": true,
+      "env": { "EXPO_PUBLIC_API_URL": "https://navcoaching.com" }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
