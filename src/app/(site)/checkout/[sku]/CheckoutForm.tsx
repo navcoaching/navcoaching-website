@@ -123,17 +123,20 @@ export default function CheckoutForm({ sku, offers, defaultName, responseTime, i
           </div>
           <div className="field">
             <label htmlFor="name">{lab("name")} <span className="req">*</span></label>
-            <input id="name" name="name" type="text" autoComplete="name" defaultValue={d("name")} required minLength={2} maxLength={80} data-err="الاسم مطلوب (حرفين على الأقل)." {...inv("name")} />
+            <input id="name" name="name" type="text" autoComplete="name" defaultValue={d("name")} required minLength={2} maxLength={80}
+              pattern="[\p{L}\p{M}]+( [\p{L}\p{M}]+)*" data-err="الاسم مطلوب، حروف فقط بدون أرقام أو رموز." {...inv("name")} />
             {hint("name")}<ErrText n="name" errors={errors} />
           </div>
           <div className="field">
             <label htmlFor="phone">{lab("phone")} <span className="req">*</span></label>
             <div className="phone-row" dir="ltr">
               <select name="cc" aria-label="رمز الدولة" defaultValue={d("cc") || "+966"}>{OPT.cc.map((c) => <option key={c}>{c}</option>)}</select>
-              <input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel-national" defaultValue={d("phone")} required
-                pattern={val("cc") === "+966" || !val("cc") ? "0?5[0-9]{8}" : "[0-9]{6,14}"}
-                data-err={val("cc") === "+966" || !val("cc") ? "الرقم السعودي يبدأ بـ 5 ويتكون من 9 أرقام، مثل 512345678." : "رقم الجوال غير صحيح."} {...inv("phone")} />
+              <input id="phone" name="phone" type="tel" inputMode="numeric" autoComplete="tel-national" defaultValue={d("phone")} required
+                pattern={val("cc") === "+966" || !val("cc") ? "[0٠][5٥][0-9٠-٩]{8}" : "[0-9٠-٩]{6,14}"} maxLength={val("cc") === "+966" || !val("cc") ? 10 : 14}
+                placeholder={val("cc") === "+966" || !val("cc") ? "05xxxxxxxx" : undefined}
+                data-err={val("cc") === "+966" || !val("cc") ? "رقم الجوال 10 أرقام ويبدأ بـ 05، مثل 0512345678." : "رقم الجوال غير صحيح."} {...inv("phone")} />
             </div>
+            <input type="hidden" name="phone_format" value="10" />
             <span className="hint">الرقم اللي تستخدمه في واتساب — نتواصل معك عليه.</span>{hint("phone")}
             <ErrText n="phone" errors={errors} />
           </div>

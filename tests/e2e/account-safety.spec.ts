@@ -115,7 +115,7 @@ test("الاستبيان باسم شخص غير صاحب الحساب: يوقف 
   await page.goto("/checkout/int1");
   await expect(page.getByTestId("order-account")).toBeHidden(); // في الخطوة الأخيرة فقط
   await page.getByLabel("الاسم").fill("غيداء");
-  await page.locator("#phone").fill("512345678");
+  await page.locator("#phone").fill("0512345678");
   await pickRadio(page, "gender", "أنثى");
   await page.locator("#age").fill("27");
   await page.getByRole("button", { name: "التالي" }).click();

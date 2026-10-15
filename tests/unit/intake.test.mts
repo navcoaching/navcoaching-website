@@ -25,6 +25,18 @@ describe("الاستبيان", () => {
     assert.equal(health.weight, 70);
     assert.equal(EXPECTATIONS_Q, "ماذا تتوقع مني أثناء التدريب؟");
   });
+  test("الاسم إجباري وحروف فقط (عربي أو إنجليزي) بمسافات بين الكلمات", () => {
+    for (const name of ["", "س", "سارة2", "Sara_1", "سارة!", "123", "<b>"]) assert.ok(errs({ ...valid, name }).name, name);
+    for (const name of ["سارة", "سارة  الأحمد", "Sara Ahmed", "نورة عبدالله"]) assert.equal(errs({ ...valid, name }).name, undefined, name);
+    assert.equal(intakeSchema.parse({ ...valid, name: " سارة   الأحمد " }).name, "سارة الأحمد");
+  });
+  test("الجوال من الموقع: 10 أرقام يبدأ بـ 05 (والتطبيق الحالي بصيغته السابقة)", () => {
+    const web = { ...valid, phone_format: "10" };
+    for (const phone of ["", "512345678", "05123456789", "0412345678", "05123abc78"]) assert.ok(errs({ ...web, phone }).phone, phone);
+    for (const phone of ["0512345678", "٠٥١٢٣٤٥٦٧٨"]) assert.equal(errs({ ...web, phone }).phone, undefined, phone);
+    assert.equal(errs({ ...valid, phone: "512345678" }).phone, undefined);
+    assert.equal(errs({ ...web, cc: "+971", phone: "501234567" }).phone, undefined);
+  });
   test("العمر: رقم صحيح بين 10 و 90 فقط", () => {
     for (const age of ["9", "91", "25.5", "abc", "", "25 – 34"]) assert.ok(errs({ ...valid, age }).age, age);
     for (const age of ["10", "90"]) assert.equal(errs({ ...valid, age, guardian_ok: "on" }).age, undefined, age);

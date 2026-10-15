@@ -77,7 +77,7 @@ test("أسئلة الاستبيان: المدربة تعدّل وتخفي وتض
     const page = await newPage(browser, project + "-t");
     await login(page, email, "/checkout/int1");
     await page.getByLabel("الاسم").fill("سارة الأسئلة");
-    await page.locator("#phone").fill("512345678");
+    await page.locator("#phone").fill("0512345678");
     await pick(page, "gender", "أنثى");
     await page.locator("#age").fill("29");
     await page.getByRole("button", { name: "التالي" }).click();

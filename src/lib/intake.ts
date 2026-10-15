@@ -40,13 +40,20 @@ const oneOf = <T extends readonly string[]>(list: T, msg: string) => z.enum(list
 const optionalOneOf = <T extends readonly string[]>(list: T) => z.union([z.literal(""), oneOf(list, "اختيار غير صالح")]).optional().default("");
 const text = (max: number) => z.string().trim().max(max, `النص أطول من ${max} حرفاً`).optional().default("");
 
+/** الاسم: حروف فقط (عربي أو إنجليزي) مع مسافة بين الكلمات، بدون أرقام أو رموز */
+export const NAME_RE = /^[\p{L}\p{M}]+( [\p{L}\p{M}]+)*$/u;
+const asciiDigits = (s: string) => s.replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d))).replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)));
+
 export const intakeSchema = z
   .object({
     idempotency_key: z.string().min(16).max(80),
     sku: z.string().min(1).max(40),
-    name: z.string().trim().min(2, "الاسم مطلوب (حرفين على الأقل).").max(80),
+    name: z.string().trim().transform((s) => s.replace(/\s+/g, " "))
+      .pipe(z.string().min(2, "الاسم مطلوب (حرفين على الأقل).").max(80).regex(NAME_RE, "الاسم حروف فقط، بدون أرقام أو رموز.")),
     cc: oneOf(OPT.cc, "اختيار رمز الدولة مطلوب"),
-    phone: z.string().trim().max(20),
+    phone: z.string().trim().max(20).transform(asciiDigits),
+    // نموذج الموقع يرسل "10": الرقم السعودي يُكتب كاملاً 10 أرقام (05xxxxxxxx). تطبيق الجوال الحالي بدونه
+    phone_format: z.enum(["", "10"]).optional().default(""),
     gender: oneOf(OPT.gender, "اختيار الجنس مطلوب"),
     age: z.string().trim().regex(/^\d{1,3}$/, `اكتب عمرك رقماً صحيحاً بين ${AGE_MIN} و ${AGE_MAX}.`)
       .transform(Number).refine((n) => n >= AGE_MIN && n <= AGE_MAX, `اكتب عمرك رقماً صحيحاً بين ${AGE_MIN} و ${AGE_MAX}.`),
@@ -92,7 +99,10 @@ export const intakeSchema = z
     if (NUTRITION_SKUS.includes(v.sku) && !v.calories)
       ctx.addIssue({ code: "custom", path: ["calories"], message: "الخبرة في حساب السعرات مطلوبة، لأن باقتك تشمل تغذية." });
     const digits = v.phone.replace(/[^\d]/g, "").replace(/^0+/, "");
-    if (v.cc === "+966" ? !/^5\d{8}$/.test(digits) : !/^\d{6,14}$/.test(digits))
+    if (v.cc === "+966" && v.phone_format === "10") {
+      if (!/^05\d{8}$/.test(v.phone.replace(/[\s-]/g, "")))
+        ctx.addIssue({ code: "custom", path: ["phone"], message: "رقم الجوال 10 أرقام ويبدأ بـ 05، مثل 0512345678." });
+    } else if (v.cc === "+966" ? !/^5\d{8}$/.test(digits) : !/^\d{6,14}$/.test(digits))
       ctx.addIssue({ code: "custom", path: ["phone"], message: v.cc === "+966" ? "الرقم السعودي يبدأ بـ 5 ويتكون من 9 أرقام، مثل 512345678." : "رقم الجوال غير صحيح." });
   });
 

@@ -314,7 +314,7 @@ test("الاستبيان: العمر والقياسات وسؤال التوقع�
   await login(page, `valid-${info.project.name}@e2e.test`, "/checkout/int1");
   await expect(page.getByText("استبيان المتدرب").first()).toBeVisible();
   await page.getByLabel("الاسم").fill("اختبار التحقق");
-  await page.locator("#phone").fill("512345678");
+  await page.locator("#phone").fill("0512345678");
   await page.locator('input[name="gender"][value="أنثى"]').locator("xpath=..").click();
   for (const bad of ["9", "91", "25.5"]) {
     await page.locator("#age").fill(bad);

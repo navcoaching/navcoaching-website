@@ -90,9 +90,15 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   await noHorizontalScroll(page);
   await expect(page.locator('fieldset[data-step="2"]')).toBeHidden();
   await page.getByRole("button", { name: "التالي" }).click();
-  await expect(page.getByText("الاسم مطلوب (حرفين على الأقل).")).toBeVisible(); // التحقق من الحقول
-  await page.getByLabel("الاسم").fill("سارة الاختبار");
+  await expect(page.getByText("الاسم مطلوب، حروف فقط بدون أرقام أو رموز.")).toBeVisible(); // التحقق من الحقول
+  // الاسم حروف فقط، والجوال 10 أرقام يبدأ بـ 05
+  await page.getByLabel("الاسم").fill("سارة2");
   await page.locator("#phone").fill("512345678");
+  await page.getByRole("button", { name: "التالي" }).click();
+  await expect(page.getByText("الاسم مطلوب، حروف فقط بدون أرقام أو رموز.")).toBeVisible();
+  await expect(page.getByText("رقم الجوال 10 أرقام ويبدأ بـ 05، مثل 0512345678.")).toBeVisible();
+  await page.getByLabel("الاسم").fill("سارة الاختبار");
+  await page.locator("#phone").fill("0512345678");
   await pickRadio(page, "gender", "أنثى");
   await page.locator("#age").fill("29");
   await page.getByRole("button", { name: "التالي" }).click();
