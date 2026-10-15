@@ -863,6 +863,69 @@ describe("موعد بداية البرنامج", () => {
   });
 });
 
+describe("الكتيبات: لباقات المتابعة اللي تشملها، وبيع منفرد لغيرهم", () => {
+  let bk, sku;
+  const C = "user-bk-c", D = "user-bk-d"; // مستخدمان بدون طلبات سابقة
+  const visible = async (who) => (await as(who, "SELECT count(*)::int n FROM booklets WHERE id = $1", [bk])).rows[0].n;
+  const activate = (no) => owner.query("UPDATE orders SET status = 'active' WHERE order_no = $1", [no]);
+  before(async () => {
+    bk = (await owner.query(`INSERT INTO booklets (title, file_key, file_size, file_sha256) VALUES ('كتيب اختبار', 'booklets/t.pdf', 10, 'x') RETURNING id`)).rows[0].id;
+    for (const id of [C, D]) await owner.query(`INSERT INTO "user" (id, name, email, "emailVerified", role) VALUES ($1, $1, $1 || '@test.local', true, 'client')`, [id]);
+  });
+  test("باقة التغذية أو الملفات ما تفتح الكتيبات؛ الأساسية تفتحها وتبقى بعد الانتهاء", async () => {
+    assert.equal(await visible(C), 0);
+    await activate(await newOrder(C, "k-bk-nut-000000000001", "nut1"));
+    await activate(await newOrder(C, "k-bk-diy-000000000001", "diy"));
+    assert.equal(await visible(C), 0);
+    const no = await newOrder(C, "k-bk-bas-000000000001", "bas1");
+    await activate(no);
+    assert.equal(await visible(C), 1);
+    await owner.query("UPDATE orders SET status = 'completed' WHERE order_no = $1", [no]);
+    assert.equal(await visible(C), 1);
+    assert.equal(await visible(D), 0);
+    assert.equal(await visible(COACH), 1);
+  });
+  test("السعر للمدربة فقط، ومنتج الكتيب يُدار من الكتيبات", async () => {
+    await assert.rejects(as(A, "SELECT app.coach_set_booklet_price($1, 4900)", [bk]), /للمدربة فقط/);
+    assert.equal((await as(null, "SELECT count(*)::int n FROM app.booklets_for_sale()")).rows[0].n, 0);
+    await as(COACH, "SELECT app.coach_set_booklet_price($1, 4900)", [bk]);
+    const sale = (await as(null, "SELECT * FROM app.booklets_for_sale()")).rows;
+    assert.equal(sale.length, 1);
+    assert.equal(sale[0].price_halalas, 4900);
+    assert.equal(sale[0].file_key, undefined);
+    sku = sale[0].sku;
+    // الزائر ما يقرأ الملف
+    assert.equal(await visible(null), 0);
+    // إخفاء الكتيب يوقف بيعه
+    await owner.query("UPDATE booklets SET published = false WHERE id = $1", [bk]);
+    await as(COACH, "SELECT app.coach_set_booklet_price($1, 4900)", [bk]);
+    assert.equal((await as(null, "SELECT count(*)::int n FROM app.booklets_for_sale()")).rows[0].n, 0);
+    await owner.query("UPDATE booklets SET published = true WHERE id = $1", [bk]);
+    await as(COACH, "SELECT app.coach_set_booklet_price($1, 4900)", [bk]);
+  });
+  test("الشراء: يفتح بعد تأكيد الدفع فقط، ولصاحبه فقط", async () => {
+    const no = await newOrder(D, "k-bk-buy-000000000001", sku);
+    const o = (await owner.query("SELECT amount_due_halalas, category, status FROM orders WHERE order_no = $1", [no])).rows[0];
+    assert.deepEqual(o, { amount_due_halalas: 4900, category: "files", status: "awaiting_payment" });
+    let mine = (await as(D, "SELECT owned, pending_order FROM app.booklets_for_sale()")).rows[0];
+    assert.deepEqual(mine, { owned: false, pending_order: no });
+    assert.equal(await visible(D), 0);
+    await owner.query("UPDATE orders SET status = 'payment_review' WHERE order_no = $1", [no]);
+    assert.equal(await visible(D), 0);
+    await as(COACH, "SELECT app.coach_transition($1, 'preparing', NULL, true)", [no]);
+    assert.equal(await visible(D), 1);
+    mine = (await as(D, "SELECT owned, pending_order FROM app.booklets_for_sale()")).rows[0];
+    assert.deepEqual(mine, { owned: true, pending_order: null });
+    // كتيب ثاني ما اشتراه: ما يشوفه
+    const other = (await owner.query(`INSERT INTO booklets (title, file_key, file_size, file_sha256) VALUES ('كتيب ثاني', 'booklets/t2.pdf', 10, 'x') RETURNING id`)).rows[0].id;
+    assert.equal((await as(D, "SELECT count(*)::int n FROM booklets WHERE id = $1", [other])).rows[0].n, 0);
+    // منتج الكتيب مستبعد من البرامج (فلترة التطبيق) ومحذوف الكتيب يُؤرشف منتجه
+    await owner.query("DELETE FROM booklets WHERE id = $1", [bk]);
+    assert.equal((await owner.query("SELECT status FROM products WHERE slug LIKE 'booklet-%'")).rows[0].status, "archived");
+    await assert.rejects(newOrder(D, "k-bk-buy-000000000002", sku), /غير متاح/);
+  });
+});
+
 describe("فيديو شرح المراجعة الأسبوعية", () => {
   test("المدربة ترد بنص و/أو رابط https فقط، والمتدرب لا يرد على نفسه", async () => {
     const no = await newOrder(A, "k-video-00000000000001", "int1");

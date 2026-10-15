@@ -88,6 +88,7 @@ export default async function Programs() {
                 </tbody>
               </table>
             </div>
+            <p className="small muted" style={{ marginTop: 12 }}>الكتيبات متاحة أيضاً للشراء منفردة: <Link href="/booklets">صفحة الكتيبات</Link>.</p>
           </div>
         </section>
       )}

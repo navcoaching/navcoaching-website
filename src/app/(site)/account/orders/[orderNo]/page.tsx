@@ -48,7 +48,8 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
   const lastMissed = follow?.weeks.filter((w) => w.status === "missed").pop();
   const every = Number(o.review_every_weeks) || 1; // المراجعة كل كم أسبوع (الأساسية: كل أسبوعين)
   const h = intake?.health ?? {};
-  const missingMeasures = intake && o.status !== "cancelled" && (h.weight == null || h.weight === "" || h.height == null || h.height === "");
+  const booklet = o.booklet_id; // طلب شراء كتيب: بدون استبيان ولا موعد بداية، والتحميل من «ملفاتي»
+  const missingMeasures = !booklet && intake && o.status !== "cancelled" && (h.weight == null || h.weight === "" || h.height == null || h.height === "");
 
   const steps = timelineSteps(o.category, o.student_discount_requested);
   const current = o.status === "cancelled" ? -1 : stepIndex(o.status, o.category, o.student_discount_requested);
@@ -220,7 +221,12 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
             {entitled && (
               <div className="card stack">
                 <h2 style={{ fontSize: 20 }}>ملفاتي</h2>
-                {deliverables.length === 0 ? (
+                {booklet && (
+                  <a className="btn btn-block" style={{ justifyContent: "flex-start" }} href={`/api/booklets/${booklet}`} data-testid="order-booklet">
+                    <IconFile /> تحميل الكتيب (PDF)
+                  </a>
+                )}
+                {booklet && deliverables.length === 0 ? null : deliverables.length === 0 ? (
                   <p className="muted">بتظهر ملفات برنامجك وروابطه هنا أول ما تضيفها المدربة.</p>
                 ) : (
                   <ul className="stack" style={{ listStyle: "none", padding: 0, margin: 0, ["--space" as string]: "10px" }}>
@@ -315,14 +321,14 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
                 <dt>المطلوب</dt><dd className="num">{o.is_free ? "مجاني" : amount == null ? "بانتظار التأكيد" : riyals(amount)}</dd>
                 <dt>طريقة الدفع</dt><dd>تحويل بنكي</dd>
                 {o.paid_at && (<><dt>تأكيد الدفع</dt><dd>{fmtDate(o.paid_at)}</dd></>)}
-                {!o.sub_start_at && o.status !== "cancelled" && (<><dt>موعد البداية</dt><dd data-testid="start-pref-value">{o.preferred_start ? fmtYMD(o.preferred_start) : "بأقرب وقت"}</dd></>)}
+                {!o.sub_start_at && !booklet && o.status !== "cancelled" && (<><dt>موعد البداية</dt><dd data-testid="start-pref-value">{o.preferred_start ? fmtYMD(o.preferred_start) : "بأقرب وقت"}</dd></>)}
                 {o.sub_start_at && (<><dt>بداية الاشتراك</dt><dd data-testid="sub-start">{fmtYMD(riyadhDate(o.sub_start_at))}</dd></>)}
                 {o.sub_end_at && (<><dt>نهاية الاشتراك</dt><dd data-testid="sub-end">{fmtYMD(riyadhDate(o.sub_end_at))}</dd></>)}
                 {follow && (<><dt>حالة الاشتراك</dt><dd>{SUB_LABEL[follow.state]}</dd></>)}
                 {o.review_weekday != null && o.sub_start_at && (<><dt>يوم المراجعة</dt><dd data-testid="review-day">{WEEKDAYS[o.review_weekday]}{every > 1 ? ` · ${reviewEveryLabel(every)}` : ""}</dd></>)}
               </dl>
             </div>
-            {PRE_ACTIVE.includes(o.status) && (
+            {PRE_ACTIVE.includes(o.status) && !booklet && (
               <div className="card flat stack">
                 <h2 style={{ fontSize: 16, margin: 0 }}>موعد بداية برنامجك</h2>
                 <StartPrefForm orderNo={o.order_no} pref={o.preferred_start ?? null} />

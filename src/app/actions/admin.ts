@@ -72,6 +72,10 @@ export async function transitionAction(_: ActionState, fd: FormData): Promise<Ac
       // «مجاني»: قبول بدون دفع، ويتفعّل في المدة المحددة (بداية ونهاية) لاشتراكات المتابعة
       if (to === "free") await tx.query("SELECT app.coach_accept_free($1,$2,$3,$4)", [orderNo, date("free_start"), date("free_end"), note]);
       else await tx.query("SELECT app.coach_transition($1,$2,$3,$4)", [orderNo, to, note, bank]);
+      // طلب كتيب: بعد تأكيد الدفع يُسلَّم مباشرة (الكتيب يفتح له في «حسابي»)
+      const bk = await tx.query(
+        `SELECT 1 FROM orders o JOIN products p ON p.id = o.product_id WHERE o.order_no = $1 AND o.status = 'preparing' AND p.booklet_id IS NOT NULL`, [orderNo]);
+      if (bk.rowCount) await tx.query("SELECT app.coach_transition($1,'delivered',$2,false)", [orderNo, "الكتيب متاح للتحميل من «حسابي»."]);
       return notifyStatus(tx, orderNo, note);
     });
   } catch (err) { return fail(err); }
@@ -421,6 +425,7 @@ export async function saveProductAction(_: ActionState, fd: FormData): Promise<A
           [o.id, id, o.sku, o.label, o.months, Math.round(o.price * 100), o.active, i]);
       }
       // تكرار المراجعة: للباقة ولطلباتها الحالية (قاعدة البيانات تنقل علامات المراجعة اليدوية للموعد المقابل)
+      if (fd.has("booklets_field")) await tx.query("UPDATE products SET includes_booklets = $2 WHERE id = $1::uuid", [id, fd.get("includes_booklets") === "on"]);
       if (every != null) moved = (await tx.query("SELECT app.coach_set_review_every($1::uuid, $2) AS n", [id, every])).rows[0].n as number;
       await log(tx, uid, "product.save", p.slug, { status: p.status, offers: offers.map((o) => ({ sku: o.sku, price: o.price, active: o.active })) });
     });

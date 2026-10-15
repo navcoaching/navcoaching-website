@@ -65,11 +65,11 @@ export const getSettings = cache(async (): Promise<Settings> =>
 );
 
 export const getProducts = cache(async (): Promise<Product[]> =>
-  withAnon(async (tx) => (await tx.query(`${PRODUCT_SQL} WHERE p.status = 'published' GROUP BY p.id ORDER BY p.sort`)).rows),
+  withAnon(async (tx) => (await tx.query(`${PRODUCT_SQL} WHERE p.status = 'published' AND p.booklet_id IS NULL GROUP BY p.id ORDER BY p.sort`)).rows),
 );
 
 export const getProduct = cache(async (slug: string): Promise<Product | null> =>
-  withAnon(async (tx) => (await tx.query(`${PRODUCT_SQL} WHERE p.slug = $1 AND p.status = 'published' GROUP BY p.id`, [slug])).rows[0] ?? null),
+  withAnon(async (tx) => (await tx.query(`${PRODUCT_SQL} WHERE p.slug = $1 AND p.status = 'published' AND p.booklet_id IS NULL GROUP BY p.id`, [slug])).rows[0] ?? null),
 );
 
 export async function getOfferBySku(sku: string): Promise<{ product: Product; offer: Offer } | null> {
@@ -129,7 +129,7 @@ export async function getMyOrders(userId: string): Promise<OrderRow[]> {
 export async function getOrderDetail(userId: string, orderNo: string) {
   return withUser(userId, async (tx) => {
     const { rows: [order] } = await tx.query(
-      `SELECT o.*, o.preferred_start::text AS preferred_start, p.slug AS product_slug, coalesce(p.video_review, false) AS video_review, u.email AS user_email, u.name AS user_name
+      `SELECT o.*, o.preferred_start::text AS preferred_start, p.slug AS product_slug, p.booklet_id, coalesce(p.video_review, false) AS video_review, u.email AS user_email, u.name AS user_name
          FROM orders o LEFT JOIN products p ON p.id = o.product_id JOIN "user" u ON u.id = o.user_id
         WHERE o.order_no = $1`, [orderNo]);
     if (!order) return null;
@@ -144,7 +144,7 @@ export async function getOrderDetail(userId: string, orderNo: string) {
       `SELECT answers, health, health_flag, media_consent, consent_terms_at, created_at FROM intakes WHERE order_id = ${id}`,
     ]);
     return {
-      order: order as OrderRow & { user_id: string; client_note: string | null },
+      order: order as OrderRow & { user_id: string; client_note: string | null; booklet_id: string | null },
       events: events.rows as { id: number; actor_id: string | null; from_status: string | null; to_status: string; actor_role: string; note: string | null; created_at: string; client_visible: boolean }[],
       proofs: proofs.rows as { id: string; mime: string; size_bytes: number; review_status: string; review_note: string | null; created_at: string; reviewed_at: string | null }[],
       deliverables: deliverables.rows as { id: string; title: string; kind: string; url: string | null; mime: string | null; size_bytes: number | null; created_at: string }[],
@@ -197,11 +197,18 @@ export async function getMyFreePlans(userId: string): Promise<MyFreePlan[]> {
   return withUser(userId, async (tx) => (await tx.query("SELECT * FROM app.my_free_plans()")).rows as MyFreePlan[]);
 }
 
+export type SaleBooklet = { id: string; title: string; description: string | null; file_size: number; sku: string; price_halalas: number; owned: boolean; pending_order: string | null };
+/** الكتيبات المعروضة للبيع (بدون مفتاح الملف) مع حالة المستخدم: يملكه، أو عنده طلب ينتظر الدفع */
+export async function getBookletsForSale(userId: string | null): Promise<SaleBooklet[]> {
+  const q = "SELECT * FROM app.booklets_for_sale()";
+  return (userId ? withUser(userId, async (tx) => (await tx.query(q)).rows) : withAnon(async (tx) => (await tx.query(q)).rows)) as Promise<SaleBooklet[]>;
+}
+
 export type MyBooklet = { id: string; title: string; description: string | null; file_size: number };
-/** الكتيبات المتاحة للمتدرب (RLS: المنشورة لمن عنده اشتراك) */
+/** الكتيبات المتاحة للمتدرب (RLS: مشترك متابعة، أو اشترى الكتيب) */
 export async function getMyBooklets(userId: string): Promise<MyBooklet[]> {
   return withUser(userId, async (tx) => (await tx.query(
-    `SELECT id, title, description, file_size FROM booklets WHERE published ORDER BY sort, created_at`)).rows as MyBooklet[]);
+    `SELECT id, title, description, file_size FROM booklets ORDER BY sort, created_at`)).rows as MyBooklet[]);
 }
 
 /** أول طلب فعّال أو مكتمل لم يكتب عليه المتدرب تقييماً بعد (لبطاقة «قيّم تجربتك» في حسابي) */

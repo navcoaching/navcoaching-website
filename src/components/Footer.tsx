@@ -24,6 +24,7 @@ export default function Footer({ s, hasFreePlans = true }: { s: Settings; hasFre
               <h2>الموقع</h2>
               <ul>
                 <li><Link href="/programs">البرامج والأسعار</Link></li>
+                <li><Link href="/booklets">الكتيبات</Link></li>
                 <li><Link href="/about">عن المدربة</Link></li>
                 <li><Link href="/reviews">تقييمات المتدربين</Link></li>
                 <li><Link href="/faq">الأسئلة الشائعة</Link></li>

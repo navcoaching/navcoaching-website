@@ -56,6 +56,8 @@ export default async function EditProduct({ params, searchParams }: { params: Pr
             </div>
           </div>
           <label className="check"><input type="checkbox" name="recommended" defaultChecked={p?.recommended} /><span>شارة «الأكثر طلباً»</span></label>
+          <input type="hidden" name="booklets_field" value="1" />
+          <label className="check"><input type="checkbox" name="includes_booklets" defaultChecked={p?.includes_booklets} /><span>تشمل الكتيبات (المشترك يحمّل كل الكتيبات من «حسابي»)</span></label>
           <div className="field"><label htmlFor="review-every">المراجعة (لباقات المتابعة)</label>
             <select id="review-every" name="review_every_weeks" defaultValue={p?.review_every_weeks ?? 1}>
               <option value={1}>كل أسبوع</option><option value={2}>كل أسبوعين</option><option value={3}>كل 3 أسابيع</option><option value={4}>كل 4 أسابيع</option>

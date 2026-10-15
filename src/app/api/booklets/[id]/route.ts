@@ -4,7 +4,7 @@ import { storage } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
 
-// تحميل كتيب: قاعدة البيانات (RLS) تسمح فقط للمدربة ولمن عنده اشتراك. الأخطاء ترجع المستخدم لحسابه برسالة.
+// تحميل كتيب: قاعدة البيانات (RLS) تسمح فقط للمدربة ولمشترك المتابعة ولمن اشترى الكتيب. الأخطاء ترجع المستخدم لحسابه برسالة.
 const back = (req: Request, path: string) => Response.redirect(new URL(path, req.url), 303);
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -13,7 +13,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const user = await getCurrentUser().catch(() => null);
   if (!user) return back(req, `/login?next=${encodeURIComponent("/account#booklets")}`);
 
-  const row = await withUser(user.id, async (tx) => (await tx.query("SELECT title, file_key FROM booklets WHERE id = $1 AND (app.is_coach() OR (published AND app.has_program()))", [id])).rows[0]);
+  const row = await withUser(user.id, async (tx) => (await tx.query("SELECT title, file_key FROM booklets WHERE id = $1", [id])).rows[0]);
   if (!row) return back(req, "/account?booklet=notfound#booklets");
   let data: Buffer | null = null;
   try { data = await (await storage()).get(row.file_key); } catch { data = null; }

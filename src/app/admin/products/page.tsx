@@ -8,7 +8,7 @@ export default async function AdminProducts() {
   const rows = await withUser(coach.id, async (tx) => (await tx.query(
     `SELECT p.id, p.slug, p.name, p.category, p.status, p.is_demo, p.sort,
             coalesce(json_agg(json_build_object('label', o.label, 'price', o.price_halalas, 'active', o.active) ORDER BY o.sort) FILTER (WHERE o.id IS NOT NULL), '[]') offers
-       FROM products p LEFT JOIN product_offers o ON o.product_id = p.id GROUP BY p.id ORDER BY p.category, p.sort`)).rows);
+       FROM products p LEFT JOIN product_offers o ON o.product_id = p.id WHERE p.booklet_id IS NULL GROUP BY p.id ORDER BY p.category, p.sort`)).rows);
   const ST: Record<string, string> = { draft: "مسودة", published: "منشور", archived: "مؤرشف" };
   return (
     <div>
