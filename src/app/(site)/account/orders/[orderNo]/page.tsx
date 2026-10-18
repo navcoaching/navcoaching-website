@@ -248,7 +248,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
               <div className="card stack" id="checkin" style={{ scrollMarginTop: 90 }}>
                 <h2 style={{ fontSize: 20 }}>{reviewTitle(every)}</h2>
                 {o.status === "active" && block?.status === "active" && (
-                  <p className="small alert info" style={{ margin: 0 }} data-testid="checkin-training">
+                  <p className="small alert info" style={{ marginBottom: 0 }} data-testid="checkin-training">
                     تسجيل تمرين هذا الأسبوع: <Link href={`/account/orders/${o.order_no}/training`}>جدول التمرين ←</Link>
                   </p>
                 )}

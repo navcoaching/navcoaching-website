@@ -2275,3 +2275,9 @@ body:has(.page-hero) .site-header .menu > summary, body:has(.page-hero) .site-he
 body:has(.page-hero) .site-header .nav a[aria-current="page"] { background: rgba(76,197,237,.18); color: #fff; }
 .page-hero:not(.v3 *) b, .page-hero:not(.v3 *) .num, .page-hero:not(.v3 *) .price b { color: #fff; }
 .page-hero:not(.v3 *) .price span { color: #b9c8de; }
+
+/* ===== مسافة تحت العناوين (أكتوبر 2026) =====
+   حروف مثل «ج ي» تنزل تحت سطر العنوان، فإذا لصقت فيه بطاقة أو قائمة لها خلفية تغطي أسفل الحروف.
+   القوائم التالية كانت تلغي مسافة .stack بـ margin: 0، فنرجّعها، ونعطي العناوين هامشاً صغيراً تحتها. */
+.stack > * + :is(.fp-mine, .alert-list, .today-days, .food-results) { margin-top: var(--space, 16px); }
+main :is(h1, h2, h3) { padding-block-end: 0.12em; }
