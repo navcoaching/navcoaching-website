@@ -1,4 +1,4 @@
-// الصفحة الرئيسية (أكتوبر 2026): ترتيب الأقسام، الهيرو بعمودين، الهيدر والتذييل، وعدم وجود تمرير أفقي على العروض الصغيرة.
+// الصفحة الرئيسية (تصميم v3): ترتيب الأقسام، الهيرو بعمودين، الهيدر والتذييل، وعدم وجود تمرير أفقي على العروض الصغيرة.
 import { test, expect } from "@playwright/test";
 
 test("الرئيسية: الترتيب والهيرو والهيدر والتذييل", async ({ page }) => {
@@ -6,31 +6,44 @@ test("الرئيسية: الترتيب والهيرو والهيدر والتذ�
   await expect(page.locator("html")).toHaveAttribute("lang", "ar");
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
 
-  // الهيرو: العنوان بسطرين، زر واحد، رابط نصي للاختبار، وسطر ثقة بدون الشعار اللفظي الإنجليزي
-  const hero = page.locator(".hero-split");
+  // الهيرو (تصميم v3): العنوان بسطرين، زر واحد، رابط نصي للاختبار، وسطر ثقة بدون الشعار اللفظي الإنجليزي
+  const hero = page.locator(".v3-hero");
   await expect(hero.locator("h1")).toContainText("برنامج مبني عليك،");
   await expect(hero.locator("h1 .hl")).toHaveText("مو جدول جاهز");
-  expect(parseFloat(await hero.locator("h1").evaluate((e) => getComputedStyle(e).lineHeight)) / parseFloat(await hero.locator("h1").evaluate((e) => getComputedStyle(e).fontSize))).toBeGreaterThanOrEqual(1.59);
+  // ارتفاع السطر يكفي لنقاط الحروف العربية (بدون تداخل)
+  expect(parseFloat(await hero.locator("h1").evaluate((e) => getComputedStyle(e).lineHeight)) / parseFloat(await hero.locator("h1").evaluate((e) => getComputedStyle(e).fontSize))).toBeGreaterThanOrEqual(1.3);
   await expect(hero.locator(".btn")).toHaveCount(1);
   await expect(hero.getByRole("link", { name: /البرامج والأسعار/ })).toHaveAttribute("href", "#programs");
   await expect(hero.locator("a.text-link", { hasText: "أي برنامج يناسبني؟" })).toHaveAttribute("href", "/programs#quiz");
   await expect(page.getByTestId("trust-line")).toContainText("أدرّب منذ 2017");
   await expect(page.locator("body")).not.toContainText("Where Passion Meets Quality");
-  await expect(hero.locator(".hero-frame img:visible")).toHaveCount(1);
+  // لقطة «برنامجي» الأمامية: نسخة واحدة ظاهرة حسب الوضع (فاتح/داكن)
+  await expect(hero.locator(".v3-shot-front img:visible")).toHaveCount(1);
+  // النص والزر ظاهران فوراً بدون حركة دخول تخفيهما
+  expect(Number(await hero.locator(".lead").evaluate((e) => getComputedStyle(e).opacity))).toBe(1);
 
-  // ترتيب الأقسام: الهيرو، المدربة، البرامج، ليش Nav، (التقييمات)، الخطوات، الأسئلة
-  const heads = await page.locator("main .eyebrow").allTextContents();
-  const order = ["عن المدربة", "البرامج", "ليش Nav Coaching", "طريقة الاشتراك", "الأسئلة الشائعة"].map((t) => heads.findIndex((h) => h.trim() === t));
-  expect(order.every((i) => i >= 0), JSON.stringify(heads)).toBe(true);
+  // ترتيب الأقسام: الهيرو، المدربة، البرامج، ليش Nav، الخطوات، المكافأة، (التقييمات)، الأسئلة
+  const ids = await page.locator("main section[id]").evaluateAll((els) => els.map((e) => e.id));
+  const order = ["about", "programs", "why", "how", "reward", "faq"].map((id) => ids.indexOf(id));
+  expect(order.every((i) => i >= 0), JSON.stringify(ids)).toBe(true);
   expect([...order].sort((a, b) => a - b)).toEqual(order);
-  await expect(page.locator(".stats")).toHaveCount(0);
   await expect(page.locator("#calculator")).toHaveCount(0);
 
-  // البرامج: 3 بطاقات رئيسية بالترتيب، وزر/رابط واحد في كل بطاقة
-  const main = page.locator("#programs .grid.g3").first().locator(".pcard");
+  // البرامج: 3 بطاقات رئيسية بالترتيب، والموصى بها مميزة
+  const main = page.locator("#programs .v3-pgrid .v3-plan");
   await expect(main).toHaveCount(3);
   expect(await main.evaluateAll((els) => els.map((e) => e.getAttribute("href")))).toEqual(["/programs/intensive", "/programs/advanced", "/programs/basic"]);
+  await expect(page.locator("#programs .v3-plan.feat")).toHaveCount(1);
   await expect(page.locator("#programs")).toContainText("خصم 10% للطلاب · مجاني لأهل غزة · الدفع بتحويل بنكي");
+
+  // حاسبة المكافأة: تغيير الالتزام يغيّر النتيجة
+  const calc = page.getByTestId("reward-calc");
+  await calc.scrollIntoViewIfNeeded();
+  const before = await calc.textContent();
+  const range = calc.locator('input[type="range"]').first();
+  await range.focus();
+  for (let i = 0; i < 4; i++) await range.press("ArrowDown");
+  await expect.poll(() => calc.textContent()).not.toBe(before);
 
   // الهيدر: روابط القائمة بلون واحد، وزر «البرامج والأسعار»
   if (await page.locator(".nav").isVisible()) {

@@ -62,7 +62,7 @@ test("باقة القيمرز: مخفية بدون باقة، وتظهر في «
     // بانر القيمرز انشال من الرئيسية، والباقة تظهر ببطاقة البرامج نفسها تحت «مسارات خاصة»
     await expect(visitor.getByTestId("gamers-banner")).toHaveCount(0);
     await expect(visitor.getByRole("heading", { name: "مسارات خاصة" })).toBeVisible();
-    const card = visitor.locator('.special-row a[href="/programs/gamers"]');
+    const card = visitor.locator('.v3-special a[href="/programs/gamers"]');
     await expect(card).toBeVisible();
     await expect(card).toContainText("300");
     await noHorizontalScroll(visitor);

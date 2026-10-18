@@ -62,7 +62,7 @@ test("صورة الواجهة: عريضة وطويلة تظهر كاملة بد�
 
     const visitor = await newPage(browser, project + "-v" + tag);
     await visitor.goto("/");
-    const img = visitor.locator(".hero-frame img");
+    const img = visitor.locator(".v3-frame img.hero-upload");
     await expect(img).toBeVisible();
     await expect.poll(() => img.evaluate((e: HTMLImageElement) => e.complete && e.naturalWidth > 0)).toBe(true);
     const r = await img.evaluate((e: HTMLImageElement) => ({ nw: e.naturalWidth, nh: e.naturalHeight, w: e.getBoundingClientRect().width, h: e.getBoundingClientRect().height,
@@ -73,7 +73,7 @@ test("صورة الواجهة: عريضة وطويلة تظهر كاملة بد�
     expect(Math.abs(r.w / r.nw - drawn) < 0.02 || Math.abs(r.h / r.nh - drawn) < 0.02).toBe(true);
     expect(r.clip).toBe("none");
     await noHorizontalScroll(visitor);
-    if (tag === "عريضة") await visitor.locator(".hero").screenshot({ path: `${process.env.SHOT_DIR ?? "/tmp"}/hero-${project}.png` });
+    if (tag === "عريضة") await visitor.locator(".v3-hero").screenshot({ path: `${process.env.SHOT_DIR ?? "/tmp"}/hero-${project}.png` });
   }
   // نرجع الرسم الافتراضي
   await coach.goto("/admin/content#hero");
