@@ -1921,8 +1921,10 @@ body:has(.pub.v3) .site-header .menu > summary, body:has(.pub.v3) .site-header .
 .v3-chip b { font-family: var(--f-display); font-size: 17px; }
 
 /* ---------- الشريط المتحرك ---------- */
-.v3-marquee { position: relative; z-index: 4; background: var(--v3-cyan-2); color: var(--v3-ink); overflow: hidden; white-space: nowrap; transform: skewY(-2deg); margin-top: -26px; }
-.v3-track { display: inline-flex; gap: 48px; padding: 18px 0; font: 700 clamp(19px, 2vw, 28px)/1.3 var(--f-display); }
+/* الميل على الخلفية فقط: النص المائل (skew) يُرسم بحواف مسنّنة على بعض الشاشات */
+.v3-marquee { position: relative; z-index: 4; color: var(--v3-ink); overflow-x: clip; white-space: nowrap; margin-top: -26px; padding: 10px 0; }
+.v3-marquee::before { content: ""; position: absolute; inset: 0 -2%; background: var(--v3-cyan-2); transform: skewY(-2deg); z-index: -1; }
+.v3-track { position: relative; display: inline-flex; gap: 48px; padding: 18px 0; font: 700 clamp(19px, 2vw, 28px)/1.3 var(--f-display); }
 .v3-track span::after { content: ""; display: inline-block; width: 20px; height: 20px; margin-inline-start: 48px; background: var(--v3-navy); transform: skewX(var(--v3-slant)); vertical-align: -2px; }
 
 /* ---------- 2. عن المدربة ---------- */
