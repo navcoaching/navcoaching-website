@@ -2103,3 +2103,80 @@ body:has(.pub.v3) .site-header .menu > summary, body:has(.pub.v3) .site-header .
   .v3-close { padding: 100px 0; }
   .v3-close::before { left: -10vw; width: 20vw; } .v3-close::after { left: 14vw; width: 8vw; }
 }
+
+/* ===== حساب المتدرب: تصميم v3 (أكتوبر 2026) ===== */
+.account-shell.app { --t-bg: #eef3f8; --t-card: #fff; --t-ink: #07142a; --t-ink-2: #12285a; --t-navy: #284da0; --t-cyan: #4cc5ed; --t-slant: -37deg; background: var(--t-bg); }
+.account-shell.app .account-content { background: var(--t-bg); }
+
+/* القائمة الجانبية: حبر غامق وخطوط الشعار المائلة في أسفلها */
+.account-shell.app .account-side { position: sticky; background: var(--t-ink); border: 0; padding: 22px 14px; gap: 6px; overflow: hidden; isolation: isolate; }
+.account-shell.app .account-side::before, .account-shell.app .account-side::after { content: ""; position: absolute; bottom: -40px; height: 260px; transform: skewX(var(--t-slant)); transform-origin: bottom; z-index: -1; pointer-events: none; }
+.account-shell.app .account-side::before { inset-inline-start: 30px; width: 60px; background: var(--t-cyan); opacity: .9; }
+.account-shell.app .account-side::after { inset-inline-start: 100px; width: 26px; background: var(--t-navy); }
+.account-shell.app .account-side a, .account-shell.app .account-side .off { color: #c9d6ea; border-radius: 14px; font-weight: 600; }
+.account-shell.app .account-side .nav-ico { color: var(--t-cyan); }
+.account-shell.app .account-side a:hover { background: rgba(255,255,255,.07); color: #fff; }
+.account-shell.app .account-side a[aria-current="page"] { background: var(--t-cyan); color: var(--t-ink); box-shadow: none; font-weight: 700; }
+.account-shell.app .account-side a[aria-current="page"] .nav-ico { color: var(--t-ink); }
+.account-shell.app .account-side .off { color: #7f90ab; }
+
+/* العناوين */
+.account-shell.app h1 { font-family: var(--f-display); font-size: clamp(30px, 3.6vw, 46px) !important; line-height: 1.3; color: var(--heading); }
+.account-shell.app .eyebrow { display: none; }
+
+/* البطاقات: حواف أنعم بدون إطار، وتدرج سطح بدل الظل */
+.account-shell.app .card, .account-shell.app .card.flat { border: 0; border-radius: 22px; box-shadow: none; background: var(--t-card); }
+
+/* «برنامجي»: بطاقة حبر بخطوط الشعار */
+.account-shell.app .my-program { position: relative; overflow: hidden; isolation: isolate; background: var(--t-ink); color: #fff; border: 0; box-shadow: none; padding: 28px clamp(18px, 2.4vw, 34px); }
+.account-shell.app .my-program::before, .account-shell.app .my-program::after { content: ""; position: absolute; top: 0; height: 84px; transform: skewX(var(--t-slant)); transform-origin: top; z-index: -1; }
+.account-shell.app .my-program::before { inset-inline-end: 190px; width: 54px; background: var(--t-cyan); }
+.account-shell.app .my-program::after { inset-inline-end: 262px; width: 22px; background: var(--t-navy); }
+.account-shell.app .my-program h2, .account-shell.app .my-program h3, .account-shell.app .my-program b { color: #fff; }
+.account-shell.app .my-program .muted, .account-shell.app .my-program .small { color: #a9bcd8; }
+.account-shell.app .my-program .adherence { background: rgba(255,255,255,.06); border: 0; border-radius: 16px; }
+.account-shell.app .my-program .meter { background: rgba(255,255,255,.14); block-size: 14px; border-radius: 4px; }
+.account-shell.app .my-program .meter > span { background: var(--t-cyan); border-radius: 4px; }
+.account-shell.app .my-program .meter > i { background: #fff; }
+.account-shell.app .my-program hr, .account-shell.app .my-program .sep { border-color: rgba(255,255,255,.12); }
+.account-shell.app .my-program .today-days a { background: rgba(255,255,255,.06); color: #fff; border-color: transparent; border-radius: 14px; }
+.account-shell.app .my-program .today-days a.done { background: rgba(76,197,237,.18); color: #dff6fd; }
+.account-shell.app .my-program .today-macros > div { background: rgba(255,255,255,.06); border-radius: 14px; }
+.account-shell.app .my-program a:not(.btn) { color: var(--t-cyan); }
+.account-shell.app .my-program .btn { background: var(--t-cyan); color: var(--t-ink); border: 0; box-shadow: none; }
+.account-shell.app .my-program .btn.btn-ghost { background: rgba(255,255,255,.1); color: #fff; }
+.account-shell.app .my-program .nav-ico, .account-shell.app .my-program svg { color: var(--t-cyan); }
+
+/* قائمة التمارين: رقم بشكل متوازي أضلاع مائل مثل الشعار */
+.account-shell.app .ex-row { border: 0; border-radius: 18px; background: var(--t-card); min-height: 72px; padding: 14px 18px; }
+.account-shell.app .ex-row:hover { box-shadow: inset 0 0 0 2px var(--t-cyan); }
+/* الميل على الخلفية فقط حتى يبقى الرقم مستقيماً */
+.account-shell.app .ex-no { position: relative; isolation: isolate; background: none; color: #fff; inline-size: 38px; block-size: 34px; border-radius: 0; }
+.account-shell.app .ex-no::before { content: ""; position: absolute; inset: 0 4px; border-radius: 4px; background: var(--t-navy); transform: skewX(var(--t-slant)); z-index: -1; }
+.account-shell.app li:has(.ex-done) .ex-no::before { background: var(--ok); }
+.account-shell.app .ex-done { color: #fff; background: var(--ok); border-radius: 50%; inline-size: 32px; block-size: 32px; display: grid; place-items: center; }
+.account-shell.app .ex-go { color: var(--accent-text); font-weight: 700; }
+
+/* أزرار الأيام وشرائح الاختيار */
+.account-shell.app .pill-nav a[aria-current], .account-shell.app .pill-nav a.on { background: var(--t-ink); color: #fff; }
+
+/* الوضع الداكن */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .account-shell.app li:has(.ex-done) .ex-no, .account-shell.app .ex-done { color: var(--t-ink); }
+  :root:not([data-theme="light"]) .account-shell.app { --t-bg: #07142a; --t-card: #0f2140; }
+  :root:not([data-theme="light"]) .account-shell.app .my-program { background: var(--t-ink-2); }
+  :root:not([data-theme="light"]) .account-shell.app .account-side { background: #050e1e; }
+}
+:root[data-theme="dark"] .account-shell.app li:has(.ex-done) .ex-no, .account-shell.app .ex-done { color: var(--t-ink); }
+:root[data-theme="dark"] .account-shell.app { --t-bg: #07142a; --t-card: #0f2140; }
+:root[data-theme="dark"] .account-shell.app .my-program { background: var(--t-ink-2); }
+:root[data-theme="dark"] .account-shell.app .account-side { background: #050e1e; }
+
+/* الجوال: القائمة شريط أفقي غامق */
+@media (max-width: 760px) {
+  .account-shell.app .account-side { padding: 8px 10px; gap: 6px; }
+  .account-shell.app .account-side::before, .account-shell.app .account-side::after { display: none; }
+  .account-shell.app .account-side a, .account-shell.app .account-side .off { border-radius: 999px; }
+  .account-shell.app .my-program::before { width: 34px; inset-inline-end: 120px; height: 56px; }
+  .account-shell.app .my-program::after { inset-inline-end: 170px; width: 14px; height: 56px; }
+}
