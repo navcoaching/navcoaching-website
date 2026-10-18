@@ -162,7 +162,9 @@ test("لوحة الإدارة: زر المظهر الليلي يعمل ويبق�
   await expect(coach.locator("html")).toHaveAttribute("data-theme", "dark");
   await coach.goto("/admin/orders");
   await expect(coach.locator("html")).toHaveAttribute("data-theme", "dark");
-  expect(await coach.locator(".admin-side").evaluate((e) => getComputedStyle(e).backgroundColor)).toBe("rgb(22, 33, 58)");
+  // القائمة غامقة في الوضعين (تصميم v3)، فالتحقق من خلفية المحتوى التي تتبدل مع المظهر
+  expect(await coach.locator(".admin-main").evaluate((e) => getComputedStyle(e).backgroundColor)).toBe("rgb(7, 20, 42)");
+  expect(await coach.locator(".admin-side").evaluate((e) => getComputedStyle(e).backgroundColor)).toBe("rgb(5, 14, 30)");
   if (process.env.SHOT_DIR) await coach.screenshot({ path: `${process.env.SHOT_DIR}/admin-dark-${p}.png` });
   await noHorizontalScroll(coach);
 });
