@@ -219,8 +219,9 @@ test("رحلة الشراء والمتابعة والتقييم", async ({ brows
   // تاريخ البدء يُضبط تلقائياً عند التفعيل، والنهاية = البدء + مدة الباقة
   const { rows: [sub] } = await db.query("SELECT sub_start_at, sub_end_at, months FROM orders WHERE order_no = $1", [orderNo]);
   expect(sub.sub_start_at).not.toBeNull();
-  const months = (new Date(sub.sub_end_at).getUTCFullYear() - new Date(sub.sub_start_at).getUTCFullYear()) * 12 + new Date(sub.sub_end_at).getUTCMonth() - new Date(sub.sub_start_at).getUTCMonth();
-  expect(months).toBe(sub.months);
+  // الشهر في الاشتراك = 4 أسابيع (28 يوماً، migration 024)، لا شهر تقويمي
+  const days = Math.round((new Date(sub.sub_end_at).getTime() - new Date(sub.sub_start_at).getTime()) / 86400000);
+  expect(days).toBe(28 * sub.months);
   // سطر الاشتراك في رأس الصفحة، والتواريخ الكاملة في «الاشتراك والتواريخ»
   await expect(coach.getByTestId("sub-line")).toContainText("الأسبوع 1 من 4");
   await openFold(coach, "الاشتراك والتواريخ");

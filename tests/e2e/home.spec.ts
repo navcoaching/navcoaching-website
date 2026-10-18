@@ -81,7 +81,7 @@ test("الرئيسية: لا تمرير أفقي على 320 و375 و414 و768، 
 test("نظرة داخل البرنامج: صفحة مستقلة", async ({ page }) => {
   await page.goto("/program-preview");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("كيف يبدو البرنامج من الداخل؟");
-  await expect(page.locator("img").first()).toBeVisible();
+  await expect(page.locator("main img").first()).toBeVisible();
 });
 
 test("صفحة الباقة: السعر وزر الاشتراك في أول الشاشة، وشريط ثابت على الجوال", async ({ page }, info) => {
