@@ -11,6 +11,7 @@ import BodyInfoForm from "./BodyInfoForm";
 import { MeasureForm, StepsForm, WeightForm } from "../training/TrainingForms";
 import { currentWeek } from "@/lib/training";
 import { riyadhDate } from "@/lib/schedule";
+import { fmtDayMonth } from "@/lib/format";
 
 export const metadata: Metadata = { title: "التقدم", robots: { index: false } };
 
@@ -44,7 +45,7 @@ export default async function ProgressPage({ params }: { params: Promise<{ order
   const prs = personalRecords(lifts);
   const top = [...prs].sort((a, b) => b.best - a.best)[0];
   const stats: [string, string, Sub][] = [
-    ["الوزن الحالي", w.length ? `${fmt1(w[w.length - 1].kg)} كغ` : "—", w.length > 1 ? [delta(w[0].kg, w[w.length - 1].kg), "كغ من البداية"] : null],
+    ["الوزن الحالي", w.length ? `${fmt1(w[w.length - 1].kg)} كغ` : "—", w.length > 1 ? [delta(w[0].kg, w[w.length - 1].kg), `كغ من أول تسجيل (${fmtDayMonth(w[0].logged_on)})`] : null],
     ["الخصر", waist.length ? `${fmt1(waist[waist.length - 1].waist!)} سم` : "—", waist.length > 1 ? [delta(waist[0].waist!, waist[waist.length - 1].waist!), "سم من البداية"] : null],
     ["أرقام قياسية", String(prs.filter((p) => p.status === "new").length), ["", `من ${prs.length} تمرين`]],
     ["أثقل وزن", top ? `${top.best} كغ` : "—", top ? [top.name, ""] : null],

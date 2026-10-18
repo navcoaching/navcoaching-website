@@ -19,6 +19,9 @@ const dateTimeFmt = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", {
 });
 
 export const fmtDate = (d: Date | string) => dateFmt.format(new Date(d));
+const dayMonthFmt = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", { timeZone: "UTC", day: "numeric", month: "long" });
+/** تاريخ بصيغة YYYY-MM-DD بدون اسم اليوم: «5 أكتوبر» */
+export const fmtDayMonth = (ymd: string) => dayMonthFmt.format(new Date(`${ymd.slice(0, 10)}T12:00:00Z`));
 export const fmtDateTime = (d: Date | string) => dateTimeFmt.format(new Date(d));
 
 export const CATEGORY_LABEL: Record<string, string> = {

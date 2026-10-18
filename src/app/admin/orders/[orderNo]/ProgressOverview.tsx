@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { withUser } from "@/lib/db";
-import { fmtDate, fmtDay } from "@/lib/format";
+import { fmtDate, fmtDay, fmtDayMonth } from "@/lib/format";
 import { loadAllLifts, loadBodyData } from "@/lib/program-data";
 import { personalRecords } from "@/lib/training";
 import { kcalOf } from "@/lib/nutrition";
@@ -47,8 +47,13 @@ export default async function ProgressOverview({ coachId, o, adherence, weeks, i
   });
 
   const w = d.body.weights;
-  const startW = intakeWeight ?? w[0]?.kg ?? null;
+  // نقطة البداية = أول وزن سجّله المتدرب (موزون فعلاً وبتاريخ)، مثل صفحة التقدم عنده؛ وزن الاستبيان للمقارنة فقط
+  const first = w[0] ?? null;
   const lastW = w.at(-1)?.kg ?? null;
+  const intakeNote = intakeWeight != null ? ` · بالاستبيان ${intakeWeight}` : "";
+  const weightSub = !first ? `لم يسجّل وزنه بعد${intakeNote}`
+    : w.length === 1 ? `أول تسجيل (${fmtDayMonth(first.logged_on)})${intakeNote}`
+    : `${signed(lastW! - first.kg, "كغ")} من أول تسجيل (${first.kg} كغ، ${fmtDayMonth(first.logged_on)})${intakeNote}`;
   const ms = d.body.measurements.filter((m) => m.waist != null);
   const kcalDays = d.food.map((f) => kcalOf(f));
   const kcalAvg = kcalDays.length ? kcalDays.reduce((a, b) => a + b, 0) / kcalDays.length : null;
@@ -68,8 +73,8 @@ export default async function ProgressOverview({ coachId, o, adherence, weeks, i
           sub={adherence?.scored ? `متوسط ${adherence.scored} أسابيع مكتملة` : "يبدأ بعد أول أسبوع كامل"} />
         <Kpi label="أسابيع متتالية" value={String(adherence?.streak ?? 0)} sub="بالتزام 90% فأكثر" />
         <Kpi label="الوزن" value={lastW != null ? `${lastW} كغ` : "—"} testId="kpi-weight"
-          tone={startW != null && lastW != null && lastW !== startW ? "good" : ""}
-          sub={startW != null && lastW != null ? `${signed(lastW - startW, "كغ")} من البداية (${startW})` : "لم يسجّل وزنه بعد"} />
+          tone={first && lastW != null && lastW !== first.kg ? "good" : ""}
+          sub={weightSub} />
         <Kpi label="الخصر" value={ms.length ? `${ms.at(-1)!.waist} سم` : "—"}
           sub={ms.length > 1 ? `${signed(ms.at(-1)!.waist! - ms[0].waist!, "سم")} من أول قياس` : ms.length ? "قياس واحد فقط" : "لم يسجّل قياساته بعد"} />
         <Kpi label="السعرات (متوسط 7 أيام)" value={kcalAvg != null ? num(kcalAvg) : "—"}

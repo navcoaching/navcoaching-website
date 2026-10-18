@@ -267,6 +267,12 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await trainee.reload();
   await expect(trainee.getByTestId("weekly-summary")).toContainText("50,000");
   await expect(trainee.getByTestId("weekly-summary")).toContainText("72.4");
+  // المدربة: نقطة بداية الوزن = أول تسجيل للمتدرب (مو وزن الاستبيان)
+  // (قسم «تطور المتدرب» يظهر للاشتراك اللي له تاريخ بداية؛ الطلب هنا مُدخل مباشرة بدون تفعيل)
+  await db.query(`UPDATE orders SET sub_start_at = now() - interval '7 days', sub_end_at = now() + interval '77 days' WHERE order_no = $1`, [orderNo]);
+  await coach.goto(`/admin/orders/${orderNo}`);
+  await expect(coach.getByTestId("kpi-weight")).toContainText("72.4 كغ");
+  await expect(coach.getByTestId("kpi-weight")).toContainText("أول تسجيل");
   await expect(trainee.getByTestId("prs")).toContainText("Back Squat");
   await noHorizontalScroll(trainee);
 

@@ -84,6 +84,7 @@ test("حساب المتدرب: التقدم، سجل الماكروز، التع
   await expect(page).toHaveURL(new RegExp(`/account/orders/${orderNo}/progress$`));
   await expect(page.getByTestId("progress-stats")).toContainText("69.8 كغ");
   await expect(page.getByTestId("progress-stats")).toContainText("-0.6");
+  await expect(page.getByTestId("progress-stats")).toContainText("كغ من أول تسجيل");
   await expect(page.getByTestId("prs")).toContainText("Mid Leg Press");
   // الضغط على رسم الوزن يفتح جدول القراءات بالتاريخ واسم اليوم والقيمة
   const wt = page.locator("section[aria-labelledby=wt-h]").getByTestId("chart-details");
