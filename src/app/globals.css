@@ -2232,25 +2232,27 @@ body:has(.pub.v3) .site-header .menu > summary, body:has(.pub.v3) .site-header .
 
 /* ===== الصفحات العامة الداخلية: تصميم v3 (أكتوبر 2026) ===== */
 /* الهيدر غامق مثل الرئيسية في كل صفحة لها رأس داخلي */
-body:has(.pub .page-hero) .site-header { background: #07142a; border-color: transparent; }
-body:has(.pub .page-hero) .site-header .l-light { display: none; }
-body:has(.pub .page-hero) .site-header .l-dark { display: block; }
-body:has(.pub .page-hero) .site-header .nav a:not(.btn) { color: #dbe6f5; }
-body:has(.pub .page-hero) .site-header .nav a:not(.btn):hover { background: rgba(255,255,255,.08); }
-body:has(.pub .page-hero) .site-header .btn-ghost { --fg: #fff; --bd: rgba(255,255,255,.3); color: #fff; }
-body:has(.pub .page-hero) .site-header .nav .btn:not(.btn-ghost) { background: #4cc5ed; color: #07142a; }
-body:has(.pub .page-hero) .site-header .menu > summary, body:has(.pub .page-hero) .site-header .theme-btn { color: #fff; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); }
+body:has(.page-hero) .site-header { background: #07142a; border-color: transparent; }
+body:has(.page-hero) .site-header .l-light { display: none; }
+body:has(.page-hero) .site-header .l-dark { display: block; }
+body:has(.page-hero) .site-header .nav a:not(.btn) { color: #dbe6f5; }
+body:has(.page-hero) .site-header .nav a:not(.btn):hover { background: rgba(255,255,255,.08); }
+body:has(.page-hero) .site-header .btn-ghost { --fg: #fff; --bd: rgba(255,255,255,.3); color: #fff; }
+body:has(.page-hero) .site-header .nav .btn:not(.btn-ghost) { background: #4cc5ed; color: #07142a; }
+body:has(.page-hero) .site-header .menu > summary, body:has(.page-hero) .site-header .theme-btn { color: #fff; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); }
 
 /* رأس الصفحة: حبر غامق، عنوان كبير، وخطوط الشعار المائلة على اليسار (بعيد عن النص) */
-.pub:not(.v3) .page-hero { background: #07142a; color: #fff; border: 0; padding-block: clamp(56px, 8vw, 110px) clamp(48px, 7vw, 96px); isolation: isolate; }
-.pub:not(.v3) .page-hero::before, .pub:not(.v3) .page-hero::after { content: ""; position: absolute; top: 0; height: 100%; inset-inline-end: auto; transform: skewX(-37deg); transform-origin: top; opacity: 1; z-index: 0; pointer-events: none; }
-.pub:not(.v3) .page-hero::before { left: 8vw; width: 9vw; background: #4cc5ed; }
-.pub:not(.v3) .page-hero::after { left: 20vw; width: 4vw; background: #284da0; }
-.pub:not(.v3) .page-hero h1 { color: #fff; font-family: var(--f-display); font-size: clamp(36px, 5.4vw, 76px) !important; line-height: 1.3; max-width: 16ch; }
-.pub:not(.v3) .page-hero .lead, .pub:not(.v3) .page-hero p, .pub:not(.v3) .page-hero .muted, .pub:not(.v3) .page-hero .small { color: #b9c8de; }
-.pub:not(.v3) .page-hero .eyebrow { display: none; }
-.pub:not(.v3) .page-hero a:not(.btn) { color: #4cc5ed; }
-.pub:not(.v3) .page-hero .btn-ghost { --fg: #fff; --bd: rgba(255,255,255,.3); }
+.page-hero:not(.v3 *) { background: #07142a; color: #fff; border: 0; padding-block: clamp(56px, 8vw, 110px) clamp(48px, 7vw, 96px); isolation: isolate; }
+.page-hero:not(.v3 *)::before, .page-hero:not(.v3 *)::after { content: ""; position: absolute; top: 0; height: 100%; inset-inline-end: auto; transform: skewX(-37deg); transform-origin: top; opacity: 1; z-index: 0; pointer-events: none; }
+.page-hero:not(.v3 *)::before { left: 8vw; width: 9vw; background: #4cc5ed; }
+.page-hero:not(.v3 *)::after { left: 20vw; width: 4vw; background: #284da0; }
+.page-hero:not(.v3 *) h1 { color: #fff; font-family: var(--f-display); font-size: clamp(36px, 5.4vw, 76px) !important; line-height: 1.3; max-width: 16ch; }
+.page-hero:not(.v3 *) .lead, .page-hero:not(.v3 *) p, .page-hero:not(.v3 *) .muted, .page-hero:not(.v3 *) .small { color: #b9c8de; }
+/* عنوان التمهيد مكرر في الصفحات العامة فيُخفى، ويبقى في صفحة الاستبيان («استبيان المتدرب») */
+.pub .page-hero:not(.v3 *) .eyebrow { display: none; }
+.page-hero:not(.v3 *) .eyebrow { color: #4cc5ed; }
+.page-hero:not(.v3 *) a:not(.btn) { color: #4cc5ed; }
+.page-hero:not(.v3 *) .btn-ghost { --fg: #fff; --bd: rgba(255,255,255,.3); }
 
 /* الأقسام والبطاقات */
 .pub:not(.v3) .section { background: var(--paper); }
@@ -2266,10 +2268,10 @@ body:has(.pub .page-hero) .site-header .menu > summary, body:has(.pub .page-hero
 
 /* الجوال: الخطوط أصغر وفي الزاوية السفلية */
 @media (max-width: 760px) {
-  .pub:not(.v3) .page-hero::before, .pub:not(.v3) .page-hero::after { top: auto; bottom: 0; height: 40%; }
-  .pub:not(.v3) .page-hero::before { left: 62vw; width: 18vw; opacity: .25; }
-  .pub:not(.v3) .page-hero::after { left: 86vw; width: 8vw; opacity: .3; }
+  .page-hero:not(.v3 *)::before, .page-hero:not(.v3 *)::after { top: auto; bottom: 0; height: 40%; }
+  .page-hero:not(.v3 *)::before { left: 62vw; width: 18vw; opacity: .25; }
+  .page-hero:not(.v3 *)::after { left: 86vw; width: 8vw; opacity: .3; }
 }
-body:has(.pub .page-hero) .site-header .nav a[aria-current="page"] { background: rgba(76,197,237,.18); color: #fff; }
-.pub:not(.v3) .page-hero b, .pub:not(.v3) .page-hero .num, .pub:not(.v3) .page-hero .price b { color: #fff; }
-.pub:not(.v3) .page-hero .price span { color: #b9c8de; }
+body:has(.page-hero) .site-header .nav a[aria-current="page"] { background: rgba(76,197,237,.18); color: #fff; }
+.page-hero:not(.v3 *) b, .page-hero:not(.v3 *) .num, .page-hero:not(.v3 *) .price b { color: #fff; }
+.page-hero:not(.v3 *) .price span { color: #b9c8de; }
