@@ -17,7 +17,7 @@ const QUERIES: Record<string, string> = {
 export async function GET(_: Request, { params }: { params: Promise<{ kind: string; id: string }> }) {
   const { kind, id } = await params;
   const sql = QUERIES[kind];
-  if (!sql || !/^[0-9a-f-]{36}$/.test(id)) return new Response("Not found", { status: 404 });
+  if (!sql || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id)) return new Response("Not found", { status: 404 });
 
   const user = kind === "media" ? await getCurrentUser().catch(() => null) : await getCurrentUser();
   if (kind !== "media" && !user) return new Response("Unauthorized", { status: 401 });

@@ -11,7 +11,7 @@ import { riyals } from "@/lib/format";
 import type { ActionState } from "./client";
 
 const GENERIC = "تعذّر الحفظ. حاولي مرة أخرى.";
-const UUID = /^[0-9a-f-]{36}$/;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const s = (fd: FormData, k: string) => String(fd.get(k) ?? "").trim();
 const fail = (err: unknown): ActionState => {
   if (err instanceof UploadError) return { error: err.message };
