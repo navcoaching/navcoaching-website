@@ -2,6 +2,7 @@ import Link from "next/link";
 import { fromPrice } from "@/components/ProductCard";
 import { shortName } from "@/lib/format";
 import Marquee from "@/components/home/Marquee";
+import ScrollStory from "@/components/home/ScrollStory";
 import RewardCalc from "@/components/home/RewardCalc";
 import RichText from "@/components/RichText";
 import ReviewCard from "@/components/ReviewCard";
@@ -87,8 +88,8 @@ export default async function Home() {
             <div className="ph"><img src="/brand/coach-sara-portrait.webp" alt="" width={640} height={800} loading="lazy" /></div>
           </div>
           <div className="reveal" style={{ ["--d" as string]: "90ms" }}>
-            <h2>{s.about.name}</h2>
-            <p className="v3-bio">{s.about.home_bio || s.about.bio}</p>
+            <h2 data-story>{s.about.name}</h2>
+            <p className="v3-bio" data-fill>{s.about.home_bio || s.about.bio}</p>
             <ul className="v3-certs" aria-label="الشهادات والمؤهلات">{s.about.certs.map((c) => <li key={c}><bdi>{c}</bdi></li>)}</ul>
             <Link href="/about" className="text-link">القصة كاملة ←</Link>
           </div>
@@ -111,8 +112,8 @@ export default async function Home() {
       <section className="v3-plans" id="programs">
         <div className="wrap">
           <p className="v3-eyebrow reveal">البرامج</p>
-          <h2 className="v3-h2 reveal">اختيار مستوى المتابعة</h2>
-          <p className="v3-sub reveal">كل البرامج مخصصة حسب الهدف بعد الاستبيان. {s.prices_note}</p>
+          <h2 className="v3-h2 reveal" data-story>اختيار مستوى المتابعة</h2>
+          <p className="v3-sub reveal" data-fill>كل البرامج مخصصة حسب الهدف بعد الاستبيان. {s.prices_note}</p>
           <div className="v3-pgrid">
             {main.map((p, i) => {
               const price = fromPrice(p);
@@ -161,8 +162,8 @@ export default async function Home() {
         <div className="wrap v3-why-in">
           <div>
             <p className="v3-eyebrow reveal">ليش Nav Coaching</p>
-            <h2 className="v3-h2 reveal">تدريب مبني <span className="hl">عليك</span>، أسبوع بعد أسبوع</h2>
-            <p className="v3-sub reveal">كل برنامج يُصمم بعد استبيان مفصل، ويتعدّل حسب القياسات والالتزام.</p>
+            <h2 className="v3-h2 reveal" data-story>تدريب مبني <span className="hl">عليك</span>، أسبوع بعد أسبوع</h2>
+            <p className="v3-sub reveal" data-fill>كل برنامج يُصمم بعد استبيان مفصل، ويتعدّل حسب القياسات والالتزام.</p>
             <ul className="v3-reasons reveal">
               {s.why.map((w) => <li key={w.title}><b>{w.title}</b>{w.body}</li>)}
             </ul>
@@ -184,19 +185,15 @@ export default async function Home() {
         <i className="v3-bg-stroke" aria-hidden="true" />
         <div className="wrap">
           <p className="v3-eyebrow reveal">طريقة البدء</p>
-          <h2 className="v3-h2 reveal">ثلاث خطوات لأول تمرين</h2>
-          <div className="v3-steps-wrap">
-            {/* خط تقدّم يمتلئ مع التمرير (CSS فقط)؛ بدون دعم المتصفح يظهر ممتلئاً */}
-            <div className="v3-rail" aria-hidden="true"><i className="fill" /><i className="run"><b /></i></div>
-            <ol className="v3-steps">
-              {s.how_steps.map((st, i) => (
-                <li key={st.title} className="reveal" style={{ ["--d" as string]: `${i * 90}ms` }}>
-                  <h3>{st.title}</h3>
-                  <p>{st.body}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
+          <h2 className="v3-h2 reveal" data-story>ثلاث خطوات لأول تمرين</h2>
+          <ol className="v3-steps">
+            {s.how_steps.map((st, i) => (
+              <li key={st.title} className="reveal" style={{ ["--d" as string]: `${i * 90}ms` }}>
+                <h3>{st.title}</h3>
+                <p>{st.body}</p>
+              </li>
+            ))}
+          </ol>
           <a href="#programs" className="btn v3-btn-cyan">البرامج والأسعار</a>
         </div>
       </section>
@@ -206,8 +203,8 @@ export default async function Home() {
         <div className="wrap v3-reward-in">
           <div className="reveal">
             <p className="v3-eyebrow">مكافأة الالتزام</p>
-            <h2 className="v3-h2">التزم 12 أسبوع، <em>والأشهر الثلاثة علينا</em></h2>
-            <p className="v3-sub">في باقات الثلاثة أشهر: التزام 90% خلال 12 أسبوع يعطيك 3 أشهر مجاناً. تجربة الأرقام هنا.</p>
+            <h2 className="v3-h2" data-story>التزم 12 أسبوع، <em>والأشهر الثلاثة علينا</em></h2>
+            <p className="v3-sub" data-fill>في باقات الثلاثة أشهر: التزام 90% خلال 12 أسبوع يعطيك 3 أشهر مجاناً. تجربة الأرقام هنا.</p>
           </div>
           <RewardCalc />
         </div>
@@ -218,8 +215,8 @@ export default async function Home() {
         <section className="v3-reviews" id="reviews">
           <div className="wrap">
             <p className="v3-eyebrow reveal">التقييمات</p>
-            <h2 className="v3-h2 reveal">تقييمات المتدربين</h2>
-            <p className="v3-sub reveal">{s.testimonials_disclaimer}</p>
+            <h2 className="v3-h2 reveal" data-story>تقييمات المتدربين</h2>
+            <p className="v3-sub reveal" data-fill>{s.testimonials_disclaimer}</p>
             <div className="reviews reviews-home">
               {reviews.map((r) => <ReviewCard key={r.id} r={r} />)}
             </div>
@@ -233,8 +230,8 @@ export default async function Home() {
         <div className="wrap v3-faq-in">
           <div className="reveal">
             <p className="v3-eyebrow">الأسئلة الشائعة</p>
-            <h2 className="v3-h2">قبل الاشتراك</h2>
-            <p className="v3-sub">لم يظهر الجواب؟ التواصل عبر واتساب، والرد خلال {s.response_time}.</p>
+            <h2 className="v3-h2" data-story>قبل الاشتراك</h2>
+            <p className="v3-sub" data-fill>لم يظهر الجواب؟ التواصل عبر واتساب، والرد خلال {s.response_time}.</p>
             <div className="row"><Link href="/faq" className="text-link">كل الأسئلة</Link><Link href="/policies" className="text-link">السياسات</Link></div>
           </div>
           <div className="faq reveal">
@@ -256,6 +253,7 @@ export default async function Home() {
           <a href="#programs" className="btn v3-btn-ink reveal">البرامج والأسعار <IconArrow size={18} className="arrow" /></a>
         </div>
       </section>
+      <ScrollStory />
     </div>
   );
 }
