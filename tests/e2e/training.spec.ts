@@ -158,7 +158,17 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   const nav = trainee.getByTestId("account-nav");
   await expect(nav.getByRole("link", { name: "طلباتي" })).toHaveAttribute("aria-current", "page");
   await expect(nav.getByRole("link", { name: "جدول التمرين" })).toHaveAttribute("href", `/account/orders/${orderNo}/training`);
-  await expect(nav.getByRole("link", { name: "المراجعة الأسبوعية" })).toHaveAttribute("href", `/account/orders/${orderNo}#checkin`);
+  const review = nav.getByRole("link", { name: "المراجعة الأسبوعية", includeHidden: true });
+  await expect(review).toHaveAttribute("href", `/account/orders/${orderNo}#checkin`);
+  if (project === "iphone") {
+    // الشريط السفلي على الجوال: صفحات الاستخدام اليومي فقط (المراجعة والدليل في القائمة الجانبية للكمبيوتر)
+    await expect(review).toBeHidden();
+    // (التغذية تظهر معطّلة لين تُسند لها جداول، لكنها تبقى في الشريط)
+    const items = (await nav.locator("a:visible, .off:visible").allTextContents()).map((t) => t.trim());
+    expect(items).toEqual(["طلباتي", "جدول التمرين", "التقدم", "التغذية والمكملات"]);
+  } else {
+    await expect(review).toBeVisible();
+  }
   await noHorizontalScroll(trainee);
   await trainee.goto(`/account/orders/${orderNo}`);
   await trainee.getByTestId("training-link").click();

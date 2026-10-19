@@ -128,6 +128,10 @@ export default async function Account({ searchParams }: { searchParams: Promise<
             <Link href="/account/profile" className="btn btn-ghost btn-sm" style={{ width: "fit-content" }} data-testid="profile-link">{intakeSaved ? "تحديث الاستبيان" : "تعبئة الاستبيان"}</Link>
           </div>
           {pushPublicKey() && <PushCard publicKey={pushPublicKey()} />}
+          <Link href="/account/guide" className="card flat install-cta" data-testid="guide-link">
+            <b>دليل الاستخدام</b>
+            <span className="small muted">شرح مصوّر لكل صفحة في حسابك</span>
+          </Link>
           <Link href="/install" className="card flat install-cta" data-testid="install-link">
             <b>إضافة الموقع كتطبيق على الجوال</b>
             <span className="small muted">خطوات مصوّرة لـ iPhone وأندرويد</span>

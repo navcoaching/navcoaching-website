@@ -13,8 +13,8 @@ export default async function AccountLayout({ children }: { children: React.Reac
     { href: base && cur?.training ? `${base}/training` : null, label: "جدول التمرين", icon: "training" },
     { href: base ? `${base}/progress` : null, label: "التقدم", icon: "progress" },
     { href: base && cur?.nutrition ? `${base}/nutrition` : null, label: "التغذية والمكملات", icon: "nutrition" },
-    { href: base ? `${base}#checkin` : null, label: "المراجعة الأسبوعية", icon: "checkin" },
-    { href: "/account/guide", label: "دليل الاستخدام", icon: "guide" },
+    { href: base ? `${base}#checkin` : null, label: "المراجعة الأسبوعية", icon: "checkin", daily: false },
+    { href: "/account/guide", label: "دليل الاستخدام", icon: "guide", daily: false },
   ];
   return (
     <div className="account-shell app">

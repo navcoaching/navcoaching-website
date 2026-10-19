@@ -8,7 +8,8 @@ import { IconBook, IconClipboard, IconDumbbell, IconReceipt, IconSalad, IconTren
 const ICONS = { orders: IconReceipt, training: IconDumbbell, progress: IconTrend, nutrition: IconSalad, checkin: IconClipboard, guide: IconBook } as const;
 export type AccountIcon = keyof typeof ICONS;
 
-export type AccountLink = { href: string | null; label: string; icon: AccountIcon; exact?: boolean };
+// daily: false = يظهر في القائمة الجانبية فقط، ويختفي من الشريط السفلي على الجوال (نكتفي فيه بصفحات الاستخدام اليومي)
+export type AccountLink = { href: string | null; label: string; icon: AccountIcon; exact?: boolean; daily?: false };
 
 /** قائمة حساب المتدرب: جانبية على الشاشات الكبيرة، وشريط أفقي على الجوال */
 export default function AccountNav({ links }: { links: AccountLink[] }) {
@@ -26,7 +27,7 @@ export default function AccountNav({ links }: { links: AccountLink[] }) {
       {links.map((l) => {
         const Icon = ICONS[l.icon];
         if (!l.href) {
-          return <span key={l.label} className="off" title="يظهر بعد تجهيز برنامجك"><span className="nav-ico" aria-hidden="true"><Icon size={18} /></span> {l.label}</span>;
+          return <span key={l.label} className={`off${l.daily === false ? " not-daily" : ""}`} title="يظهر بعد تجهيز برنامجك"><span className="nav-ico" aria-hidden="true"><Icon size={18} /></span> {l.label}</span>;
         }
         const target = l.href.split("#")[0];
         // الأطول تطابقاً يفوز (التغذية مقابل سجل الماكروز)
@@ -34,7 +35,7 @@ export default function AccountNav({ links }: { links: AccountLink[] }) {
         const longer = links.some((x) => x.href && x.href !== l.href && x.href.startsWith(target + "/") && matches(x.href));
         const current = !l.href.includes("#") && !longer && (l.exact ? path === target : matches(l.href));
         return (
-          <Link key={l.label} href={l.href} aria-current={current ? "page" : undefined}>
+          <Link key={l.label} href={l.href} aria-current={current ? "page" : undefined} className={l.daily === false ? "not-daily" : undefined}>
             <span className="nav-ico" aria-hidden="true"><Icon size={18} /></span> {l.label}
           </Link>
         );
