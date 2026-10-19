@@ -14,7 +14,7 @@ type Result = { orderNo: string } | { error: string; fieldErrors?: Record<string
 
 const GENERIC = "حدث خطأ غير متوقع. حاول مرة أخرى أو تواصل معنا على واتساب.";
 
-function formToObject(fd: FormData) {
+export function formToObject(fd: FormData) {
   const o: Record<string, unknown> = {};
   for (const key of new Set(fd.keys())) {
     if (key.startsWith("$ACTION")) continue;

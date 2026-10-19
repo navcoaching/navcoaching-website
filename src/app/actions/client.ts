@@ -12,22 +12,13 @@ import { storage } from "@/lib/storage";
 import { notifySafe } from "@/lib/mail";
 import { validStartPref } from "@/lib/schedule";
 import { createRenewal } from "@/lib/renew";
-import { createOrder } from "@/lib/create-order";
+import { createOrder, formToObject } from "@/lib/create-order";
 import { LOGIN_REQUIRED } from "@/lib/messages";
 
 export type ActionState = { ok?: boolean; message?: string; error?: string; fieldErrors?: Record<string, string> };
 
 const LIMITED = "محاولات كثيرة خلال وقت قصير. يُرجى الانتظار قليلاً ثم المحاولة مرة أخرى.";
 const GENERIC = "حدث خطأ غير متوقع. يُرجى المحاولة مرة أخرى أو التواصل عبر واتساب.";
-
-function formToObject(fd: FormData) {
-  const o: Record<string, unknown> = {};
-  for (const key of new Set(fd.keys())) {
-    if (key.startsWith("$ACTION")) continue;
-    o[key] = key === "equip" ? fd.getAll(key) : fd.get(key);
-  }
-  return o;
-}
 
 // ---------- إنشاء الطلب مع الاستبيان ----------
 export async function createOrderAction(_: ActionState, fd: FormData): Promise<ActionState> {
