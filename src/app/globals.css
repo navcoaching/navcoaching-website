@@ -2377,3 +2377,8 @@ h2 { font-size: var(--t-section); }
 @keyframes v3-run { from { translate: 100% 0; } }
 @keyframes v3-fill-y { from { transform: scaleY(0); } }
 @keyframes v3-run-y { from { translate: 0 -100%; } }
+
+/* ===== Safari: fieldset داخل شبكة ينكمش لعرض حرف واحد (نص «المجموعات والتكرارات» يطلع عمودياً) =====
+   نجبره يأخذ عرض حاويته، والعنوان (legend) بعرض كامل، وعمود الشبكة بعرض كامل. */
+fieldset.field { inline-size: 100%; grid-template-columns: minmax(0, 1fr); }
+fieldset.field > legend { inline-size: 100%; padding: 0; float: none; }

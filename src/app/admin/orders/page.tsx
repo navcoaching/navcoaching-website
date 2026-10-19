@@ -9,7 +9,7 @@ import StartTag from "@/components/admin/StartTag";
 import { archiveOrderAction } from "@/app/actions/admin";
 
 const STATUSES = ["", "awaiting_quote", "awaiting_payment", "payment_review", "preparing", "active", "delivered", "completed", "cancelled"];
-const UUID = /^[0-9a-f-]{36}$/;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 type SP = { status?: string; q?: string; view?: string; deleted?: string; pkg?: string; sec?: string };
 

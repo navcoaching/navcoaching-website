@@ -16,7 +16,7 @@ export default async function EditProduct({ params, searchParams }: { params: Pr
     p: isNew ? null : (await tx.query(
       `SELECT p.*, coalesce(json_agg(o ORDER BY o.sort) FILTER (WHERE o.id IS NOT NULL), '[]') offers
          FROM products p LEFT JOIN product_offers o ON o.product_id = p.id WHERE p.id = $1::uuid GROUP BY p.id`,
-      [/^[0-9a-f-]{36}$/.test(id) ? id : "00000000-0000-0000-0000-000000000000"])).rows[0],
+      [/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id) ? id : "00000000-0000-0000-0000-000000000000"])).rows[0],
     media: (await tx.query("SELECT id, alt FROM media_assets WHERE approved ORDER BY created_at DESC")).rows as { id: string; alt: string }[],
   }));
   if (!isNew && !p) notFound();
