@@ -14,7 +14,7 @@ export default async function EditFreePlan({ params, searchParams }: { params: P
   const { id } = await params;
   const { created } = await searchParams;
   const isNew = id === "new";
-  if (!isNew && !/^[0-9a-f-]{36}$/.test(id)) notFound();
+  if (!isNew && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id)) notFound();
   const { plan, media, requests } = await withUser(coach.id, async (tx) => ({
     plan: isNew ? null : ((await tx.query(
       `SELECT id, slug, title, summary, audience, image_id, status, sort, file_size, file_updated_at FROM free_plans WHERE id = $1`, [id])).rows[0] as Plan | undefined),

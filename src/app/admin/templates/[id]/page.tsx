@@ -16,7 +16,7 @@ export default async function TemplatePage({ params, searchParams }: { params: P
   const { id } = await params;
   const { created } = await searchParams;
   const isNew = id === "new";
-  if (!isNew && !/^[0-9a-f-]{36}$/.test(id)) notFound();
+  if (!isNew && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id)) notFound();
   const data = await withUser(coach.id, async (tx) => {
     if (isNew) return { tpl: null, days: [] as EditorDay[], exercises: [] as ExOption[], volume: { limits: {}, saved: {}, muscles: [] as string[], sessionCap: 10 } };
     const tpl = (await tx.query(`SELECT id, name, weeks, instructions, archived, public, public_summary, place FROM program_templates WHERE id = $1`, [id])).rows[0] as Tpl | undefined;

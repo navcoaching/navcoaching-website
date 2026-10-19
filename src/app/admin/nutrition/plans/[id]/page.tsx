@@ -11,7 +11,7 @@ export default async function PlanPage({ params, searchParams }: { params: Promi
   const coach = await requireCoach();
   const { id } = await params;
   const { created } = await searchParams;
-  if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id)) notFound();
   const data = await withUser(coach.id, async (tx) => {
     const [plan] = await loadPlans(tx, { ids: [id] });
     if (!plan) return null;
