@@ -1989,7 +1989,8 @@ body:has(.pub.v3) .site-header .menu > summary, body:has(.pub.v3) .site-header .
 .v3-stack .s3 { width: 62%; bottom: 0; inset-inline-start: 14%; transform: rotate(1deg); z-index: 3; }
 
 /* ---------- 5. الخطوات ---------- */
-.v3-how { position: relative; overflow: hidden; background: var(--v3-navy); color: #fff; padding: 130px 0; }
+/* clip وليس hidden: hidden يجعل القسم حاوية تمرير فيتعطل خط تقدّم الخطوات (view-timeline) */
+.v3-how { position: relative; overflow: hidden; overflow: clip; background: var(--v3-navy); color: #fff; padding: 130px 0; }
 .v3-how .v3-h2 { color: #fff; }
 .v3-bg-stroke { position: absolute; bottom: -20%; left: -4%; width: 18vw; height: 150%; background: rgba(76,197,237,.18); transform: skewX(var(--v3-slant)); }
 .v3-steps { list-style: none; padding: 0; margin: 56px 0 40px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: end; counter-reset: none; }
@@ -2323,3 +2324,56 @@ h2 { font-size: var(--t-section); }
   body:has(.account-shell) .wa-float { bottom: calc(88px + env(safe-area-inset-bottom)); }
   body:has(.account-shell) .site-footer { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 }
+
+/* ===== الرئيسية v3: لمسات حركة مأخوذة من lumofy.ai (أكتوبر 2026) =====
+   CSS فقط بدون مكتبات: تسمية صغيرة فوق عناوين الأقسام، إضاءة تتنفس خلف لقطات الواجهة وحاسبة المكافأة،
+   ظهور متتابع لشارات الواجهة، وخط تقدّم للخطوات يمتلئ مع التمرير. كل الحركة داخل prefers-reduced-motion. */
+.v3-eyebrow { display: flex; align-items: center; gap: 10px; width: fit-content; margin: 0 0 16px; padding: 6px 16px 6px 14px; border-radius: 999px; background: var(--cyan-soft); color: var(--cyan-ink); font: 600 14px/1.4 var(--f-display); }
+.v3-eyebrow::before { content: ""; flex: none; width: 7px; height: 14px; background: var(--v3-cyan); transform: skewX(var(--v3-slant)); }
+.v3-plans .v3-eyebrow { margin-inline: auto; }
+.v3-how .v3-eyebrow, .v3-reward .v3-eyebrow { background: rgba(255,255,255,.08); color: #dbe6f5; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
+.v3-how .v3-eyebrow::before, .v3-reward .v3-eyebrow::before { background: var(--v3-cyan-2); }
+
+/* إضاءة سماوية ناعمة (بدون filter: blur حتى تبقى خفيفة على الجوال) */
+.v3-glow { position: absolute; inset: -12% -10%; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(76,197,237,.42), rgba(40,77,160,.22) 55%, transparent 78%); }
+.v3-reward { position: relative; overflow: hidden; overflow: clip; }
+.v3-reward::before { content: ""; position: absolute; width: min(760px, 90vw); aspect-ratio: 1; left: 2%; top: 50%; translate: 0 -50%; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(76,197,237,.22), rgba(40,77,160,.16) 50%, transparent 75%); }
+.v3-reward-in { position: relative; z-index: 1; }
+
+/* خط تقدّم الخطوات: أفقي تحت البطاقات (من اليمين)، وعمودي بجانبها على الجوال */
+.v3-steps-wrap { position: relative; margin: 56px 0 40px; padding-bottom: 30px; }
+.v3-steps-wrap .v3-steps { margin: 0; }
+.v3-rail { position: absolute; inset-inline: 0; bottom: 0; height: 4px; border-radius: 4px; background: rgba(255,255,255,.16); }
+.v3-rail .fill { position: absolute; inset: 0; border-radius: inherit; background: var(--v3-cyan-2); transform-origin: 100% 50%; }
+.v3-rail .run { position: absolute; inset: 0; }
+.v3-rail .run b { position: absolute; left: 0; top: 50%; width: 12px; height: 22px; translate: -50% -50%; background: #fff; transform: skewX(var(--v3-slant)); box-shadow: 0 0 0 4px rgba(76,197,237,.35), 0 0 22px 6px rgba(76,197,237,.65); }
+@media (max-width: 860px) {
+  .v3-steps-wrap { padding: 0; padding-inline-start: 28px; }
+  .v3-rail { inset: 0 0 0 auto; width: 4px; height: auto; }
+  .v3-rail .fill { transform-origin: 50% 0; }
+  .v3-rail .run b { left: 50%; top: 100%; width: 22px; height: 12px; transform: skewY(calc(var(--slant) * -.5)); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .v3-glow, .v3-reward::before { animation: v3-breathe 7s ease-in-out infinite; }
+  .v3-facts li { animation: v3-rise .55s var(--v3-ease) both; }
+  .v3-facts li:nth-child(1) { animation-delay: .2s; } .v3-facts li:nth-child(2) { animation-delay: .28s; }
+  .v3-facts li:nth-child(3) { animation-delay: .36s; } .v3-facts li:nth-child(n+4) { animation-delay: .44s; }
+  .v3-chip { animation: v3-pop .5s var(--v3-ease) .45s both; }
+  @supports (animation-timeline: view()) {
+    .v3-steps-wrap { view-timeline: --v3-steps block; }
+    .v3-rail .fill { animation: v3-fill linear both; animation-timeline: --v3-steps; animation-range: entry 70% cover 65%; }
+    .v3-rail .run { animation: v3-run linear both; animation-timeline: --v3-steps; animation-range: entry 70% cover 65%; }
+    @media (max-width: 860px) {
+      .v3-rail .fill { animation-name: v3-fill-y; animation-range: entry 30% cover 70%; }
+      .v3-rail .run { animation-name: v3-run-y; animation-range: entry 30% cover 70%; }
+    }
+  }
+}
+@keyframes v3-breathe { 50% { scale: 1.06; opacity: .75; } }
+@keyframes v3-rise { from { opacity: 0; transform: translateY(14px); } }
+@keyframes v3-pop { from { opacity: 0; transform: translateY(10px) scale(.92); } }
+@keyframes v3-fill { from { transform: scaleX(0); } }
+@keyframes v3-run { from { translate: 100% 0; } }
+@keyframes v3-fill-y { from { transform: scaleY(0); } }
+@keyframes v3-run-y { from { translate: 0 -100%; } }
