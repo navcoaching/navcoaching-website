@@ -4,6 +4,7 @@ import { storage } from "@/lib/storage";
 import { notifySafe } from "@/lib/mail";
 import { allow } from "@/lib/rate";
 import { LOGIN_REQUIRED } from "@/lib/messages";
+import { logSecurity } from "@/lib/ops";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,7 @@ export async function POST(req: Request) {
   } catch (err) {
     return Response.json({ error: dbErrorMessage(err) ?? "تعذّر حذف الحساب. تواصل معنا على واتساب." }, { status: 422 });
   }
+  await logSecurity("account_deleted", { email: res.email, detail: `طلبات محذوفة: ${res.orders.length}` });
   const store = await storage();
   await Promise.all(res.keys.map((k) => store.remove(k).catch(() => {})));
   await notifySafe(process.env.COACH_NOTIFY_EMAIL, `حذف حساب من التطبيق: ${res.email}`,

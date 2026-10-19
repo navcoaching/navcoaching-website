@@ -20,7 +20,7 @@ export default function Login() {
     setBusy(true); setError(null);
     const { error: err } = await authClient.emailOtp.sendVerificationOtp({ email: e, type: "sign-in" });
     setBusy(false);
-    if (err) return setError(err.status === 429 ? "طلبات كثيرة. انتظر دقائق ثم حاول." : "تعذّر إرسال الرمز. تأكد من الاتصال وحاول مرة ثانية.");
+    if (err) return setError(err.code === "ACCOUNT_LOCKED" && err.message ? err.message : err.status === 429 ? "طلبات كثيرة. انتظر دقائق ثم حاول." : "تعذّر إرسال الرمز. تأكد من الاتصال وحاول مرة ثانية.");
     setEmail(e); setStep("code");
   }
 
@@ -29,7 +29,7 @@ export default function Login() {
     setBusy(true); setError(null);
     const { error: err } = await authClient.signIn.emailOtp({ email, otp });
     setBusy(false);
-    if (err) return setError("الرمز غير صحيح أو انتهت صلاحيته.");
+    if (err) return setError(err.code === "ACCOUNT_LOCKED" && err.message ? err.message : "الرمز غير صحيح أو انتهت صلاحيته.");
     router.back();
   }
 
