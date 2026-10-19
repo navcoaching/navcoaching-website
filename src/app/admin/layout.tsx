@@ -15,7 +15,7 @@ const NAV: { title?: string; links: [string, string][] }[] = [
   { title: "التمرين", links: [["/admin/templates", "قوالب البرامج"], ["/admin/exercises", "مكتبة التمارين"], ["/admin/rehab", "التمارين التأهيلية"]] },
   { title: "التغذية", links: [["/admin/nutrition", "التغذية والمكملات"], ["/admin/foods", "قاعدة الأكل"], ["/admin/foods/guide", "دليل مصادر الأكل"]] },
   { title: "المتجر والموقع", links: [["/admin/products", "المنتجات"], ["/admin/free-plans", "الجداول المجانية"], ["/admin/booklets", "الكتيبات"], ["/admin/reviews", "التقييمات"], ["/admin/media", "الصور"]] },
-  { title: "الإعدادات", links: [["/admin/content", "المحتوى والإعدادات"], ["/admin/stats", "أرشيف الأرقام"], ["/admin/content/intake", "أسئلة الاستبيان"], ["/admin/speed", "فحص السرعة"], ["/", "الموقع ↗"]] },
+  { title: "الإعدادات", links: [["/admin/content", "المحتوى والإعدادات"], ["/admin/stats", "أرشيف الأرقام"], ["/admin/content/intake", "أسئلة الاستبيان"], ["/admin/speed", "فحص السرعة"], ["/admin/security", "الأمان والمراقبة"], ["/", "الموقع ↗"]] },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

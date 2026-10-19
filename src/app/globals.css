@@ -1860,7 +1860,8 @@ td.empty-cta > * { margin-inline-start: 10px; vertical-align: middle; }
    أقسام ملوّنة (حبر / كحلي / سماوي)، وخط Readex Pro بدون تضييق للحروف العربية.
    الرجوع للتصميم السابق: وسم git ‏design-before-v3.
    ===================================================================== */
-.v3 { --v3-ink: #07142a; --v3-ink-2: #0d1f3c; --v3-navy: #284da0; --v3-navy-2: #1d3a7c; --v3-cyan: #29b5e8; --v3-cyan-2: #4cc5ed; --v3-on-dark: #c8d6ea;
+/* ‎.pub‎ و‎.v3-story‎ أيضاً: الصفحات الداخلية وخط القصة (خارج ‎.v3‎) يستخدمون نفس الألوان */
+.v3, .pub, .v3-story { --v3-ink: #07142a; --v3-ink-2: #0d1f3c; --v3-navy: #284da0; --v3-navy-2: #1d3a7c; --v3-cyan: #29b5e8; --v3-cyan-2: #4cc5ed; --v3-on-dark: #c8d6ea;
   --v3-slant: calc(var(--slant) * -1); --v3-ease: cubic-bezier(.16, 1, .3, 1); --v3-m: clamp(20px, 4vw, 64px); }
 .v3 h1, .v3 h2, .v3 h3 { letter-spacing: 0; line-height: 1.35; }
 .v3 .wrap { position: relative; }
@@ -2231,15 +2232,15 @@ body:has(.pub.v3) .site-header .menu > summary, body:has(.pub.v3) .site-header .
 }
 
 /* ===== الصفحات العامة الداخلية: تصميم v3 (أكتوبر 2026) ===== */
-/* الهيدر غامق مثل الرئيسية في كل صفحة لها رأس داخلي */
-body:has(.page-hero) .site-header { background: #07142a; border-color: transparent; }
-body:has(.page-hero) .site-header .l-light { display: none; }
-body:has(.page-hero) .site-header .l-dark { display: block; }
-body:has(.page-hero) .site-header .nav a:not(.btn) { color: #dbe6f5; }
-body:has(.page-hero) .site-header .nav a:not(.btn):hover { background: rgba(255,255,255,.08); }
-body:has(.page-hero) .site-header .btn-ghost { --fg: #fff; --bd: rgba(255,255,255,.3); color: #fff; }
-body:has(.page-hero) .site-header .nav .btn:not(.btn-ghost) { background: #4cc5ed; color: #07142a; }
-body:has(.page-hero) .site-header .menu > summary, body:has(.page-hero) .site-header .theme-btn { color: #fff; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); }
+/* الهيدر غامق مثل الرئيسية في كل صفحة لها رأس داخلي، وفي حساب المتدرب بجانب قائمته الغامقة */
+body:has(.page-hero, .account-shell.app) .site-header { background: #07142a; border-color: transparent; }
+body:has(.page-hero, .account-shell.app) .site-header .l-light { display: none; }
+body:has(.page-hero, .account-shell.app) .site-header .l-dark { display: block; }
+body:has(.page-hero, .account-shell.app) .site-header .nav a:not(.btn) { color: #dbe6f5; }
+body:has(.page-hero, .account-shell.app) .site-header .nav a:not(.btn):hover { background: rgba(255,255,255,.08); }
+body:has(.page-hero, .account-shell.app) .site-header .btn-ghost { --fg: #fff; --bd: rgba(255,255,255,.3); color: #fff; }
+body:has(.page-hero, .account-shell.app) .site-header .nav .btn:not(.btn-ghost) { background: #4cc5ed; color: #07142a; }
+body:has(.page-hero, .account-shell.app) .site-header .menu > summary, body:has(.page-hero, .account-shell.app) .site-header .theme-btn { color: #fff; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); }
 
 /* رأس الصفحة: حبر غامق، عنوان كبير، وخطوط الشعار المائلة على اليسار (بعيد عن النص) */
 .page-hero:not(.v3 *) { background: #07142a; color: #fff; border: 0; padding-block: clamp(56px, 8vw, 110px) clamp(48px, 7vw, 96px); isolation: isolate; }
@@ -2272,7 +2273,7 @@ body:has(.page-hero) .site-header .menu > summary, body:has(.page-hero) .site-he
   .page-hero:not(.v3 *)::before { left: 62vw; width: 18vw; opacity: .25; }
   .page-hero:not(.v3 *)::after { left: 86vw; width: 8vw; opacity: .3; }
 }
-body:has(.page-hero) .site-header .nav a[aria-current="page"] { background: rgba(76,197,237,.18); color: #fff; }
+body:has(.page-hero, .account-shell.app) .site-header .nav a[aria-current="page"] { background: rgba(76,197,237,.18); color: #fff; }
 .page-hero:not(.v3 *) b, .page-hero:not(.v3 *) .num, .page-hero:not(.v3 *) .price b { color: #fff; }
 .page-hero:not(.v3 *) .price span { color: #b9c8de; }
 
@@ -2324,11 +2325,106 @@ h2 { font-size: var(--t-section); }
   body:has(.account-shell) .site-footer { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 }
 
+/* ===== الرئيسية v3: لمسات حركة مأخوذة من lumofy.ai (أكتوبر 2026) =====
+   CSS فقط بدون مكتبات: تسمية صغيرة فوق عناوين الأقسام، إضاءة تتنفس خلف لقطات الواجهة وحاسبة المكافأة،
+   ظهور متتابع لشارات الواجهة. كل الحركة داخل prefers-reduced-motion. */
+.v3-eyebrow, .pub:not(.v3) .section .eyebrow { display: flex; align-items: center; gap: 10px; width: fit-content; margin: 0 0 16px; padding: 6px 16px 6px 14px; border-radius: 999px; background: var(--cyan-soft); color: var(--cyan-ink); font: 600 14px/1.4 var(--f-display); }
+.v3-eyebrow::before, .pub:not(.v3) .section .eyebrow::before { content: ""; flex: none; width: 7px; height: 14px; background: var(--v3-cyan); transform: skewX(var(--v3-slant)); }
+.v3-plans .v3-eyebrow { margin-inline: auto; }
+.v3-how .v3-eyebrow, .v3-reward .v3-eyebrow { background: rgba(255,255,255,.08); color: #dbe6f5; box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
+.v3-how .v3-eyebrow::before, .v3-reward .v3-eyebrow::before { background: var(--v3-cyan-2); }
+
+/* إضاءة سماوية ناعمة (بدون filter: blur حتى تبقى خفيفة على الجوال) */
+.v3-glow { position: absolute; inset: -12% -10%; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(76,197,237,.42), rgba(40,77,160,.22) 55%, transparent 78%); }
+.v3-reward { position: relative; overflow: hidden; }
+.v3-reward::before { content: ""; position: absolute; width: min(760px, 90vw); aspect-ratio: 1; left: 2%; top: 50%; translate: 0 -50%; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(76,197,237,.22), rgba(40,77,160,.16) 50%, transparent 75%); }
+.v3-reward-in { position: relative; z-index: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .v3-glow, .v3-reward::before { animation: v3-breathe 7s ease-in-out infinite; }
+  .v3-facts li { animation: v3-rise .55s var(--v3-ease) both; }
+  .v3-facts li:nth-child(1) { animation-delay: .2s; } .v3-facts li:nth-child(2) { animation-delay: .28s; }
+  .v3-facts li:nth-child(3) { animation-delay: .36s; } .v3-facts li:nth-child(n+4) { animation-delay: .44s; }
+  .v3-chip { animation: v3-pop .5s var(--v3-ease) .45s both; }
+}
+@keyframes v3-breathe { 50% { scale: 1.06; opacity: .75; } }
+@keyframes v3-rise { from { opacity: 0; transform: translateY(14px); } }
+@keyframes v3-pop { from { opacity: 0; transform: translateY(10px) scale(.92); } }
+
 /* ===== Safari: fieldset داخل شبكة ينكمش لعرض حرف واحد (نص «المجموعات والتكرارات» يطلع عمودياً) =====
    نجبره يأخذ عرض حاويته، والعنوان (legend) بعرض كامل، وعمود الشبكة بعرض كامل. */
 fieldset.field { inline-size: 100%; grid-template-columns: minmax(0, 1fr); }
 fieldset.field > legend { inline-size: 100%; padding: 0; float: none; }
 
+/* ===== الرئيسية والصفحات الداخلية: خط القصة بطول الصفحة والبطاقات العائمة (من lumofy.ai، أكتوبر 2026) =====
+   ScrollStory.tsx يضع الخط في الهامش يمين النص ويحسب امتلاءه (حتى منتصف الشاشة) و‎--rev‎ لكل عنوان ونص.
+   السماوي يظهر على كل خلفيات الأقسام (فاتح، كحلي، حبر). */
+.v3-story { position: absolute; z-index: 5; width: 2px; margin-left: -1px; pointer-events: none; background: rgba(120,140,170,.28); border-radius: 2px; }
+.v3-story .fill { position: absolute; inset: 0; transform-origin: top; transform: scaleY(0); border-radius: inherit; background: linear-gradient(var(--v3-cyan), var(--v3-cyan-2)); box-shadow: 0 0 12px rgba(76,197,237,.55); }
+/* علامة كل قسم: متوازي أضلاع مائل بزاوية الشعار بدل النقطة */
+.v3-story > i:not(.fill) { position: absolute; left: 50%; width: 10px; height: 16px; translate: -50% -50%; transform: skewX(var(--v3-slant)); background: #8fa3bf; border-radius: 2px; transition: background-color .3s, box-shadow .3s; }
+.v3-story > i.in { background: var(--v3-cyan-2); }
+.v3-story > i.now { background: #fff; box-shadow: 0 0 0 4px rgba(76,197,237,.35), 0 0 18px 4px rgba(76,197,237,.7); }
+@media (max-width: 860px) { .v3-story > i:not(.fill) { width: 7px; height: 12px; } }
+
+/* النص يمتلئ من اليمين: الجزء الممتلئ بلون العنوان، والباقي باهت. ‎--ink‎ لون النص في كل قسم */
+.story-on [data-story], .story-on [data-fill] { --ink: var(--heading); --dim: 26%; color: transparent; -webkit-text-fill-color: transparent; -webkit-background-clip: text; background-clip: text;
+  background-image: linear-gradient(-90deg, var(--ink) calc(var(--rev, 1) * 100%), color-mix(in srgb, var(--ink) var(--dim), transparent) calc(var(--rev, 1) * 100%)); }
+.story-on [data-fill] { --ink: var(--text); --dim: 40%; }
+.story-on .v3-how [data-story], .story-on .v3-reward [data-story] { --ink: #fff; }
+.story-on .v3-how [data-fill], .story-on .v3-reward [data-fill] { --ink: var(--v3-on-dark); }
+/* أجزاء العنوان الملوّنة تبقى بلونها: مربع التمييز والكلمة السماوية */
+.story-on [data-story] .hl { -webkit-text-fill-color: var(--v3-ink); }
+.story-on .v3-reward [data-story] em { -webkit-text-fill-color: var(--v3-cyan-2); }
+@media (prefers-reduced-motion: reduce) { .story-on [data-story], .story-on [data-fill] { --rev: 1 !important; } }
+@media print { .story-on [data-story], .story-on [data-fill] { --rev: 1 !important; } .v3-story { display: none; } }
+
+/* البطاقات العائمة: ظل عميق ناعم وتمايل بطيء، لكل بطاقة طور مختلف حتى لا تتحرك معاً.
+   translate منفصل عن transform فلا يتعارض مع حركة الظهور أو رفع البطاقة عند المرور. */
+.v3-plan, .v3-steps li, .v3-reviews .review, .v3-meter { box-shadow: 0 30px 60px -28px rgba(7,20,42,.45), 0 10px 22px -14px rgba(7,20,42,.25); }
+.v3-how .v3-steps li, .v3-meter { box-shadow: 0 34px 70px -26px rgba(0,0,0,.6), 0 12px 24px -14px rgba(0,0,0,.4); }
+@media (prefers-reduced-motion: no-preference) {
+  .v3-plan, .v3-steps li, .v3-reviews .review, .v3-meter, .v3-stack figure { animation: v3-bob 7s ease-in-out infinite; }
+  .v3-plan:nth-child(2), .v3-steps li:nth-child(2), .v3-reviews .review:nth-child(2), .v3-stack .s2 { animation-delay: -2.4s; }
+  .v3-plan:nth-child(3), .v3-steps li:nth-child(3), .v3-reviews .review:nth-child(3), .v3-stack .s3 { animation-delay: -4.8s; }
+  .v3-reviews .review:nth-child(n+4) { animation-delay: -1.2s; }
+  .v3-meter { animation-duration: 9s; }
+}
+@keyframes v3-bob { 50% { translate: 0 -8px; } }
+
+/* الصفحات الداخلية: نفس اللمسات (التسمية فوق العناوين مع قاعدة الرئيسية أعلاه، وخط القصة من ScrollStory في القالب المشترك).
+   إضاءة تتنفس خلف عنوان رأس الصفحة، وبطاقات عائمة في الأقسام إلا البطاقات اللي فيها نماذج إدخال. */
+.page-hero:not(.v3 *) > .wrap::before { content: ""; position: absolute; z-index: -1; inset-inline-start: -8%; top: 50%; width: min(620px, 80vw); aspect-ratio: 1; translate: 0 -50%; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, rgba(76,197,237,.26), rgba(40,77,160,.16) 55%, transparent 78%); }
+.pub:not(.v3) .section :is(.card, .pcard, .review):not(:has(form, input, select, textarea)) { box-shadow: 0 30px 60px -28px rgba(7,20,42,.42), 0 10px 22px -14px rgba(7,20,42,.22); }
+@media (prefers-reduced-motion: no-preference) {
+  .page-hero:not(.v3 *) > .wrap::before { animation: v3-breathe 7s ease-in-out infinite; }
+  .pub:not(.v3) .section :is(.card, .pcard, .review):not(:has(form, input, select, textarea)) { animation: v3-bob 7s ease-in-out infinite; }
+  .pub:not(.v3) .section :is(.card, .pcard, .review):nth-child(3n+2) { animation-delay: -2.4s; }
+  .pub:not(.v3) .section :is(.card, .pcard, .review):nth-child(3n) { animation-delay: -4.8s; }
+}
+
+/* ===== حساب المتدرب ولوحة الإدارة: لمسات lumofy.ai بدون حركة (أكتوبر 2026) =====
+   سطوح تشغيل يومية: عمق (بطاقات عائمة بظل ناعم ثابت) وإضاءة سماوية ثابتة، بلا تمايل ولا خط قصة ولا حركات دخول.
+   الرفع عند المرور فقط على العناصر القابلة للنقر. */
+.account-shell.app .card, .account-shell.app .ex-row, .admin.app .card { box-shadow: 0 24px 50px -30px rgba(7,20,42,.32), 0 8px 18px -12px rgba(7,20,42,.16); }
+.account-shell.app .my-program { box-shadow: 0 36px 70px -30px rgba(7,20,42,.6), 0 12px 24px -14px rgba(7,20,42,.3);
+  background: radial-gradient(60% 90% at 12% 0%, rgba(76,197,237,.2), transparent 70%), var(--t-ink); }
+.account-shell.app .my-program .meter > span { box-shadow: 0 0 14px rgba(76,197,237,.55); }
+/* القائمة الجانبية: إضاءة خفيفة أعلاها، والصفحة الحالية تتوهج */
+.account-shell.app .account-side, .admin.app .admin-side { background-image: radial-gradient(130% 40% at 100% 0%, rgba(76,197,237,.14), transparent 70%); }
+.account-shell.app .account-side a[aria-current="page"], .admin.app .admin-side a[aria-current="page"] { box-shadow: 0 10px 28px -8px rgba(76,197,237,.6); }
+@media (hover: hover) and (pointer: fine) {
+  .account-shell.app a.ex-row, .admin.app a.card { transition: translate .25s var(--ease), box-shadow .25s; }
+  .account-shell.app a.ex-row:hover, .admin.app a.card:hover { translate: 0 -2px; }
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .account-shell.app .card, :root:not([data-theme="light"]) .account-shell.app .ex-row, :root:not([data-theme="light"]) .admin.app .card { box-shadow: 0 24px 50px -28px rgba(0,0,0,.7); }
+  :root:not([data-theme="light"]) .account-shell.app .my-program { background: radial-gradient(60% 90% at 12% 0%, rgba(76,197,237,.18), transparent 70%), var(--t-ink-2); }
+  :root:not([data-theme="light"]) .account-shell.app .account-side, :root:not([data-theme="light"]) .admin.app .admin-side { background-image: radial-gradient(130% 40% at 100% 0%, rgba(76,197,237,.14), transparent 70%); }
+}
+:root[data-theme="dark"] .account-shell.app .card, :root[data-theme="dark"] .account-shell.app .ex-row, :root[data-theme="dark"] .admin.app .card { box-shadow: 0 24px 50px -28px rgba(0,0,0,.7); }
+:root[data-theme="dark"] .account-shell.app .my-program { background: radial-gradient(60% 90% at 12% 0%, rgba(76,197,237,.18), transparent 70%), var(--t-ink-2); }
+:root[data-theme="dark"] .account-shell.app .account-side, :root[data-theme="dark"] .admin.app .admin-side { background-image: radial-gradient(130% 40% at 100% 0%, rgba(76,197,237,.14), transparent 70%); }
 /* الهدف الشهري وأرشيف الأرقام (لوحة الإدارة) */
 .goal-form > summary { cursor: pointer; min-height: 44px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .goal-form[open] > summary { margin-block-end: 12px; }

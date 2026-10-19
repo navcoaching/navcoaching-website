@@ -261,6 +261,11 @@ test("التطبيق: الخدمات الإضافية (راجعي جدولي، �
   const v = await fetch(`${B}/api/files/addon/${o2.id}`, { headers: { Cookie: cookie } });
   assert.equal(v.status, 200);
   assert.equal(v.headers.get("content-type"), "video/mp4");
+  // Safari يطلب أول بايتين قبل التشغيل ويحتاج 206
+  const part = await fetch(`${B}/api/files/addon/${o2.id}`, { headers: { Cookie: cookie, Range: "bytes=0-1" } });
+  assert.equal(part.status, 206);
+  assert.equal(part.headers.get("content-range"), `bytes 0-1/${v.headers.get("content-length")}`);
+  assert.equal((await part.arrayBuffer()).byteLength, 2);
   const other = await login(`addon-other-${tag}@e2e.test`);
   assert.equal((await fetch(`${B}/api/files/addon/${o2.id}`, { headers: { Cookie: other } })).status, 404, "فيديو متدرب آخر");
 

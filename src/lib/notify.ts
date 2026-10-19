@@ -3,6 +3,7 @@ import type { Tx } from "./db";
 import { sendMail, mailConfigured, devMailboxEnabled, mailBrand } from "./mail";
 import { renderEmail, statusCopy } from "./email-template";
 import { pushConfigured, sendPush } from "./push";
+import { reportIssue } from "./ops";
 
 /**
  * إشعارات المتدرب عبر البريد وواتساب وإشعارات الجوال (push)، مع سجل لكل محاولة (notification_log).
@@ -125,6 +126,7 @@ export async function notifyTrainee(
       r = { channel, status: "failed", detail: (err as Error).message.slice(0, 300) };
     }
     await tx.query("SELECT app.notify_finish($1,$2,$3)", [claim.id, r.status, r.detail ?? null]);
+    if (r.status === "failed") await reportIssue(channel === "email" ? "mail_failed" : channel === "push" ? "push_failed" : "whatsapp_failed",`${opts.kind} ${target.orderNo}: ${r.detail ?? ""}`);
     results.push(r);
   }
   return results;

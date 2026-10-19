@@ -1,6 +1,7 @@
 import { withUser } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
 import { storage } from "@/lib/storage";
+import { byteRange } from "@/lib/byte-range";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,7 @@ const QUERIES: Record<string, string> = {
   addon: "SELECT video_key AS storage_key, video_mime AS mime FROM addon_requests a WHERE order_id = $1 AND video_key IS NOT NULL AND (app.is_coach() OR EXISTS (SELECT 1 FROM orders o WHERE o.id = a.order_id AND o.user_id = app.uid()))",
 };
 
-export async function GET(_: Request, { params }: { params: Promise<{ kind: string; id: string }> }) {
+export async function GET(req: Request, { params }: { params: Promise<{ kind: string; id: string }> }) {
   const { kind, id } = await params;
   const sql = QUERIES[kind];
   if (!sql || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id)) return new Response("Not found", { status: 404 });
@@ -31,10 +32,19 @@ export async function GET(_: Request, { params }: { params: Promise<{ kind: stri
   const inline = row.mime.startsWith("image/") || row.mime.startsWith("video/");
   const ext = row.mime === "application/pdf" ? "pdf" : row.mime.includes("spreadsheet") ? "xlsx" : row.mime.includes("word") ? "docx"
     : row.mime === "video/mp4" ? "mp4" : row.mime === "video/quicktime" ? "mov" : "webp";
-  return new Response(new Uint8Array(data), {
+  // Safari ما يشغّل الفيديو إلا إذا الخادم يرجّع الجزء المطلوب (Range) بـ 206.
+  // للفيديو فقط (no-store دائماً): الصور العامة تُخزَّن في CDN، فما نرجّع لها أجزاء
+  const range = row.mime.startsWith("video/") ? byteRange(req.headers.get("range"), data.length) : null;
+  if (range === "invalid") return new Response(null, { status: 416, headers: { "Content-Range": `bytes */${data.length}` } });
+  const { start, end } = range ?? { start: 0, end: data.length - 1 };
+  const partial = range !== null;
+  return new Response(new Uint8Array(data.subarray(start, end + 1)), {
+    status: partial ? 206 : 200,
     headers: {
       "Content-Type": row.mime,
-      "Content-Length": String(data.length),
+      "Content-Length": String(end - start + 1),
+      "Accept-Ranges": "bytes",
+      ...(partial ? { "Content-Range": `bytes ${start}-${end}/${data.length}` } : {}),
       "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="nav-${kind}-${id.slice(0, 8)}.${ext}"`,
       "Cache-Control": kind === "media" && row.approved ? "public, max-age=86400" : "private, no-store",
       "X-Content-Type-Options": "nosniff",
