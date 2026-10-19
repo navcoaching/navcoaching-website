@@ -10,7 +10,7 @@ const back = (req: Request, path: string) => Response.redirect(new URL(path, req
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  if (!/^[0-9a-f-]{36}$/.test(id)) return back(req, "/account?plan=notfound#free-plans");
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id)) return back(req, "/account?plan=notfound#free-plans");
   const user = await getCurrentUser().catch(() => null);
   if (!user) return back(req, `/login?next=${encodeURIComponent("/account#free-plans")}`);
 

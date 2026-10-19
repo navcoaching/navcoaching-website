@@ -22,7 +22,7 @@ export default async function EditExercise({ params, searchParams }: { params: P
   const { id } = await params;
   const { created } = await searchParams;
   const isNew = id === "new";
-  if (!isNew && !/^[0-9a-f-]{36}$/.test(id)) notFound();
+  if (!isNew && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id)) notFound();
   const { ex, alts, options, usage } = await withUser(coach.id, async (tx) => ({
     ex: isNew ? null : ((await tx.query(`SELECT * FROM exercises WHERE id = $1`, [id])).rows[0] as Ex | undefined),
     alts: isNew ? [] : ((await tx.query(
