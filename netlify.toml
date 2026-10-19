@@ -1,0 +1,9 @@
+# موقع Netlify جديد ومستقل عن الموقع الحالي، حتى يُختبر على رابط Preview قبل نقل الدومين.
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Netlify يكتشف Next.js تلقائياً ويركّب محرّكه (لا حاجة لإضافة plugin يدوياً).
