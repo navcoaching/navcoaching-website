@@ -6,6 +6,10 @@ import { pool } from "./db";
 import { mailBrand, notifySafe, sendMail } from "./mail";
 import { renderEmail } from "./email-template";
 import { allow } from "./rate";
+import { APIError, createAuthMiddleware } from "better-auth/api";
+import { LOGIN_LOCK_AFTER, logSecurity, loginFailures, reportIssue } from "./ops";
+
+const ipOf = (h?: Headers) => h?.get("x-nf-client-connection-ip") ?? h?.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
 
 /**
  * الدخول برمز مؤقت يصل للبريد (بدون كلمة مرور): أبسط على الجوال ولا يوجد كلمات مرور تتسرب.
@@ -42,9 +46,10 @@ export const auth = betterAuth({
       },
     },
   },
+  // الجلسة تنتهي بعد 12 ساعة بلا نشاط: تتجدد مع الاستخدام (كل ساعة على الأكثر)، فمن يستخدم الموقع لا يخرج.
   session: {
-    expiresIn: 60 * 60 * 24 * 14,
-    updateAge: 60 * 60 * 24,
+    expiresIn: 60 * 60 * 12,
+    updateAge: 60 * 60,
     // الجلسة تُقرأ من الكوكي الموقّع لمدة 5 دقائق بدل استعلامين لقاعدة البيانات في كل صفحة.
     // الثمن: تغيير الدور (مدربة/متدرب) أو إلغاء الجلسة من قاعدة البيانات يتأخر حتى 5 دقائق.
     cookieCache: { enabled: true, maxAge: 60 * 5 },
@@ -58,6 +63,24 @@ export const auth = betterAuth({
       "/email-otp/send-verification-otp": { window: 60 * 10, max: 5 },
       "/sign-in/email-otp": { window: 60 * 10, max: 10 },
     },
+  },
+  // قفل الدخول بعد 5 محاولات خاطئة لنفس البريد (15 دقيقة)، وتسجيل كل محاولة في سجل الأمان.
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path !== "/sign-in/email-otp" && ctx.path !== "/email-otp/send-verification-otp") return;
+      const email = String(ctx.body?.email ?? "").trim().toLowerCase();
+      if (!email || (await loginFailures(email)) < LOGIN_LOCK_AFTER) return;
+      await logSecurity("login_locked", { email, ip: ipOf(ctx.headers) });
+      throw new APIError("TOO_MANY_REQUESTS", { code: "ACCOUNT_LOCKED", message: "الدخول مقفل مؤقتاً بعد 5 محاولات خاطئة. حاول بعد 15 دقيقة." });
+    }),
+    after: createAuthMiddleware(async (ctx) => {
+      if (ctx.path !== "/sign-in/email-otp") return;
+      const email = String(ctx.body?.email ?? "").trim().toLowerCase();
+      const s = ctx.context.newSession;
+      if (s) return logSecurity("login_ok", { email, userId: s.user.id, ip: ipOf(ctx.headers) });
+      const r = ctx.context.returned as { body?: { code?: string } } | undefined;
+      await logSecurity("login_failed", { email, ip: ipOf(ctx.headers), detail: r?.body?.code ?? null });
+    }),
   },
   advanced: {
     useSecureCookies: process.env.NODE_ENV === "production",
@@ -80,13 +103,14 @@ export const auth = betterAuth({
         }
         if (reviewLogin(email)) return; // حساب المراجعة: لا يُرسل بريد (الحدود أعلاه تبقى سارية)
         const brand = await mailBrand(pool).catch(() => ({ site: (process.env.NEXT_PUBLIC_SITE_URL || "https://navcoaching.com").replace(/\/$/, "") }));
+        await logSecurity("otp_sent", { email: key });
         await sendMail(
           email,
           `رمز الدخول إلى Nav Coaching: ${otp}`,
           `رمز الدخول: ${otp}\n\nصالح لمدة 10 دقائق. إذا لم يكن طلب الدخول منك فلا حاجة لأي إجراء.\n\nNav Coaching`,
           renderEmail({ headline: "رمز الدخول", code: otp, brand,
             message: "هذا الرمز يُكتب في صفحة الدخول. صالح لمدة 10 دقائق، وإذا لم يكن طلب الدخول منك فلا حاجة لأي إجراء." }),
-        );
+        ).catch(async (err) => { await reportIssue("login_mail_failed", (err as Error).message); throw err; });
       },
     }),
     expo(),

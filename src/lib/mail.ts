@@ -47,6 +47,7 @@ export async function notifySafe(to: string | undefined | null, subject: string,
     await sendMail(to, subject, text, await coachHtml(subject, text, html));
   } catch (err) {
     console.error("[notify] skipped:", (err as Error).message);
+    await (await import("./ops")).reportIssue("mail_failed", `${subject.slice(0, 120)}: ${(err as Error).message}`);
   }
   // نفس التنبيه على جوال المدربة (العنوان فقط)
   if (to === process.env.COACH_NOTIFY_EMAIL) await pushToCoaches(subject);

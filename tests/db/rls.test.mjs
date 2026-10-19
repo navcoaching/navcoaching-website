@@ -1196,3 +1196,37 @@ describe("تكرار المراجعة لكل باقة (الأساسية كل أ�
     assert.equal((await owner.query("SELECT review_every_weeks n FROM products WHERE slug = 'basic'")).rows[0].n, 2);
   });
 });
+
+describe("سجل الأمان والتشغيل وقفل الدخول", () => {
+  test("الكتابة عبر الدوال فقط، والقراءة للمدربة فقط", async () => {
+    await as(null, "SELECT app.log_security('login_failed', 'Victim@Test.local', NULL, '1.2.3.4', 'INVALID_OTP')");
+    await as(null, "SELECT app.ops_event('server_error', 'تجربة')");
+    for (const u of [A, null]) {
+      assert.equal((await as(u, "SELECT count(*)::int n FROM security_log")).rows[0].n, 0);
+      assert.equal((await as(u, "SELECT count(*)::int n FROM ops_events")).rows[0].n, 0);
+      await assert.rejects(as(u, "INSERT INTO security_log (event) VALUES ('login_ok')"), /permission denied|row-level/);
+      await assert.rejects(as(u, "DELETE FROM security_log"), /permission denied/);
+    }
+    const r = await as(COACH, "SELECT email FROM security_log WHERE event = 'login_failed'");
+    assert.equal(r.rows[0].email, "victim@test.local"); // يُحفظ بأحرف صغيرة
+    assert.equal((await as(COACH, "SELECT count(*)::int n FROM ops_events")).rows[0].n, 1);
+    await assert.rejects(as(COACH, "UPDATE security_log SET email = 'x'"), /permission denied/);
+  });
+  test("العدّاد: 5 محاولات خلال 15 دقيقة، ويُصفَّر بعد دخول ناجح، ولا يتأثر ببريد آخر", async () => {
+    const n = async (e) => (await as(null, "SELECT app.login_failures($1) AS n", [e])).rows[0].n;
+    const e = "lock@test.local";
+    for (let i = 0; i < 5; i++) await as(null, "SELECT app.log_security('login_failed', $1, NULL, NULL, NULL)", [e]);
+    assert.equal(await n(e), 5);
+    assert.equal(await n("LOCK@test.local"), 5);
+    assert.equal(await n("other@test.local"), 0);
+    await owner.query("UPDATE security_log SET created_at = now() - interval '16 minutes' WHERE email = $1", [e]);
+    assert.equal(await n(e), 0); // انتهت مدة القفل
+    for (let i = 0; i < 3; i++) await as(null, "SELECT app.log_security('login_failed', $1, NULL, NULL, NULL)", [e]);
+    await as(null, "SELECT app.log_security('login_ok', $1, NULL, NULL, NULL)", [e]);
+    assert.equal(await n(e), 0); // الدخول الناجح يصفّر
+  });
+  test("قيود الحقول ترفض قيماً غير متوقعة", async () => {
+    await assert.rejects(as(null, "SELECT app.log_security('Bad Event!', NULL, NULL, NULL, NULL)"), /check/i);
+    await assert.rejects(as(null, "SELECT app.ops_event('x', NULL)"), /check/i);
+  });
+});

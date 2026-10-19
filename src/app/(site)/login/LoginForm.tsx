@@ -6,6 +6,7 @@ const ERR: Record<string, string> = {
   INVALID_OTP: "الرمز غير صحيح. تأكد منه وحاول مرة أخرى.",
   OTP_EXPIRED: "انتهت صلاحية الرمز. اطلب رمزاً جديداً.",
   TOO_MANY_ATTEMPTS: "محاولات كثيرة. اطلب رمزاً جديداً.",
+  ACCOUNT_LOCKED: "الدخول مقفل مؤقتاً بعد 5 محاولات خاطئة. حاول بعد 15 دقيقة.",
 };
 
 export default function LoginForm({ next }: { next: string }) {
@@ -23,7 +24,7 @@ export default function LoginForm({ next }: { next: string }) {
     setBusy(true);
     const { error } = await authClient.emailOtp.sendVerificationOtp({ email: clean, type: "sign-in" });
     setBusy(false);
-    if (error) { setError(error.status === 429 ? "طلبات كثيرة. انتظر دقائق ثم حاول." : "تعذّر إرسال الرمز الآن. حاول بعد قليل أو تواصل معنا على واتساب."); return; }
+    if (error) { setError(error.code === "ACCOUNT_LOCKED" ? ERR.ACCOUNT_LOCKED : error.status === 429 ? "طلبات كثيرة. انتظر دقائق ثم حاول." : "تعذّر إرسال الرمز الآن. حاول بعد قليل أو تواصل معنا على واتساب."); return; }
     setEmail(clean);
     setStep("otp");
   }
