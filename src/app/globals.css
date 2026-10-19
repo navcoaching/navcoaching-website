@@ -2281,3 +2281,44 @@ body:has(.page-hero) .site-header .nav a[aria-current="page"] { background: rgba
    القوائم التالية كانت تلغي مسافة .stack بـ margin: 0، فنرجّعها، ونعطي العناوين هامشاً صغيراً تحتها. */
 .stack > * + :is(.fp-mine, .alert-list, .today-days, .food-results) { margin-top: var(--space, 16px); }
 main :is(h1, h2, h3) { padding-block-end: 0.12em; }
+
+/* ===== سلّم العناوين (تقييم impeccable، أكتوبر 2026) =====
+   الصفحات العامة (إقناع): عنوان رئيسي واحد بارز، وعناوين الأقسام خطوة واضحة تحته.
+   الحساب ولوحة الإدارة (تشغيل): عناوين ثابتة الحجم تقريباً، والتسلسل بالوزن والمسافة لا بالحجم فقط. */
+:root {
+  --t-display: clamp(34px, 4.2vw, 60px);   /* عنوان الصفحة الرئيسية */
+  --t-page: clamp(30px, 3.4vw, 48px);      /* عنوان رأس الصفحات الداخلية */
+  --t-section: clamp(26px, 2.8vw, 40px);   /* عناوين أقسام الصفحات العامة */
+  --t-close: clamp(32px, 4vw, 56px);       /* عنوان الختام */
+  --t-app-h1: clamp(24px, 2.2vw, 30px);    /* عنوان صفحة في الحساب والإدارة */
+  --t-app-h2: 20px;                        /* عنوان بطاقة/قسم في الحساب والإدارة */
+}
+.v3-hero h1 { font-size: var(--t-display); }
+.v3-h2, .v3-about h2, .v3-why .v3-h2, .v3-reward .v3-h2 { font-size: var(--t-section); }
+.v3-close h2 { font-size: var(--t-close); }
+.v3-steps h3 { font-size: clamp(20px, 1.6vw, 24px); }
+.page-hero:not(.v3 *) h1 { font-size: var(--t-page) !important; max-width: 20ch; }
+h1 { font-size: var(--t-page); }
+h2 { font-size: var(--t-section); }
+.account-shell.app h1 { font-size: var(--t-app-h1) !important; }
+.admin.app .admin-main h1 { font-size: var(--t-app-h1); }
+.account-shell.app .card > h2, .account-shell.app section > h2, .admin.app .card > h2, .admin.app section > h2 { font-size: var(--t-app-h2) !important; }
+
+/* ===== قائمة حساب المتدرب على الجوال: شريط سفلي ثابت (أكتوبر 2026) =====
+   أيقونة فوق الاسم، والصفحة الحالية سماوي، بنفس هوية القائمة الغامقة. */
+@media (max-width: 760px) {
+  .account-shell.app .account-side {
+    position: fixed; inset: auto 0 0; top: auto; z-index: 40; height: auto; overflow: visible;
+    display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px;
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); border: 0; border-radius: 0;
+    box-shadow: 0 -8px 24px rgba(7, 20, 42, .18);
+  }
+  .account-shell.app .account-side a, .account-shell.app .account-side .off {
+    flex-direction: column; justify-content: center; gap: 3px; min-height: 58px; padding: 6px 2px;
+    border-radius: 14px; font-size: 11.5px; line-height: 1.25; text-align: center; white-space: normal;
+  }
+  .account-shell.app .account-side .nav-ico svg { width: 22px; height: 22px; }
+  .account-shell.app .account-content { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+  body:has(.account-shell) .wa-float { bottom: calc(88px + env(safe-area-inset-bottom)); }
+  body:has(.account-shell) .site-footer { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
+}
