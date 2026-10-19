@@ -10,7 +10,7 @@ import { getCurrentUser, getFreshUser } from "@/lib/session";
 import { notifySafe } from "@/lib/mail";
 import { notifyTrainee, RESULT_LABEL, CHANNEL_LABEL, type ChannelResult } from "@/lib/notify";
 import { DEFAULT_WEEK_RIR, MAX_SETS, parseReps, parseRir, type PlanWeek } from "@/lib/training";
-import { ANATOMICAL_ACTIONS, EQUIPMENT, EX_STATUS, KINDS, LEVELS, MOVEMENT_SUBCATEGORIES, MUSCLES, PATTERNS, REHAB_CATEGORIES, REHAB_LOADS, REHAB_PHASES, REHAB_REVIEW, SECONDARY_MUSCLES, SUB_PATTERNS, placeFor, type RehabReview } from "@/lib/exercises";
+import { ANATOMICAL_ACTIONS, EQUIPMENT, EX_STATUS, KINDS, LEVELS, MOVEMENT_SUBCATEGORIES, MUSCLES, PATTERNS, REHAB_CATEGORIES, REHAB_LOADS, REHAB_PHASES, REHAB_REVIEW, SECONDARY_MUSCLES, SUB_PATTERNS, PLACES, placeFor, type RehabReview } from "@/lib/exercises";
 import type { ActionState } from "./client";
 import { allow } from "@/lib/rate";
 import { DEFAULT_VOLUME_LIMIT, DEFAULT_SESSION_CAP, SESSION_KEY } from "@/lib/volume";
@@ -61,6 +61,7 @@ const exerciseSchema = z.object({
   rehab_evidence: opt(1000),
   rehab_refs: opt(2000).refine((v) => !v || v.split("|").every((u) => /^https?:\/\/\S+$/.test(u.trim())), "روابط المراجع يجب أن تبدأ بـ https:// ويُفصل بينها بـ |"),
   rehab_review: z.union([z.literal(""), z.enum(Object.keys(REHAB_REVIEW) as [RehabReview])]).transform((v) => v || null),
+  place: z.union([z.literal(""), z.enum(PLACES)]),
 });
 
 export async function saveExerciseAction(_: ActionState, fd: FormData): Promise<ActionState> {
@@ -74,7 +75,7 @@ export async function saveExerciseAction(_: ActionState, fd: FormData): Promise<
     alternatives: [...new Set(fd.getAll("alt").map(String))],
     rehab_categories: [...new Set(fd.getAll("rehab_category").map(String))],
     rehab_goal: g("rehab_goal"), rehab_phase: g("rehab_phase"), rehab_load: g("rehab_load"), rehab_safety: g("rehab_safety"),
-    rehab_evidence: g("rehab_evidence"), rehab_refs: g("rehab_refs"), rehab_review: g("rehab_review"),
+    rehab_evidence: g("rehab_evidence"), rehab_refs: g("rehab_refs"), rehab_review: g("rehab_review"), place: g("place"),
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const v = parsed.data;
@@ -84,7 +85,7 @@ export async function saveExerciseAction(_: ActionState, fd: FormData): Promise<
   try {
     await asCoach(async (tx, uid) => {
       const cols = [v.name, v.primary_muscle, v.secondary.filter((m) => m !== v.primary_muscle), v.pattern, v.kind, v.equipment, v.level,
-        placeFor(v.equipment), v.video_url, v.instructions, v.notes, v.source, v.source_name, v.source_url, v.status,
+        (v.place || placeFor(v.equipment, v.name)), v.video_url, v.instructions, v.notes, v.source, v.source_name, v.source_url, v.status,
         v.sub_pattern, v.anatomical_action, v.movement_subcategory,
         v.rehab_categories.length ? v.rehab_categories.join(" | ") : null, v.rehab_goal, v.rehab_phase, v.rehab_load, v.rehab_safety, v.rehab_evidence,
         v.rehab_refs ? v.rehab_refs.split("|").map((u) => u.trim()).filter(Boolean).join(" | ") : null, v.rehab_review];
@@ -143,22 +144,29 @@ async function revalidateOwner(tx: Tx, kind: Kind, ownerId: string) {
 }
 async function ownerOfDay(tx: Tx, kind: Kind, dayId: string) {
   const t = T[kind];
-  const { rows: [r] } = await tx.query(`SELECT d.${t.fk} AS owner, o.weeks FROM ${t.days} d JOIN ${t.owner} o ON o.id = d.${t.fk} WHERE d.id = $1`, [dayId]);
+  const { rows: [r] } = await tx.query(`SELECT d.${t.fk} AS owner, o.weeks, o.place FROM ${t.days} d JOIN ${t.owner} o ON o.id = d.${t.fk} WHERE d.id = $1`, [dayId]);
   if (!r) throw new Error("gone");
-  return r as { owner: string; weeks: number };
+  return r as { owner: string; weeks: number; place: string };
 }
 async function ownerOfItem(tx: Tx, kind: Kind, itemId: string) {
   const t = T[kind];
   const { rows: [r] } = await tx.query(
-    `SELECT i.day_id, d.${t.fk} AS owner, o.weeks FROM ${t.items} i JOIN ${t.days} d ON d.id = i.day_id JOIN ${t.owner} o ON o.id = d.${t.fk} WHERE i.id = $1`, [itemId]);
+    `SELECT i.day_id, d.${t.fk} AS owner, o.weeks, o.place FROM ${t.items} i JOIN ${t.days} d ON d.id = i.day_id JOIN ${t.owner} o ON o.id = d.${t.fk} WHERE i.id = $1`, [itemId]);
   if (!r) throw new Error("gone");
-  return r as { day_id: string; owner: string; weeks: number };
+  return r as { day_id: string; owner: string; weeks: number; place: string };
 }
 async function exerciseByName(tx: Tx, name: string, allowId?: string | null) {
   const { rows: [e] } = await tx.query(
     `SELECT id FROM exercises WHERE lower(trim(name)) = lower(trim($1)) AND (status = 'approved' OR id::text = $2)`, [name, allowId ?? ""]);
   return (e?.id as string | undefined) ?? null;
 }
+/** برنامج البيت يقبل تمارين البيت فقط */
+async function gymInHome(tx: Tx, place: string, exerciseId: string) {
+  if (place !== "منزل") return false;
+  const { rows: [e] } = await tx.query(`SELECT place FROM exercises WHERE id = $1`, [exerciseId]);
+  return e?.place === "نادي";
+}
+const GYM_IN_HOME = { error: "هذا تمرين نادي، والبرنامج للبيت. اختاري تمريناً من تمارين البيت." };
 /** يضع التمرين في الترتيب المطلوب داخل يومه (1 = الأول) ويعيد ترقيم الباقي */
 async function placeAt(tx: Tx, table: string, dayId: string, itemId: string, pos: number | null) {
   if (pos == null) return;
@@ -179,23 +187,24 @@ const templateSchema = z.object({
   archived: z.boolean(),
   public: z.boolean(),
   public_summary: opt(300),
+  place: z.enum(PLACES, { message: "اختاري مكان التمرين: البيت أو النادي." }),
 });
 
 export async function saveTemplateAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const g = (k: string) => String(fd.get(k) ?? "");
   const p = templateSchema.safeParse({ id: g("id"), name: g("name"), weeks: g("weeks") || "5", instructions: g("instructions"), archived: fd.get("archived") === "on",
-    public: fd.get("public") === "on", public_summary: g("public_summary") });
+    public: fd.get("public") === "on", public_summary: g("public_summary"), place: g("place") || "نادي" });
   if (!p.success) return { error: p.error.issues[0].message };
   const v = p.data;
   let id = v.id;
   try {
     await asCoach(async (tx) => {
       if (id) {
-        const r = await tx.query(`UPDATE program_templates SET name=$2, weeks=$3, instructions=$4, archived=$5, public=$6, public_summary=$7, updated_at=now() WHERE id=$1`,
-          [id, v.name, v.weeks, v.instructions, v.archived, v.public, v.public_summary]);
+        const r = await tx.query(`UPDATE program_templates SET name=$2, weeks=$3, instructions=$4, archived=$5, public=$6, public_summary=$7, place=$8, updated_at=now() WHERE id=$1`,
+          [id, v.name, v.weeks, v.instructions, v.archived, v.public, v.public_summary, v.place]);
         if (!r.rowCount) throw new Error("gone");
       } else {
-        id = (await tx.query(`INSERT INTO program_templates (name, weeks, instructions) VALUES ($1,$2,$3) RETURNING id`, [v.name, v.weeks, v.instructions])).rows[0].id;
+        id = (await tx.query(`INSERT INTO program_templates (name, weeks, instructions, place) VALUES ($1,$2,$3,$4) RETURNING id`, [v.name, v.weeks, v.instructions, v.place])).rows[0].id;
         await tx.query(`INSERT INTO template_days (template_id, day_no, title) VALUES ($1, 1, 'DAY 1')`, [id]);
       }
     });
@@ -214,7 +223,7 @@ export async function duplicateTemplateAction(_: ActionState, fd: FormData): Pro
   try {
     id = await asCoach(async (tx) => {
       const { rows: [n] } = await tx.query(
-        `INSERT INTO program_templates (name, weeks, instructions) SELECT left(name || ' (نسخة)', 120), weeks, instructions FROM program_templates WHERE id = $1 RETURNING id`, [src]);
+        `INSERT INTO program_templates (name, weeks, instructions, place) SELECT left(name || ' (نسخة)', 120), weeks, instructions, place FROM program_templates WHERE id = $1 RETURNING id`, [src]);
       if (!n) throw new Error("gone");
       const days = (await tx.query(`SELECT id, day_no, title FROM template_days WHERE template_id = $1`, [src])).rows;
       for (const d of days) {
@@ -299,6 +308,7 @@ export async function addItemAction(_: ActionState, fd: FormData): Promise<Actio
         ? ((await tx.query(`SELECT id FROM exercises WHERE id = $1 AND status = 'approved'`, [pickedId])).rows[0]?.id as string | undefined) ?? null
         : await exerciseByName(tx, name);
       if (!ex) return { error: "التمرين غير موجود في المكتبة أو غير معتمد. اختاريه من القائمة." };
+      if (await gymInHome(tx, o.place, ex)) return GYM_IN_HOME;
       const plan: PlanWeek[] = Array.from({ length: o.weeks }, (_, w) => ({ sets: reps.length, reps, rir: rir ?? DEFAULT_WEEK_RIR[Math.min(w, DEFAULT_WEEK_RIR.length - 1)] }));
       const { rows: [{ pos }] } = await tx.query(`SELECT coalesce(max(position), -1) + 1 AS pos FROM ${t.items} WHERE day_id = $1`, [day]);
       const { rows: [ins] } = kind === "block"
@@ -332,6 +342,8 @@ export async function saveItemAction(_: ActionState, fd: FormData): Promise<Acti
         ? ((await tx.query(`SELECT id FROM exercises WHERE id = $1 AND (status = 'approved' OR id = $2)`, [pickedId, cur.exercise_id])).rows[0]?.id as string | undefined) ?? null
         : await exerciseByName(tx, name, cur.exercise_id);
       if (!ex) return { error: "التمرين غير موجود في المكتبة أو غير معتمد. اختاريه من القائمة." };
+      // تمرين موجود من قبل (قبل تغيير مكان البرنامج) يبقى قابلاً للتعديل
+      if (ex !== cur.exercise_id && await gymInHome(tx, o.place, ex)) return GYM_IN_HOME;
       const plan: PlanWeek[] = [];
       for (let w = 1; w <= o.weeks; w++) {
         const src = copyFirst ? 1 : w;
@@ -431,11 +443,12 @@ const blockSchema = z.object({
   weeks: z.coerce.number().int().min(1).max(12, "عدد الأسابيع من 1 إلى 12."),
   steps_goal_week: z.coerce.number().int().min(0).max(300000, "هدف الخطوات غير منطقي."),
   instructions: opt(4000),
+  place: z.enum(PLACES),
 });
 
 export async function saveBlockAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const g = (k: string) => String(fd.get(k) ?? "");
-  const p = blockSchema.safeParse({ id: g("id"), name: g("name"), start_date: g("start_date"), weeks: g("weeks"), steps_goal_week: g("steps_goal_day") ? String(Math.round(Number(g("steps_goal_day")) * 7)) : g("steps_goal_week") || "0", instructions: g("instructions") });
+  const p = blockSchema.safeParse({ id: g("id"), name: g("name"), start_date: g("start_date"), weeks: g("weeks"), steps_goal_week: g("steps_goal_day") ? String(Math.round(Number(g("steps_goal_day")) * 7)) : g("steps_goal_week") || "0", instructions: g("instructions"), place: g("place") || "نادي" });
   if (!p.success) return { error: p.error.issues[0].message };
   const v = p.data;
   try {
@@ -444,8 +457,8 @@ export async function saveBlockAction(_: ActionState, fd: FormData): Promise<Act
         `SELECT greatest(coalesce((SELECT max(l.week_no) FROM item_logs l JOIN block_items i ON i.id = l.block_item_id JOIN block_days d ON d.id = i.day_id WHERE d.block_id = $1), 0),
                          coalesce((SELECT max(week_no) FROM step_logs WHERE block_id = $1), 0)) AS maxw`, [v.id]);
       if (v.weeks < maxw) return { error: `المتدرب سجّل حتى الأسبوع ${maxw}، فلا يمكن تقليل الأسابيع لأقل من ذلك.` };
-      const r = await tx.query(`UPDATE blocks SET name=$2, start_date=$3, weeks=$4, steps_goal_week=$5, instructions=$6, updated_at=now() WHERE id=$1`,
-        [v.id, v.name, v.start_date, v.weeks, v.steps_goal_week, v.instructions]);
+      const r = await tx.query(`UPDATE blocks SET name=$2, start_date=$3, weeks=$4, steps_goal_week=$5, instructions=$6, place=$7, updated_at=now() WHERE id=$1`,
+        [v.id, v.name, v.start_date, v.weeks, v.steps_goal_week, v.instructions, v.place]);
       if (!r.rowCount) throw new Error("gone");
       await revalidateOwner(tx, "block", v.id);
       return null;

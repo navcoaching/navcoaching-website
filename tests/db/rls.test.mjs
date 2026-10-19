@@ -482,6 +482,36 @@ describe("منصة التدريب", () => {
     assert.equal((await as(B, "SELECT count(*)::int n FROM weight_logs")).rows[0].n, 0);
     assert.equal((await as(COACH, "SELECT count(*)::int n FROM weight_logs")).rows[0].n, 1);
   });
+  test("البيت والنادي: تصنيف التمارين، مكان القالب ينتقل للبرنامج، وبدائل برنامج البيت من تمارين البيت فقط", async () => {
+    const pl = async (eq, name) => (await owner.query("SELECT app.exercise_place($1,$2) AS p", [eq, name])).rows[0].p;
+    assert.equal(await pl("بار", "Back Squat"), "منزل");
+    assert.equal(await pl("وزن الجسم", "Push Up"), "منزل");
+    assert.equal(await pl("دمبل", "Incline Press"), "منزل");
+    assert.equal(await pl("جهاز", "Leg Extension"), "نادي");
+    assert.equal(await pl("كيبل", "Face Pull"), "نادي");
+    assert.equal(await pl(null, "Kneeling Lat Pulldown"), "نادي");
+    assert.equal(await pl(null, "Band Lat Pulldown"), "منزل");
+    // لا قيم غير البيت والنادي، والقيم القديمة تتحوّل تلقائياً
+    assert.equal((await owner.query("SELECT count(*)::int n FROM exercises WHERE place NOT IN ('منزل','نادي')")).rows[0].n, 0);
+    const x = (await owner.query("INSERT INTO exercises (name, primary_muscle, equipment, place, status) VALUES ('Place Test Lunge', 'Quadriceps / الأمامية', 'وزن الجسم', 'بدون معدات', 'review') RETURNING place")).rows[0];
+    assert.equal(x.place, "منزل");
+    await owner.query("DELETE FROM exercises WHERE name = 'Place Test Lunge'");
+    // القالب للبيت ← البرنامج المُنشأ منه للبيت
+    await as(COACH, "UPDATE program_templates SET place = 'منزل' WHERE id = $1", [tpl]);
+    const b2 = (await owner.query("INSERT INTO blocks (order_id, user_id, template_id, name, start_date, weeks, status) SELECT order_id, user_id, $1, 'tmp', current_date, 5, 'archived' FROM blocks WHERE id = $2 RETURNING place", [tpl, block])).rows[0];
+    assert.equal(b2.place, "منزل");
+    await owner.query("DELETE FROM blocks WHERE name = 'tmp' AND status = 'archived'");
+    await as(COACH, "UPDATE program_templates SET place = 'نادي' WHERE id = $1", [tpl]);
+    // بدائل تمرين جهاز (Leg Extension) في برنامج البيت: اختيار المدربة يبقى، والبقية تمارين بيت فقط
+    const gymOpts = (await as(A, "SELECT * FROM app.swap_options($1)", [item2])).rows;
+    await as(COACH, "UPDATE blocks SET place = 'منزل' WHERE id = $1", [block]);
+    const homeOpts = (await as(A, "SELECT * FROM app.swap_options($1)", [item2])).rows;
+    const places = Object.fromEntries((await owner.query("SELECT id, place FROM exercises WHERE id = ANY($1::uuid[])", [homeOpts.map((o) => o.id)])).rows.map((r) => [r.id, r.place]));
+    assert.ok(homeOpts[0].is_coach_choice);
+    assert.ok(homeOpts.filter((o) => !o.is_coach_choice).every((o) => places[o.id] === "منزل"));
+    assert.ok(homeOpts.length <= gymOpts.length);
+    await as(COACH, "UPDATE blocks SET place = 'نادي' WHERE id = $1", [block]);
+  });
   test("التبديل: من بدائل اختيار المدربة فقط، ويُسجّل للمدربة كإشعار", async () => {
     const opts = (await as(A, "SELECT * FROM app.swap_options($1)", [item])).rows;
     assert.equal(opts[0].name, "Back Squat"); assert.equal(opts[0].is_coach_choice, true); assert.equal(opts[0].is_current, true);

@@ -76,7 +76,11 @@ export default async function EditExercise({ params, searchParams }: { params: P
             {sel("equipment", "المعدات", EQUIPMENT, ex?.equipment)}
             {sel("level", "المستوى", LEVELS, ex?.level)}
           </div>
-          <p className="small muted" style={{ marginTop: -6 }}>المكان يُحسب تلقائياً من المعدات{ex?.place ? ` (الحالي: ${ex.place})` : ""}.</p>
+          <div className="field" style={{ maxWidth: 360 }}><label htmlFor="ex-place">مكان التمرين</label>
+            <select id="ex-place" name="place" defaultValue={ex?.place ?? ""} data-testid="exercise-place">
+              <option value="">تلقائي من المعدات</option><option value="منزل">البيت</option><option value="نادي">النادي</option>
+            </select>
+            <span className="hint">البيت: وزن الجسم، الدمبل، الباند، البار والبنش، والأدوات الصغيرة. النادي: الأجهزة والكيبل والسميث.</span></div>
           <fieldset className="field"><legend>العضلات الثانوية</legend>
             <div className="check-grid">
               {SECONDARY_MUSCLES.map((m) => (

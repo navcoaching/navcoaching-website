@@ -15,7 +15,7 @@ import {
 import TraineeLogs from "./TraineeLogs";
 import { CHANNEL_LABEL, RESULT_LABEL, type Channel, type ChannelResult } from "@/lib/notify";
 
-type Block = { id: string; name: string; start_date: string; weeks: number; instructions: string | null; steps_goal_week: number; status: string; created_at: string; template_name: string | null };
+type Block = { id: string; name: string; start_date: string; weeks: number; instructions: string | null; steps_goal_week: number; status: string; created_at: string; template_name: string | null; place: string };
 type Swap = { id: number; created_at: string; seen_at: string | null; week_no: number | null; from_name: string; to_name: string; day_title: string };
 
 /** برنامج التمرين لمتدرب: إسناد قالب، تعديل البلوك له، ملاحظات، تبديلاته، وسجلاته */
@@ -31,10 +31,10 @@ export default async function OrderProgram({ params, searchParams }: { params: P
       `SELECT o.id, o.order_no, o.user_id, o.contact_name, o.product_name, o.status, o.preferred_start::text, o.sub_start_at FROM orders o WHERE o.order_no = $1`, [orderNo]);
     if (!o) return null;
     const blocks = (await tx.query(
-      `SELECT b.id, b.name, b.start_date::text, b.weeks, b.instructions, b.steps_goal_week, b.status, b.created_at, t.name AS template_name
+      `SELECT b.id, b.name, b.start_date::text, b.weeks, b.instructions, b.steps_goal_week, b.status, b.created_at, b.place, t.name AS template_name
          FROM blocks b LEFT JOIN program_templates t ON t.id = b.template_id WHERE b.order_id = $1 ORDER BY (b.status = 'active') DESC, b.created_at DESC`, [o.id])).rows as Block[];
     const active = blocks.find((b) => b.status === "active") ?? null;
-    const templates = (await tx.query(`SELECT id, name, weeks FROM program_templates WHERE NOT archived ORDER BY name`)).rows as { id: string; name: string; weeks: number }[];
+    const templates = (await tx.query(`SELECT id, name, weeks, place FROM program_templates WHERE NOT archived ORDER BY name`)).rows as { id: string; name: string; weeks: number; place: string }[];
     const days = active ? await loadProgramDays(tx, "block", active.id) : [];
     const logCount = active ? (await tx.query(
       `SELECT count(*)::int AS n FROM item_logs l JOIN block_items i ON i.id = l.block_item_id JOIN block_days d ON d.id = i.day_id WHERE d.block_id = $1`, [active.id])).rows[0].n as number : 0;
@@ -44,7 +44,7 @@ export default async function OrderProgram({ params, searchParams }: { params: P
          FROM exercise_swaps s JOIN exercises f ON f.id = s.from_exercise_id JOIN exercises t ON t.id = s.to_exercise_id
          JOIN block_items i ON i.id = s.block_item_id JOIN block_days d ON d.id = i.day_id
          JOIN blocks b ON b.id = s.block_id WHERE b.order_id = $1 ORDER BY s.created_at DESC LIMIT 50`, [o.id])).rows as Swap[];
-    return { o, blocks, active, templates, days, logCount, notes, swaps, exercises: active ? await loadExerciseOptions(tx) : [], volume: await loadVolumeSetup(tx) };
+    return { o, blocks, active, templates, days, logCount, notes, swaps, exercises: active ? await loadExerciseOptions(tx, active.place, days.flatMap((d) => d.items.map((i) => i.exercise_id).filter((x): x is string => Boolean(x)))) : [], volume: await loadVolumeSetup(tx) };
   });
   if (!data) notFound();
   const { o, blocks, active, templates, days, logCount, notes, swaps, exercises, volume } = data;
@@ -61,7 +61,7 @@ export default async function OrderProgram({ params, searchParams }: { params: P
         <div className="field"><label htmlFor="as-tpl">القالب <span className="req">*</span></label>
           <select id="as-tpl" name="template" required defaultValue="">
             <option value="" disabled>اختاري…</option>
-            {templates.map((t) => <option key={t.id} value={t.id}>{t.name} ({t.weeks} أسابيع)</option>)}
+            {templates.map((t) => <option key={t.id} value={t.id}>{t.name} ({t.weeks} أسابيع{t.place === "منزل" ? " · البيت" : ""})</option>)}
           </select></div>
         <div className="field"><label htmlFor="as-start">تاريخ البداية <span className="req">*</span></label>
           <input id="as-start" name="start_date" type="date" required defaultValue={programLockedUntil(o, today) ?? today} /></div>
@@ -126,6 +126,11 @@ export default async function OrderProgram({ params, searchParams }: { params: P
                 <div className="field"><label htmlFor="bk-weeks">عدد الأسابيع</label><input id="bk-weeks" name="weeks" type="number" min={1} max={12} defaultValue={active.weeks} /></div>
                 <div className="field"><label htmlFor="bk-steps">هدف الخطوات اليومي</label><input id="bk-steps" name="steps_goal_day" type="number" inputMode="numeric" min={0} max={40000} step={100} defaultValue={Math.round(active.steps_goal_week / 7)} />
                   <span className="hint">يظهر للمتدرب في «تعليمات التمرين»، والهدف الأسبوعي في التقدم = اليومي × 7.</span></div>
+                <div className="field"><label htmlFor="bk-place">مكان التمرين</label>
+                  <select id="bk-place" name="place" defaultValue={active.place} data-testid="block-place">
+                    <option value="نادي">النادي</option><option value="منزل">البيت</option>
+                  </select>
+                  <span className="hint">البيت: بدائل المتدرب والإضافة من تمارين البيت فقط.</span></div>
               </div>
               <div className="field"><label htmlFor="bk-instr">تعليمات البرنامج (تظهر للمتدرب)</label>
                 <textarea id="bk-instr" name="instructions" maxLength={4000} rows={3} defaultValue={active.instructions ?? ""} /></div>

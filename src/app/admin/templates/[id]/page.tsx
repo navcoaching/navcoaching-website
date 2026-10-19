@@ -9,7 +9,7 @@ import { normalizePlan } from "@/lib/training";
 import { loadExerciseOptions, loadProgramDays, loadVolumeSetup } from "@/lib/program-data";
 import VolumeTable from "@/components/admin/VolumeTable";
 
-type Tpl = { id: string; name: string; weeks: number; instructions: string | null; archived: boolean; public: boolean; public_summary: string | null };
+type Tpl = { id: string; name: string; weeks: number; instructions: string | null; archived: boolean; public: boolean; public_summary: string | null; place: string };
 
 export default async function TemplatePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string }> }) {
   const coach = await requireCoach();
@@ -19,10 +19,10 @@ export default async function TemplatePage({ params, searchParams }: { params: P
   if (!isNew && !/^[0-9a-f-]{36}$/.test(id)) notFound();
   const data = await withUser(coach.id, async (tx) => {
     if (isNew) return { tpl: null, days: [] as EditorDay[], exercises: [] as ExOption[], volume: { limits: {}, saved: {}, muscles: [] as string[], sessionCap: 10 } };
-    const tpl = (await tx.query(`SELECT id, name, weeks, instructions, archived, public, public_summary FROM program_templates WHERE id = $1`, [id])).rows[0] as Tpl | undefined;
+    const tpl = (await tx.query(`SELECT id, name, weeks, instructions, archived, public, public_summary, place FROM program_templates WHERE id = $1`, [id])).rows[0] as Tpl | undefined;
     if (!tpl) return null;
     const days = (await loadProgramDays(tx, "template", id)).map((d) => ({ ...d, items: d.items.map((i) => ({ ...i, plan: normalizePlan(i.plan, tpl.weeks) })) }));
-    return { tpl, days, exercises: await loadExerciseOptions(tx), volume: await loadVolumeSetup(tx) };
+    return { tpl, days, exercises: await loadExerciseOptions(tx, tpl.place, days.flatMap((d) => d.items.map((i) => i.exercise_id).filter((x): x is string => Boolean(x)))), volume: await loadVolumeSetup(tx) };
   });
   if (!data) notFound();
   const { tpl, days, exercises, volume } = data;
@@ -42,6 +42,11 @@ export default async function TemplatePage({ params, searchParams }: { params: P
             <div className="field"><label htmlFor="tp-weeks">عدد الأسابيع</label>
               <input id="tp-weeks" name="weeks" type="number" min={1} max={12} defaultValue={tpl?.weeks ?? 5} style={{ maxWidth: 120 }} />
               <span className="hint">مثل الشيت: 4 أسابيع + أسبوع تخفيف (Deload) = 5.</span></div>
+            <div className="field"><label htmlFor="tp-place">مكان التمرين</label>
+              <select id="tp-place" name="place" defaultValue={tpl?.place ?? "نادي"} data-testid="template-place">
+                <option value="نادي">النادي</option><option value="منزل">البيت</option>
+              </select>
+              <span className="hint">قالب البيت: الإضافة وبدائل المتدرب من تمارين البيت فقط (بنش، أوزان، باند، وزن الجسم).</span></div>
           </div>
           <div className="field"><label htmlFor="tp-instr">تعليمات البلوك (تظهر للمتدرب)</label>
             <textarea id="tp-instr" name="instructions" maxLength={4000} rows={3} defaultValue={tpl?.instructions ?? ""} placeholder="الإحماء: جولتان بـ 50–60% · الراحة: 2–4 دقائق بين المجموعات…" /></div>

@@ -23,10 +23,12 @@ export async function loadProgramDays(tx: Tx, kind: "template" | "block", ownerI
   return days.map((d) => ({ ...d, items: items.filter((i) => i.day_id === d.id) }));
 }
 
-export async function loadExerciseOptions(tx: Tx): Promise<ExOption[]> {
+/** خيارات «إضافة تمرين»: برنامج البيت يعرض تمارين البيت فقط، مع التمارين المحفوظة فيه (حتى تبقى قابلة للتعديل) */
+export async function loadExerciseOptions(tx: Tx, place?: string, keepIds: string[] = []): Promise<ExOption[]> {
   return (await tx.query(
     `SELECT id, name, equipment, primary_muscle, secondary_muscles, pattern, sub_pattern, anatomical_action, movement_subcategory, rehab_category
-       FROM exercises WHERE status = 'approved' ORDER BY name`)).rows;
+       FROM exercises WHERE status = 'approved' AND ($1::text IS DISTINCT FROM 'منزل' OR place = 'منزل' OR id = ANY($2::uuid[])) ORDER BY name`,
+    [place ?? null, keepIds])).rows;
 }
 
 // =====================================================================

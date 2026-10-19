@@ -7,13 +7,17 @@ export const LEVELS = ["مبتدئ", "متوسط", "متقدم"] as const;
 export const EX_STATUS = { approved: "معتمد", review: "يحتاج مراجعة", rejected: "غير معتمد" } as const;
 export type ExStatus = keyof typeof EX_STATUS;
 
-/** المكان يُشتق من المعدات (نفس معادلة الشيت) */
-export function placeFor(equipment: string | null | undefined): "نادي" | "منزل" | "بدون معدات" | null {
-  if (!equipment) return null;
-  if (equipment === "وزن الجسم") return "بدون معدات";
-  if (["دمبل", "مطاط", "كرة سويسرية", "TRX", "كيتلبل"].includes(equipment)) return "منزل";
-  return "نادي";
+/** مكان التمرين: «منزل» أو «نادي» (نفس منطق app.exercise_place في migration 043).
+ *  البيت: وزن الجسم، الدمبل والكيتلبل، الباند، البار والبنش، والأدوات الصغيرة. النادي: الأجهزة والكيبل والسميث. */
+export const PLACES = ["منزل", "نادي"] as const;
+export type Place = (typeof PLACES)[number];
+export function placeFor(equipment: string | null | undefined, name = ""): Place {
+  if (/\bband/i.test(name)) return "منزل";
+  if (equipment && ["جهاز", "كيبل", "سميث"].includes(equipment)) return "نادي";
+  if (/(machine|cable|smith|leg press|pulldown|pull-down|pec deck|sled|hack squat|wall ball)/i.test(name)) return "نادي";
+  return "منزل";
 }
+export const PLACE_LABEL: Record<Place, string> = { "منزل": "البيت", "نادي": "النادي" };
 
 /** الجزء العربي من اسم العضلة «Chest / الصدر» ← «الصدر» */
 export const muscleAr = (m: string) => m.split(" / ")[1] ?? m;

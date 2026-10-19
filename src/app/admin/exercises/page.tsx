@@ -21,7 +21,7 @@ export default async function Exercises({ searchParams }: { searchParams: Promis
   const pick = (v: string | undefined, list: readonly string[]) => (v && list.includes(v) ? v : "");
   const f = {
     equipment: pick(sp.equipment, EQUIPMENT), level: pick(sp.level, LEVELS),
-    status: pick(sp.status, Object.keys(EX_STATUS)), place: pick(sp.place, ["نادي", "منزل", "بدون معدات"]),
+    status: pick(sp.status, Object.keys(EX_STATUS)), place: pick(sp.place, ["نادي", "منزل"]),
   };
   const { all, stats } = await withUser(coach.id, async (tx) => ({
     all: (await tx.query(
@@ -87,7 +87,7 @@ export default async function Exercises({ searchParams }: { searchParams: Promis
             {SECONDARY_MUSCLES.filter((m) => secCounts.has(m) || m === sec).map((m) => <option key={m} value={m}>{muscleAr(m)} ({secCounts.get(m) ?? 0})</option>)}
           </select></div>
         {sel("equipment", "المعدات", EQUIPMENT)}
-        {sel("place", "المكان", ["نادي", "منزل", "بدون معدات"])}
+        {sel("place", "المكان", [["منزل", "البيت"], ["نادي", "النادي"]])}
         {sel("level", "المستوى", LEVELS)}
         {sel("status", "المراجعة", Object.entries(EX_STATUS) as [string, string][])}
           </div>
@@ -107,7 +107,7 @@ export default async function Exercises({ searchParams }: { searchParams: Promis
                   {e.anatomical_action && <div className="small muted">{arPart(e.anatomical_action)}</div>}</td>
                 <td data-label="العضلة الأساسية">{muscleAr(e.primary_muscle)}</td>
                 <td data-label="العضلة الثانوية" className="small" data-testid="ex-secondary">{e.secondary_muscles.length ? [...new Set(e.secondary_muscles)].map(muscleAr).join("، ") : "—"}</td>
-                <td data-label="المعدات" className="small">{e.equipment ?? "—"}{e.place && <div className="muted">{e.place}</div>}</td>
+                <td data-label="المعدات" className="small">{e.equipment ?? "—"}{e.place && <div className="muted">{e.place === "منزل" ? "البيت" : "النادي"}</div>}</td>
                 <td data-label="المستوى" className="small">{e.level ?? "—"}</td>
                 <td data-label="المراجعة"><span className={`status ${STATUS_CLASS[e.status]}`}>{EX_STATUS[e.status]}</span></td>
                 <td data-label="بدائل" className="num">{e.alts}</td>

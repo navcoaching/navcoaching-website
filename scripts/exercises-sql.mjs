@@ -15,10 +15,11 @@ const literal = (rows) => {
 /** SQL كامل (التمارين ثم البدائل)، أو جزء منه: part = "exercises" لدفعة صفوف، أو "alternatives" */
 export function exercisesSql(rows = loadExercises(), part = "all") {
   const data = literal(part === "alternatives" ? rows.filter((r) => r.alternatives?.length).map((r) => ({ name: r.name, alternatives: r.alternatives })) : rows);
+  // المكان (البيت/النادي) يحسبه trigger app.exercise_place_norm من المعدات والاسم (migration 043)، فما نأخذه من الملف
   const ex = `INSERT INTO exercises (name, primary_muscle, secondary_muscles, pattern, kind, equipment, level, place, video_url,
   instructions, notes, source, source_name, source_url, rehab_category, status, sub_pattern, anatomical_action, movement_subcategory,
   rehab_goal, rehab_phase, rehab_load, rehab_safety, rehab_evidence, rehab_refs, rehab_review)
-SELECT trim(x.name), x.primary_muscle, coalesce(x.secondary_muscles, '{}'), x.pattern, x.kind, x.equipment, x.level, x.place, x.video_url,
+SELECT trim(x.name), x.primary_muscle, coalesce(x.secondary_muscles, '{}'), x.pattern, x.kind, x.equipment, x.level, NULL, x.video_url,
   x.instructions, x.notes, x.source, x.source_name, x.source_url, x.rehab_category, x.status, x.sub_pattern, x.anatomical_action, x.movement_subcategory,
   x.rehab_goal, x.rehab_phase, x.rehab_load, x.rehab_safety, x.rehab_evidence, x.rehab_refs, x.rehab_review
   FROM jsonb_to_recordset(${data}) AS x(name text, primary_muscle text, secondary_muscles text[], pattern text, kind text, equipment text,
