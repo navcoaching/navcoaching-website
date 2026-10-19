@@ -2,7 +2,6 @@ import Link from "next/link";
 import { fromPrice } from "@/components/ProductCard";
 import { shortName } from "@/lib/format";
 import Marquee from "@/components/home/Marquee";
-import ScrollStory from "@/components/home/ScrollStory";
 import RewardCalc from "@/components/home/RewardCalc";
 import RichText from "@/components/RichText";
 import ReviewCard from "@/components/ReviewCard";
@@ -253,7 +252,6 @@ export default async function Home() {
           <a href="#programs" className="btn v3-btn-ink reveal">البرامج والأسعار <IconArrow size={18} className="arrow" /></a>
         </div>
       </section>
-      <ScrollStory />
     </div>
   );
 }

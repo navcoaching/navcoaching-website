@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Reveal from "@/components/Reveal";
 import CardFx from "@/components/CardFx";
+import ScrollStory from "@/components/home/ScrollStory";
 import Analytics from "@/components/Analytics";
 import { getFreePlans, getSettings } from "@/lib/data";
 
@@ -14,6 +15,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <main id="main">{children}</main>
       <Footer s={s} hasFreePlans={freePlans.length > 0} />
       <Reveal />
+      <ScrollStory />
       <CardFx />
       {s.analytics?.ga_id && /^G-[A-Z0-9]{6,12}$/.test(s.analytics.ga_id) && <Analytics id={s.analytics.ga_id} />}
     </>
