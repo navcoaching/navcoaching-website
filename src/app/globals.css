@@ -2328,3 +2328,8 @@ h2 { font-size: var(--t-section); }
    نجبره يأخذ عرض حاويته، والعنوان (legend) بعرض كامل، وعمود الشبكة بعرض كامل. */
 fieldset.field { inline-size: 100%; grid-template-columns: minmax(0, 1fr); }
 fieldset.field > legend { inline-size: 100%; padding: 0; float: none; }
+
+/* الهدف الشهري وأرشيف الأرقام (لوحة الإدارة) */
+.goal-form > summary { cursor: pointer; min-height: 44px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.goal-form[open] > summary { margin-block-end: 12px; }
+.stats-table td.goal-hit { color: var(--ok); font-weight: 700; }

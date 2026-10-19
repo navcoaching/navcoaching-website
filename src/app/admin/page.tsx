@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { differentPerson } from "@/lib/names";
-import LineChart from "@/components/LineChart";
 import StartTag from "@/components/admin/StartTag";
 import { batch, litList, pool, withUser } from "@/lib/db";
 import { requireCoach } from "@/lib/session";
@@ -17,7 +16,8 @@ import { loadAdherence } from "@/lib/program-data";
 import { prefetchOrders } from "@/lib/order-prefetch";
 import { pct } from "@/lib/adherence";
 import ActionForm from "@/components/admin/ActionForm";
-import { grantRewardAction, markAlertsReadAction } from "@/app/actions/admin";
+import { grantRewardAction, markAlertsReadAction, saveMonthlyGoalAction } from "@/app/actions/admin";
+import { goalFor, loadGoals, loadMonths, monthName, prevYm } from "@/lib/monthly-stats";
 import GrantedAlert from "@/components/admin/GrantedAlert";
 import { autoFillTargets, loadPendingAuto, loadPendingSuggestions } from "@/lib/calorie-data";
 
@@ -39,7 +39,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
     withUser(coach.id, async (tx) => {
       // الاشتراكات التي مرّ يوم انتهائها تصبح «انتهى الاشتراك» (احتياط إن لم تعمل التذكيرات المجدولة)
       // كل استعلام في رحلة شبكة مستقلة إلى قاعدة البيانات، فنجمع المستقل منها في رحلة واحدة (batch)
-      const [, countsR, newWeekR, pendingReviewsR, swapsR, incompleteR, demoR, monthlyR] = await batch(tx, [
+      const [, countsR, newWeekR, pendingReviewsR, swapsR, incompleteR, demoR] = await batch(tx, [
         "SELECT app.expire_subscriptions()",
         "SELECT status, count(*)::int n FROM orders WHERE NOT is_demo GROUP BY status",
         "SELECT count(*)::int n FROM orders WHERE NOT is_demo AND created_at > now() - interval '7 days'",
@@ -49,15 +49,11 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           WHERE NOT is_demo AND archived_at IS NULL AND status = ANY(${litList(tx, INCOMPLETE, "text")})
           ORDER BY array_position(${litList(tx, INCOMPLETE, "text")}, status), preferred_start NULLS FIRST, created_at LIMIT 40`,
         "SELECT (SELECT count(*) FROM products WHERE is_demo)::int + (SELECT count(*) FROM orders WHERE is_demo)::int AS n",
-        // آخر 6 أشهر (بتوقيت الرياض): عدد الطلبات، الأعضاء الجدد، ومجموع المبالغ المدفوعة (طلبات مؤكدة الدفع، بدون المجاني والتجريبي)
-        `SELECT to_char(m, 'YYYY-MM') AS ym,
-                (SELECT count(*)::int FROM orders o WHERE NOT o.is_demo AND NOT o.is_free AND date_trunc('month', o.created_at AT TIME ZONE 'Asia/Riyadh') = m) AS orders,
-                (SELECT count(*)::int FROM "user" u WHERE u.role = 'client' AND date_trunc('month', u."createdAt" AT TIME ZONE 'Asia/Riyadh') = m) AS members,
-                (SELECT coalesce(sum(o.amount_due_halalas), 0)::bigint FROM orders o WHERE NOT o.is_demo AND NOT o.is_free AND o.paid_at IS NOT NULL AND o.status <> 'cancelled'
-                    AND date_trunc('month', o.paid_at AT TIME ZONE 'Asia/Riyadh') = m) AS revenue
-           FROM generate_series(date_trunc('month', now() AT TIME ZONE 'Asia/Riyadh') - interval '5 months', date_trunc('month', now() AT TIME ZONE 'Asia/Riyadh'), interval '1 month') m ORDER BY m`,
       ]);
-      const monthly = (monthlyR.rows as { ym: string; orders: number; members: number; revenue: string }[]).map((r) => ({ ym: r.ym, orders: r.orders, members: r.members, revenue: Number(r.revenue) / 100 }));
+      // أرقام هذا الشهر فقط (تبدأ من صفر أول كل شهر) ومقارنتها بالشهر الماضي، والأرشيف في /admin/stats
+      const ym = riyadhDate().slice(0, 7);
+      const [[prevMonth, month], goals] = await Promise.all([loadMonths(tx, prevYm(ym), ym), loadGoals(tx)]);
+      const goal = goalFor(goals, ym);
       const counts = countsR.rows as { status: string; n: number }[];
       const newWeek = newWeekR.rows[0].n as number;
       const pendingReviews = pendingReviewsR.rows[0].n as number;
@@ -172,7 +168,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
       const hasReads = (await tx.query(`SELECT to_regclass('public.coach_alert_reads') IS NOT NULL AS ok`)).rows[0].ok as boolean;
       const read = new Set(hasReads ? (await tx.query(`SELECT key FROM coach_alert_reads WHERE key = ANY($1::text[])`, [alerts.map((a) => a.key)])).rows.map((x) => x.key as string) : []);
       const unread = alerts.filter((a) => !read.has(a.key));
-      return { monthly, swaps, counts, newWeek, pendingReviews, incomplete, todos, ending, demo, alerts: unread, today };
+      return { month, prevMonth, goal, swaps, counts, newWeek, pendingReviews, incomplete, todos, ending, demo, alerts: unread, today };
     }),
     getSettings(),
   ]);
@@ -292,25 +288,41 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
         </section>
       </div>
       <section className="stack" style={{ ["--space" as string]: "10px" }} aria-labelledby="stats-h" data-testid="monthly-stats">
-        <h2 id="stats-h" style={{ fontSize: 20 }}>الأرقام الشهرية (آخر 6 أشهر)</h2>
+        <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
+          <h2 id="stats-h" style={{ fontSize: 20 }}>أرقام {monthName(data.month.ym)}</h2>
+          <Link href="/admin/stats" className="small">أرشيف الأرقام ←</Link>
+        </div>
         <div className="grid g3">
-          {([["orders", "عدد الطلبات", "", "var(--navy)"], ["members", "عدد الأعضاء الجدد", "", "var(--cyan)"], ["revenue", "مجموع المبالغ المدفوعة", " ريال", "#c77d00"]] as const).map(([k, title, unit, color]) => {
-            const total = data.monthly.reduce((a, m) => a + m[k], 0);
-            // هذا الشهر مقابل الشهر الماضي (آخر عنصرين في السلسلة)
-            const cur = data.monthly.at(-1)?.[k] ?? 0, prev = data.monthly.at(-2)?.[k] ?? 0, diff = cur - prev;
+          {([["members", "الأعضاء الجدد", ""], ["revenue", "المبالغ المدفوعة", " ريال"], ["orders", "الطلبات", ""]] as const).map(([k, title, unit]) => {
+            const cur = data.month[k], diff = cur - data.prevMonth[k];
+            const target = k === "orders" ? null : data.goal[k];
+            const p = target ? Math.min(100, Math.round((cur / target) * 100)) : 0;
             return (
-              <div key={k} className="card stack" style={{ ["--space" as string]: "6px" }}>
+              <div key={k} className="card stack" style={{ ["--space" as string]: "8px" }} data-testid={`month-${k}`}>
                 <span className="muted">{title}</span>
-                <b className="num" style={{ fontSize: 24 }}>{total.toLocaleString("en-US")}{unit}</b>
+                <b className="num" style={{ fontSize: 28 }}>{cur.toLocaleString("en-US")}{unit}</b>
+                {target ? (
+                  <>
+                    <div className={`meter ${cur >= target ? "good" : ""}`} role="progressbar" aria-label={`${title} من الهدف`} aria-valuenow={p} aria-valuemin={0} aria-valuemax={100}><span style={{ inlineSize: `${p}%` }} /></div>
+                    <span className="small">{cur >= target ? "حققتِ الهدف" : `${p}% من الهدف`} · الهدف {target.toLocaleString("en-US")}{unit}</span>
+                  </>
+                ) : k !== "orders" && <span className="small muted">بدون هدف لهذا الشهر</span>}
                 <span className={`small trend ${diff > 0 ? "up" : diff < 0 ? "down" : ""}`} data-testid={`trend-${k}`}>
-                  هذا الشهر {cur.toLocaleString("en-US")}{unit} · {diff === 0 ? "مثل الشهر الماضي" : `${diff > 0 ? "↑" : "↓"} ${Math.abs(diff).toLocaleString("en-US")} عن الشهر الماضي`}
+                  {diff === 0 ? "مثل الشهر الماضي" : `${diff > 0 ? "↑" : "↓"} ${Math.abs(diff).toLocaleString("en-US")}${unit} عن الشهر الماضي`}
                 </span>
-                <LineChart title={title} unit={unit} height={160} xLabel="الشهر" series={[{ label: title, color, points: data.monthly.map((m) => ({ x: m.ym.slice(2), y: m[k] })) }]} />
               </div>
             );
           })}
         </div>
-        <p className="small muted">الطلبات بدون المجانية والتجريبية. المبالغ لطلبات تأكد دفعها (حسب شهر الدفع)، بدون الملغاة والمجانية.</p>
+        <details className="card goal-form" data-testid="goal-form">
+          <summary><b>هدف {monthName(data.month.ym)}</b> <span className="small muted">— يستمر للأشهر الجاية لين تغيّرينه</span></summary>
+          <ActionForm action={saveMonthlyGoalAction} className="inline-form" submit="حفظ الهدف">
+            <input type="hidden" name="ym" value={data.month.ym} />
+            <label className="field">عدد الأعضاء الجدد<input name="members" type="number" min={0} max={10000} step={1} inputMode="numeric" defaultValue={data.goal.members ?? ""} /></label>
+            <label className="field">المبالغ المدفوعة (ريال)<input name="revenue" type="number" min={0} step={1} inputMode="numeric" defaultValue={data.goal.revenue ?? ""} /></label>
+          </ActionForm>
+        </details>
+        <p className="small muted">تبدأ الأرقام من صفر أول كل شهر (بتوقيت الرياض). المبالغ لطلبات تأكد دفعها حسب شهر الدفع، بدون الملغاة والمجانية والتجريبية.</p>
       </section>
       <div className="grid g2" style={{ alignItems: "start" }}>
         {/* مطوية افتراضياً، وتنفتح تلقائياً إذا حماية البيانات غير مفعّلة */}
