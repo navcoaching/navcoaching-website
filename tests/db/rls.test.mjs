@@ -491,6 +491,10 @@ describe("منصة التدريب", () => {
     assert.equal(await pl("كيبل", "Face Pull"), "نادي");
     assert.equal(await pl(null, "Kneeling Lat Pulldown"), "نادي");
     assert.equal(await pl(null, "Band Lat Pulldown"), "منزل");
+    assert.equal(await pl("أخرى", "Box Jumps"), "نادي");
+    assert.equal(await pl(null, "Hip Thrusts"), "نادي");
+    assert.equal(await pl(null, "DB Bench Press"), "منزل");
+    assert.equal(await pl("كيتلبل", "Swing"), "منزل");
     // لا قيم غير البيت والنادي، والقيم القديمة تتحوّل تلقائياً
     assert.equal((await owner.query("SELECT count(*)::int n FROM exercises WHERE place NOT IN ('منزل','نادي')")).rows[0].n, 0);
     const x = (await owner.query("INSERT INTO exercises (name, primary_muscle, equipment, place, status) VALUES ('Place Test Lunge', 'Quadriceps / الأمامية', 'وزن الجسم', 'بدون معدات', 'review') RETURNING place")).rows[0];

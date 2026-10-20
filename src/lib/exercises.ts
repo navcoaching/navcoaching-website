@@ -7,15 +7,17 @@ export const LEVELS = ["مبتدئ", "متوسط", "متقدم"] as const;
 export const EX_STATUS = { approved: "معتمد", review: "يحتاج مراجعة", rejected: "غير معتمد" } as const;
 export type ExStatus = keyof typeof EX_STATUS;
 
-/** مكان التمرين: «منزل» أو «نادي» (نفس منطق app.exercise_place في migration 043).
- *  البيت: وزن الجسم، الدمبل والكيتلبل، الباند، البار والبنش، والأدوات الصغيرة. النادي: الأجهزة والكيبل والسميث. */
+/** مكان التمرين: «منزل» أو «نادي» (نفس منطق app.exercise_place في migration 046).
+ *  البيت فقط: بار، دمبل، بنش، كيتلبل، TRX، باند، وزن الجسم. أي شيء غيرها (أجهزة، كيبل، سميث، معدات أخرى أو غير محددة) = النادي. */
 export const PLACES = ["منزل", "نادي"] as const;
 export type Place = (typeof PLACES)[number];
+const HOME_EQUIPMENT = ["بار", "دمبل", "كيتلبل", "TRX", "مطاط", "وزن الجسم"];
 export function placeFor(equipment: string | null | undefined, name = ""): Place {
   if (/\bband/i.test(name)) return "منزل";
-  if (equipment && ["جهاز", "كيبل", "سميث"].includes(equipment)) return "نادي";
+  if (equipment && HOME_EQUIPMENT.includes(equipment)) return "منزل";
   if (/(machine|cable|smith|leg press|pulldown|pull-down|pec deck|sled|hack squat|wall ball)/i.test(name)) return "نادي";
-  return "منزل";
+  if (/(dumbbell|\bdb\b|barbell|kettlebell|\bkb\b|trx|bench|bodyweight)/i.test(name)) return "منزل";
+  return "نادي";
 }
 export const PLACE_LABEL: Record<Place, string> = { "منزل": "البيت", "نادي": "النادي" };
 
