@@ -1,0 +1,49 @@
+# نسخة احتياطية يومية مشفّرة (قاعدة البيانات + الملفات الخاصة)، محفوظة في GitHub منفصلة عن Netlify وNeon لمدة 30 يوماً.
+# فشل التشغيل يصل بريد تلقائي من GitHub لصاحب المستودع. الإعداد والاستعادة: docs/ops/BACKUP.md
+name: Daily backup
+
+on:
+  schedule:
+    - cron: "17 0 * * *" # 03:17 بتوقيت الرياض
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency: backup
+
+jobs:
+  backup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install pg_dump 17
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSo /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client-17
+          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
+      - name: Install script dependencies
+        run: npm ci --omit=dev --ignore-scripts
+      - name: Backup
+        env:
+          ENV_FILE: /dev/null
+          BACKUP_DATABASE_URL: ${{ secrets.BACKUP_DATABASE_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+          DATABASE_SSL: "true"
+          STORAGE_DRIVER: netlify
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: node scripts/backup.mjs backups
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nav-backup-${{ github.run_id }}
+          path: backups/*.enc
+          retention-days: 30
+          if-no-files-found: error
+          compression-level: 0

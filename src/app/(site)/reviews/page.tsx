@@ -1,0 +1,32 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import ReviewCard from "@/components/ReviewCard";
+import { getPublicReviews, getSettings } from "@/lib/data";
+
+export const revalidate = 3600; // ساعة. تعديلات الإدارة تُحدّث الصفحات فوراً (revalidatePath)، فلا حاجة لإعادة توليد كل 5 دقائق (وهي ما تسبب بطء أول زائر)
+export const metadata: Metadata = { title: "تقييمات المتدربين", description: "تجارب حقيقية لمتدربين مع برامج التدريب والتغذية في Nav Coaching، تُنشر بموافقتهم وبدون تعديل." };
+
+export default async function Reviews() {
+  const [reviews, s] = await Promise.all([getPublicReviews(), getSettings()]);
+  return (
+    <div className="pub">
+      <section className="page-hero">
+        <div className="wrap">
+          <span className="eyebrow">التقييمات</span>
+          <h1 style={{ fontSize: "clamp(30px,5vw,50px)", marginTop: 12 }}>تقييمات المتدربين</h1>
+          <p className="lead">تجارب متدربين حقيقية، تُنشر بموافقتهم وبدون أي تعديل على النص.</p>
+        </div>
+      </section>
+      <section className="section tight">
+        <div className="wrap">
+          <div className="reviews">{reviews.map((r) => <ReviewCard key={r.id} r={r} />)}</div>
+          <p className="small muted">{s.testimonials_disclaimer} كل تقييم يُراجع قبل النشر ولا يُعدّل نصه. <Link href="/policies#reviews">سياسة التقييمات</Link></p>
+          <div className="row" style={{ marginTop: 24, gap: "8px 24px" }}>
+            <Link href="/programs" className="btn">البرامج والأسعار</Link>
+            <Link href="/faq" className="text-link">الأسئلة الشائعة ←</Link>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}

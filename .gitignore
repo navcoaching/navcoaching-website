@@ -1,5 +1,23 @@
-data/
+node_modules/
+.next/
+out/
+.netlify/
+.data/
 .env
+.env.local
+.env.*.local
+test-results/
+playwright-report/
+*.tsbuildinfo
+next-env.d.ts
+.next-e2e/
+/undefined-*.png
+
+# ملفات عمل مهارة Taste
+.taste-skill/
+
+# المساعد العلمي (Python — navcoach)
+/data/
 __pycache__/
 *.pyc
 .pytest_cache/
