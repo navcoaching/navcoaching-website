@@ -59,7 +59,9 @@ export default async function Account({ searchParams }: { searchParams: Promise<
             <ul className="stack" style={{ ["--space" as string]: "10px", listStyle: "none", margin: 0, padding: 0 }}>
               {booklets.map((b) => (
                 <li key={b.id} className="row" style={{ justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
-                  <span className="stack" style={{ ["--space" as string]: "2px" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {b.cover_id && <img className="booklet-thumb" src={`/api/files/media/${b.cover_id}`} alt="" loading="lazy" />}
+                  <span className="stack" style={{ ["--space" as string]: "2px", flex: 1, minWidth: 160 }}>
                     <b>{b.title}</b>
                     {b.description && <span className="small muted">{b.description}</span>}
                   </span>

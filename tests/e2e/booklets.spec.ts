@@ -37,6 +37,7 @@ async function noHorizontalScroll(page: Page) {
 
 
 const PDF = Buffer.from("%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[]/Count 0>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF\n");
+const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==", "base64");
 
 test("الكتيبات: المدربة ترفع، والمتدرب المشترك يحمّل، وغير المشترك ما يشوفها", async ({ browser }, info) => {
   const project = info.project.name;
@@ -131,6 +132,23 @@ test("شراء كتيب: المدربة تحدد السعر، الزائر يس�
   await expect(up.getByText("تم رفع الكتيب.")).toBeVisible();
   await coach.reload();
   await expect(coach.getByTestId("booklet-row").filter({ hasText: title }).getByTestId("booklet-for-sale")).toContainText("49");
+  // صورة الغلاف: ملف غير صورة يُرفض، والصورة تنحفظ، والاستبدال يحذف القديمة
+  const cover = coach.getByTestId("booklet-row").filter({ hasText: title }).getByTestId("booklet-cover");
+  await cover.getByLabel("صورة الغلاف").setInputFiles({ name: "c.png", mimeType: "image/png", buffer: Buffer.from("not an image") });
+  await cover.getByRole("button", { name: "حفظ الغلاف" }).click();
+  await expect(cover.getByText(/نوع الملف غير مسموح/)).toBeVisible();
+  await cover.getByLabel("صورة الغلاف").setInputFiles({ name: "c.png", mimeType: "image/png", buffer: PNG });
+  await cover.getByRole("button", { name: "حفظ الغلاف" }).click();
+  await expect(cover.getByText("تم حفظ الغلاف.")).toBeVisible();
+  const coverOf = async () => (await db.query(`SELECT cover_id FROM booklets WHERE title = $1`, [title])).rows[0].cover_id as string;
+  const first = await coverOf();
+  await coach.reload();
+  await cover.getByLabel("صورة الغلاف").setInputFiles({ name: "c2.png", mimeType: "image/png", buffer: PNG });
+  await cover.getByRole("button", { name: "استبدال الغلاف" }).click();
+  await expect(cover.getByText("تم حفظ الغلاف.")).toBeVisible();
+  expect(await coverOf()).not.toBe(first);
+  expect((await db.query(`SELECT count(*)::int n FROM media_assets WHERE id = $1`, [first])).rows[0].n).toBe(0);
+  await noHorizontalScroll(coach);
   // منتج الكتيب ما يظهر في المنتجات ولا البرامج
   await coach.goto("/admin/products");
   await expect(coach.locator("body")).not.toContainText(`كتيب: ${title}`);
@@ -143,6 +161,10 @@ test("شراء كتيب: المدربة تحدد السعر، الزائر يس�
   await buyer.goto("/booklets");
   const card = buyer.getByTestId("booklet-card").filter({ hasText: title });
   await expect(card).toContainText("49");
+  // الغلاف يظهر للزائر بدون تسجيل دخول
+  const img = card.locator(".fp-cover img");
+  await expect(img).toHaveAttribute("alt", `غلاف ${title}`);
+  await expect.poll(() => img.evaluate((e: HTMLImageElement) => e.complete && e.naturalWidth)).toBeGreaterThan(0);
   await card.getByRole("link", { name: "شراء الكتيب" }).click();
   await buyer.getByLabel("البريد الإلكتروني").fill(buyerEmail);
   await buyer.getByRole("button", { name: "أرسل رمز الدخول" }).click();
@@ -182,6 +204,7 @@ test("شراء كتيب: المدربة تحدد السعر، الزائر يس�
   expect(dl.suggestedFilename()).toBe(`${title}.pdf`);
   await buyer.goto("/account");
   await expect(buyer.getByTestId("booklets")).toContainText(title);
+  await expect(buyer.getByTestId("booklets").locator(".booklet-thumb")).toHaveCount(1);
   await buyer.goto("/booklets");
   await expect(buyer.getByTestId("booklet-card").filter({ hasText: title }).getByTestId("booklet-owned")).toBeVisible();
   await noHorizontalScroll(buyer);
@@ -208,8 +231,16 @@ test("شراء كتيب: المدربة تحدد السعر، الزائر يس�
   const row = coach.getByTestId("booklet-row").filter({ hasText: title });
   await row.getByText("تعديل").click();
   await row.getByLabel(/سعر البيع/).fill("");
-  await row.getByRole("button", { name: "حفظ" }).click();
+  await row.getByRole("button", { name: "حفظ", exact: true }).click();
   await expect(row.getByText("تم الحفظ.")).toBeVisible();
   await buyer.goto("/booklets");
   await expect(buyer.getByTestId("booklet-card").filter({ hasText: title })).toHaveCount(0);
+  // إزالة الغلاف تحذف الصورة
+  const last = await coverOf();
+  coach.once("dialog", (d) => d.accept());
+  await row.getByTestId("booklet-cover").getByRole("button", { name: "إزالة الغلاف" }).click();
+  // بعد الإزالة ينعرض النموذج من جديد بدون زر الإزالة (فرسالة النجاح ما تبقى)
+  await expect(row.getByTestId("booklet-cover").getByRole("button", { name: "حفظ الغلاف" })).toBeVisible();
+  expect(await coverOf()).toBeNull();
+  expect((await db.query(`SELECT count(*)::int n FROM media_assets WHERE id = $1`, [last])).rows[0].n).toBe(0);
 });

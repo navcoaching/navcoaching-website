@@ -2398,7 +2398,7 @@ fieldset.field > legend { inline-size: 100%; padding: 0; float: none; }
 .pub:not(.v3) .section :is(.card, .pcard, .review):not(:has(form, input, select, textarea)) { box-shadow: 0 30px 60px -28px rgba(7,20,42,.42), 0 10px 22px -14px rgba(7,20,42,.22); }
 @media (prefers-reduced-motion: no-preference) {
   .page-hero:not(.v3 *) > .wrap::before { animation: v3-breathe 7s ease-in-out infinite; }
-  .pub:not(.v3) .section :is(.card, .pcard, .review):not(:has(form, input, select, textarea)) { animation: v3-bob 7s ease-in-out infinite; }
+  .pub:not(.v3) .section :is(.card, .pcard, .review):not(:has(form, input, select, textarea, .btn)) { animation: v3-bob 7s ease-in-out infinite; }
   .pub:not(.v3) .section :is(.card, .pcard, .review):nth-child(3n+2) { animation-delay: -2.4s; }
   .pub:not(.v3) .section :is(.card, .pcard, .review):nth-child(3n) { animation-delay: -4.8s; }
 }
@@ -2429,3 +2429,8 @@ fieldset.field > legend { inline-size: 100%; padding: 0; float: none; }
 .goal-form > summary { cursor: pointer; min-height: 44px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .goal-form[open] > summary { margin-block-end: 12px; }
 .stats-table td.goal-hit { color: var(--ok); font-weight: 700; }
+
+/* غلاف الكتيب: معاينة ونموذج في لوحة الإدارة، وصورة مصغّرة في «حسابي» */
+.booklet-cover-edit { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 14px; align-items: start; }
+@media (max-width: 600px) { .booklet-cover-edit { grid-template-columns: minmax(0, 1fr); } }
+.booklet-thumb { inline-size: 72px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; flex: none; }

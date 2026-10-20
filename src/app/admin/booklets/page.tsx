@@ -2,18 +2,19 @@ import { withUser } from "@/lib/db";
 import { requireCoach } from "@/lib/session";
 import { fmtDate } from "@/lib/format";
 import ActionForm from "@/components/admin/ActionForm";
-import { deleteBookletAction, saveBookletAction, uploadBookletAction } from "@/app/actions/booklets";
+import { bookletCoverAction, deleteBookletAction, saveBookletAction, uploadBookletAction } from "@/app/actions/booklets";
 import FilePicker from "@/components/FilePicker";
+import { IconBook } from "@/components/Icons";
 
 export const metadata = { title: "الكتيبات" };
 
-type Row = { id: string; title: string; description: string | null; file_size: number; published: boolean; created_at: string; price_halalas: number | null; for_sale: boolean; sold: number };
+type Row = { id: string; title: string; description: string | null; file_size: number; published: boolean; created_at: string; price_halalas: number | null; for_sale: boolean; sold: number; cover_id: string | null };
 
 /** الكتيبات: ملفات PDF لمشتركي باقات المتابعة في «حسابي»، وتُباع منفردة لغيرهم في /booklets */
 export default async function AdminBooklets() {
   const coach = await requireCoach();
   const rows = await withUser(coach.id, async (tx) => (await tx.query(
-    `SELECT b.id, b.title, b.description, b.file_size, b.published, b.created_at,
+    `SELECT b.id, b.title, b.description, b.file_size, b.published, b.created_at, b.cover_id,
             o.price_halalas, coalesce(p.status = 'published', false) AS for_sale,
             (SELECT count(*)::int FROM orders x WHERE x.product_id = p.id AND x.status IN ('preparing','active','delivered','completed')) AS sold
        FROM booklets b LEFT JOIN products p ON p.booklet_id = b.id LEFT JOIN product_offers o ON o.product_id = p.id AND o.active
@@ -32,7 +33,7 @@ export default async function AdminBooklets() {
           <div className="field"><label htmlFor="bk-price">سعر البيع لغير المشتركين (ريال، اختياري)</label><input id="bk-price" name="price" inputMode="decimal" dir="ltr" placeholder="مثل 49" style={{ maxWidth: 180 }} /><span className="hint">فاضي = للمشتركين فقط، وما ينعرض للبيع.</span></div>
           <div className="field"><label htmlFor="bk-file">ملف PDF</label><FilePicker id="bk-file" name="file" accept="application/pdf,.pdf" required hint="PDF حتى 5 ميجابايت" /></div>
           <label className="row" style={{ gap: 8 }}><input type="checkbox" name="published" defaultChecked /> يظهر للمتدربين</label>
-          <span className="hint">PDF فقط، وحجمه 5 ميجابايت أو أقل. لو أكبر: من كانفا اختاري «PDF Standard» بدل «PDF Print»، أو اضغطيه قبل الرفع.</span>
+          <span className="hint">PDF فقط، وحجمه 5 ميجابايت أو أقل. لو أكبر: من كانفا اختاري «PDF Standard» بدل «PDF Print»، أو اضغطيه قبل الرفع. صورة الغلاف تنضاف بعد الرفع من بطاقة الكتيب.</span>
         </ActionForm>
       </section>
 
@@ -46,6 +47,23 @@ export default async function AdminBooklets() {
                 {b.for_sale ? <span className="status ok" data-testid="booklet-for-sale">للبيع · <bdi className="num">{sar(b.price_halalas)}</bdi> ر.س</span> : <span className="status muted">للمشتركين فقط</span>}
                 {b.sold > 0 && <span className="small muted"> · مبيعات <bdi className="num">{b.sold}</bdi></span>}</span>
               <span className="small muted">PDF · <span className="num">{(b.file_size / 1024 / 1024).toFixed(1)}</span> م.ب · {fmtDate(b.created_at)}</span>
+            </div>
+            <div className="booklet-cover-edit" data-testid="booklet-cover">
+              <div className="fp-cover">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {b.cover_id ? <img src={`/api/files/media/${b.cover_id}`} alt={`غلاف ${b.title}`} /> : <span aria-hidden="true"><IconBook size={36} /></span>}
+              </div>
+              <div className="stack" style={{ ["--space" as string]: "8px" }}>
+                <ActionForm action={bookletCoverAction} submit={b.cover_id ? "استبدال الغلاف" : "حفظ الغلاف"}>
+                  <input type="hidden" name="id" value={b.id} />
+                  <div className="field"><label htmlFor={`bc-${b.id}`}>صورة الغلاف</label><FilePicker id={`bc-${b.id}`} name="cover" accept="image/jpeg,image/png,image/webp" required hint="JPG أو PNG أو WebP حتى 5 ميجابايت" /></div>
+                </ActionForm>
+                {b.cover_id && (
+                  <ActionForm action={bookletCoverAction} submit="إزالة الغلاف" submitClass="text-link" confirm={`إزالة غلاف «${b.title}»؟`}>
+                    <input type="hidden" name="id" value={b.id} /><input type="hidden" name="op" value="remove" />
+                  </ActionForm>
+                )}
+              </div>
             </div>
             <div className="row" style={{ gap: 8, flexWrap: "wrap" }}>
               <a className="btn btn-ghost btn-sm" href={`/api/booklets/${b.id}`}>تحميل</a>

@@ -5,7 +5,7 @@ import ActionForm from "@/components/admin/ActionForm";
 import { updateMediaAction, uploadMediaAction } from "@/app/actions/admin";
 import FilePicker from "@/components/FilePicker";
 
-const USAGE: Record<string, string> = { hero: "الواجهة", about: "عن المدربة", gallery: "معرض", product: "منتج", free_plan: "جدول مجاني" };
+const USAGE: Record<string, string> = { hero: "الواجهة", about: "عن المدربة", gallery: "معرض", product: "منتج", free_plan: "جدول مجاني", booklet: "غلاف كتيب" };
 
 export default async function AdminMedia() {
   const coach = await requireCoach();
