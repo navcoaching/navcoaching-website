@@ -12,8 +12,12 @@ import { loadEnv } from "./env.mjs";
 loadEnv();
 const DB = process.env.BACKUP_DATABASE_URL || process.env.DATABASE_URL_OWNER;
 const PASS = process.env.BACKUP_PASSPHRASE ?? "";
-if (!DB) throw new Error("BACKUP_DATABASE_URL (أو DATABASE_URL_OWNER) غير معرّف");
-if (PASS.length < 24) throw new Error("BACKUP_PASSPHRASE لازم 24 حرفاً أو أكثر");
+const missing = [
+  !DB && "BACKUP_DATABASE_URL (رابط neondb_owner المباشر من Neon)",
+  PASS.length < 24 && "BACKUP_PASSPHRASE (24 حرفاً أو أكثر)",
+  process.env.STORAGE_DRIVER === "netlify" && !process.env.NETLIFY_AUTH_TOKEN && "NETLIFY_AUTH_TOKEN (Netlify ← User settings ← Personal access tokens)",
+].filter(Boolean);
+if (missing.length) throw new Error(`أسرار ناقصة في GitHub ← Settings ← Secrets and variables ← Actions:\n- ${missing.join("\n- ")}\nالتفاصيل: docs/ops/BACKUP.md`);
 
 const out = path.resolve(process.argv[2] ?? "backups");
 const work = mkdtempSync(path.join(tmpdir(), "nav-backup-"));

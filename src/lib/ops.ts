@@ -4,7 +4,7 @@ import { allow } from "./rate";
 import { sendMail } from "./mail";
 import { pushToCoaches } from "./push";
 
-export type SecurityEvent = "login_ok" | "login_failed" | "login_locked" | "otp_sent" | "account_deleted";
+export type SecurityEvent = "login_ok" | "login_failed" | "login_locked" | "otp_sent" | "account_deleted" | "intake_exported";
 export type IssueKind = "server_error" | "mail_failed" | "login_mail_failed" | "push_failed" | "whatsapp_failed";
 
 const ISSUE_LABEL: Record<IssueKind, string> = {

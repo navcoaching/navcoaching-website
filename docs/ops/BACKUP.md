@@ -14,9 +14,8 @@ GitHub ← المستودع ← **Settings ← Secrets and variables ← Actions
 
 | الاسم | القيمة |
 |---|---|
-| `BACKUP_DATABASE_URL` | رابط **المالك** من Neon (نفس `DATABASE_URL_OWNER`، مع `sslmode=require`). رابط `nav_app` لا يصلح لأنه محكوم بـ RLS ولن ينسخ كل البيانات |
+| `BACKUP_DATABASE_URL` | رابط **المالك** من Neon: Connect ← الفرع production ← قاعدة `neondb` ← الدور **`neondb_owner`** ← أطفئي Connection pooling (رابط مباشر بدون `-pooler`، ومعه `sslmode=require`). رابط `nav_app` لا يصلح لأنه محكوم بـ RLS ولن ينسخ كل البيانات |
 | `BACKUP_PASSPHRASE` | `openssl rand -base64 32`. **احفظيها خارج GitHub** (مدير كلمات مرور). ضياعها = النسخ لا تُفتح |
-| `NETLIFY_SITE_ID` | Netlify ← الموقع ← Site configuration ← **Site ID** |
 | `NETLIFY_AUTH_TOKEN` | Netlify ← User settings ← Applications ← **Personal access tokens** ← New (مدة انتهاء سنة، وجدّديه قبلها) |
 
 ثم: **Actions ← Daily backup ← Run workflow** للتجربة الأولى، وتأكدي أنه أخضر وأن فيه ملفاً في Artifacts.
@@ -26,10 +25,10 @@ GitHub ← المستودع ← **Settings ← Secrets and variables ← Actions
 
 ## الاستعادة
 1. Actions ← آخر تشغيل ناجح ← Artifacts ← تحميل وفك الـ zip ← ملف `nav-backup-….tar.gz.enc`.
-2. أنشئي قاعدة **فارغة** (في Neon: Branches ← New branch فارغ، أو قاعدة جديدة)، والدوران `nav_owner` و`nav_app` موجودان فيها.
+2. أنشئي قاعدة **فارغة** (في Neon: Branches ← New branch فارغ، أو قاعدة جديدة)، والدوران `neondb_owner` و`nav_app` موجودان فيها.
 3. من جهازك:
    ```
-   RESTORE_DATABASE_URL='postgres://nav_owner:…@…/nav_restore?sslmode=require' DATABASE_SSL=true \
+   RESTORE_DATABASE_URL='postgres://neondb_owner:…@…/nav_restore?sslmode=require' DATABASE_SSL=true \
    BACKUP_PASSPHRASE='…' node scripts/restore.mjs nav-backup-….tar.gz.enc restored-files
    ```
    السكربت يرفض أي قاعدة فيها جداول (فما يمسح الإنتاج بالخطأ)، ويتحقق أن عدد صفوف كل جدول وبصمة كل ملف تطابق وقت النسخ.
@@ -37,9 +36,9 @@ GitHub ← المستودع ← **Settings ← Secrets and variables ← Actions
 5. وجّهي `DATABASE_URL` في Netlify (بدور `nav_app`) للقاعدة المستعادة، وأعيدي النشر.
 
 ## اختبار الاستعادة (قبل الإطلاق، ثم كل 3 أشهر)
-نفّذي «الاستعادة» أعلاه على قاعدة اختبار، وسجّلي النتيجة هنا.
+**Actions ← Restore test ← Run workflow**: يفك آخر نسخة ناجحة بـ `BACKUP_PASSPHRASE` ويستعيدها في قاعدة PostgreSQL 18 مؤقتة داخل التشغيل (لا يلمس Neon)، ويتحقق من عدد صفوف كل جدول وبصمة كل ملف. سجّلي النتيجة هنا.
 
 | التاريخ | النسخة | النتيجة | المدة | من |
 |---|---|---|---|---|
 | 2026-10-19 | محلية (قاعدة تطوير + ملفات تجريبية) | ✓ 64 جدول، 1759 صف، ملفان، مطابقة كاملة؛ RLS 64/64 بعد الاستعادة؛ كلمة سر خاطئة/ملف تالف/قاعدة غير فارغة ← رُفضت | 0.6 ثانية | Claude (قبل الإعداد على الإنتاج) |
-| — | أول نسخة من الإنتاج | **مطلوب قبل الإطلاق** | | |
+| 2026-10-21 | أول نسخة من الإنتاج ([Daily backup #3](https://github.com/navcoaching/navcoaching-website/actions/runs/39644623555)) | ✓ فك التشفير بـ `BACKUP_PASSPHRASE`، 66 جدول، 3396 صف، 22 ملف، مطابقة كاملة ([Restore test](https://github.com/navcoaching/navcoaching-website/actions/runs/39646472381)) | 0.6 ثانية | Claude |

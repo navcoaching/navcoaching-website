@@ -21,13 +21,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install pg_dump 17
+      # لازم يطابق نسخة Neon أو أحدث (الإنتاج PostgreSQL 18)، pg_dump يرفض خادماً أحدث منه
+      - name: Install pg_dump 18
         run: |
           sudo install -d /usr/share/postgresql-common/pgdg
           sudo curl -fsSo /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
           echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
-          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client-17
-          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client-18
+          echo "/usr/lib/postgresql/18/bin" >> "$GITHUB_PATH"
       - name: Install script dependencies
         run: npm ci --omit=dev --ignore-scripts
       - name: Backup
@@ -37,7 +38,7 @@ jobs:
           BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
           DATABASE_SSL: "true"
           STORAGE_DRIVER: netlify
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_SITE_ID: f9dea0dc-c66e-4a76-aad0-51788cb53fc2 # navcoaching-app (معرّف عام، ليس سراً)
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         run: node scripts/backup.mjs backups
       - uses: actions/upload-artifact@v4

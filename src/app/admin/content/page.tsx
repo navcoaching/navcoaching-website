@@ -9,28 +9,53 @@ import VapidKeys from "@/components/admin/VapidKeys";
 import { pushConfigured, pushMock, pushPublicKey } from "@/lib/push";
 import PushCard from "@/components/account/PushCard";
 import UnsavedGuard from "@/components/admin/UnsavedGuard";
+import { riyadhDate } from "@/lib/schedule";
 
 export default async function AdminContent() {
   const coach = await requireCoach();
-  const [s, { faqs, policies, heroMedia, rem }] = await Promise.all([
+  const [s, { faqs, policies, heroMedia, rem, ops }] = await Promise.all([
     getSettings(),
     withUser(coach.id, async (tx) => ({
       faqs: (await tx.query("SELECT * FROM faqs ORDER BY sort")).rows,
       policies: (await tx.query("SELECT * FROM policies ORDER BY sort")).rows,
       // إعداد التذكيرات غير عام (is_public=false) فيُقرأ بصلاحية المدربة
       rem: await loadReminders(tx),
+      ops: ((await tx.query("SELECT value FROM site_settings WHERE key = 'ops'")).rows[0]?.value ?? {}) as { netlify_token_expires?: string | null },
       heroMedia: (await tx.query("SELECT id, alt FROM media_assets WHERE approved AND usage = 'hero' ORDER BY created_at DESC")).rows as { id: string; alt: string }[],
     })),
   ]);
   const vid = youtubeId(s.intro_video?.url);
+  const tokenExp = ops.netlify_token_expires ?? null;
+  const tokenDays = tokenExp ? Math.round((Date.parse(tokenExp) - Date.parse(riyadhDate())) / 86_400_000) : null;
   const H = ({ children, id }: { children: React.ReactNode; id: string }) => <h2 id={id} style={{ fontSize: 20 }}>{children}</h2>;
 
   return (
     <div className="stack" style={{ ["--space" as string]: "22px" }}>
       <h1>المحتوى والإعدادات</h1>
       <nav className="pill-nav">
-        {[["video", "مقطع التعريف"], ["hero", "الواجهة"], ["contact", "التواصل ومدة الرد"], ["bank", "الحساب البنكي"], ["about", "عن المدربة"], ["checkins", "المراجعة الأسبوعية"], ["reminders", "التنبيهات والتذكيرات"], ["push", "إشعارات الجوال"], ["faq", "الأسئلة الشائعة"], ["policies", "السياسات"]].map(([id, l]) => <a key={id} href={`#${id}`}>{l}</a>)}
+        {[["ops", "تذكيرات التشغيل"], ["video", "مقطع التعريف"], ["hero", "الواجهة"], ["contact", "التواصل ومدة الرد"], ["bank", "الحساب البنكي"], ["about", "عن المدربة"], ["checkins", "المراجعة الأسبوعية"], ["reminders", "التنبيهات والتذكيرات"], ["push", "إشعارات الجوال"], ["faq", "الأسئلة الشائعة"], ["policies", "السياسات"]].map(([id, l]) => <a key={id} href={`#${id}`}>{l}</a>)}
       </nav>
+
+      <section className="card stack" data-testid="ops-settings">
+        <H id="ops">تذكيرات التشغيل</H>
+        <p className="small muted" style={{ margin: 0 }}>رمز Netlify (<bdi dir="ltr">NETLIFY_AUTH_TOKEN</bdi>) يستخدمه النسخ الاحتياطي اليومي لنسخ الملفات. عند انتهائه يتوقف النسخ الاحتياطي ويصلك بريد فشل من GitHub.</p>
+        {tokenDays == null ? <p className="alert info small" style={{ margin: 0 }}>لم يُحدَّد تاريخ الانتهاء.</p>
+          : tokenDays < 0 ? <p className="alert err small" style={{ margin: 0 }} data-testid="token-status">انتهى الرمز قبل <span className="num">{-tokenDays}</span> يوم. جدّديه الآن.</p>
+          : tokenDays <= 30 ? <p className="alert warn small" style={{ margin: 0 }} data-testid="token-status">ينتهي بعد <span className="num">{tokenDays}</span> يوم. جدّديه الآن.</p>
+          : <p className="alert ok small" style={{ margin: 0 }} data-testid="token-status">صالح، باقي <span className="num">{tokenDays}</span> يوم.</p>}
+        <details className="small"><summary style={{ cursor: "pointer", minHeight: 36 }}>طريقة التجديد</summary>
+          <ol style={{ margin: "6px 0 0" }}>
+            <li>Netlify ← User settings ← Applications ← Personal access tokens ← New access token (مدة سنة).</li>
+            <li>GitHub ← المستودع ← Settings ← Secrets and variables ← Actions ← <bdi dir="ltr">NETLIFY_AUTH_TOKEN</bdi> ← Update.</li>
+            <li>Actions ← Daily backup ← Run workflow، وتأكدي أنه أخضر.</li>
+            <li>حدّثي تاريخ الانتهاء هنا.</li>
+          </ol>
+        </details>
+        <ActionForm action={saveSettingAction}>
+          <input type="hidden" name="key" value="ops" />
+          <div className="field"><label htmlFor="ops-netlify">تاريخ انتهاء رمز Netlify</label><input id="ops-netlify" name="netlify_token_expires" type="date" dir="ltr" defaultValue={tokenExp ?? ""} /></div>
+        </ActionForm>
+      </section>
 
       <section className="card stack" aria-labelledby="push" data-testid="push-settings">
         <H id="push">إشعارات الجوال (التطبيق)</H>

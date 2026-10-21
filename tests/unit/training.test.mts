@@ -1,9 +1,18 @@
 // اختبارات منطق منصة التدريب مقابل معادلات ملف التدريب في Google Sheets.
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { bestOneRm, currentWeek, effective, formatReps, formatSets, normalizePlan, oneRm, parseReps, parseRir, personalRecords, vlu, weeklyAverages, weeklySummary } from "../../src/lib/training.ts";
+import { bestOneRm, currentWeek, effective, formatReps, formatSets, normalizePlan, oneRm, parseReps, parseRir, personalRecords, suggestWeight, vlu, weeklyAverages, weeklySummary } from "../../src/lib/training.ts";
 
 describe("منصة التدريب", () => {
+  test("الوزن المقترح من 1RM الأسبوع السابق", () => {
+    const item = { id: "i", plan: [{ sets: 3, reps: [10, 10, 10], rir: 2 }, { sets: 3, reps: [8, 8, 8], rir: 1 }, { sets: 0, reps: [], rir: null }] };
+    const logs = [{ block_item_id: "i", week_no: 1, weight: 60, reps: [], rir: null }];
+    // 1RM = 60 × (1 + 12/30) = 84 ← الوزن = 84 ÷ (1 + 9/30) ≈ 64.6 ← 64.5
+    assert.deepEqual(suggestWeight(item, logs, 2), { weight: 64.5, oneRm: 84, fromWeek: 1 });
+    assert.equal(suggestWeight(item, logs, 1), null);
+    assert.equal(suggestWeight(item, logs, 3), null);
+    assert.equal(suggestWeight(item, [], 2), null);
+  });
   test("VLU = مجموع التكرارات × الوزن × (1 − RIR × 0.05)", () => {
     assert.equal(vlu([12, 12, 12], 50, 3), 36 * 50 * 0.85);
     assert.equal(vlu([10, 10, 10], 40, null), 1200);
