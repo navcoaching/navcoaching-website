@@ -50,13 +50,15 @@ export async function apiAction(name: string, fd: FormData): Promise<ActionResul
 export type PlanWeek = { sets: number; reps: number[]; rir: number | null };
 export type CoachingItem = {
   id: string; note: string | null; plan: PlanWeek[];
+  /** مقياس الألم بعد التمرين (مثل «ألم الركبة»). null = بدون مقياس. السيرفر القديم لا يرسله */
+  pain_label?: string | null;
   exercise: { id: string; name: string; muscle: string | null; video: string | null; instructions: string | null };
 };
 export type Coaching = {
   order: { order_no: string; product_name: string; status: string };
   block: null | { id: string; name: string; weeks: number; start_date: string; instructions: string | null; read_only: boolean; current_week: number };
   days?: { id: string; title: string; items: CoachingItem[] }[];
-  logs?: { item: string; week: number; weights: number[]; reps: number[]; rir: number | null }[];
+  logs?: { item: string; week: number; weights: number[]; reps: number[]; rir: number | null; pain?: number | null }[];
   notes?: { id: number; week: number | null; body: string }[];
   ratings?: { day: string; week: number; rating: number }[];
 };

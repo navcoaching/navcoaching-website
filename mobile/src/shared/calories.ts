@@ -54,10 +54,10 @@ export function validate(i: Partial<Record<keyof EnergyInput, unknown>>): FieldE
     else if (v < LIMITS.kcal[0] || v > LIMITS.kcal[1]) e[k] = `اكتب ${label} بين ${LIMITS.kcal[0]} و ${LIMITS.kcal[1]}.`;
   }
   const td = i.trainingDays;
-  if (!isNum(td) || !Number.isInteger(td) || td < 0 || td > 7) e.trainingDays = "اختر عدد أيام التمرين (0–7).";
+  if (!isNum(td) || !Number.isInteger(td) || td < 0 || td > 7) e.trainingDays = "اختيار عدد أيام التمرين مطلوب (0–7).";
   const s = String(i.startDate ?? ""), en = String(i.endDate ?? "");
-  if (Number.isNaN(parseDate(s))) e.startDate = "اختر تاريخ القياس الأول.";
-  if (Number.isNaN(parseDate(en))) e.endDate = "اختر تاريخ القياس الثاني.";
+  if (Number.isNaN(parseDate(s))) e.startDate = "اختيار تاريخ القياس الأول مطلوب.";
+  if (Number.isNaN(parseDate(en))) e.endDate = "اختيار تاريخ القياس الثاني مطلوب.";
   else if (!e.startDate && daysBetween(s, en) < 1) e.endDate = "تاريخ القياس الثاني لازم يكون بعد الأول.";
   return e;
 }
@@ -160,19 +160,19 @@ export function validateIntake(i: Partial<Record<keyof IntakeInput, unknown>>): 
     else if (v <= 0 && k !== "minutes") e[k] = `${label} لازم يكون أكبر من صفر.`;
     else if (v < min || v > max) e[k] = `اكتب ${label} بين ${min} و ${max}${unit}.`;
   };
-  if (!["cunningham", "tenhaaf", "tinsley"].includes(i.method as string)) e.method = "اختر طريقة الحساب.";
+  if (!["cunningham", "tenhaaf", "tinsley"].includes(i.method as string)) e.method = "اختيار طريقة الحساب مطلوب.";
   num("weight", "الوزن", " كغ");
   num("minutes", "مدة التمرين", " دقيقة");
   if (i.method === "cunningham") num("bodyFat", "نسبة الدهون", "%");
   if (i.method === "tenhaaf") {
     num("heightCm", "الطول", " سم");
     num("age", "العمر", " سنة");
-    if (i.sex !== "male" && i.sex !== "female") e.sex = "اختر الجنس.";
+    if (i.sex !== "male" && i.sex !== "female") e.sex = "اختيار الجنس مطلوب.";
   }
   const td = i.trainingDays;
-  if (typeof td !== "number" || !Number.isInteger(td) || td < 0 || td > 7) e.trainingDays = "اختر عدد أيام التمرين.";
-  if (typeof i.paf !== "number" || i.paf < 1 || i.paf > 2) e.paf = "اختر مستوى نشاطك.";
-  if (typeof i.ebFactor !== "number" || i.ebFactor < 0.6 || i.ebFactor > 1.3) e.ebFactor = "اختر هدفك.";
+  if (typeof td !== "number" || !Number.isInteger(td) || td < 0 || td > 7) e.trainingDays = "اختيار عدد أيام التمرين مطلوب.";
+  if (typeof i.paf !== "number" || i.paf < 1 || i.paf > 2) e.paf = "اختيار مستوى النشاط مطلوب.";
+  if (typeof i.ebFactor !== "number" || i.ebFactor < 0.6 || i.ebFactor > 1.3) e.ebFactor = "اختيار الهدف مطلوب.";
   return e;
 }
 
