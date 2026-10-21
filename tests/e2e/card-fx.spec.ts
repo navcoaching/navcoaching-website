@@ -5,9 +5,9 @@ test("البطاقات: الضغط يلمّع البطاقة ويدوّرها ث
   // الرئيسية بتصميمها الجديد بدون دوران؛ الحركة باقية في صفحة «عن المدربة»
   await page.goto("/about");
   const card = page.locator(".card.feature").first();
-  // البطاقات تطفو باستمرار (v3-bob) فلا تثبت أبداً: نمرّر وننقر بدون انتظار الثبات
-  await card.evaluate((e) => e.scrollIntoView({ block: "center" }));
-  await card.click({ force: true });
+  // بدون force: البطاقة لازم تكون ثابتة (التمايل عند مرور الماوس فقط، لا حركة مستمرة)
+  await card.scrollIntoViewIfNeeded();
+  await card.click();
   await expect(card).toHaveClass(/fx-spin/);
   await expect(card.locator(".fx-shine")).toHaveCount(1);
   // بعد انتهاء الحركة: تُزال اللمعة والدوران
@@ -21,9 +21,9 @@ test("البطاقات: تفضيل تقليل الحركة يلغي الدورا
   const page = await ctx.newPage();
   await page.goto("http://localhost:3100/about");
   const card = page.locator(".card.feature").first();
-  // البطاقات تطفو باستمرار (v3-bob) فلا تثبت أبداً: نمرّر وننقر بدون انتظار الثبات
-  await card.evaluate((e) => e.scrollIntoView({ block: "center" }));
-  await card.click({ force: true });
+  // بدون force: البطاقة لازم تكون ثابتة (التمايل عند مرور الماوس فقط، لا حركة مستمرة)
+  await card.scrollIntoViewIfNeeded();
+  await card.click();
   expect(await card.evaluate((e) => getComputedStyle(e).animationName)).toBe("none");
   await ctx.close();
 });
@@ -32,7 +32,7 @@ test("بطاقات البرامج: تلمع وتدور ثم تفتح صفحة ا
   await page.goto("/programs");
   const card = page.locator(".pcard:visible").first();
   const href = await card.getAttribute("href");
-  await card.click({ force: true });
+  await card.click();
   await expect(card).toHaveClass(/fx-spin/);
   await expect(page).toHaveURL(new RegExp(`${href}$`), { timeout: 5000 });
   await expect(page.locator("h1")).toHaveCount(1);
