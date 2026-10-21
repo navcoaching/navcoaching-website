@@ -1,6 +1,6 @@
 // استعادة نسخة من scripts/backup.mjs إلى قاعدة بيانات **فارغة** ومجلد ملفات، ثم التحقق أنها كاملة
 // (عدد صفوف كل جدول وبصمة كل ملف تطابق ما سُجّل وقت النسخ).
-// الاستخدام: RESTORE_DATABASE_URL=postgres://nav_owner:...@host/nav_restore BACKUP_PASSPHRASE=... node scripts/restore.mjs <ملف.enc> [مجلد الملفات]
+// الاستخدام: RESTORE_DATABASE_URL=postgres://neondb_owner:...@host/nav_restore BACKUP_PASSPHRASE=... node scripts/restore.mjs <ملف.enc> [مجلد الملفات]
 // لا يكتب أبداً على قاعدة فيها جداول، فلا يمكن أن يمسح الإنتاج بالخطأ.
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
