@@ -16,7 +16,6 @@ GitHub ← المستودع ← **Settings ← Secrets and variables ← Actions
 |---|---|
 | `BACKUP_DATABASE_URL` | رابط **المالك** من Neon (نفس `DATABASE_URL_OWNER`، مع `sslmode=require`). رابط `nav_app` لا يصلح لأنه محكوم بـ RLS ولن ينسخ كل البيانات |
 | `BACKUP_PASSPHRASE` | `openssl rand -base64 32`. **احفظيها خارج GitHub** (مدير كلمات مرور). ضياعها = النسخ لا تُفتح |
-| `NETLIFY_SITE_ID` | Netlify ← الموقع ← Site configuration ← **Site ID** |
 | `NETLIFY_AUTH_TOKEN` | Netlify ← User settings ← Applications ← **Personal access tokens** ← New (مدة انتهاء سنة، وجدّديه قبلها) |
 
 ثم: **Actions ← Daily backup ← Run workflow** للتجربة الأولى، وتأكدي أنه أخضر وأن فيه ملفاً في Artifacts.

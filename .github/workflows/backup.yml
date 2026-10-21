@@ -37,7 +37,7 @@ jobs:
           BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
           DATABASE_SSL: "true"
           STORAGE_DRIVER: netlify
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_SITE_ID: f9dea0dc-c66e-4a76-aad0-51788cb53fc2 # navcoaching-app (معرّف عام، ليس سراً)
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         run: node scripts/backup.mjs backups
       - uses: actions/upload-artifact@v4
