@@ -24,7 +24,7 @@ jobs:
           POSTGRES_PASSWORD: restore-test-only
           POSTGRES_DB: nav_restore
         ports: ["5432:5432"]
-        options: --health-cmd "pg_isready -U neondb_owner" --health-interval 2s --health-retries 30
+        options: --health-cmd "pg_isready -U neondb_owner -d nav_restore" --health-interval 2s --health-retries 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -60,6 +60,6 @@ jobs:
           RESTORE_DATABASE_URL: postgres://neondb_owner:restore-test-only@localhost:5432/nav_restore
           BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
         run: |
-          # الأدوار اللي تشير لها الصلاحيات وسياسات RLS في النسخة
-          psql -h localhost -U neondb_owner -d nav_restore -c "CREATE ROLE nav_app LOGIN"
+          # الأدوار اللي تشير لها الصلاحيات وسياسات RLS في النسخة، ودورا Neon الداخليان في صلاحياته الافتراضية
+          psql -h localhost -U neondb_owner -d nav_restore -c "CREATE ROLE nav_app LOGIN" -c "CREATE ROLE neon_superuser" -c "CREATE ROLE cloud_admin"
           node scripts/restore.mjs backup/*.enc "$RUNNER_TEMP/restored-files"
