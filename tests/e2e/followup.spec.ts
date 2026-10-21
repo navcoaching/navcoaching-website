@@ -108,6 +108,13 @@ test("متابعة المشترك: الملاحظات، الباقات، الا�
   coach.once("dialog", (d) => d.accept());
   await notes.locator(".note-log li", { hasText: "ملاحظة أولى" }).getByRole("button", { name: "حذف" }).click();
   await expect(notes.locator(".note-log li")).toHaveCount(1);
+  // تعديل الملاحظة: النص يتغير ويظهر وقت التعديل، والتاريخ الأصلي يبقى
+  const li = notes.locator(".note-log li");
+  await li.getByText("تعديل", { exact: true }).click();
+  await li.getByLabel("تعديل الملاحظة").fill(`${secretNote} (معدّلة)`);
+  await li.getByRole("button", { name: "حفظ التعديل" }).click();
+  await expect(li.locator(":scope > p")).toHaveText(`${secretNote} (معدّلة)`);
+  await expect(li.getByTestId("note-edited")).toBeVisible();
   await coach.goto(`/admin/orders?q=${encodeURIComponent(secretNote)}`);
   const row = coach.locator("tr", { hasText: orderNo });
   await expect(row).toHaveCount(1); // البحث يشمل نص الملاحظة

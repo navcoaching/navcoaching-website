@@ -679,6 +679,9 @@ ol.weeks li .small { margin-inline-start: auto; }
 .note-log p { margin: 4px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.8; }
 .note-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
 .note-log .note-del { display: flex; justify-content: flex-end; gap: 6px; align-items: center; }
+.note-edit summary { display: inline-flex; min-height: 32px; align-items: center; cursor: pointer; list-style: none; }
+.note-edit summary::-webkit-details-marker { display: none; }
+.note-edit[open] summary { margin-bottom: 6px; }
 
 /* ---------- حاسبة السعرات ---------- */
 .g3 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); }
