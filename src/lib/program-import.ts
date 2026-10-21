@@ -4,12 +4,16 @@
 
 import { DEFAULT_WEEK_RIR, MAX_SETS, MAX_WEEKS, parseReps, parseRir, type PlanWeek } from "./training.ts";
 import { normalizeName } from "./workout-import.ts";
+import { painLabelFrom } from "./pain.ts";
 
-/** name: الاسم كما في الملف، match: الجزء الإنجليزي للمطابقة مع المكتبة */
-export type ImportedItem = { name: string; match: string; plan: PlanWeek[]; note: string | null };
+/** name: الاسم كما في الملف، match: الجزء الإنجليزي للمطابقة مع المكتبة، pain: اسم مقياس الألم إذا ذُكر التمرين في عمود ألم */
+export type ImportedItem = { name: string; match: string; plan: PlanWeek[]; note: string | null; pain: string | null };
 export type ImportedDay = { title: string; items: ImportedItem[] };
-/** skipped: ما تُرك أو اختُصر (يُعرض للمدربة بعد الإنشاء) */
-export type ImportedProgram = { name: string; weeks: number; place: "نادي" | "منزل"; instructions: string | null; days: ImportedDay[]; skipped: string[] };
+/**
+ * instructions: تعليمات البلوك للمتدرب (بدون بيانات المتدرب). notes: كل معلومات الملف النصية مع بيانات المتدرب لملاحظات المدربة الخاصة.
+ * skipped: ما تُرك أو اختُصر (يُعرض للمدربة بعد الإنشاء)
+ */
+export type ImportedProgram = { name: string; weeks: number; place: "نادي" | "منزل"; instructions: string | null; notes: string | null; days: ImportedDay[]; skipped: string[] };
 
 export const MAX_DAYS = 14;
 export const MAX_ITEMS = 30;
@@ -23,8 +27,9 @@ const cells = (line: string) => line.trim().replace(/^\||\|$/g, "").split("|").m
 const EMPTY = /^(|-|—|–|_)$/;
 const RANGE = "\\s*[–\\-—~]\\s*";
 const ORDINAL = "الأول|الثاني|الثالث|الرابع|الخامس|السادس|السابع|الثامن|التاسع|العاشر";
-// أقسام نصية لا تصير تعليمات للمتدرب: بيانات المتدرب الصحية، وطريقة تعبئة شيت خارجي
+// أقسام نصية لا تصير تعليمات للمتدرب: بيانات المتدرب الصحية، وطريقة تعبئة شيت خارجي. ولا لملاحظات المدربة: طريقة التعبئة
 const NOT_INSTRUCTIONS = /بيانات|التعبئة|سجل/;
+const NOT_NOTES = /التعبئة|سجل/;
 
 /** الاسم الإنجليزي للمطابقة، والباقي (كلمات عربية أو ما بين أقواس) وصف يُضاف للملاحظة */
 export function splitName(raw: string): { match: string; extra: string } {
@@ -67,8 +72,9 @@ export function parseCell(cell: string): Cell | "duration" | null {
 }
 
 type Span = { col: number; from: number; to: number | null }; // to = null: كل الأسابيع
-type Cols = { ex: number; spans: Span[]; rir: number; tempo: number; rest: number; note: number };
-type Section = { heading: string; text: string[]; rows: string[][]; cols: Cols | null };
+type Cols = { ex: number; spans: Span[]; rir: number; tempo: number; rest: number; note: number; pain: string | null };
+// pain: جدول فيه عمود ألم (سجل الأسبوع أو جدول البرنامج نفسه): اسم المقياس ومفاتيح التمارين المذكورة فيه
+type Section = { heading: string; text: string[]; rows: string[][]; cols: Cols | null; pain: { label: string; keys: Set<string>; all: boolean } | null };
 
 /** سطر عناوين الجدول: عمود التمرين إلزامي، وأعمدة الأسابيع («الأسبوع 1» أو «الأسبوع 1–2» أو «الخطة») تجعله جدول برنامج */
 function headerOf(c: string[]): Cols | null {
@@ -81,7 +87,8 @@ function headerOf(c: string[]): Cols | null {
     else if (/^(الخطة|plan)/i.test(x)) spans.push({ col: i, from: 1, to: null });
   });
   const find = (re: RegExp) => c.findIndex((x) => re.test(x));
-  return { ex, spans, rir: find(/^rir$/i), tempo: find(/الإيقاع|الايقاع|tempo/i), rest: find(/الراحة|rest/i), note: find(/ملاحظ|note/i) };
+  return { ex, spans, rir: find(/^rir$/i), tempo: find(/الإيقاع|الايقاع|tempo/i), rest: find(/الراحة|rest/i), note: find(/ملاحظ|note/i),
+    pain: c.map(painLabelFrom).find(Boolean) ?? null };
 }
 
 const rirRange = (v: string): [number, number] | null => {
@@ -98,7 +105,7 @@ export function parseProgram(text: string): { program: ImportedProgram } | { err
   let name = "", weeksMeta: number | null = null, weeksText: number | null = null, place: "نادي" | "منزل" | null = null;
   const preamble: string[] = [];
   const sections: Section[] = [];
-  let table: "plan" | "skip" | null = null;
+  let table: "plan" | "pain" | "skip" | null = null, painEx = 0;
 
   for (const raw of text.replace(/^﻿/, "").split(/\r?\n/)) {
     const line = raw.trim();
@@ -106,7 +113,7 @@ export function parseProgram(text: string): { program: ImportedProgram } | { err
     if (!line.startsWith("|")) table = null;
     if (!line || line.startsWith("```") || line.startsWith(">") || /^(-{3,}|\*{3,})$/.test(line)) continue;
     if (/^#\s/.test(line)) { if (!name) name = clean(line.slice(2)).replace(/^(اسم القالب|القالب)\s*[:：]\s*/, ""); continue; }
-    if (/^##\s/.test(line)) { sections.push({ heading: clean(line.replace(/^#+\s*/, "")), text: [], rows: [], cols: null }); continue; }
+    if (/^##\s/.test(line)) { sections.push({ heading: clean(line.replace(/^#+\s*/, "")), text: [], rows: [], cols: null, pain: null }); continue; }
     if (/^#{3,}\s/.test(line)) continue;
     if (line.startsWith("|")) {
       if (!sec) continue;
@@ -114,12 +121,14 @@ export function parseProgram(text: string): { program: ImportedProgram } | { err
       if (c.every((x) => /^:?-{2,}:?$/.test(x))) continue;
       if (table === null) {
         const h = headerOf(c);
-        // أول جدول برنامج في القسم فقط؛ جداول «سجل الأسبوع» وغيرها تُتجاهل
-        table = h && h.spans.length && !sec.cols ? "plan" : "skip";
-        if (table === "plan") sec.cols = h;
+        // أول جدول برنامج في القسم يُقرأ؛ جدول آخر فيه عمود ألم (مثل «سجل الأسبوع») يحدد تمارين مقياس الألم؛ والباقي يُتجاهل
+        table = h && h.spans.length && !sec.cols ? "plan" : h?.pain ? "pain" : "skip";
+        if (table === "plan") { sec.cols = h; if (h!.pain) sec.pain = { label: h!.pain, keys: new Set(), all: true }; }
+        if (table === "pain") { painEx = h!.ex; sec.pain ??= { label: h!.pain!, keys: new Set(), all: false }; }
         continue;
       }
       if (table === "plan") sec.rows.push(c);
+      if (table === "pain" && c[painEx]) sec.pain!.keys.add(canon(splitName(c[painEx]).match));
       continue;
     }
     const txt = clean(line).replace(/^[-*]\s+/, "• ");
@@ -155,7 +164,6 @@ export function parseProgram(text: string): { program: ImportedProgram } | { err
   if (maxEnd > MAX_WEEKS) err(`عدد الأسابيع من 1 إلى ${MAX_WEEKS}.`);
 
   const skipped: string[] = [];
-  const instr: string[] = [...preamble];
   const dayNotes: string[] = [];
   const days: ImportedDay[] = daySecs.map((s, di) => {
     const title = (s.heading.replace(new RegExp(`^(اليوم|يوم|day)\\s*(\\d+|${ORDINAL})\\s*[:：\\-–—]?\\s*`, "i"), "").trim() || s.heading).slice(0, 80);
@@ -207,25 +215,32 @@ export function parseProgram(text: string): { program: ImportedProgram } | { err
         val(cols.rest) && `الراحة: ${val(cols.rest)}`,
         val(cols.note),
       ].filter(Boolean).join(" · ").slice(0, 500);
-      items.push({ name: ex, match, plan, note: note || null });
+      const pain = s.pain && (s.pain.all || s.pain.keys.has(canon(match))) ? s.pain.label : null;
+      items.push({ name: ex, match, plan, note: note || null, pain });
     }
     return { title, items };
   });
 
-  // الأقسام النصية (قواعد السلامة، الإحماء، طريقة التقدم…) تصير تعليمات البلوك للمتدرب
-  for (const s of sections) {
-    if (s.cols || NOT_INSTRUCTIONS.test(s.heading) || !s.text.length) continue;
-    instr.push("", ...(/^التعليمات/.test(s.heading) ? [] : [`${s.heading}:`]), ...s.text.filter((t) => !instr.includes(t)));
-  }
-  if (dayNotes.length) instr.push("", ...dayNotes.filter((t) => !instr.includes(t)));
-  let instructions = instr.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+  // الأقسام النصية (قواعد السلامة، الإحماء، طريقة التقدم…) تصير تعليمات البلوك للمتدرب،
+  // وكلها مع بيانات المتدرب تصير ملاحظة خاصة للمدربة. المقدمة أولاً، وملاحظات الأيام العامة (السوبرست…) في الآخر
+  const build = (skip: RegExp) => {
+    const out: string[] = [...preamble];
+    for (const s of sections) {
+      if (s.cols || skip.test(s.heading) || !s.text.length) continue;
+      out.push("", ...(/^التعليمات/.test(s.heading) ? [] : [`${s.heading}:`]), ...s.text.filter((t) => !out.includes(t)));
+    }
+    if (dayNotes.length) out.push("", ...dayNotes.filter((t) => !out.includes(t)));
+    return out.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+  };
+  let instructions = build(NOT_INSTRUCTIONS);
   if (instructions.length > MAX_INSTR) {
     instructions = instructions.slice(0, instructions.lastIndexOf("\n", MAX_INSTR) > 0 ? instructions.lastIndexOf("\n", MAX_INSTR) : MAX_INSTR);
     skipped.push(`التعليمات اختُصرت إلى ${MAX_INSTR} حرف`);
   }
+  const notes = build(NOT_NOTES);
 
   if (errors.length) return { errors };
-  return { program: { name: name.slice(0, 120), weeks, place, instructions: instructions || null, days, skipped } };
+  return { program: { name: name.slice(0, 120), weeks, place, instructions: instructions || null, notes: notes || null, days, skipped } };
 }
 
 // =====================================================================

@@ -5,7 +5,7 @@ import { dayTotalSets, formatReps, planLabel, type PlanWeek } from "@/lib/traini
 import { muscleAr } from "@/lib/exercises";
 import { DEFAULT_SESSION_CAP, dayMuscleSets, muscleLabel } from "@/lib/volume";
 
-export type EditorItem = { id: string; exercise_id?: string; name: string; plan: PlanWeek[]; note: string | null; coach_name?: string | null; logs?: number;
+export type EditorItem = { id: string; exercise_id?: string; name: string; plan: PlanWeek[]; note: string | null; pain_label?: string | null; coach_name?: string | null; logs?: number;
   primary_muscle?: string | null; secondary_muscles?: string[] | null; pattern?: string | null; sub_pattern?: string | null };
 export type EditorDay = { id: string; day_no: number; title: string; items: EditorItem[] };
 export type ExOption = PickerExercise;
@@ -89,7 +89,7 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises, s
                   <summary>
                     <span><bdi dir="ltr"><b>{it.name}</b></bdi>
                       {it.coach_name && <span className="status action small" style={{ marginInlineStart: 8 }}>بدّله المتدرب من <bdi dir="ltr">{it.coach_name}</bdi></span>}</span>
-                    <span className="small muted">{planLabel(it.plan[0])}{it.logs ? ` · ${it.logs} تسجيل` : ""}</span>
+                    <span className="small muted">{planLabel(it.plan[0])}{it.logs ? ` · ${it.logs} تسجيل` : ""}{it.pain_label && <> · <span className="pain-chip mid">مقياس {it.pain_label}</span></>}</span>
                   </summary>
                   <ActionForm action={saveItemAction} submit="حفظ التمرين">
                     {hidden({ item: it.id })}
@@ -100,6 +100,9 @@ export default function ProgramEditor({ kind, ownerId, weeks, days, exercises, s
                       <div className="field"><label htmlFor={`nt-${it.id}`}>ملاحظة للمتدرب (اختياري)</label>
                         <input id={`nt-${it.id}`} name="note" type="text" maxLength={500} defaultValue={it.note ?? ""} placeholder="مثال: نزول بطيء 3 ثوانٍ" /></div>
                     </div>
+                    <div className="field"><label htmlFor={`pain-${it.id}`}>مقياس الألم بعد التمرين (اختياري)</label>
+                      <input id={`pain-${it.id}`} name="pain_label" type="text" maxLength={40} defaultValue={it.pain_label ?? ""} placeholder="مثال: ألم الركبة" style={{ maxWidth: 320 }} />
+                      <span className="hint">إذا كتبتِ اسم المنطقة، يسجّل المتدرب بعد هذا التمرين ألمه من 0 إلى 10 وتشوفينه أسبوعياً. فارغ = بدون مقياس. الاستيراد يعبّيه تلقائياً من عمود الألم للتمارين اللي تحمّل منطقة الشكوى.</span></div>
                     <fieldset className="field"><legend>المجموعات والتكرارات و RIR لكل أسبوع</legend>
                       <div className="plan-grid">
                         {Array.from({ length: weeks }, (_, w) => (

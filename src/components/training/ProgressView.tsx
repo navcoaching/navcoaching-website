@@ -2,6 +2,7 @@ import LineChart from "@/components/LineChart";
 import { fmtDate, fmtDay } from "@/lib/format";
 import { personalRecords, weeklyAverages, weeklySummary, type LiftLog } from "@/lib/training";
 import type { BlockData, BodyData } from "@/lib/program-data";
+import { painTone } from "@/lib/pain";
 
 const pct = (v: number) => `${Math.round(v * 100)}٪`;
 const num = (v: number) => Math.round(v).toLocaleString("en-US");
@@ -15,6 +16,13 @@ export default function ProgressView({ data, body, lifts }: {
   const summary = data ? weeklySummary(items, data.logs, data.block.weeks) : [];
   const avgW = data ? weeklyAverages(body.weights.map((w) => ({ date: w.logged_on, value: w.kg })), data.block.start_date) : [];
   const steps = new Map(data?.steps.map((s) => [s.week_no, s.total]) ?? []);
+  // مقياس الألم (إن وُجد في البرنامج): متوسط وأعلى قيمة لكل أسبوع. اسم واحد إذا كل التمارين بنفس المنطقة
+  const painItems = new Set(items.filter((i) => i.pain_label).map((i) => i.id));
+  const painNames = [...new Set(items.map((i) => i.pain_label).filter(Boolean))];
+  const painWeek = (w: number) => {
+    const v = (data?.logs ?? []).filter((l) => l.week_no === w && painItems.has(l.block_item_id) && l.pain != null).map((l) => l.pain!);
+    return v.length ? { avg: v.reduce((a, b) => a + b, 0) / v.length, max: Math.max(...v) } : null;
+  };
   const prs = personalRecords(lifts);
   const recentW = body.weights.slice(-24);
   const M = [["waist", "الخصر"], ["hips", "الحوض"], ["chest", "الصدر"], ["thigh", "الفخذ"]] as const;
@@ -31,6 +39,12 @@ export default function ProgressView({ data, body, lifts }: {
                 <tr><th scope="row">الالتزام (تمارين مسجّلة)</th>{summary.map((s) => <td key={s.week} className="num">{s.logged ? pct(s.adherence) : "—"}</td>)}</tr>
                 <tr><th scope="row">الحجم التدريبي (VLU)</th>{summary.map((s) => <td key={s.week} className="num">{s.logged ? num(s.vlu) : "—"}</td>)}</tr>
                 <tr><th scope="row">التغيّر عن الأسبوع السابق</th>{summary.map((s) => <td key={s.week} className="num">{s.change == null ? "—" : <bdi dir="ltr">{`${s.change > 0 ? "+" : ""}${Math.round(s.change * 100)}%`}</bdi>}</td>)}</tr>
+                {painItems.size > 0 && (
+                  <tr data-testid="pain-row"><th scope="row">{painNames.length === 1 ? painNames[0] : "الألم"} (المتوسط · الأعلى)</th>{summary.map((s) => {
+                    const p = painWeek(s.week);
+                    return <td key={s.week} className="num">{p ? <span className={`pain-chip ${painTone(p.max)}`}><bdi dir="ltr">{p.avg.toFixed(1)} · {p.max}</bdi></span> : "—"}</td>;
+                  })}</tr>
+                )}
                 <tr><th scope="row">متوسط الوزن (كغ)</th>{summary.map((s) => { const a = avgW.find((w) => w.week === s.week); return <td key={s.week} className="num">{a ? a.avg.toFixed(1) : "—"}</td>; })}</tr>
                 <tr><th scope="row">الخطوات / الهدف {num(data.block.steps_goal_week)}</th>{summary.map((s) => { const t = steps.get(s.week); return <td key={s.week} className="num">{t == null ? "—" : <>{num(t)}{data.block.steps_goal_week > 0 && <div className="small muted">{pct(t / data.block.steps_goal_week)}</div>}</>}</td>; })}</tr>
               </tbody>

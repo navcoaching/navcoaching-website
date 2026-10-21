@@ -17,6 +17,7 @@ import { DEFAULT_VOLUME_LIMIT, DEFAULT_SESSION_CAP, SESSION_KEY } from "@/lib/vo
 import { cleanUpload, UploadError } from "@/lib/uploads";
 import { matchExercises, type DayItem, type ExtractedExercise } from "@/lib/workout-import";
 import { canon, matchLibrary, parseProgram, type LibEx } from "@/lib/program-import";
+import { painApplies } from "@/lib/pain";
 import { MAX_IMAGES, readWorkoutImages, visionEnabled, VisionError } from "@/lib/workout-vision";
 import { LOGIN_REQUIRED } from "@/lib/messages";
 
@@ -229,7 +230,7 @@ export async function duplicateTemplateAction(_: ActionState, fd: FormData): Pro
       const days = (await tx.query(`SELECT id, day_no, title FROM template_days WHERE template_id = $1`, [src])).rows;
       for (const d of days) {
         const { rows: [nd] } = await tx.query(`INSERT INTO template_days (template_id, day_no, title) VALUES ($1,$2,$3) RETURNING id`, [n.id, d.day_no, d.title]);
-        await tx.query(`INSERT INTO template_items (day_id, position, exercise_id, plan, note) SELECT $1, position, exercise_id, plan, note FROM template_items WHERE day_id = $2`, [nd.id, d.id]);
+        await tx.query(`INSERT INTO template_items (day_id, position, exercise_id, plan, note, pain_label) SELECT $1, position, exercise_id, plan, note, pain_label FROM template_items WHERE day_id = $2`, [nd.id, d.id]);
       }
       return n.id as string;
     });
@@ -240,7 +241,7 @@ export async function duplicateTemplateAction(_: ActionState, fd: FormData): Pro
 
 /** شاشة مراجعة الأسماء: كل اسم في الملف مع التمرين المطابق أو المقترح، والمكتبة كاملة للاختيار */
 export type ImportReview = {
-  text: string; summary: string;
+  text: string; summary: string; orderNo: string;
   rows: { key: string; name: string; id: string | null; how: "alias" | "name" | null; suggestions: { id: string; name: string }[] }[];
   library: { id: string; name: string }[];
 };
@@ -252,6 +253,8 @@ const IMPORT_ALIASES = "program_import_aliases";
  * استيراد قالب كامل من ملف Markdown (الصيغ في lib/program-import.ts). الكل أو لا شيء.
  * الأسماء غير المطابقة للمكتبة ترجع شاشة مراجعة (review) تختار فيها المدربة التمرين أو «تجاهل»، ثم يُرسل الملف مرة ثانية
  * مع الاختيارات (confirm=1، k_i/m_i). الاختيارات تُحفظ ليطابق الاسم نفسه تلقائياً في الملفات القادمة.
+ * order_no (اختياري): معلومات الملف كاملة مع بيانات المتدرب تُضاف لملاحظات المدربة الخاصة على طلبه.
+ * مقياس الألم: فقط للتمارين المذكورة في عمود ألم بالملف، وعضلتها الأساسية تحمّل منطقة الشكوى (ألم الركبة ← تمارين الرجل).
  */
 export async function importTemplateAction(_: ImportState, fd: FormData): Promise<ImportState> {
   const file = fd.get("file");
@@ -266,6 +269,8 @@ export async function importTemplateAction(_: ImportState, fd: FormData): Promis
   const parsed = parseProgram(text);
   if ("errors" in parsed) return { error: parsed.errors.join("\n") };
   const p = parsed.program;
+  const orderNo = String(fd.get("order_no") ?? "");
+  if (orderNo && !ORDER_NO.test(orderNo)) return { error: "اختاري المتدرب من القائمة." };
   const chosen = new Map<string, string>();
   if (fd.get("confirm") === "1") {
     for (let i = 0; i < 300 && fd.has(`k_${i}`); i++) chosen.set(String(fd.get(`k_${i}`)), String(fd.get(`m_${i}`) ?? ""));
@@ -276,7 +281,9 @@ export async function importTemplateAction(_: ImportState, fd: FormData): Promis
   const skipped = [...p.skipped];
   try {
     const res = await asCoach(async (tx, uid): Promise<ImportState | null> => {
-      const lib = (await tx.query(`SELECT id, name, place FROM exercises WHERE status = 'approved' ORDER BY name`)).rows as LibEx[];
+      const lib = (await tx.query(`SELECT id, name, place, primary_muscle FROM exercises WHERE status = 'approved' ORDER BY name`)).rows as (LibEx & { primary_muscle: string })[];
+      const order = orderNo ? (await tx.query(`SELECT id FROM orders WHERE order_no = $1`, [orderNo])).rows[0] : null;
+      if (orderNo && !order) return { error: "الطلب غير موجود." };
       // قالب البيت: تمارين البيت فقط في المطابقة والاقتراحات والاختيار
       const allowed = p.place === "منزل" ? lib.filter((e) => e.place !== "نادي") : lib;
       const allowedIds = new Set(allowed.map((e) => e.id));
@@ -299,13 +306,14 @@ export async function importTemplateAction(_: ImportState, fd: FormData): Promis
         return {
           error: chosen.size ? "اختاري تمريناً لكل اسم أو «تجاهل هذا التمرين»." : undefined,
           review: {
-            text, summary: `${p.name} · ${p.days.length} أيام · ${items} تمريناً · ${p.weeks} أسابيع · ${p.place === "منزل" ? "البيت" : "النادي"}`,
+            text, orderNo, summary: `${p.name} · ${p.days.length} أيام · ${items} تمريناً · ${p.weeks} أسابيع · ${p.place === "منزل" ? "البيت" : "النادي"}`,
             rows: matches.map((m) => ({ key: m.key, name: m.name, id: m.id, how: m.how, suggestions: m.suggestions.map(({ id, name }) => ({ id, name })) })),
             library: allowed.map(({ id, name }) => ({ id, name })),
           },
         };
       }
       const idOfKey = new Map(matches.map((m) => [m.key, m.id]));
+      const muscle = new Map(lib.map((e) => [e.id, e.primary_muscle]));
       const days = p.days.map((d) => ({
         ...d,
         items: d.items.filter((it) => {
@@ -320,10 +328,17 @@ export async function importTemplateAction(_: ImportState, fd: FormData): Promis
       for (const [di, d] of days.entries()) {
         const { rows: [day] } = await tx.query(`INSERT INTO template_days (template_id, day_no, title) VALUES ($1,$2,$3) RETURNING id`, [id, di + 1, d.title]);
         await tx.query(
-          `INSERT INTO template_items (day_id, position, exercise_id, plan, note)
-           SELECT $1, (x.ord - 1)::int, x.ex, x.plan, x.note
-             FROM ROWS FROM (jsonb_to_recordset($2::jsonb) AS (ex uuid, plan jsonb, note text)) WITH ORDINALITY AS x(ex, plan, note, ord)`,
-          [day.id, JSON.stringify(d.items.map((it) => ({ ex: idOfKey.get(canon(it.match)), plan: it.plan, note: it.note })))]);
+          `INSERT INTO template_items (day_id, position, exercise_id, plan, note, pain_label)
+           SELECT $1, (x.ord - 1)::int, x.ex, x.plan, x.note, x.pain
+             FROM ROWS FROM (jsonb_to_recordset($2::jsonb) AS (ex uuid, plan jsonb, note text, pain text)) WITH ORDINALITY AS x(ex, plan, note, pain, ord)`,
+          [day.id, JSON.stringify(d.items.map((it) => {
+            const ex = idOfKey.get(canon(it.match))!;
+            return { ex, plan: it.plan, note: it.note, pain: it.pain && painApplies(it.pain, muscle.get(ex)) ? it.pain : null };
+          }))]);
+      }
+      if (order && p.notes) {
+        const head = `من ملف البرنامج «${p.name}» (قالب: ${days.length} أيام · ${p.weeks} أسابيع)\n\n`;
+        await tx.query("SELECT app.coach_add_note($1,$2)", [orderNo, (head + p.notes).slice(0, 5000)]);
       }
       if (Object.keys(learned).length) {
         await tx.query(
@@ -337,7 +352,8 @@ export async function importTemplateAction(_: ImportState, fd: FormData): Promis
   } catch (err) { return trainingFail(err); }
   revalidatePath("/admin/templates");
   const left = skipped.length ? `&skipped=${encodeURIComponent(skipped.join("\n").slice(0, 800))}` : "";
-  redirect(`/admin/templates/${id}?imported=1${left}`);
+  if (orderNo) revalidatePath(`/admin/orders/${orderNo}`);
+  redirect(`/admin/templates/${id}?imported=1${left}${orderNo && parsed.program.notes ? `&note=${orderNo}` : ""}`);
 }
 
 export async function addDayAction(_: ActionState, fd: FormData): Promise<ActionState> {
@@ -433,8 +449,10 @@ export async function saveItemAction(_: ActionState, fd: FormData): Promise<Acti
   const name = String(fd.get("exercise") ?? "").trim();
   const pickedId = idOf(fd, "exercise_id");
   const note = String(fd.get("note") ?? "").trim();
+  const pain = String(fd.get("pain_label") ?? "").trim();
   if (!name && !pickedId) return { error: "اختاري التمرين من القائمة." };
   if (note.length > 500) return { error: "الملاحظة حتى 500 حرف." };
+  if (pain && (pain.length < 2 || pain.length > 40)) return { error: "اسم مقياس الألم من 2 إلى 40 حرفاً (مثل: ألم الركبة)." };
   const copyFirst = fd.get("copy_first") === "on";
   const t = T[kind];
   try {
@@ -459,10 +477,10 @@ export async function saveItemAction(_: ActionState, fd: FormData): Promise<Acti
       if (kind === "block") {
         // تغيير المدربة للتمرين يصبح هو اختيارها الأصلي (أساس بدائل المتدرب)
         await tx.query(
-          `UPDATE block_items SET exercise_id = $2, coach_exercise_id = CASE WHEN $2 = exercise_id THEN coach_exercise_id ELSE $2 END, plan = $3, note = $4 WHERE id = $1`,
-          [item, ex, JSON.stringify(plan), note || null]);
+          `UPDATE block_items SET exercise_id = $2, coach_exercise_id = CASE WHEN $2 = exercise_id THEN coach_exercise_id ELSE $2 END, plan = $3, note = $4, pain_label = $5 WHERE id = $1`,
+          [item, ex, JSON.stringify(plan), note || null, pain || null]);
       } else {
-        await tx.query(`UPDATE template_items SET exercise_id = $2, plan = $3, note = $4 WHERE id = $1`, [item, ex, JSON.stringify(plan), note || null]);
+        await tx.query(`UPDATE template_items SET exercise_id = $2, plan = $3, note = $4, pain_label = $5 WHERE id = $1`, [item, ex, JSON.stringify(plan), note || null, pain || null]);
       }
       await placeAt(tx, t.items, cur.day_id, item, positionOf(fd));
       await revalidateOwner(tx, kind, o.owner);
@@ -690,17 +708,20 @@ export async function logItemAction(_: ActionState, fd: FormData): Promise<Actio
   const rawW = fd.getAll("set_weight").map((v) => toNum(v));
   const rawR = fd.getAll("reps").map((v) => toNum(v));
   const rir = toNum(fd.get("rir"));
+  // الألم: يُرسل فقط للتمارين اللي عليها مقياس (فارغ = بدون قيمة)
+  const pain = fd.has("pain") ? toNum(fd.get("pain")) : undefined;
   if (!clear) {
     if (rawW[0] == null) return { error: "اكتب وزن الجولة الأولى بالكيلو (0 لتمارين وزن الجسم)." };
     if ([...rawW, ...rawR].some((v) => v != null && !Number.isFinite(v))) return { error: "الأوزان والتكرارات أرقام." };
     if (rawW.some((w) => w != null && (w < 0 || w > 1000))) return { error: "الوزن بين 0 و 1000 كغ." };
     if (rawR.some((r) => r != null && (!Number.isInteger(r) || r < 0 || r > 200))) return { error: "التكرارات أرقام صحيحة." };
     if (rir != null && (!Number.isFinite(rir) || rir < 0 || rir > 10)) return { error: "RIR رقم من 0 إلى 10." };
+    if (pain != null && (!Number.isInteger(pain) || pain < 0 || pain > 10)) return { error: "الألم رقم صحيح من 0 إلى 10." };
   }
   try {
     await asTrainee(async (tx) => {
       if (clear) return tx.query("SELECT app.log_item_sets($1,$2,NULL,NULL,NULL)", [item, week]);
-      const { rows: [it] } = await tx.query("SELECT plan FROM block_items WHERE id = $1", [item]);
+      const { rows: [it] } = await tx.query("SELECT plan, pain_label FROM block_items WHERE id = $1", [item]);
       const target: number[] = Array.isArray(it?.plan?.[week - 1]?.reps) ? it.plan[week - 1].reps.map(Number) : [];
       const weights: number[] = [], reps: number[] = [];
       let last = rawW[0]!;
@@ -711,7 +732,8 @@ export async function logItemAction(_: ActionState, fd: FormData): Promise<Actio
         weights.push(last); reps.push(r);
       }
       if (!weights.length) throw new Error(NEED_REPS);
-      return tx.query("SELECT app.log_item_sets($1,$2,$3,$4,$5)", [item, week, weights, reps, rir]);
+      await tx.query("SELECT app.log_item_sets($1,$2,$3,$4,$5)", [item, week, weights, reps, rir]);
+      if (it?.pain_label && pain !== undefined) await tx.query("SELECT app.set_item_pain($1,$2,$3)", [item, week, pain]);
     });
   } catch (err) {
     if ((err as Error).message === NEED_REPS) return { error: NEED_REPS };

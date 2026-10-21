@@ -1,10 +1,17 @@
 import Link from "next/link";
 import { requireCoach } from "@/lib/session";
+import { withUser } from "@/lib/db";
 import ImportForm from "./ImportForm";
 
 /** استيراد قالب من ملف Markdown: رفع، ثم مراجعة الأسماء غير المطابقة إن وُجدت، ثم إنشاء القالب */
 export default async function ImportTemplate() {
-  await requireCoach();
+  const coach = await requireCoach();
+  // متدربو المتابعة الحاليون (لإضافة معلومات الملف لملاحظاتها الخاصة عنهم)
+  const trainees = await withUser(coach.id, async (tx) => (await tx.query(
+    `SELECT o.order_no, coalesce(nullif(o.contact_name, ''), u.name) AS name, o.product_name
+       FROM orders o JOIN "user" u ON u.id = o.user_id
+      WHERE o.category = 'follow' AND o.status IN ('payment_review', 'preparing', 'active')
+      ORDER BY (o.status = 'active') DESC, o.created_at DESC LIMIT 300`)).rows as { order_no: string; name: string; product_name: string }[]);
   return (
     <div className="stack" style={{ ["--space" as string]: "18px", maxWidth: 820 }}>
       <nav className="small"><Link href="/admin/templates">قوالب البرامج</Link> / استيراد من ملف</nav>
@@ -15,7 +22,7 @@ export default async function ImportTemplate() {
         <li>يُنشأ قالب جديد بأيامه وتمارينه وخطة كل أسبوع، وأقسام مثل قواعد السلامة والإحماء تصير تعليمات البلوك. ثم يفتح في المحرر للمراجعة.</li>
       </ol>
       <p className="small muted">لا يُنشأ شيء إذا في الملف خطأ. تحسين اختياري: <a href="/admin/templates/import/guide" download data-testid="import-guide">ملف الدليل</a> فيه أسماء تمارين مكتبتك كما هي، أرفقيه مع طلب البرنامج فتطابق الأسماء من أول مرة.</p>
-      <div className="card"><ImportForm /></div>
+      <div className="card"><ImportForm trainees={trainees} /></div>
     </div>
   );
 }

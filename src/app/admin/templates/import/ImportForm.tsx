@@ -6,7 +6,7 @@ import { importTemplateAction, type ImportState } from "@/app/actions/training";
 const HOW = { alias: ["من ربط سابق", "ok"], name: ["مطابق", "ok"] } as const;
 
 /** رفع الملف أو لصقه، ثم (إذا في أسماء غير موجودة في المكتبة) مراجعة الأسماء واختيار التمرين لكل اسم */
-export default function ImportForm() {
+export default function ImportForm({ trainees }: { trainees: { order_no: string; name: string; product_name: string }[] }) {
   const [state, action, pending] = useActionState<ImportState, FormData>(importTemplateAction, {});
   const review = state.review;
   const err = state.error && <p className="alert err" role="alert">{state.error}</p>;
@@ -17,6 +17,7 @@ export default function ImportForm() {
       <form action={action} className="form import-form" data-testid="import-review">
         <input type="hidden" name="text" value={review.text} />
         <input type="hidden" name="confirm" value="1" />
+        <input type="hidden" name="order_no" value={review.orderNo} />
         <p><b>{review.summary}</b></p>
         <p className="small muted">
           {open} {open === 1 ? "اسم غير موجود" : "أسماء غير موجودة"} في مكتبتك بنفس الاسم. اختاري التمرين المقابل لكل اسم (الأقرب أولاً) أو «تجاهل».
@@ -50,6 +51,12 @@ export default function ImportForm() {
 
   return (
     <form action={action} className="form import-form">
+      <div className="field"><label htmlFor="imp-order">لمتدرب (اختياري)</label>
+        <select id="imp-order" name="order_no" defaultValue="" data-testid="import-order">
+          <option value="">بدون: قالب فقط</option>
+          {trainees.map((t) => <option key={t.order_no} value={t.order_no}>{t.name} · {t.order_no} · {t.product_name}</option>)}
+        </select>
+        <span className="hint">معلومات الملف كاملة (بيانات المتدرب، قواعد السلامة، الإحماء، طريقة التقدم…) تُضاف لـ«ملاحظاتك الخاصة» في صفحة طلبه، ولا تظهر له. قواعد السلامة والإحماء تبقى أيضاً في تعليمات البرنامج اللي يشوفها بعد إسناد القالب له.</span></div>
       <div className="field"><label htmlFor="imp-file">الملف (‎.md‎)</label>
         <input id="imp-file" name="file" type="file" accept=".md,.markdown,.txt,text/markdown,text/plain" data-testid="import-file" /></div>
       <div className="field"><label htmlFor="imp-text">أو الصقي النص</label>

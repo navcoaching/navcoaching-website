@@ -1,5 +1,6 @@
 import { effective, formatSets, planLabel, suggestWeight } from "@/lib/training";
 import type { BlockData } from "@/lib/program-data";
+import { painTone } from "@/lib/pain";
 
 /** جدول يوم بنفس شكل الشيت: التمارين صفوف والأسابيع أعمدة (المستهدف ثم المسجّل) */
 export default function DayLogTable({ data, dayId }: { data: BlockData; dayId: string }) {
@@ -24,6 +25,7 @@ export default function DayLogTable({ data, dayId }: { data: BlockData; dayId: s
                     {l && e ? (
                       <div>
                         <bdi dir="ltr">{formatSets(e.weights, e.reps)}</bdi> كغ{e.rir != null && <> · RIR {e.rir}</>}
+                        {it.pain_label && l.pain != null && <div><span className={`pain-chip ${painTone(l.pain)}`} data-testid="pain-chip">{it.pain_label} <span className="num">{l.pain}</span>/10</span></div>}
                         <div className="small muted">VLU {Math.round(e.vlu).toLocaleString("en-US")}{e.oneRm > 0 && <> · 1RM {e.oneRm}</>}{l.exercise_id !== it.exercise_id && <> · <bdi dir="ltr">{data.exercises.get(l.exercise_id)?.name}</bdi></>}</div>
                       </div>
                     ) : (() => { const s = suggestWeight(it, data.logs, w); return s ? <span className="small muted">مقترح: <b className="num">{s.weight}</b> كغ</span> : <span className="muted">—</span>; })()}
