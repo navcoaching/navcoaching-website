@@ -15,8 +15,8 @@ import type { ActionState } from "./client";
 import { allow } from "@/lib/rate";
 import { DEFAULT_VOLUME_LIMIT, DEFAULT_SESSION_CAP, SESSION_KEY } from "@/lib/volume";
 import { cleanUpload, UploadError } from "@/lib/uploads";
-import { matchExercises, normalizeName, overlap, type DayItem, type ExtractedExercise } from "@/lib/workout-import";
-import { parseProgram } from "@/lib/program-import";
+import { matchExercises, type DayItem, type ExtractedExercise } from "@/lib/workout-import";
+import { canon, matchLibrary, parseProgram, type LibEx } from "@/lib/program-import";
 import { MAX_IMAGES, readWorkoutImages, visionEnabled, VisionError } from "@/lib/workout-vision";
 import { LOGIN_REQUIRED } from "@/lib/messages";
 
@@ -238,11 +238,22 @@ export async function duplicateTemplateAction(_: ActionState, fd: FormData): Pro
   redirect(`/admin/templates/${id}?created=1`);
 }
 
+/** شاشة مراجعة الأسماء: كل اسم في الملف مع التمرين المطابق أو المقترح، والمكتبة كاملة للاختيار */
+export type ImportReview = {
+  text: string; summary: string;
+  rows: { key: string; name: string; id: string | null; how: "alias" | "name" | null; suggestions: { id: string; name: string }[] }[];
+  library: { id: string; name: string }[];
+};
+export type ImportState = ActionState & { review?: ImportReview };
+// روابط الأسماء اللي اختارتها المدربة سابقاً { مفتاح الاسم: معرّف التمرين } — في site_settings (خاص بالمدربة)
+const IMPORT_ALIASES = "program_import_aliases";
+
 /**
- * استيراد قالب كامل من ملف Markdown (الصيغة في lib/program-import.ts). الكل أو لا شيء:
- * أي خطأ في الملف أو اسم تمرين غير موجود في المكتبة يوقف الإنشاء ويُعرض بمكانه مع أقرب اسم.
+ * استيراد قالب كامل من ملف Markdown (الصيغ في lib/program-import.ts). الكل أو لا شيء.
+ * الأسماء غير المطابقة للمكتبة ترجع شاشة مراجعة (review) تختار فيها المدربة التمرين أو «تجاهل»، ثم يُرسل الملف مرة ثانية
+ * مع الاختيارات (confirm=1، k_i/m_i). الاختيارات تُحفظ ليطابق الاسم نفسه تلقائياً في الملفات القادمة.
  */
-export async function importTemplateAction(_: ActionState, fd: FormData): Promise<ActionState> {
+export async function importTemplateAction(_: ImportState, fd: FormData): Promise<ImportState> {
   const file = fd.get("file");
   let text = String(fd.get("text") ?? "").trim();
   if (file instanceof File && file.size > 0) {
@@ -255,28 +266,55 @@ export async function importTemplateAction(_: ActionState, fd: FormData): Promis
   const parsed = parseProgram(text);
   if ("errors" in parsed) return { error: parsed.errors.join("\n") };
   const p = parsed.program;
+  const chosen = new Map<string, string>();
+  if (fd.get("confirm") === "1") {
+    for (let i = 0; i < 300 && fd.has(`k_${i}`); i++) chosen.set(String(fd.get(`k_${i}`)), String(fd.get(`m_${i}`) ?? ""));
+  }
+  // ⁨…⁩ يعزل الاسم الإنجليزي داخل الجملة العربية حتى لا تنقلب علامات الاقتباس
+  const iso = (n: string) => `⁨${n}⁩`;
   let id = "";
+  const skipped = [...p.skipped];
   try {
-    const res = await asCoach(async (tx) => {
-      const lib = (await tx.query(`SELECT id, name, place FROM exercises WHERE status = 'approved'`)).rows as { id: string; name: string; place: string | null }[];
-      const exact = new Map(lib.map((e) => [e.name.trim().toLowerCase(), e]));
-      const byNorm = new Map<string, typeof lib>();
-      for (const e of lib) byNorm.set(normalizeName(e.name), [...(byNorm.get(normalizeName(e.name)) ?? []), e]);
+    const res = await asCoach(async (tx, uid): Promise<ImportState | null> => {
+      const lib = (await tx.query(`SELECT id, name, place FROM exercises WHERE status = 'approved' ORDER BY name`)).rows as LibEx[];
+      // قالب البيت: تمارين البيت فقط في المطابقة والاقتراحات والاختيار
+      const allowed = p.place === "منزل" ? lib.filter((e) => e.place !== "نادي") : lib;
+      const allowedIds = new Set(allowed.map((e) => e.id));
+      const aliases = ((await tx.query(`SELECT value FROM site_settings WHERE key = $1`, [IMPORT_ALIASES])).rows[0]?.value ?? {}) as Record<string, string>;
+      const matches = matchLibrary(p.days.flatMap((d) => d.items.map((it) => it.match)), allowed, aliases);
+      const skip = new Set<string>(), learned: Record<string, string> = {};
       const errors: string[] = [];
-      const pick = (name: string) => {
-        const e = exact.get(name.trim().toLowerCase()) ?? (byNorm.get(normalizeName(name))?.length === 1 ? byNorm.get(normalizeName(name))![0] : undefined);
-        if (e) return e;
-        const near = lib.map((x) => ({ x, s: overlap(name, x.name) })).sort((a, b) => b.s - a.s)[0];
-        // \u2068…\u2069 يعزل الاسم الإنجليزي داخل الجملة العربية حتى لا تنقلب علامات الاقتباس
-        errors.push(`«\u2068${name}\u2069» غير موجود في المكتبة${near && near.s >= 0.34 ? `. الأقرب: «\u2068${near.x.name}\u2069»` : ""}.`);
-        return null;
-      };
-      const days = p.days.map((d) => ({ ...d, items: d.items.map((it) => ({ ...it, ex: pick(it.name) })) }));
-      if (p.place === "منزل") {
-        const gym = [...new Set(days.flatMap((d) => d.items.filter((it) => it.ex?.place === "نادي").map((it) => it.ex!.name)))];
-        if (gym.length) errors.push(`القالب للبيت وهذه تمارين نادي: ${gym.map((n) => `\u2068${n}\u2069`).join("، ")}.`);
+      for (const m of matches) {
+        const c = chosen.get(m.key);
+        if (!c) continue;
+        if (c === "skip") { skip.add(m.key); m.id = null; continue; }
+        if (!UUID.test(c) || !allowedIds.has(c)) { errors.push(`«${iso(m.name)}»: ${p.place === "منزل" ? "اختاري تمريناً من تمارين البيت." : "التمرين غير موجود في المكتبة."}`); continue; }
+        if (c !== m.id || m.how !== "name") learned[m.key] = c;
+        m.id = c;
       }
-      if (errors.length) return { error: [...new Set(errors)].slice(0, 15).join("\n") };
+      if (errors.length) return { error: errors.join("\n") };
+      const open = matches.filter((m) => !m.id && !skip.has(m.key));
+      if (open.length) {
+        const items = p.days.reduce((n, d) => n + d.items.length, 0);
+        return {
+          error: chosen.size ? "اختاري تمريناً لكل اسم أو «تجاهل هذا التمرين»." : undefined,
+          review: {
+            text, summary: `${p.name} · ${p.days.length} أيام · ${items} تمريناً · ${p.weeks} أسابيع · ${p.place === "منزل" ? "البيت" : "النادي"}`,
+            rows: matches.map((m) => ({ key: m.key, name: m.name, id: m.id, how: m.how, suggestions: m.suggestions.map(({ id, name }) => ({ id, name })) })),
+            library: allowed.map(({ id, name }) => ({ id, name })),
+          },
+        };
+      }
+      const idOfKey = new Map(matches.map((m) => [m.key, m.id]));
+      const days = p.days.map((d) => ({
+        ...d,
+        items: d.items.filter((it) => {
+          if (idOfKey.get(canon(it.match))) return true;
+          skipped.push(`${d.title}: ${it.name} (تجاهلتِه)`);
+          return false;
+        }),
+      }));
+      if (!days.some((d) => d.items.length)) return { error: "لا توجد تمارين بعد التجاهل." };
       id = (await tx.query(`INSERT INTO program_templates (name, weeks, instructions, place) VALUES ($1,$2,$3,$4) RETURNING id`,
         [p.name, p.weeks, p.instructions, p.place])).rows[0].id;
       for (const [di, d] of days.entries()) {
@@ -285,14 +323,21 @@ export async function importTemplateAction(_: ActionState, fd: FormData): Promis
           `INSERT INTO template_items (day_id, position, exercise_id, plan, note)
            SELECT $1, (x.ord - 1)::int, x.ex, x.plan, x.note
              FROM ROWS FROM (jsonb_to_recordset($2::jsonb) AS (ex uuid, plan jsonb, note text)) WITH ORDINALITY AS x(ex, plan, note, ord)`,
-          [day.id, JSON.stringify(d.items.map((it) => ({ ex: it.ex!.id, plan: it.plan, note: it.note })))]);
+          [day.id, JSON.stringify(d.items.map((it) => ({ ex: idOfKey.get(canon(it.match)), plan: it.plan, note: it.note })))]);
+      }
+      if (Object.keys(learned).length) {
+        await tx.query(
+          `INSERT INTO site_settings (key, value, is_public, updated_by) VALUES ($1, $2::jsonb, false, $3)
+           ON CONFLICT (key) DO UPDATE SET value = site_settings.value || EXCLUDED.value, updated_by = EXCLUDED.updated_by, updated_at = now()`,
+          [IMPORT_ALIASES, JSON.stringify(learned), uid]);
       }
       return null;
     });
     if (res) return res;
   } catch (err) { return trainingFail(err); }
   revalidatePath("/admin/templates");
-  redirect(`/admin/templates/${id}?imported=1`);
+  const left = skipped.length ? `&skipped=${encodeURIComponent(skipped.join("\n").slice(0, 800))}` : "";
+  redirect(`/admin/templates/${id}?imported=1${left}`);
 }
 
 export async function addDayAction(_: ActionState, fd: FormData): Promise<ActionState> {
