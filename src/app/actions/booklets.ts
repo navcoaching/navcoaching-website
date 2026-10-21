@@ -90,18 +90,57 @@ export async function saveBookletAction(_: ActionState, fd: FormData): Promise<A
 export async function deleteBookletAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const id = s(fd, "id");
   if (!UUID.test(id)) return { error: GENERIC };
-  let key = "";
+  const keys: string[] = [];
   try {
     await asCoach(async (tx, uid) => {
-      const { rows: [b] } = await tx.query(`DELETE FROM booklets WHERE id = $1 RETURNING file_key, title`, [id]);
+      const { rows: [b] } = await tx.query(`DELETE FROM booklets WHERE id = $1 RETURNING file_key, title, cover_id`, [id]);
       if (!b) throw bad("الكتيب غير موجود.");
-      key = b.file_key;
+      keys.push(b.file_key);
+      if (b.cover_id) keys.push(...(await tx.query("DELETE FROM media_assets WHERE id = $1 RETURNING storage_key", [b.cover_id])).rows.map((r) => r.storage_key));
       await tx.query("INSERT INTO admin_log (actor_id, action, target) VALUES ($1,'booklet.delete',$2)", [uid, b.title]);
     });
   } catch (err) { return fail(err); }
-  await (await storage()).remove(key).catch(() => {});
+  const st = await storage();
+  for (const k of keys) await st.remove(k).catch(() => {});
   refresh();
   return { ok: true, message: "تم الحذف." };
+}
+
+/** المدربة: صورة غلاف الكتيب (رفع أو استبدال أو إزالة). نموذج مستقل عن ملف PDF حتى ما يتجاوز الطلب حد الحجم */
+export async function bookletCoverAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const id = s(fd, "id");
+  if (!UUID.test(id)) return { error: GENERIC };
+  const remove = s(fd, "op") === "remove";
+  let key = "", oldKey = "";
+  try {
+    await asCoach(async () => {});
+    let clean: Awaited<ReturnType<typeof cleanUpload>> | null = null;
+    if (!remove) {
+      clean = await cleanUpload(fd.get("cover") as File | null, "image");
+      key = newKey("media", clean.ext);
+      await (await storage()).put(key, clean.data, clean.mime);
+    }
+    await asCoach(async (tx, uid) => {
+      const { rows: [b] } = await tx.query("SELECT title, cover_id FROM booklets WHERE id = $1 FOR UPDATE", [id]);
+      if (!b) throw bad("الكتيب غير موجود.");
+      let coverId: string | null = null;
+      if (clean) {
+        ({ rows: [{ id: coverId }] } = await tx.query(
+          `INSERT INTO media_assets (storage_key, mime, size_bytes, width, height, alt, usage, rights_note, approved, created_by)
+           VALUES ($1,$2,$3,$4,$5,$6,'booklet','غلاف كتيب من المدربة',true,$7) RETURNING id`,
+          [key, clean.mime, clean.size, clean.width ?? null, clean.height ?? null, `غلاف كتيب ${b.title}`.slice(0, 200), uid]));
+      }
+      await tx.query("UPDATE booklets SET cover_id = $2, updated_at = now() WHERE id = $1", [id, coverId]);
+      if (b.cover_id) oldKey = (await tx.query("DELETE FROM media_assets WHERE id = $1 RETURNING storage_key", [b.cover_id])).rows[0]?.storage_key ?? "";
+      await tx.query("INSERT INTO admin_log (actor_id, action, target) VALUES ($1,$2,$3)", [uid, remove ? "booklet.cover_remove" : "booklet.cover", b.title]);
+    });
+  } catch (err) {
+    if (key) await (await storage()).remove(key).catch(() => {});
+    return fail(err);
+  }
+  if (oldKey) await (await storage()).remove(oldKey).catch(() => {});
+  refresh();
+  return { ok: true, message: remove ? "تمت إزالة الغلاف." : "تم حفظ الغلاف." };
 }
 
 export type BuyBookletState = ActionState & { orderNo?: string; needLogin?: boolean };

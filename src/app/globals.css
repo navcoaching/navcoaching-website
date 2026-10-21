@@ -1346,13 +1346,14 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
   transform: translateX(-120%); animation: fx-shine 0.9s var(--ease) forwards;
 }
 @keyframes fx-shine { to { transform: translateX(120%); } }
-.fx-spin { animation: fx-spin 0.9s var(--ease); }
+/* !important: قاعدة البطاقات العائمة (v3-bob) أعلى خصوصية وكانت تلغي الدوران، فلا يصل animationend ولا تنتقل بطاقة البرنامج */
+.fx-spin { animation: fx-spin 0.9s var(--ease) !important; }
 @keyframes fx-spin {
   from { transform: perspective(1000px) rotateY(0deg); }
   to { transform: perspective(1000px) rotateY(360deg); }
 }
-.pcard.fx-spin { animation-duration: 0.7s; }
-@media (prefers-reduced-motion: reduce) { .fx-spin { animation: none; } }
+.pcard.fx-spin { animation-duration: 0.7s !important; }
+@media (prefers-reduced-motion: reduce) { .fx-spin { animation: none !important; } }
 
 /* ---------- ظهور تدريجي أوضح في الصفحات العامة ---------- */
 .js .pub .reveal { transform: translateY(34px) scale(0.98); transition-duration: 0.8s; }
@@ -2232,15 +2233,15 @@ body:has(.pub.v3) .site-header .menu > summary, body:has(.pub.v3) .site-header .
 }
 
 /* ===== الصفحات العامة الداخلية: تصميم v3 (أكتوبر 2026) ===== */
-/* الهيدر غامق مثل الرئيسية في كل صفحة لها رأس داخلي */
-body:has(.page-hero) .site-header { background: #07142a; border-color: transparent; }
-body:has(.page-hero) .site-header .l-light { display: none; }
-body:has(.page-hero) .site-header .l-dark { display: block; }
-body:has(.page-hero) .site-header .nav a:not(.btn) { color: #dbe6f5; }
-body:has(.page-hero) .site-header .nav a:not(.btn):hover { background: rgba(255,255,255,.08); }
-body:has(.page-hero) .site-header .btn-ghost { --fg: #fff; --bd: rgba(255,255,255,.3); color: #fff; }
-body:has(.page-hero) .site-header .nav .btn:not(.btn-ghost) { background: #4cc5ed; color: #07142a; }
-body:has(.page-hero) .site-header .menu > summary, body:has(.page-hero) .site-header .theme-btn { color: #fff; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); }
+/* الهيدر غامق مثل الرئيسية في كل صفحة لها رأس داخلي، وفي حساب المتدرب بجانب قائمته الغامقة */
+body:has(.page-hero, .account-shell.app) .site-header { background: #07142a; border-color: transparent; }
+body:has(.page-hero, .account-shell.app) .site-header .l-light { display: none; }
+body:has(.page-hero, .account-shell.app) .site-header .l-dark { display: block; }
+body:has(.page-hero, .account-shell.app) .site-header .nav a:not(.btn) { color: #dbe6f5; }
+body:has(.page-hero, .account-shell.app) .site-header .nav a:not(.btn):hover { background: rgba(255,255,255,.08); }
+body:has(.page-hero, .account-shell.app) .site-header .btn-ghost { --fg: #fff; --bd: rgba(255,255,255,.3); color: #fff; }
+body:has(.page-hero, .account-shell.app) .site-header .nav .btn:not(.btn-ghost) { background: #4cc5ed; color: #07142a; }
+body:has(.page-hero, .account-shell.app) .site-header .menu > summary, body:has(.page-hero, .account-shell.app) .site-header .theme-btn { color: #fff; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); }
 
 /* رأس الصفحة: حبر غامق، عنوان كبير، وخطوط الشعار المائلة على اليسار (بعيد عن النص) */
 .page-hero:not(.v3 *) { background: #07142a; color: #fff; border: 0; padding-block: clamp(56px, 8vw, 110px) clamp(48px, 7vw, 96px); isolation: isolate; }
@@ -2273,7 +2274,7 @@ body:has(.page-hero) .site-header .menu > summary, body:has(.page-hero) .site-he
   .page-hero:not(.v3 *)::before { left: 62vw; width: 18vw; opacity: .25; }
   .page-hero:not(.v3 *)::after { left: 86vw; width: 8vw; opacity: .3; }
 }
-body:has(.page-hero) .site-header .nav a[aria-current="page"] { background: rgba(76,197,237,.18); color: #fff; }
+body:has(.page-hero, .account-shell.app) .site-header .nav a[aria-current="page"] { background: rgba(76,197,237,.18); color: #fff; }
 .page-hero:not(.v3 *) b, .page-hero:not(.v3 *) .num, .page-hero:not(.v3 *) .price b { color: #fff; }
 .page-hero:not(.v3 *) .price span { color: #b9c8de; }
 
@@ -2398,7 +2399,39 @@ fieldset.field > legend { inline-size: 100%; padding: 0; float: none; }
 .pub:not(.v3) .section :is(.card, .pcard, .review):not(:has(form, input, select, textarea)) { box-shadow: 0 30px 60px -28px rgba(7,20,42,.42), 0 10px 22px -14px rgba(7,20,42,.22); }
 @media (prefers-reduced-motion: no-preference) {
   .page-hero:not(.v3 *) > .wrap::before { animation: v3-breathe 7s ease-in-out infinite; }
-  .pub:not(.v3) .section :is(.card, .pcard, .review):not(:has(form, input, select, textarea)) { animation: v3-bob 7s ease-in-out infinite; }
+  .pub:not(.v3) .section :is(.card, .pcard, .review):not(:has(form, input, select, textarea, .btn)) { animation: v3-bob 7s ease-in-out infinite; }
   .pub:not(.v3) .section :is(.card, .pcard, .review):nth-child(3n+2) { animation-delay: -2.4s; }
   .pub:not(.v3) .section :is(.card, .pcard, .review):nth-child(3n) { animation-delay: -4.8s; }
 }
+
+/* ===== حساب المتدرب ولوحة الإدارة: لمسات lumofy.ai بدون حركة (أكتوبر 2026) =====
+   سطوح تشغيل يومية: عمق (بطاقات عائمة بظل ناعم ثابت) وإضاءة سماوية ثابتة، بلا تمايل ولا خط قصة ولا حركات دخول.
+   الرفع عند المرور فقط على العناصر القابلة للنقر. */
+.account-shell.app .card, .account-shell.app .ex-row, .admin.app .card { box-shadow: 0 24px 50px -30px rgba(7,20,42,.32), 0 8px 18px -12px rgba(7,20,42,.16); }
+.account-shell.app .my-program { box-shadow: 0 36px 70px -30px rgba(7,20,42,.6), 0 12px 24px -14px rgba(7,20,42,.3);
+  background: radial-gradient(60% 90% at 12% 0%, rgba(76,197,237,.2), transparent 70%), var(--t-ink); }
+.account-shell.app .my-program .meter > span { box-shadow: 0 0 14px rgba(76,197,237,.55); }
+/* القائمة الجانبية: إضاءة خفيفة أعلاها، والصفحة الحالية تتوهج */
+.account-shell.app .account-side, .admin.app .admin-side { background-image: radial-gradient(130% 40% at 100% 0%, rgba(76,197,237,.14), transparent 70%); }
+.account-shell.app .account-side a[aria-current="page"], .admin.app .admin-side a[aria-current="page"] { box-shadow: 0 10px 28px -8px rgba(76,197,237,.6); }
+@media (hover: hover) and (pointer: fine) {
+  .account-shell.app a.ex-row, .admin.app a.card { transition: translate .25s var(--ease), box-shadow .25s; }
+  .account-shell.app a.ex-row:hover, .admin.app a.card:hover { translate: 0 -2px; }
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .account-shell.app .card, :root:not([data-theme="light"]) .account-shell.app .ex-row, :root:not([data-theme="light"]) .admin.app .card { box-shadow: 0 24px 50px -28px rgba(0,0,0,.7); }
+  :root:not([data-theme="light"]) .account-shell.app .my-program { background: radial-gradient(60% 90% at 12% 0%, rgba(76,197,237,.18), transparent 70%), var(--t-ink-2); }
+  :root:not([data-theme="light"]) .account-shell.app .account-side, :root:not([data-theme="light"]) .admin.app .admin-side { background-image: radial-gradient(130% 40% at 100% 0%, rgba(76,197,237,.14), transparent 70%); }
+}
+:root[data-theme="dark"] .account-shell.app .card, :root[data-theme="dark"] .account-shell.app .ex-row, :root[data-theme="dark"] .admin.app .card { box-shadow: 0 24px 50px -28px rgba(0,0,0,.7); }
+:root[data-theme="dark"] .account-shell.app .my-program { background: radial-gradient(60% 90% at 12% 0%, rgba(76,197,237,.18), transparent 70%), var(--t-ink-2); }
+:root[data-theme="dark"] .account-shell.app .account-side, :root[data-theme="dark"] .admin.app .admin-side { background-image: radial-gradient(130% 40% at 100% 0%, rgba(76,197,237,.14), transparent 70%); }
+/* الهدف الشهري وأرشيف الأرقام (لوحة الإدارة) */
+.goal-form > summary { cursor: pointer; min-height: 44px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.goal-form[open] > summary { margin-block-end: 12px; }
+.stats-table td.goal-hit { color: var(--ok); font-weight: 700; }
+
+/* غلاف الكتيب: معاينة ونموذج في لوحة الإدارة، وصورة مصغّرة في «حسابي» */
+.booklet-cover-edit { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 14px; align-items: start; }
+@media (max-width: 600px) { .booklet-cover-edit { grid-template-columns: minmax(0, 1fr); } }
+.booklet-thumb { inline-size: 72px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; flex: none; }

@@ -217,6 +217,13 @@ test("منصة التدريب: قالب، إسناد، تسجيل، تبديل �
   await trainee.reload();
   await expect(card.getByLabel("وزن الجولة 3")).toHaveValue("65");
   await expect(card).toContainText("أعلى وزن تقديري (1RM): 82.5 كغ");
+  await expect(trainee.getByTestId("suggested-weight")).toHaveCount(0); // الأسبوع 1 بلا تسجيل سابق
+  // الأسبوع 2: الوزن المقترح من 1RM الأسبوع 1 (65 × (1 + (8+2)/30) ≈ 86.7) على 3×10 · RIR 2 ← 86.7 ÷ 1.4 ≈ 62
+  const exUrl = new URL(trainee.url());
+  exUrl.searchParams.set("week", "2");
+  await trainee.goto(exUrl.toString());
+  await expect(trainee.getByTestId("suggested-weight")).toHaveText("62");
+  await noHorizontalScroll(trainee);
   // القائمة: التمرين مسجّل، وتقييم اليوم داخل «تقييم تمرين اليوم»
   await trainee.goto(`/account/orders/${orderNo}/training`);
   await expect(trainee.getByTestId("exercise-card").first().getByLabel("مسجّل")).toBeVisible();

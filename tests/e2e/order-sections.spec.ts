@@ -55,11 +55,29 @@ test("الطلبات: أقسام الباقات والاستشارات والم�
     await noHorizontalScroll(coach);
   }
 
+  // الرئيسية: أرقام الشهر الحالي فقط، والهدف الشهري (نفس القيم في كل الأجهزة لأن الإعداد مشترك)
   await coach.goto("/admin");
   const stats = coach.getByTestId("monthly-stats");
-  await expect(stats).toContainText("عدد الطلبات");
-  await expect(stats).toContainText("عدد الأعضاء الجدد");
-  await expect(stats).toContainText("مجموع المبالغ المدفوعة");
-  await expect(stats.locator("svg")).toHaveCount(3);
+  for (const t of ["الأعضاء الجدد", "المبالغ المدفوعة", "الطلبات"]) await expect(stats).toContainText(t);
+  await expect(stats.locator("svg")).toHaveCount(0);
+  const goal = coach.getByTestId("goal-form");
+  await goal.locator("summary").click();
+  await goal.getByLabel("عدد الأعضاء الجدد").fill("500");
+  await goal.getByLabel("المبالغ المدفوعة (ريال)").fill("900000");
+  await goal.getByRole("button", { name: "حفظ الهدف" }).click();
+  await expect(goal.getByText("تم حفظ الهدف.")).toBeVisible();
+  await coach.reload();
+  await expect(coach.getByTestId("month-members")).toContainText("الهدف 500");
+  await expect(coach.getByTestId("month-revenue")).toContainText("الهدف 900,000 ريال");
+  await expect(coach.getByTestId("month-revenue").getByRole("progressbar")).toBeVisible();
   await noHorizontalScroll(coach);
+
+  // الأرشيف: من قسم الإعدادات، وفيه الشهر الحالي بهدفه
+  await coach.goto("/admin/stats");
+  const table = coach.getByTestId("stats-table");
+  await expect(table.locator("tbody tr").first()).toContainText("(الحالي)");
+  await expect(table.locator("tbody tr").first()).toContainText("900,000");
+  await expect(coach.getByTestId("year-totals")).toContainText("نفس الفترة");
+  await noHorizontalScroll(coach);
+  await expect(coach.locator('.admin-side a[href="/admin/stats"]')).toHaveCount(1);
 });

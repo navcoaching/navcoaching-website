@@ -197,18 +197,18 @@ export async function getMyFreePlans(userId: string): Promise<MyFreePlan[]> {
   return withUser(userId, async (tx) => (await tx.query("SELECT * FROM app.my_free_plans()")).rows as MyFreePlan[]);
 }
 
-export type SaleBooklet = { id: string; title: string; description: string | null; file_size: number; sku: string; price_halalas: number; owned: boolean; pending_order: string | null };
+export type SaleBooklet = { id: string; title: string; description: string | null; file_size: number; sku: string; price_halalas: number; owned: boolean; pending_order: string | null; cover_id: string | null };
 /** الكتيبات المعروضة للبيع (بدون مفتاح الملف) مع حالة المستخدم: يملكه، أو عنده طلب ينتظر الدفع */
 export async function getBookletsForSale(userId: string | null): Promise<SaleBooklet[]> {
   const q = "SELECT * FROM app.booklets_for_sale()";
   return (userId ? withUser(userId, async (tx) => (await tx.query(q)).rows) : withAnon(async (tx) => (await tx.query(q)).rows)) as Promise<SaleBooklet[]>;
 }
 
-export type MyBooklet = { id: string; title: string; description: string | null; file_size: number };
+export type MyBooklet = { id: string; title: string; description: string | null; file_size: number; cover_id: string | null };
 /** الكتيبات المتاحة للمتدرب (RLS: مشترك متابعة، أو اشترى الكتيب) */
 export async function getMyBooklets(userId: string): Promise<MyBooklet[]> {
   return withUser(userId, async (tx) => (await tx.query(
-    `SELECT id, title, description, file_size FROM booklets ORDER BY sort, created_at`)).rows as MyBooklet[]);
+    `SELECT id, title, description, file_size, cover_id FROM booklets ORDER BY sort, created_at`)).rows as MyBooklet[]);
 }
 
 /** أول طلب فعّال أو مكتمل لم يكتب عليه المتدرب تقييماً بعد (لبطاقة «قيّم تجربتك» في حسابي) */

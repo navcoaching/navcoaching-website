@@ -44,7 +44,10 @@ export default async function Booklets() {
             <ul className="fp-grid" data-testid="booklets-sale">
               {items.map((b) => (
                 <li key={b.id} className="card fp-card" data-testid="booklet-card">
-                  <div className="fp-cover"><span aria-hidden="true"><IconBook size={44} /></span></div>
+                  <div className="fp-cover">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    {b.cover_id ? <img src={`/api/files/media/${b.cover_id}`} alt={`غلاف ${b.title}`} loading="lazy" /> : <span aria-hidden="true"><IconBook size={44} /></span>}
+                  </div>
                   <div className="fp-body">
                     <span className="tag soft">PDF · <bdi className="num">{(b.file_size / 1024 / 1024).toFixed(1)}</bdi> م.ب</span>
                     <h2>{b.title}</h2>

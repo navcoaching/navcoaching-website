@@ -841,3 +841,30 @@ export async function markAlertsReadAction(_: ActionState, fd: FormData): Promis
   revalidatePath("/admin");
   return { ok: true, message: keys.length === 1 ? "تم." : `تم (${keys.length}).` };
 }
+
+// ---------- الهدف الشهري (عدد الأعضاء الجدد والمبالغ المدفوعة) ----------
+export async function saveMonthlyGoalAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const ym = String(fd.get("ym") ?? "");
+  if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(ym)) return { error: "الشهر غير صالح." };
+  const num = (k: string, max: number) => {
+    const v = String(fd.get(k) ?? "").trim();
+    if (v === "") return null;
+    const n = Number(v);
+    return Number.isInteger(n) && n >= 0 && n <= max ? n : NaN;
+  };
+  const goal = { members: num("members", 10_000), revenue: num("revenue", 100_000_000) };
+  if (Number.isNaN(goal.members) || Number.isNaN(goal.revenue)) return { error: "الهدف رقم صحيح بدون كسور." };
+  try {
+    await asCoach(async (tx, uid) => {
+      // يُحفظ بشهره، والأشهر التالية تأخذه لين يتغيّر
+      await tx.query(
+        `INSERT INTO site_settings (key, value, is_public, updated_by) VALUES ('monthly_goals', jsonb_build_object($1::text, $2::jsonb), false, $3)
+         ON CONFLICT (key) DO UPDATE SET value = site_settings.value || EXCLUDED.value, updated_by = EXCLUDED.updated_by, updated_at = now()`,
+        [ym, JSON.stringify(goal), uid]);
+      await log(tx, uid, "goal.save", ym, goal);
+    });
+  } catch (err) { return fail(err); }
+  revalidatePath("/admin");
+  revalidatePath("/admin/stats");
+  return { ok: true, message: "تم حفظ الهدف." };
+}

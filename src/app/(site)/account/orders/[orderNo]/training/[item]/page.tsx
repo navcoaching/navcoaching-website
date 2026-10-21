@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/session";
 import { withUser } from "@/lib/db";
 import { riyadhDate } from "@/lib/schedule";
-import { currentWeek, effective, formatSets, planLabel } from "@/lib/training";
+import { currentWeek, effective, formatSets, planLabel, suggestWeight } from "@/lib/training";
 import { muscleAr } from "@/lib/exercises";
 import { loadBlockData, type BlockRow } from "@/lib/program-data";
 import VideoButton from "@/components/VideoButton";
@@ -46,6 +46,7 @@ export default async function ExercisePage({ params, searchParams }: { params: P
   const plan = it.plan[week - 1];
   const log = data.logs.find((l) => l.block_item_id === it.id && l.week_no === week) ?? null;
   const eff = log ? effective(log, plan) : null;
+  const sug = suggestWeight(it, data.logs, week);
   const idx = day.items.findIndex((i) => i.id === it.id);
   const q = (over: Record<string, string> = {}) => new URLSearchParams({ week: String(week), day: day.id, ...(sp.block ? { block: sp.block } : {}), ...over }).toString();
   const back = `/account/orders/${o.order_no}/training?${q()}`;
@@ -64,7 +65,8 @@ export default async function ExercisePage({ params, searchParams }: { params: P
           </div>
           {ex?.video_url && <VideoButton url={ex.video_url} title={ex.name} testId="exercise-video" />}
         </div>
-        <p className="target card flat" style={{ margin: 0 }} data-testid="exercise-target"><span className="muted small">المستهدف</span> <b dir="ltr">{planLabel(plan)}</b></p>
+        <p className="target card flat" style={{ margin: 0 }} data-testid="exercise-target"><span className="muted small">المستهدف</span> <b dir="ltr">{planLabel(plan)}</b>{sug && <> · <span className="muted small">الوزن المقترح</span> <b className="num" data-testid="suggested-weight">{sug.weight}</b> كغ</>}</p>
+        {sug && <p className="small muted" style={{ margin: 0 }}>محسوب من 1RM الأسبوع {sug.fromWeek} (<span className="num">{sug.oneRm}</span> كغ) على تكرارات وRIR هذا الأسبوع. اسمع جسمك وعدّل.</p>}
         {it.note && <p className="small alert info" style={{ margin: 0 }}>{it.note}</p>}
         {ex?.instructions && <details className="small card flat"><summary style={{ cursor: "pointer", minHeight: 36 }}>طريقة الأداء</summary><p style={{ whiteSpace: "pre-wrap", margin: "6px 0 0" }}>{ex.instructions}</p></details>}
         <div data-testid="exercise-log" className="stack" style={{ ["--space" as string]: "12px" }}>
