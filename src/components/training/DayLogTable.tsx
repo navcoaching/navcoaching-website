@@ -1,4 +1,4 @@
-import { effective, formatSets, planLabel } from "@/lib/training";
+import { effective, formatSets, planLabel, suggestWeight } from "@/lib/training";
 import type { BlockData } from "@/lib/program-data";
 
 /** جدول يوم بنفس شكل الشيت: التمارين صفوف والأسابيع أعمدة (المستهدف ثم المسجّل) */
@@ -26,7 +26,7 @@ export default function DayLogTable({ data, dayId }: { data: BlockData; dayId: s
                         <bdi dir="ltr">{formatSets(e.weights, e.reps)}</bdi> كغ{e.rir != null && <> · RIR {e.rir}</>}
                         <div className="small muted">VLU {Math.round(e.vlu).toLocaleString("en-US")}{e.oneRm > 0 && <> · 1RM {e.oneRm}</>}{l.exercise_id !== it.exercise_id && <> · <bdi dir="ltr">{data.exercises.get(l.exercise_id)?.name}</bdi></>}</div>
                       </div>
-                    ) : <span className="muted">—</span>}
+                    ) : (() => { const s = suggestWeight(it, data.logs, w); return s ? <span className="small muted">مقترح: <b className="num">{s.weight}</b> كغ</span> : <span className="muted">—</span>; })()}
                   </td>
                 );
               })}

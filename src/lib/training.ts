@@ -155,3 +155,18 @@ export const DEFAULT_WEEK_RIR = [3, 2, 1, 0] as const;
 export function dayTotalSets(items: { plan: PlanWeek[] }[], weeks: number): number[] {
   return Array.from({ length: weeks }, (_, w) => items.reduce((sum, it) => sum + (Number(it.plan[w]?.sets) || 0), 0));
 }
+
+/** الوزن المقترح لأسبوع: من آخر أسبوع سابق مسجّل، نحسب 1RM (Epley مع احتساب RIR كتكرارات متبقية)
+ *  ثم نعكسه على تكرارات ومستهدف RIR هذا الأسبوع: الوزن = 1RM ÷ (1 + (التكرارات + RIR) ÷ 30)، مقرّب لأقرب 0.5 كغ.
+ *  يرجع null إن لا يوجد تسجيل سابق أو مستهدف تكرارات */
+export function suggestWeight(item: ItemLite, logs: LogLite[], week: number): { weight: number; oneRm: number; fromWeek: number } | null {
+  const target = item.plan[week - 1];
+  if (!target?.reps.length) return null;
+  const prev = logs.filter((l) => l.block_item_id === item.id && l.week_no < week).sort((a, b) => b.week_no - a.week_no)[0];
+  if (!prev) return null;
+  const e = effective(prev, item.plan[prev.week_no - 1]);
+  const rm = Math.max(0, ...e.reps.map((r, i) => oneRm(Number(e.weights[i] ?? e.weights[e.weights.length - 1] ?? 0), r + (e.rir ?? 0))));
+  if (!(rm > 0)) return null;
+  const weight = Math.round((rm / (1 + (Math.max(...target.reps) + (target.rir ?? 0)) / 30)) * 2) / 2;
+  return { weight, oneRm: Math.round(rm * 2) / 2, fromWeek: prev.week_no };
+}
