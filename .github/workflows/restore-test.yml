@@ -1,0 +1,63 @@
+# اختبار الاستعادة: يفك آخر نسخة ناجحة من «Daily backup» ويستعيدها في قاعدة PostgreSQL 18 مؤقتة داخل التشغيل،
+# ثم يتحقق أن عدد صفوف كل جدول وبصمة كل ملف تطابق وقت النسخ (scripts/restore.mjs). لا يلمس Neon ولا Netlify.
+# شغّليه يدوياً كل 3 أشهر وسجّلي النتيجة في docs/ops/BACKUP.md
+name: Restore test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  restore:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: neondb_owner
+          POSTGRES_PASSWORD: restore-test-only
+          POSTGRES_DB: nav_restore
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U neondb_owner -d nav_restore" --health-interval 2s --health-retries 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install pg_restore 18
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSo /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client-18
+          echo "/usr/lib/postgresql/18/bin" >> "$GITHUB_PATH"
+      - name: Install script dependencies
+        run: npm ci --omit=dev --ignore-scripts
+      - name: Find latest successful backup
+        id: last
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          id=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow backup.yml --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          test -n "$id" || { echo "لا توجد نسخة ناجحة"; exit 1; }
+          echo "run_id=$id" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@v4
+        with:
+          name: nav-backup-${{ steps.last.outputs.run_id }}
+          run-id: ${{ steps.last.outputs.run_id }}
+          github-token: ${{ github.token }}
+          path: backup
+      - name: Restore and verify
+        env:
+          ENV_FILE: /dev/null
+          PGPASSWORD: restore-test-only
+          RESTORE_DATABASE_URL: postgres://neondb_owner:restore-test-only@localhost:5432/nav_restore
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          # الأدوار اللي تشير لها الصلاحيات وسياسات RLS في النسخة، ودورا Neon الداخليان في صلاحياته الافتراضية
+          psql -h localhost -U neondb_owner -d nav_restore -c "CREATE ROLE nav_app LOGIN" -c "CREATE ROLE neon_superuser" -c "CREATE ROLE cloud_admin"
+          node scripts/restore.mjs backup/*.enc "$RUNNER_TEMP/restored-files"

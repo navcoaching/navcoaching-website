@@ -305,6 +305,10 @@ export default async function AdminOrder({ params, searchParams }: { params: Pro
               </small>
             </summary>
             <div className="fold-body stack" style={{ ["--space" as string]: "12px" }}>
+              <p className="row small" style={{ justifyContent: "space-between" }}>
+                <span className="muted">ملف نصي مرتب (Markdown) للقراءة أو لرفعه لأداة ذكاء اصطناعي. بدون الجوال والبريد، وفيه البيانات الصحية.</span>
+                <a href={`/admin/orders/${o.order_no}/intake`} download className="btn btn-ghost btn-sm" data-testid="intake-export">تصدير الاستبيان</a>
+              </p>
               <div className="alert info" style={{ display: "block" }}>
                 <b>{EXPECTATIONS_Q}</b>
                 <p style={{ marginTop: 6, whiteSpace: "pre-wrap" }}>{answers.expectations ? String(answers.expectations) : "— (أُرسل الاستبيان قبل إضافة هذا السؤال)"}</p>

@@ -528,15 +528,21 @@ export async function saveSettingAction(_: ActionState, fd: FormData): Promise<A
     case "hero_image":
       value = { media_id: g("media_id") || null };
       break;
+    case "ops": {
+      const d = g("netlify_token_expires");
+      if (d && (!/^\d{4}-\d{2}-\d{2}$/.test(d) || Number.isNaN(Date.parse(d)))) return { error: "التاريخ غير صالح." };
+      value = { netlify_token_expires: d || null };
+      break;
+    }
     default:
       return { error: "إعداد غير معروف." };
   }
   try {
     await asCoach(async (tx, uid) => {
       await tx.query(
-        `INSERT INTO site_settings (key, value, updated_by) VALUES ($1,$2,$3)
+        `INSERT INTO site_settings (key, value, updated_by, is_public) VALUES ($1,$2,$3,$4)
          ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_by = EXCLUDED.updated_by, updated_at = now()`,
-        [key, JSON.stringify(value), uid]);
+        [key, JSON.stringify(value), uid, key !== "ops"]); // تذكيرات التشغيل للمدربة فقط
       await log(tx, uid, "setting.save", key, key === "bank" ? { iban_last4: (value as { iban: string }).iban.slice(-4) } : value);
     });
   } catch (err) { return fail(err); }

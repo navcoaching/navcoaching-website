@@ -6,7 +6,7 @@ export const metadata: Metadata = { title: "الأمان والمراقبة" };
 export const dynamic = "force-dynamic";
 
 const EVENT: Record<string, string> = {
-  login_ok: "دخول ناجح", login_failed: "رمز خاطئ", login_locked: "محاولة أثناء القفل", otp_sent: "طلب رمز دخول", account_deleted: "حذف حساب",
+  login_ok: "دخول ناجح", login_failed: "رمز خاطئ", login_locked: "محاولة أثناء القفل", otp_sent: "طلب رمز دخول", account_deleted: "حذف حساب", intake_exported: "تصدير استبيان",
 };
 const ISSUE: Record<string, string> = {
   server_error: "خطأ في الموقع", mail_failed: "فشل بريد", login_mail_failed: "فشل بريد رمز الدخول", push_failed: "فشل إشعار جوال", whatsapp_failed: "فشل واتساب",
