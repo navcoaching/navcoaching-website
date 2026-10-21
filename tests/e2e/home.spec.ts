@@ -38,7 +38,7 @@ test("الرئيسية: الترتيب والهيرو والهيدر والتذ�
 
   // حاسبة المكافأة: تغيير الالتزام يغيّر النتيجة
   const calc = page.getByTestId("reward-calc");
-  await calc.scrollIntoViewIfNeeded();
+  await calc.evaluate((e) => e.scrollIntoView({ block: "center" })); // تطفو باستمرار (v3-bob) فلا تثبت
   const before = await calc.textContent();
   const range = calc.locator('input[type="range"]').first();
   await range.focus();

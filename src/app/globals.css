@@ -1346,13 +1346,14 @@ legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-
   transform: translateX(-120%); animation: fx-shine 0.9s var(--ease) forwards;
 }
 @keyframes fx-shine { to { transform: translateX(120%); } }
-.fx-spin { animation: fx-spin 0.9s var(--ease); }
+/* !important: قاعدة البطاقات العائمة (v3-bob) أعلى خصوصية وكانت تلغي الدوران، فلا يصل animationend ولا تنتقل بطاقة البرنامج */
+.fx-spin { animation: fx-spin 0.9s var(--ease) !important; }
 @keyframes fx-spin {
   from { transform: perspective(1000px) rotateY(0deg); }
   to { transform: perspective(1000px) rotateY(360deg); }
 }
-.pcard.fx-spin { animation-duration: 0.7s; }
-@media (prefers-reduced-motion: reduce) { .fx-spin { animation: none; } }
+.pcard.fx-spin { animation-duration: 0.7s !important; }
+@media (prefers-reduced-motion: reduce) { .fx-spin { animation: none !important; } }
 
 /* ---------- ظهور تدريجي أوضح في الصفحات العامة ---------- */
 .js .pub .reveal { transform: translateY(34px) scale(0.98); transition-duration: 0.8s; }
