@@ -5,8 +5,6 @@ name: Restore test
 
 on:
   workflow_dispatch:
-  push: # مؤقت: لتجربته قبل الدمج
-    branches: [claude/nav-coaching-platform-5ymwk1]
 
 permissions:
   contents: read

@@ -41,4 +41,4 @@ GitHub ← المستودع ← **Settings ← Secrets and variables ← Actions
 | التاريخ | النسخة | النتيجة | المدة | من |
 |---|---|---|---|---|
 | 2026-10-19 | محلية (قاعدة تطوير + ملفات تجريبية) | ✓ 64 جدول، 1759 صف، ملفان، مطابقة كاملة؛ RLS 64/64 بعد الاستعادة؛ كلمة سر خاطئة/ملف تالف/قاعدة غير فارغة ← رُفضت | 0.6 ثانية | Claude (قبل الإعداد على الإنتاج) |
-| — | أول نسخة من الإنتاج | **مطلوب قبل الإطلاق** | | |
+| 2026-10-21 | أول نسخة من الإنتاج ([Daily backup #3](https://github.com/navcoaching/navcoaching-website/actions/runs/39644623555)) | ✓ فك التشفير بـ `BACKUP_PASSPHRASE`، 66 جدول، 3396 صف، 22 ملف، مطابقة كاملة ([Restore test](https://github.com/navcoaching/navcoaching-website/actions/runs/39646472381)) | 0.6 ثانية | Claude |
