@@ -11,10 +11,10 @@ import VolumeTable from "@/components/admin/VolumeTable";
 
 type Tpl = { id: string; name: string; weeks: number; instructions: string | null; archived: boolean; public: boolean; public_summary: string | null; place: string };
 
-export default async function TemplatePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string }> }) {
+export default async function TemplatePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string; imported?: string }> }) {
   const coach = await requireCoach();
   const { id } = await params;
-  const { created } = await searchParams;
+  const { created, imported } = await searchParams;
   const isNew = id === "new";
   if (!isNew && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id)) notFound();
   const data = await withUser(coach.id, async (tx) => {
@@ -32,6 +32,7 @@ export default async function TemplatePage({ params, searchParams }: { params: P
       <nav className="small"><Link href="/admin/templates">قوالب البرامج</Link> / {tpl?.name ?? "قالب جديد"}</nav>
       <h1>{isNew ? "قالب جديد" : tpl!.name}</h1>
       {created && <p className="alert ok" role="status">تم إنشاء القالب. أضيفي الأيام والتمارين بالأسفل.</p>}
+      {imported && <p className="alert ok" role="status" data-testid="imported">تم استيراد القالب من الملف. راجعي الأيام والتمارين بالأسفل وعدّلي ما تحتاجين.</p>}
       <details className="card" open={isNew}>
         <summary style={{ cursor: "pointer", minHeight: 40, fontWeight: 700 }}>بيانات القالب</summary>
         <ActionForm action={saveTemplateAction} submit={isNew ? "إنشاء القالب" : "حفظ"}>

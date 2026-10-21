@@ -15,7 +15,8 @@ import type { ActionState } from "./client";
 import { allow } from "@/lib/rate";
 import { DEFAULT_VOLUME_LIMIT, DEFAULT_SESSION_CAP, SESSION_KEY } from "@/lib/volume";
 import { cleanUpload, UploadError } from "@/lib/uploads";
-import { matchExercises, type DayItem, type ExtractedExercise } from "@/lib/workout-import";
+import { matchExercises, normalizeName, overlap, type DayItem, type ExtractedExercise } from "@/lib/workout-import";
+import { parseProgram } from "@/lib/program-import";
 import { MAX_IMAGES, readWorkoutImages, visionEnabled, VisionError } from "@/lib/workout-vision";
 import { LOGIN_REQUIRED } from "@/lib/messages";
 
@@ -235,6 +236,63 @@ export async function duplicateTemplateAction(_: ActionState, fd: FormData): Pro
   } catch (err) { return trainingFail(err); }
   revalidatePath("/admin/templates");
   redirect(`/admin/templates/${id}?created=1`);
+}
+
+/**
+ * استيراد قالب كامل من ملف Markdown (الصيغة في lib/program-import.ts). الكل أو لا شيء:
+ * أي خطأ في الملف أو اسم تمرين غير موجود في المكتبة يوقف الإنشاء ويُعرض بمكانه مع أقرب اسم.
+ */
+export async function importTemplateAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const file = fd.get("file");
+  let text = String(fd.get("text") ?? "").trim();
+  if (file instanceof File && file.size > 0) {
+    if (file.size > 200_000) return { error: "الملف أكبر من 200 كيلوبايت." };
+    if (!/\.(md|markdown|txt)$/i.test(file.name)) return { error: "ارفعي ملف ‎.md‎ أو ‎.txt‎." };
+    text = await file.text();
+  }
+  if (!text) return { error: "ارفعي الملف أو الصقي النص." };
+  if (text.length > 200_000) return { error: "النص أطول من المسموح." };
+  const parsed = parseProgram(text);
+  if ("errors" in parsed) return { error: parsed.errors.join("\n") };
+  const p = parsed.program;
+  let id = "";
+  try {
+    const res = await asCoach(async (tx) => {
+      const lib = (await tx.query(`SELECT id, name, place FROM exercises WHERE status = 'approved'`)).rows as { id: string; name: string; place: string | null }[];
+      const exact = new Map(lib.map((e) => [e.name.trim().toLowerCase(), e]));
+      const byNorm = new Map<string, typeof lib>();
+      for (const e of lib) byNorm.set(normalizeName(e.name), [...(byNorm.get(normalizeName(e.name)) ?? []), e]);
+      const errors: string[] = [];
+      const pick = (name: string) => {
+        const e = exact.get(name.trim().toLowerCase()) ?? (byNorm.get(normalizeName(name))?.length === 1 ? byNorm.get(normalizeName(name))![0] : undefined);
+        if (e) return e;
+        const near = lib.map((x) => ({ x, s: overlap(name, x.name) })).sort((a, b) => b.s - a.s)[0];
+        // \u2068…\u2069 يعزل الاسم الإنجليزي داخل الجملة العربية حتى لا تنقلب علامات الاقتباس
+        errors.push(`«\u2068${name}\u2069» غير موجود في المكتبة${near && near.s >= 0.34 ? `. الأقرب: «\u2068${near.x.name}\u2069»` : ""}.`);
+        return null;
+      };
+      const days = p.days.map((d) => ({ ...d, items: d.items.map((it) => ({ ...it, ex: pick(it.name) })) }));
+      if (p.place === "منزل") {
+        const gym = [...new Set(days.flatMap((d) => d.items.filter((it) => it.ex?.place === "نادي").map((it) => it.ex!.name)))];
+        if (gym.length) errors.push(`القالب للبيت وهذه تمارين نادي: ${gym.map((n) => `\u2068${n}\u2069`).join("، ")}.`);
+      }
+      if (errors.length) return { error: [...new Set(errors)].slice(0, 15).join("\n") };
+      id = (await tx.query(`INSERT INTO program_templates (name, weeks, instructions, place) VALUES ($1,$2,$3,$4) RETURNING id`,
+        [p.name, p.weeks, p.instructions, p.place])).rows[0].id;
+      for (const [di, d] of days.entries()) {
+        const { rows: [day] } = await tx.query(`INSERT INTO template_days (template_id, day_no, title) VALUES ($1,$2,$3) RETURNING id`, [id, di + 1, d.title]);
+        await tx.query(
+          `INSERT INTO template_items (day_id, position, exercise_id, plan, note)
+           SELECT $1, (x.ord - 1)::int, x.ex, x.plan, x.note
+             FROM ROWS FROM (jsonb_to_recordset($2::jsonb) AS (ex uuid, plan jsonb, note text)) WITH ORDINALITY AS x(ex, plan, note, ord)`,
+          [day.id, JSON.stringify(d.items.map((it) => ({ ex: it.ex!.id, plan: it.plan, note: it.note })))]);
+      }
+      return null;
+    });
+    if (res) return res;
+  } catch (err) { return trainingFail(err); }
+  revalidatePath("/admin/templates");
+  redirect(`/admin/templates/${id}?imported=1`);
 }
 
 export async function addDayAction(_: ActionState, fd: FormData): Promise<ActionState> {

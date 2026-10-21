@@ -18,7 +18,10 @@ export default async function Templates() {
     <div className="stack" style={{ ["--space" as string]: "18px" }}>
       <div className="row" style={{ justifyContent: "space-between" }}>
         <h1>قوالب البرامج</h1>
-        <Link className="btn btn-sm" href="/admin/templates/new">+ قالب جديد</Link>
+        <div className="row" style={{ gap: 8 }}>
+          <Link className="btn btn-ghost btn-sm" href="/admin/templates/import" data-testid="import-template">استيراد من ملف</Link>
+          <Link className="btn btn-sm" href="/admin/templates/new">+ قالب جديد</Link>
+        </div>
       </div>
       <p className="muted">ابني القالب (الأيام والتمارين وخطة كل أسبوع) مرة واحدة، ثم أسنديه لأي متدرب من صفحة طلبه ← «برنامج التمرين». الإسناد ينسخ القالب، فتعديل القالب لاحقاً لا يغيّر برامج المتدربين الحالية.</p>
       <div className="table-wrap">

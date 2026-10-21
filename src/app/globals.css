@@ -2435,3 +2435,6 @@ fieldset.field > legend { inline-size: 100%; padding: 0; float: none; }
 .booklet-cover-edit { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 14px; align-items: start; }
 @media (max-width: 600px) { .booklet-cover-edit { grid-template-columns: minmax(0, 1fr); } }
 .booklet-thumb { inline-size: 72px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; flex: none; }
+
+/* استيراد قالب: أخطاء الملف سطر لكل خطأ */
+.import-form .alert.err { white-space: pre-line; }

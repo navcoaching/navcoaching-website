@@ -24,7 +24,7 @@ export function normalizeName(s: string): string {
 const words = (s: string) => new Set(normalizeName(s).split(" ").filter((w) => w && !NOISE.has(w)));
 
 /** تشابه الكلمات (Jaccard) بين اسمين بعد التطبيع */
-function overlap(a: string, b: string): number {
+export function overlap(a: string, b: string): number {
   const A = words(a), B = words(b);
   if (!A.size || !B.size) return 0;
   let n = 0;
