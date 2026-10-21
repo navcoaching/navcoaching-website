@@ -13,7 +13,7 @@ loadEnv();
 const DB = process.env.BACKUP_DATABASE_URL || process.env.DATABASE_URL_OWNER;
 const PASS = process.env.BACKUP_PASSPHRASE ?? "";
 const missing = [
-  !DB && "BACKUP_DATABASE_URL (رابط nav_owner من Neon)",
+  !DB && "BACKUP_DATABASE_URL (رابط neondb_owner المباشر من Neon)",
   PASS.length < 24 && "BACKUP_PASSPHRASE (24 حرفاً أو أكثر)",
   process.env.STORAGE_DRIVER === "netlify" && !process.env.NETLIFY_AUTH_TOKEN && "NETLIFY_AUTH_TOKEN (Netlify ← User settings ← Personal access tokens)",
 ].filter(Boolean);
