@@ -2379,16 +2379,13 @@ fieldset.field > legend { inline-size: 100%; padding: 0; float: none; }
 @media (prefers-reduced-motion: reduce) { .story-on [data-story], .story-on [data-fill] { --rev: 1 !important; } }
 @media print { .story-on [data-story], .story-on [data-fill] { --rev: 1 !important; } .v3-story { display: none; } }
 
-/* البطاقات العائمة: ظل عميق ناعم وتمايل بطيء، لكل بطاقة طور مختلف حتى لا تتحرك معاً.
+/* البطاقات العائمة: ظل عميق ناعم، وتمايل خفيف عند مرور الماوس.
    translate منفصل عن transform فلا يتعارض مع حركة الظهور أو رفع البطاقة عند المرور. */
 .v3-plan, .v3-steps li, .v3-reviews .review, .v3-meter { box-shadow: 0 30px 60px -28px rgba(7,20,42,.45), 0 10px 22px -14px rgba(7,20,42,.25); }
 .v3-how .v3-steps li, .v3-meter { box-shadow: 0 34px 70px -26px rgba(0,0,0,.6), 0 12px 24px -14px rgba(0,0,0,.4); }
-@media (prefers-reduced-motion: no-preference) {
-  .v3-plan, .v3-steps li, .v3-reviews .review, .v3-meter, .v3-stack figure { animation: v3-bob 7s ease-in-out infinite; }
-  .v3-plan:nth-child(2), .v3-steps li:nth-child(2), .v3-reviews .review:nth-child(2), .v3-stack .s2 { animation-delay: -2.4s; }
-  .v3-plan:nth-child(3), .v3-steps li:nth-child(3), .v3-reviews .review:nth-child(3), .v3-stack .s3 { animation-delay: -4.8s; }
-  .v3-reviews .review:nth-child(n+4) { animation-delay: -1.2s; }
-  .v3-meter { animation-duration: 9s; }
+/* التمايل عند مرور الماوس فقط (مرة وحدة)، فما فيه حركة مستمرة ولا زر يتحرك وقت الضغط. على الجوال ما يشتغل */
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  :is(.v3-plan, .v3-steps li, .v3-reviews .review, .v3-meter, .v3-stack figure):hover { animation: v3-bob 1.8s ease-in-out; }
 }
 @keyframes v3-bob { 50% { translate: 0 -8px; } }
 
@@ -2398,9 +2395,9 @@ fieldset.field > legend { inline-size: 100%; padding: 0; float: none; }
 .pub:not(.v3) .section :is(.card, .pcard, .review):not(:has(form, input, select, textarea)) { box-shadow: 0 30px 60px -28px rgba(7,20,42,.42), 0 10px 22px -14px rgba(7,20,42,.22); }
 @media (prefers-reduced-motion: no-preference) {
   .page-hero:not(.v3 *) > .wrap::before { animation: v3-breathe 7s ease-in-out infinite; }
-  .pub:not(.v3) .section :is(.card, .pcard, .review):not(:has(form, input, select, textarea, .btn)) { animation: v3-bob 7s ease-in-out infinite; }
-  .pub:not(.v3) .section :is(.card, .pcard, .review):nth-child(3n+2) { animation-delay: -2.4s; }
-  .pub:not(.v3) .section :is(.card, .pcard, .review):nth-child(3n) { animation-delay: -4.8s; }
+}
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  .pub:not(.v3) .section :is(.card, .pcard, .review):not(:has(form, input, select, textarea, .btn)):hover { animation: v3-bob 1.8s ease-in-out; }
 }
 
 /* ===== حساب المتدرب ولوحة الإدارة: لمسات lumofy.ai بدون حركة (أكتوبر 2026) =====
