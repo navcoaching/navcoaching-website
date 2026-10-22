@@ -2456,3 +2456,16 @@ fieldset.field > legend { inline-size: 100%; padding: 0; float: none; }
 :root[data-theme="dark"] :is(.pain-chip.ok, .pain-legend .ok b) { background: #12392b; color: #7fdcb0; }
 :root[data-theme="dark"] :is(.pain-chip.mid, .pain-legend .mid b) { background: #3d2f0d; color: #f3c66b; }
 :root[data-theme="dark"] :is(.pain-chip.hi, .pain-legend .hi b) { background: #45201b; color: #f5a397; }
+
+/* صفحة برنامج المتدرب (الإدارة): عرض كامل، بيانات البرنامج بعمودين، والملاحظات بجانب الإسناد */
+.prog-head h1 { margin-bottom: 4px; }
+.bk-layout { display: grid; gap: 16px 22px; }
+.bk-fields { display: grid; gap: 14px 16px; align-items: start; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); align-content: start; }
+.bk-instr { display: flex; flex-direction: column; }
+.bk-instr textarea { flex: 1; min-height: 220px; }
+.bk-actions { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.prog-side { display: grid; gap: 18px; align-items: start; }
+@media (min-width: 1100px) {
+  .bk-layout { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
+  .prog-side { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+}
