@@ -77,7 +77,7 @@ AR_EN_GLOSSARY: dict[str, list[str]] = {
     "اصابه": ["injury"],
     "اصابات": ["injury", "injuries"],
     "الم": ["pain"],
-    "ايام": ["days", "frequency", "week"],
+    "ايام": ["days", "day", "frequency"],
     "يوم": ["day", "days"],
     "اسبوعي": ["weekly", "week"],
     "اسبوع": ["week", "weekly"],

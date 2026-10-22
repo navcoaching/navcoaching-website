@@ -104,3 +104,12 @@ def test_fuzzy_quote_match_never_changes_numbers_or_negation():
     assert locate_quote("Training was performed three days per week", src)
     assert locate_quote("Training was performed five days per week", src) is None
     assert locate_quote("Protein intake did differ between groups", src) is None
+
+
+def test_days_question_ignores_sentences_that_only_mention_weeks(env):
+    _add_text(env, "s.md", "Twenty-four participants trained for 10 weeks.\n\n"
+                           "This randomized trial compared moderate and high weekly training volume over 12 weeks.\n\n"
+                           "Training was performed three days per week.")
+    r = rag.ask("كم عدد أيام التدريب في الأسبوع؟", lang="ar")
+    assert r["status"] == "answered"
+    assert [c["text"] for c in r["claims"]] == ["Training was performed three days per week."]
