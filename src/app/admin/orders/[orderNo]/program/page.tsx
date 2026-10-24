@@ -73,11 +73,21 @@ export default async function OrderProgram({ params, searchParams }: { params: P
     </ActionForm>
   );
 
+  const past = blocks.filter((b) => b.status !== "active");
+  const pastBlocks = past.length > 0 && (
+    <section className="card stack">
+      <h2 style={{ fontSize: 17 }}>برامج سابقة</h2>
+      <ul className="small" style={{ margin: 0, paddingInlineStart: 18 }}>
+        {past.map((b) => <li key={b.id}>{b.name} · بدأ {fmtDate(b.start_date)} · {b.weeks} أسابيع</li>)}
+      </ul>
+    </section>
+  );
+
   return (
-    <div className="stack" style={{ ["--space" as string]: "18px", maxWidth: 1100 }}>
+    <div className="stack prog-page" style={{ ["--space" as string]: "18px" }}>
       <nav className="small"><Link href="/admin/orders">الطلبات</Link> / <Link href={`/admin/orders/${o.order_no}`}><bdi className="num">{o.order_no}</bdi></Link> / برنامج التمرين</nav>
-      <div>
-        <h1 style={{ marginBottom: 4 }}>برنامج التمرين — {o.contact_name}</h1>
+      <div className="prog-head">
+        <h1>برنامج التمرين — {o.contact_name}</h1>
         <p className="muted">{o.product_name}{active && <> · {active.name} · {week === 0 ? `يبدأ ${fmtDate(active.start_date)}` : `الأسبوع ${week} من ${active.weeks}`}</>}</p>
       </div>
       {programLockedUntil(o, today) && (
@@ -120,22 +130,24 @@ export default async function OrderProgram({ params, searchParams }: { params: P
             <summary style={{ cursor: "pointer", minHeight: 40, fontWeight: 700 }}>بيانات البرنامج{active.template_name ? ` (من قالب: ${active.template_name})` : ""}</summary>
             <ActionForm action={saveBlockAction}>
               <input type="hidden" name="id" value={active.id} />
-              <div className="grid g2">
+              <div className="bk-layout">
+              <div className="bk-fields">
                 <div className="field"><label htmlFor="bk-name">الاسم</label><input id="bk-name" name="name" type="text" required maxLength={120} defaultValue={active.name} /></div>
                 <div className="field"><label htmlFor="bk-start">تاريخ البداية</label><input id="bk-start" name="start_date" type="date" required defaultValue={active.start_date} /></div>
                 <div className="field"><label htmlFor="bk-weeks">عدد الأسابيع</label><input id="bk-weeks" name="weeks" type="number" min={1} max={12} defaultValue={active.weeks} /></div>
                 <div className="field"><label htmlFor="bk-steps">هدف الخطوات اليومي</label><input id="bk-steps" name="steps_goal_day" type="number" inputMode="numeric" min={0} max={40000} step={100} defaultValue={Math.round(active.steps_goal_week / 7)} />
-                  <span className="hint">يظهر للمتدرب في «تعليمات التمرين»، والهدف الأسبوعي في التقدم = اليومي × 7.</span></div>
+                  <span className="hint">الأسبوعي = اليومي × 7.</span></div>
                 <div className="field"><label htmlFor="bk-place">مكان التمرين</label>
                   <select id="bk-place" name="place" defaultValue={active.place} data-testid="block-place">
                     <option value="نادي">النادي</option><option value="منزل">البيت</option>
                   </select>
-                  <span className="hint">البيت: بدائل المتدرب والإضافة من تمارين البيت فقط.</span></div>
+                  <span className="hint">البيت: البدائل والإضافة من تمارين البيت فقط.</span></div>
               </div>
-              <div className="field"><label htmlFor="bk-instr">تعليمات البرنامج (تظهر للمتدرب)</label>
-                <textarea id="bk-instr" name="instructions" maxLength={4000} rows={3} defaultValue={active.instructions ?? ""} /></div>
+              <div className="field bk-instr"><label htmlFor="bk-instr">تعليمات البرنامج (تظهر للمتدرب)</label>
+                <textarea id="bk-instr" name="instructions" maxLength={4000} rows={10} defaultValue={active.instructions ?? ""} /></div>
+              </div>
             </ActionForm>
-            <div className="row" style={{ marginTop: 12 }}>
+            <div className="row bk-actions">
               <ActionForm action={notifyProgramAction} className="form" submit="إشعار المتدرب بتحديث البرنامج" submitClass="btn btn-ghost btn-sm">
                 <input type="hidden" name="order_no" value={o.order_no} />
               </ActionForm>
@@ -162,6 +174,9 @@ export default async function OrderProgram({ params, searchParams }: { params: P
             <VolumeTable items={days.flatMap((d) => d.items.map((i) => ({ ...i, plan: normalizePlan(i.plan, active.weeks) })))} weeks={active.weeks} limits={volume.limits} saved={volume.saved} muscles={volume.muscles} sessionCap={volume.sessionCap} />
           </section>
 
+          <TraineeLogs coachId={coach.id} blockId={active.id} userId={o.user_id} />
+
+          <div className="prog-side">
           <section className="card stack">
             <h2 style={{ fontSize: 18 }}>ملاحظاتك للمتدرب</h2>
             <ActionForm action={addBlockNoteAction} submit="إضافة الملاحظة" resetOnSuccess>
@@ -187,23 +202,18 @@ export default async function OrderProgram({ params, searchParams }: { params: P
             ))}
           </section>
 
-          <TraineeLogs coachId={coach.id} blockId={active.id} userId={o.user_id} />
-
-          <details className="card">
-            <summary style={{ cursor: "pointer", minHeight: 40, fontWeight: 700 }}>إسناد برنامج جديد (Block جديد)</summary>
-            {assignForm}
-          </details>
+          <div className="stack">
+            <details className="card">
+              <summary style={{ cursor: "pointer", minHeight: 40, fontWeight: 700 }}>إسناد برنامج جديد (Block جديد)</summary>
+              {assignForm}
+            </details>
+            {pastBlocks}
+          </div>
+          </div>
         </>
       )}
 
-      {blocks.filter((b) => b.status !== "active").length > 0 && (
-        <section className="card stack">
-          <h2 style={{ fontSize: 17 }}>برامج سابقة</h2>
-          <ul className="small" style={{ margin: 0, paddingInlineStart: 18 }}>
-            {blocks.filter((b) => b.status !== "active").map((b) => <li key={b.id}>{b.name} · بدأ {fmtDate(b.start_date)} · {b.weeks} أسابيع</li>)}
-          </ul>
-        </section>
-      )}
+      {!active && pastBlocks}
     </div>
   );
 }

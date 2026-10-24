@@ -11,10 +11,10 @@ import VolumeTable from "@/components/admin/VolumeTable";
 
 type Tpl = { id: string; name: string; weeks: number; instructions: string | null; archived: boolean; public: boolean; public_summary: string | null; place: string };
 
-export default async function TemplatePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string }> }) {
+export default async function TemplatePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string; imported?: string; skipped?: string; note?: string }> }) {
   const coach = await requireCoach();
   const { id } = await params;
-  const { created } = await searchParams;
+  const { created, imported, skipped, note } = await searchParams;
   const isNew = id === "new";
   if (!isNew && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id)) notFound();
   const data = await withUser(coach.id, async (tx) => {
@@ -32,6 +32,18 @@ export default async function TemplatePage({ params, searchParams }: { params: P
       <nav className="small"><Link href="/admin/templates">قوالب البرامج</Link> / {tpl?.name ?? "قالب جديد"}</nav>
       <h1>{isNew ? "قالب جديد" : tpl!.name}</h1>
       {created && <p className="alert ok" role="status">تم إنشاء القالب. أضيفي الأيام والتمارين بالأسفل.</p>}
+      {imported && <p className="alert ok" role="status" data-testid="imported">تم استيراد القالب من الملف. راجعي الأيام والتمارين بالأسفل وعدّلي ما تحتاجين.</p>}
+      {imported && note && /^[A-Z]{2,5}-\d{6}-[A-Z0-9]{3,8}$/.test(note) && (
+        <p className="alert info" role="status" data-testid="import-note">
+          أُضيفت معلومات الملف لملاحظاتك الخاصة في <Link href={`/admin/orders/${note}#notes-h`}>طلب {note}</Link>. أسندي القالب له من صفحة <Link href={`/admin/orders/${note}/program`}>برنامجه</Link>.
+        </p>
+      )}
+      {imported && skipped && (
+        <div className="alert warn" style={{ display: "block" }} data-testid="import-skipped">
+          <b>لم يُستورد من الملف:</b>
+          <ul style={{ margin: "6px 0 0", paddingInlineStart: 20 }}>{skipped.slice(0, 800).split("\n").map((l) => <li key={l}>{l}</li>)}</ul>
+        </div>
+      )}
       <details className="card" open={isNew}>
         <summary style={{ cursor: "pointer", minHeight: 40, fontWeight: 700 }}>بيانات القالب</summary>
         <ActionForm action={saveTemplateAction} submit={isNew ? "إنشاء القالب" : "حفظ"}>

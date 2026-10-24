@@ -214,6 +214,20 @@ export async function addNoteAction(_: ActionState, fd: FormData): Promise<Actio
   return { ok: true, message: "أُضيفت الملاحظة." };
 }
 
+export async function updateNoteAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const orderNo = String(fd.get("order_no") ?? "");
+  const id = Number(fd.get("id"));
+  const body = String(fd.get("body") ?? "").trim();
+  if (!Number.isInteger(id) || id <= 0) return { error: GENERIC };
+  if (!body) return { error: "اكتبي الملاحظة أولاً." };
+  if (body.length > 5000) return { error: "الملاحظة أطول من 5000 حرف." };
+  try {
+    await asCoach((tx) => tx.query("SELECT app.coach_update_note($1,$2)", [id, body]));
+  } catch (err) { return fail(err); }
+  revalidatePath(`/admin/orders/${orderNo}`);
+  return { ok: true, message: "عُدّلت الملاحظة." };
+}
+
 export async function deleteNoteAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const orderNo = String(fd.get("order_no") ?? "");
   const id = Number(fd.get("id"));

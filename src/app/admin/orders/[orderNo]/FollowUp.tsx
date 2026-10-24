@@ -4,7 +4,7 @@ import { loadReminders, loadWeekState, reviewMessage } from "@/lib/reminders";
 import { SUB_LABEL, WEEKDAYS, WEEK_LABEL, fmtYMD, reviewEveryLabel, riyadhDate, subscriptionState } from "@/lib/schedule";
 import { CHANNEL_LABEL, RESULT_LABEL } from "@/lib/notify";
 import ActionForm from "@/components/admin/ActionForm";
-import { addNoteAction, deleteNoteAction, markWeekAction, sendReviewNowAction, setSubscriptionAction } from "@/app/actions/admin";
+import { addNoteAction, deleteNoteAction, updateNoteAction, markWeekAction, sendReviewNowAction, setSubscriptionAction } from "@/app/actions/admin";
 import type { OrderRow } from "@/lib/data";
 import { IconCheck, IconClock, IconLock } from "@/components/Icons";
 
@@ -14,8 +14,8 @@ const STATUS_TXT: Record<string, string> = { pending: "قيد الإرسال", .
 /** ملاحظات المدربة الخاصة: سجل بتاريخ وكاتبة كل ملاحظة. لا تُقرأ إلا بصلاحية إدارية في قاعدة البيانات */
 export async function AdminNotes({ coachId, o }: { coachId: string; o: O }) {
   const notes = await withUser(coachId, async (tx) => (await tx.query(
-    `SELECT n.id, n.body, n.created_at, u.name FROM order_note_entries n LEFT JOIN "user" u ON u.id = n.created_by
-      WHERE n.order_id = $1 ORDER BY n.created_at DESC, n.id DESC`, [o.id])).rows as { id: string; body: string; created_at: string; name: string | null }[]);
+    `SELECT n.id, n.body, n.created_at, n.updated_at, u.name FROM order_note_entries n LEFT JOIN "user" u ON u.id = n.created_by
+      WHERE n.order_id = $1 ORDER BY n.created_at DESC, n.id DESC`, [o.id])).rows as { id: string; body: string; created_at: string; updated_at: string | null; name: string | null }[]);
   return (
     <section className="card stack notes-card" aria-labelledby="notes-h" data-testid="admin-notes">
       <div className="row" style={{ justifyContent: "space-between" }}>
@@ -33,8 +33,17 @@ export async function AdminNotes({ coachId, o }: { coachId: string; o: O }) {
               <div className="note-meta">
                 <time dateTime={new Date(n.created_at).toISOString()}>{fmtDateTime(n.created_at)}</time>
                 {n.name && <span> · {n.name}</span>}
+                {n.updated_at && <span data-testid="note-edited"> · عُدّلت {fmtDateTime(n.updated_at)}</span>}
               </div>
               <p>{n.body}</p>
+              <details className="note-edit">
+                <summary className="link-btn small">تعديل</summary>
+                <ActionForm action={updateNoteAction} submit="حفظ التعديل" submitClass="btn btn-sm" className="form">
+                  <input type="hidden" name="order_no" value={o.order_no} />
+                  <input type="hidden" name="id" value={n.id} />
+                  <textarea name="body" aria-label="تعديل الملاحظة" defaultValue={n.body} maxLength={5000} required style={{ minHeight: 90 }} />
+                </ActionForm>
+              </details>
               <ActionForm action={deleteNoteAction} submit="حذف" submitClass="link-btn small" className="note-del" confirm="حذف هذه الملاحظة نهائياً؟">
                 <input type="hidden" name="order_no" value={o.order_no} />
                 <input type="hidden" name="id" value={n.id} />

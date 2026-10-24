@@ -352,6 +352,13 @@ describe("سجل ملاحظات المدربة", () => {
     await assert.rejects(as(A, "SELECT app.coach_add_note($1, 'x')", [no]), /للمدربة فقط/);
     await assert.rejects(as(A, "SELECT app.coach_delete_note($1)", [rows[0].id]), /للمدربة فقط/);
     await assert.rejects(as(COACH, "SELECT app.coach_add_note($1, '   ')", [no]), /اكتبي الملاحظة/);
+    await as(COACH, "SELECT app.coach_update_note($1, ' معدّلة ')", [rows[1].id]);
+    const ed = (await as(COACH, "SELECT body, created_at, updated_at FROM order_note_entries WHERE id = $1", [rows[1].id])).rows[0];
+    assert.equal(ed.body, "معدّلة");
+    assert.ok(ed.updated_at && +ed.created_at === +rows[1].created_at);
+    await assert.rejects(as(A, "SELECT app.coach_update_note($1, 'x')", [rows[1].id]), /للمدربة فقط/);
+    await assert.rejects(as(COACH, "SELECT app.coach_update_note($1, '  ')", [rows[1].id]), /اكتبي الملاحظة/);
+    await assert.rejects(as(COACH, "SELECT app.coach_update_note(-1, 'x')"), /غير موجودة/);
     await as(COACH, "SELECT app.coach_delete_note($1)", [rows[0].id]);
     assert.equal((await as(COACH, "SELECT count(*)::int n FROM order_note_entries n JOIN orders o ON o.id = n.order_id WHERE o.order_no = $1", [no])).rows[0].n, 1);
   });

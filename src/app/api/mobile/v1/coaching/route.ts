@@ -35,12 +35,12 @@ export async function GET() {
         items: d.items.map((i) => {
           const e = data.exercises.get(i.exercise_id);
           return {
-            id: i.id, note: i.note, plan: i.plan,
+            id: i.id, note: i.note, plan: i.plan, pain_label: i.pain_label,
             exercise: { id: i.exercise_id, name: e?.name ?? "—", muscle: e?.primary_muscle ?? null, video: e?.video_url ?? null, instructions: e?.instructions ?? null },
           };
         }),
       })),
-      logs: data.logs.map((l) => ({ item: l.block_item_id, week: l.week_no, weights: l.weights ?? l.reps.map(() => l.weight), reps: l.reps, rir: l.rir })),
+      logs: data.logs.map((l) => ({ item: l.block_item_id, week: l.week_no, weights: l.weights ?? l.reps.map(() => l.weight), reps: l.reps, rir: l.rir, pain: l.pain })),
       notes: data.notes.map((n) => ({ id: n.id, week: n.week_no, body: n.body })),
       ratings: data.ratings.map((r) => ({ day: r.block_day_id, week: r.week_no, rating: r.rating })),
     };

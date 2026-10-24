@@ -7,13 +7,14 @@ import {
   type ImportPreview,
 } from "@/app/actions/training";
 import { MAX_SETS, bestOneRm } from "@/lib/training";
+import { PAIN_ZONES } from "@/lib/pain";
 import FilePicker from "@/components/FilePicker";
 
-type Log = { weight: number; weights: number[] | null; reps: number[]; rir: number | null } | null;
+type Log = { weight: number; weights: number[] | null; reps: number[]; rir: number | null; pain?: number | null } | null;
 
 /** تسجيل تمرين لأسبوع: وزن وتكرارات لكل جولة، و RIR. الوزن الفارغ = وزن الجولة السابقة، والتكرارات الفارغة = المستهدف */
-export function ItemLogForm({ orderNo, item, week, target, targetRir, log }: {
-  orderNo: string; item: string; week: number; target: number[]; targetRir: number | null; log: Log;
+export function ItemLogForm({ orderNo, item, week, target, targetRir, log, painLabel }: {
+  orderNo: string; item: string; week: number; target: number[]; targetRir: number | null; log: Log; painLabel?: string | null;
 }) {
   const { state, onSubmit, pending } = useFormAction(logItemAction);
   const initialSets = Math.max(target.length, log?.reps.length ?? 0, log?.weights?.length ?? 0, 1);
@@ -78,6 +79,15 @@ export function ItemLogForm({ orderNo, item, week, target, targetRir, log }: {
         <label htmlFor={`r-${p}`}>RIR</label>
         <input id={`r-${p}`} name="rir" type="number" inputMode="decimal" step="0.5" min={0} max={10} dir="ltr" placeholder={targetRir != null ? String(targetRir) : ""} defaultValue={log?.rir ?? ""} />
       </div>
+      {painLabel && (
+        <div className="field rir-field pain-field">
+          <label htmlFor={`p-${p}`}>{painLabel} بعد التمرين <span className="pain-range">(0–10)</span></label>
+          <input id={`p-${p}`} name="pain" type="number" inputMode="numeric" step="1" min={0} max={10} dir="ltr" placeholder="مثال: 2" defaultValue={log?.pain ?? ""} data-testid="pain-input" />
+          <ul className="pain-legend">
+            {PAIN_ZONES.map((z) => <li key={z.range} className={z.tone}><b dir="ltr">{z.range}</b><span>{z.text}</span></li>)}
+          </ul>
+        </div>
+      )}
       <p className="hint" style={{ margin: 0 }}>وزن وعدّات الجولة الأولى تتعبّى تلقائياً في الجولات اللي بعدها، وأي جولة اختلفت قابلة للتعديل. ⧉ يكرر الجولة.</p>
       {est > 0 && <p className="small one-rm" data-testid="one-rm" style={{ margin: 0 }}>أعلى وزن تقديري لتكرار واحد (1RM): <b className="num">{est}</b> كغ</p>}
       <FormMessage state={state} />

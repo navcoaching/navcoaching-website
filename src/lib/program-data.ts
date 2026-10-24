@@ -13,10 +13,10 @@ export async function loadProgramDays(tx: Tx, kind: "template" | "block", ownerI
     : (await tx.query(`SELECT id, day_no, title FROM block_days WHERE block_id = $1 ORDER BY day_no`, [ownerId])).rows;
   const items = kind === "template"
     ? (await tx.query(
-        `SELECT i.id, i.day_id, i.exercise_id, e.name, i.plan, i.note, e.primary_muscle, e.secondary_muscles, e.pattern, e.sub_pattern FROM template_items i JOIN exercises e ON e.id = i.exercise_id
+        `SELECT i.id, i.day_id, i.exercise_id, e.name, i.plan, i.note, i.pain_label, e.primary_muscle, e.secondary_muscles, e.pattern, e.sub_pattern FROM template_items i JOIN exercises e ON e.id = i.exercise_id
           JOIN template_days d ON d.id = i.day_id WHERE d.template_id = $1 ORDER BY i.position, i.id`, [ownerId])).rows
     : (await tx.query(
-        `SELECT i.id, i.day_id, i.exercise_id, e.name, i.plan, i.note, e.primary_muscle, e.secondary_muscles, e.pattern, e.sub_pattern, CASE WHEN i.coach_exercise_id <> i.exercise_id THEN c.name END AS coach_name,
+        `SELECT i.id, i.day_id, i.exercise_id, e.name, i.plan, i.note, i.pain_label, e.primary_muscle, e.secondary_muscles, e.pattern, e.sub_pattern, CASE WHEN i.coach_exercise_id <> i.exercise_id THEN c.name END AS coach_name,
                 (SELECT count(*)::int FROM item_logs l WHERE l.block_item_id = i.id) AS logs
            FROM block_items i JOIN exercises e ON e.id = i.exercise_id JOIN exercises c ON c.id = i.coach_exercise_id
            JOIN block_days d ON d.id = i.day_id WHERE d.block_id = $1 ORDER BY i.position, i.id`, [ownerId])).rows;
@@ -37,9 +37,9 @@ export async function loadExerciseOptions(tx: Tx, place?: string, keepIds: strin
 // =====================================================================
 export type BlockRow = { id: string; order_id: string; user_id: string; name: string; start_date: string; weeks: number; instructions: string | null; steps_goal_week: number; status: string };
 export type BlockExercise = { id: string; name: string; primary_muscle: string; secondary_muscles: string[]; video_url: string | null; instructions: string | null };
-export type BlockItem = { id: string; day_id: string; position: number; exercise_id: string; coach_exercise_id: string; plan: PlanWeek[]; note: string | null };
+export type BlockItem = { id: string; day_id: string; position: number; exercise_id: string; coach_exercise_id: string; plan: PlanWeek[]; note: string | null; pain_label: string | null };
 export type BlockDay = { id: string; day_no: number; title: string; items: BlockItem[] };
-export type ItemLog = { block_item_id: string; week_no: number; exercise_id: string; weight: number; weights: number[] | null; reps: number[]; rir: number | null; logged_at: string };
+export type ItemLog = { block_item_id: string; week_no: number; exercise_id: string; weight: number; weights: number[] | null; reps: number[]; rir: number | null; pain: number | null; logged_at: string };
 export type BlockData = {
   block: BlockRow; days: BlockDay[]; exercises: Map<string, BlockExercise>; logs: ItemLog[];
   ratings: { block_day_id: string; week_no: number; rating: number }[]; steps: { week_no: number; total: number }[];
@@ -49,12 +49,12 @@ export type BlockData = {
 export async function loadBlockData(tx: Tx, block: BlockRow): Promise<BlockData> {
   const days = (await tx.query(`SELECT id, day_no, title FROM block_days WHERE block_id = $1 ORDER BY day_no`, [block.id])).rows;
   const items = (await tx.query(
-    `SELECT i.id, i.day_id, i.position, i.exercise_id, i.coach_exercise_id, i.plan, i.note
+    `SELECT i.id, i.day_id, i.position, i.exercise_id, i.coach_exercise_id, i.plan, i.note, i.pain_label
        FROM block_items i JOIN block_days d ON d.id = i.day_id WHERE d.block_id = $1 ORDER BY i.position, i.id`, [block.id])).rows;
   const exercises = new Map<string, BlockExercise>(
     (await tx.query(`SELECT * FROM app.block_exercises($1)`, [block.id])).rows.map((e) => [e.id, e]));
   const logs = (await tx.query(
-    `SELECT l.block_item_id, l.week_no, l.exercise_id, l.weight::float AS weight, l.weights::float[] AS weights, l.reps, l.rir::float AS rir, l.logged_at
+    `SELECT l.block_item_id, l.week_no, l.exercise_id, l.weight::float AS weight, l.weights::float[] AS weights, l.reps, l.rir::float AS rir, l.pain, l.logged_at
        FROM item_logs l JOIN block_items i ON i.id = l.block_item_id JOIN block_days d ON d.id = i.day_id WHERE d.block_id = $1`, [block.id])).rows;
   const ratings = (await tx.query(
     `SELECT r.block_day_id, r.week_no, r.rating FROM day_ratings r JOIN block_days d ON d.id = r.block_day_id WHERE d.block_id = $1`, [block.id])).rows;

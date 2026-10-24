@@ -7,10 +7,11 @@ import { api, apiAction } from "@/lib/api";
 import { planText, useCoaching } from "@/lib/coaching";
 import { formatKg, parseNumber } from "@/lib/tracker/logic";
 import { useTheme } from "@/lib/theme";
+import { PAIN_ZONES } from "@/shared/pain";
 
 const MAX_SETS = 10;
 
-// تسجيل تمرين من برنامج المدربة: وزن وتكرارات لكل جولة + RIR. نفس قواعد الموقع:
+// تسجيل تمرين من برنامج المدربة: وزن وتكرارات لكل جولة + RIR (+ الألم 0–10 إذا عليه مقياس). نفس قواعد الموقع:
 // الجولة الفارغة الوزن تأخذ وزن اللي قبلها، والفارغة التكرارات تأخذ المستهدف.
 export default function LogItem() {
   const { item: itemId, week: weekStr } = useLocalSearchParams<{ item: string; week: string }>();
@@ -24,6 +25,7 @@ export default function LogItem() {
   const [weights, setWeights] = useState<string[]>(() => Array.from({ length: n0 }, (_, i) => (log ? formatKg(log.weights[i]) : "")));
   const [reps, setReps] = useState<string[]>(() => Array.from({ length: n0 }, (_, i) => (log?.reps[i] != null ? String(log.reps[i]) : "")));
   const [rir, setRir] = useState(log?.rir != null ? String(log.rir) : "");
+  const [pain, setPain] = useState(log?.pain != null ? String(log.pain) : "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,6 +39,7 @@ export default function LogItem() {
       if (weights.some((w) => w.trim() && parseNumber(w, { max: 1000 }) === null)) return setError("الوزن رقم من 0 إلى 1000.");
       if (reps.some((r) => r.trim() && parseNumber(r, { max: 200, integer: true }) === null)) return setError("التكرارات أرقام صحيحة.");
       if (rir.trim() && parseNumber(rir, { max: 10 }) === null) return setError("RIR رقم من 0 إلى 10.");
+      if (item!.pain_label && pain.trim() && parseNumber(pain, { max: 10, integer: true }) === null) return setError("الألم رقم صحيح من 0 إلى 10.");
     }
     const fd = new FormData();
     fd.append("item", itemId);
@@ -47,6 +50,8 @@ export default function LogItem() {
       weights.forEach((w) => fd.append("set_weight", w.trim() ? String(parseNumber(w, { max: 1000 })) : ""));
       reps.forEach((r) => fd.append("reps", r.trim() ? String(parseNumber(r, { max: 200, integer: true })) : ""));
       if (rir.trim()) fd.append("rir", String(parseNumber(rir, { max: 10 })));
+      // الألم يُرسل فقط للتمرين اللي عليه مقياس (فارغ = بدون قيمة، مثل الموقع)
+      if (item!.pain_label) fd.append("pain", pain.trim() ? String(parseNumber(pain, { max: 10, integer: true })) : "");
     }
     setBusy(true);
     const res = await apiAction("log-item", fd);
@@ -93,6 +98,19 @@ export default function LogItem() {
           <TextInput value={rir} onChangeText={setRir} editable={!readOnly} keyboardType="decimal-pad" placeholder={plan?.rir != null ? String(plan.rir) : ""}
             placeholderTextColor={t.muted} accessibilityLabel="RIR" style={[s.input, { color: t.text, borderColor: t.line, backgroundColor: t.paper }]} />
         </View>
+        {!!item.pain_label && (
+          <View style={{ gap: 6 }}>
+            <Text style={{ color: t.text, fontSize: 15, fontWeight: "600", textAlign: "left" }}>{item.pain_label} بعد التمرين (0–10)</Text>
+            <TextInput value={pain} onChangeText={setPain} editable={!readOnly} keyboardType="number-pad" placeholder="مثال: 2" placeholderTextColor={t.muted}
+              accessibilityLabel={`${item.pain_label} من 0 إلى 10`} style={[s.input, { color: t.text, borderColor: t.line, backgroundColor: t.paper }]} />
+            {PAIN_ZONES.map((z) => (
+              <View key={z.range} style={s.zone}>
+                <Text style={[s.zoneTag, ZONE[z.tone]]}>{z.range}</Text>
+                <Text style={{ color: t.text, fontSize: 14, flex: 1, textAlign: "left", lineHeight: 21 }}>{z.text}</Text>
+              </View>
+            ))}
+          </View>
+        )}
       </Card>
       {error && <ErrorText>{error}</ErrorText>}
       {!readOnly && <Button title="حفظ" busy={busy} onPress={() => submit()} />}
@@ -113,7 +131,16 @@ const s = StyleSheet.create({
   col0: { width: 28 },
   col: { flex: 1 },
   input: { minHeight: 46, borderWidth: 1, borderRadius: 10, textAlign: "center", fontSize: 17, writingDirection: "ltr" },
+  zone: { flexDirection: "row", alignItems: "flex-start", gap: 10 },
+  zoneTag: { minWidth: 56, textAlign: "center", fontWeight: "700", fontSize: 13, paddingVertical: 3, paddingHorizontal: 8, borderRadius: 999, overflow: "hidden", writingDirection: "ltr" },
 });
+
+// نفس ألوان الموقع: أخضر 0–2، أصفر 3–5، أحمر 6–10 (مقروءة على الوضعين)
+const ZONE = {
+  ok: { backgroundColor: "#e3f5ec", color: "#13805a" },
+  mid: { backgroundColor: "#fff3d6", color: "#8a5800" },
+  hi: { backgroundColor: "#fde4e1", color: "#b4412f" },
+} as const;
 
 type SwapOpt = { id: string; name: string; is_coach_choice: boolean; is_current: boolean };
 

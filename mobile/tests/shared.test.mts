@@ -1,14 +1,15 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { HEADER, SHARED } from "../scripts/sync-shared.mjs";
+import { header, SHARED } from "../scripts/sync-shared.mjs";
 import { calculateIntake, validateIntake } from "../src/shared/calories.ts";
+import { painTone, PAIN_ZONES } from "../src/shared/pain.ts";
 
 test("shared logic matches the website copy", () => {
   for (const [from, to] of SHARED) {
     const site = readFileSync(new URL(from, new URL("../scripts/", import.meta.url)), "utf8");
     const app = readFileSync(new URL(to, new URL("../scripts/", import.meta.url)), "utf8");
-    assert.equal(app, HEADER + site, `${to} قديم: شغّل node scripts/sync-shared.mjs`);
+    assert.equal(app, header(from) + site, `${to} قديم: شغّل node scripts/sync-shared.mjs`);
   }
 });
 
@@ -17,4 +18,9 @@ test("calculator works in the app", () => {
   assert.deepEqual(validateIntake(i), {});
   const r = calculateIntake(i as never);
   assert.ok(r.target > 1000 && r.target < r.maintenance);
+});
+
+test("pain scale works in the app", () => {
+  assert.deepEqual([0, 3, 6].map(painTone), ["ok", "mid", "hi"]);
+  assert.equal(PAIN_ZONES.length, 3);
 });
