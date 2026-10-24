@@ -1,1 +1,0 @@
-(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,32563,e=>{"use strict";e.i(47167);var r=e.i(71645);e.s(["default",0,function(){return(0,r.useEffect)(()=>{"serviceWorker"in navigator&&navigator.serviceWorker.register("/sw.js",{scope:"/",updateViaCache:"none"}).catch(()=>{})},[]),null}])}]);

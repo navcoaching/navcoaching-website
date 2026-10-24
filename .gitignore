@@ -15,3 +15,4 @@ next-env.d.ts
 
 # ملفات عمل مهارة Taste
 .taste-skill/
+.next-build/

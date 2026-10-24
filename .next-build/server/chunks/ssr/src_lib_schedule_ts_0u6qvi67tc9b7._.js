@@ -1,3 +1,0 @@
-module.exports=[19778,a=>{"use strict";function b(a=new Date){return new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Riyadh",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(a))}let c=(a,b)=>new Date(Date.UTC(+a.slice(0,4),a.slice(5,7)-1,+a.slice(8,10))+864e5*b).toISOString().slice(0,10),d=(a=b())=>({min:c(a,1),max:c(a,31)});a.s(["b",0,c,"d",0,b,"h",0,d,"x",0,(a,c=b())=>/^\d{4}-\d{2}-\d{2}$/.test(a)&&a>=d(c).min&&a<=d(c).max])}];
-
-//# sourceMappingURL=src_lib_schedule_ts_0u6qvi67tc9b7._.js.map

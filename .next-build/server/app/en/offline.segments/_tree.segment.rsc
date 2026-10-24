@@ -1,8 +1,0 @@
-:HL["/_next/static/chunks/1vf_hy5fbcvt9.css","style"]
-:HL["/_next/static/chunks/1jfjtasog4rqi.css","style"]
-:HC["/",""]
-:HL["/icons/icon-192.png","image"]
-3:[["children",{"s":"__PAGE__","h":160}]]
-2:[["children",{"s":"offline","h":96,"c":"$Q3"}]]
-1:[["children",{"s":{"n":"lang","t":"d","k":"en","s":["actions","admin","api"]},"h":112,"c":"$Q2"}]]
-0:{"b":"t7XlYF_6trZ-4JzolwJh_","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
