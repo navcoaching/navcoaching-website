@@ -66,7 +66,7 @@ test("التطبيق: برنامج المتدرب، التسجيل، الطلب�
   const lr = await call("/api/mobile/v1/actions/log-item", { method: "POST", body: fd });
   assert.equal(lr.status, 200, JSON.stringify(await lr.clone().json()));
   const c2 = (await j(await call("/api/mobile/v1/coaching"))).coaching;
-  assert.deepEqual(c2.logs[0], { item: item.id, week: 1, weights: [60, 60, 62.5], reps: [10, 9, 10], rir: 2 });
+  assert.deepEqual(c2.logs[0], { item: item.id, week: 1, weights: [60, 60, 62.5], reps: [10, 9, 10], rir: 2, pain: null });
   // تقييم اليوم
   const rd = new FormData(); rd.set("day", day.id); rd.set("week", "1"); rd.set("rating", "4"); rd.set("order_no", no);
   assert.equal((await call("/api/mobile/v1/actions/rate-day", { method: "POST", body: rd })).status, 200);
