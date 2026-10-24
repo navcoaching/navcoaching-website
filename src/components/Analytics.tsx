@@ -36,10 +36,10 @@ export default function Analytics({ id }: { id: string }) {
       )}
       {consent === null && !isPrivate && (
         <div className="consent-bar" role="region" aria-label="ملفات تعريف الارتباط" data-testid="consent-bar">
-          <p className="small">نستخدم Google Analytics لقياس زيارات الموقع وتحسينه، بدون ربطها ببياناتك الصحية أو حسابك. توافق؟</p>
+          <p className="small">قياس الزيارات بـ Google Analytics بدون بياناتك الصحية. <a href="/policies#privacy">التفاصيل</a></p>
           <div className="row" style={{ gap: 8 }}>
             <button type="button" className="btn btn-sm" onClick={() => choose("yes")}>موافق</button>
-            <button type="button" className="btn btn-ghost btn-sm" onClick={() => choose("no")}>لا، شكراً</button>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => choose("no")} aria-label="لا، شكراً">لا</button>
           </div>
         </div>
       )}

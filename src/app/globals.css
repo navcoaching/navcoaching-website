@@ -1114,9 +1114,22 @@ fieldset { min-width: 0; max-width: 100%; }
 legend { max-width: 100%; white-space: normal; overflow-wrap: anywhere; padding-inline: 0; }
 .choices { max-width: 100%; }
 
-.consent-bar { position: fixed; inset-inline: 12px; bottom: 12px; z-index: 60; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;
-  padding: 12px 14px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-2, 0 8px 30px rgba(0,0,0,.18)); max-width: 640px; margin-inline: auto; }
-.consent-bar p { margin: 0; flex: 1 1 260px; }
+.consent-bar { position: fixed; inset-inline: 12px; bottom: 12px; z-index: 60; display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-2, 0 8px 30px rgba(0,0,0,.18)); max-width: 640px; margin-inline: auto; }
+.consent-bar p { margin: 0; flex: 1 1 160px; line-height: 1.4; }
+.consent-bar .btn-sm { min-height: 44px; min-width: 44px; }
+/* شريط الجوال السفلي (الصفحات العامة): واتساب برسالة جاهزة + البرامج. يختفي في الحساب واللوحة والدخول والدفع، وصفحة الباقة لها شريطها */
+.mbar { display: none; }
+@media (max-width: 760px) {
+  .mbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; position: fixed; inset-inline: 0; bottom: 0; z-index: 40;
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); background: var(--surface); border-top: 1px solid var(--line); box-shadow: 0 -8px 24px rgba(7, 20, 42, 0.08); }
+  .mbar a { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border-radius: var(--r); text-decoration: none; font-weight: 600; font-size: 15px; }
+  .mbar-wa { background: var(--ok-bg); color: var(--ok); }
+  .mbar-main { background: var(--btn-primary, var(--navy)); color: var(--btn-on, #fff); }
+  body:has(.mbar) main { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
+  body:has(.mbar) .consent-bar, body:has(.buy-bar) .consent-bar { bottom: calc(76px + env(safe-area-inset-bottom)); }
+  .buy-bar .wa-ico { min-width: 44px; padding-inline: 10px; }
+}
 .food-log-main { min-width: 0; display: grid; gap: 4px; flex: 1; }
 .meal-more summary { cursor: pointer; min-height: 36px; display: flex; align-items: center; color: var(--accent-text); }
 .meal-ingredients { margin: 4px 0; padding-inline-start: 18px; display: grid; gap: 2px; }

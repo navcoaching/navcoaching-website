@@ -46,3 +46,8 @@ export function localPhone(international: string) {
 const dayFmt = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", { timeZone: "UTC", weekday: "long", day: "numeric", month: "long" });
 /** تاريخ بصيغة YYYY-MM-DD مع اسم اليوم: «الخميس 9 أكتوبر» */
 export const fmtDay = (ymd: string) => dayFmt.format(new Date(`${ymd.slice(0, 10)}T12:00:00Z`));
+
+/** رسالة واتساب جاهزة مرتبة الأسطر (النص المعتمد من المدربة). القيم بين الأقواس يكملها العميل */
+export function waIntro(pkg?: string | null) {
+  return ["السلام عليكم كوتش ساره", `الباقة: [${pkg ?? " "}]`, "الهدف: [ ]", "المدينة: [ ]", "الاسم: [ ]"].join("\n");
+}

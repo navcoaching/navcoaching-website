@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProduct, getProducts, getSettings } from "@/lib/data";
-import { CATEGORY_LABEL, riyals, shortName } from "@/lib/format";
+import { CATEGORY_LABEL, riyals, shortName, waIntro, waLink } from "@/lib/format";
 import { timelineSteps } from "@/lib/status";
-import { IconArrow } from "@/components/Icons";
+import { IconArrow, IconWhatsApp } from "@/components/Icons";
 import { fromPrice } from "@/components/ProductCard";
 import { productDescription } from "@/lib/seo";
 import JsonLd, { siteUrl } from "@/components/JsonLd";
@@ -108,7 +108,10 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       {price && offers.length > 0 && (
         <div className="buy-bar" data-testid="buy-bar">
           <span className="price"><b className="num">{price.value.replace(" ر.س", "")}</b><span>ر.س {price.unit}</span></span>
-          <a href="#offers" className="btn btn-sm">الاشتراك</a>
+          <span className="row" style={{ gap: 8 }}>
+            <a href={waLink(s.contact.whatsapp, waIntro(shortName(p.name)))} target="_blank" rel="noopener" className="btn btn-ghost btn-sm wa-ico" aria-label="اسأل عن الباقة على واتساب"><IconWhatsApp size={20} /></a>
+            <a href="#offers" className="btn btn-sm">الاشتراك</a>
+          </span>
         </div>
       )}
     </div>

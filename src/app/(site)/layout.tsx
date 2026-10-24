@@ -4,6 +4,7 @@ import Reveal from "@/components/Reveal";
 import CardFx from "@/components/CardFx";
 import ScrollStory from "@/components/home/ScrollStory";
 import Analytics from "@/components/Analytics";
+import MobileBar from "@/components/MobileBar";
 import { getFreePlans, getSettings } from "@/lib/data";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
@@ -14,6 +15,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <Header />
       <main id="main">{children}</main>
       <Footer s={s} hasFreePlans={freePlans.length > 0} />
+      <MobileBar whatsapp={s.contact.whatsapp} />
       <Reveal />
       <ScrollStory />
       <CardFx />
