@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>نماذج المرحلة 2 — Nav Coaching</title>
+<!-- نموذج للموافقة فقط. الخطوط من Google Fonts هنا بديلاً عن ملفات @fontsource المحلية في المشروع. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#07142a;--ink-2:#0d1f3c;--navy:#284da0;--cyan:#4cc5ed;--logo-cyan:#29b5e8;--cyan-ink:#0a6a8f;--cyan-soft:#e4f6fc;--paper:#f3f6fa;--surface:#fff;--surface-2:#eaf0f6;--line:#d8e1ea;--text:#15233a;--heading:#0b1a33;--muted:#56667a;--on-dark:#c8d6ea;--ok:#157347;--ok-bg:#e2f4ea;--err:#b42318;--err-bg:#fdecea;--warn:#7a4e00;--warn-bg:#fff3d4;--btn-primary:var(--navy);--btn-primary-fg:#fff;--f-display:"Readex Pro","IBM Plex Sans Arabic",sans-serif;--f-body:"IBM Plex Sans Arabic","Segoe UI",sans-serif;--r-lg:22px;--r:14px;--r-sm:10px;--slant:37deg;--shadow-2:0 2px 6px rgba(7,20,42,.08),0 18px 40px rgba(7,20,42,.12);--ease:cubic-bezier(.16,1,.3,1)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0b1622;--surface:#122232;--surface-2:#172b3e;--line:#26394c;--text:#d5e1ea;--heading:#eef4f8;--muted:#93a6b7;--navy:#3558b0;--cyan-ink:#8adaf4;--cyan-soft:#12323f;--ok:#6fd39c;--ok-bg:#12301f;--err:#ff8a80;--err-bg:#3a1a18;--warn:#f5d48a;--warn-bg:#3a2e10;--btn-primary:var(--cyan);--btn-primary-fg:var(--ink);--shadow-2:0 2px 6px rgba(0,0,0,.35),0 18px 40px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--paper:#0b1622;--surface:#122232;--surface-2:#172b3e;--line:#26394c;--text:#d5e1ea;--heading:#eef4f8;--muted:#93a6b7;--navy:#3558b0;--cyan-ink:#8adaf4;--cyan-soft:#12323f;--ok:#6fd39c;--ok-bg:#12301f;--err:#ff8a80;--err-bg:#3a1a18;--warn:#f5d48a;--warn-bg:#3a2e10;--btn-primary:var(--cyan);--btn-primary-fg:var(--ink);--shadow-2:0 2px 6px rgba(0,0,0,.35),0 18px 40px rgba(0,0,0,.35)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--text);font-family:var(--f-body);line-height:1.6;font-size:16px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.3;margin:0;color:var(--heading)}
+[dir=ltr]{font-family:var(--f-body)}
+.doc{max-width:1180px;margin:0 auto;padding:24px clamp(16px,4vw,32px)}
+.doc>h1{font-size:28px;margin-bottom:6px}
+.doc>p{color:var(--muted);margin:0 0 28px}
+.spec{font-size:14px;color:var(--muted);margin:8px 0 0}
+.spec b{color:var(--text)}
+.frame{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface);margin:16px 0 40px}
+.frame-h{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted);background:var(--surface-2)}
+.frame-h b{color:var(--heading);font-size:15px}
+.two{display:grid;gap:24px;grid-template-columns:1fr}
+@media(min-width:900px){.two{grid-template-columns:1fr 1fr}}
+.phone{width:390px;max-width:100%;margin:0 auto;border:1px solid var(--line);border-radius:28px;overflow:hidden;background:var(--paper);position:relative}
+.phone.tall{height:760px}
+/* header */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:68px;background:var(--ink);color:#fff}
+.hdr .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;min-height:44px}
+.nav-logo{width:56px;height:20px;position:relative}
+.nav-logo i{position:absolute;top:0;bottom:0;width:6px;background:#fff;transform:skewX(calc(var(--slant) * -1))}
+.nav-logo i:nth-child(1){left:6px}.nav-logo i:nth-child(2){left:20px;background:var(--logo-cyan)}.nav-logo i:nth-child(3){left:34px}.nav-logo i:nth-child(4){left:46px;background:var(--logo-cyan)}
+.brand b{font-family:var(--f-display);font-size:15px;line-height:1.1}
+.brand small{display:block;font-size:9px;opacity:.75;font-weight:400}
+.hdr .acts{display:flex;align-items:center;gap:8px}
+.icbtn{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);display:grid;place-items:center;color:#fff}
+.lang{min-width:44px;height:44px;padding:0 12px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;font:600 14px var(--f-display);display:inline-grid;place-items:center;text-decoration:none;letter-spacing:.02em}
+.hdr.desk{height:68px;padding:0 32px}
+.hdr.desk .links{display:flex;gap:22px;font-size:15px}
+.hdr.desk .links a{color:#fff;text-decoration:none;padding:12px 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:999px;border:1px solid transparent;font:600 15px var(--f-body);text-decoration:none;cursor:pointer}
+.btn-cyan{background:var(--cyan);color:var(--ink)}
+.btn-navy{background:var(--btn-primary);color:var(--btn-primary-fg)}
+.btn-ghost{background:transparent;color:inherit;border-color:currentColor;opacity:.9}
+.btn-sm{min-height:40px;padding:0 16px;font-size:14px}
+.btn-block{width:100%}
+.text-link{color:inherit;text-decoration:underline;text-underline-offset:4px;font-weight:600}
+.cta .text-link{display:inline-flex;align-items:center;min-height:44px}
+/* hero EN */
+.hero{position:relative;overflow:hidden;background:var(--ink);color:#fff;padding:40px 20px 72px}
+.hero::before,.hero::after{content:"";position:absolute;top:0;height:100%;transform-origin:top;transform:skewX(calc(var(--slant) * -1));pointer-events:none}
+.hero::before{right:6%;width:14%;background:var(--logo-cyan)}
+.hero::after{right:24%;width:8%;background:var(--navy)}
+[dir=rtl] .hero::before{right:auto;left:6%}[dir=rtl] .hero::after{right:auto;left:24%}
+.hero h1{font-size:clamp(34px,6vw,60px);color:#fff;position:relative;z-index:1;max-width:14ch}
+.hero .hl{position:relative;display:inline-block;color:var(--ink);padding:0 .08em}
+.hero .hl::after{content:"";position:absolute;inset:.06em -.04em -.06em;background:var(--cyan);transform:skewX(calc(var(--slant) * -.5));z-index:-1}
+.hero .lead{color:var(--on-dark);font-size:18px;max-width:36ch;margin:18px 0 26px;position:relative;z-index:1}
+.hero .cta{display:flex;gap:16px;align-items:center;flex-wrap:wrap;position:relative;z-index:1}
+.hero .cta .text-link{color:#fff}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;position:relative;z-index:1}
+.badge{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:8px 14px;font-size:13px}
+.marquee{background:var(--cyan);color:var(--ink);padding:10px 20px;font-weight:600;white-space:nowrap;overflow:hidden;transform:skewY(-2deg);margin-top:-24px;position:relative;z-index:2}
+.marquee span::after{content:"";display:inline-block;width:16px;height:16px;margin:0 32px;background:var(--navy);transform:skewX(calc(var(--slant) * -1));vertical-align:-2px}
+/* plan card */
+.plan{background:var(--surface);border-radius:var(--r-lg);padding:24px;box-shadow:var(--shadow-2);position:relative;overflow:hidden;margin:20px}
+.plan.rec{background:var(--ink);color:#fff}
+.plan.rec h3{color:#fff}
+.plan .tag{position:absolute;top:0;inset-inline-start:0;width:64px;height:64px;pointer-events:none}
+.plan .tag i{position:absolute;top:-10px;height:60px;width:10px;transform:skewX(calc(var(--slant) * -1))}
+.plan .tag i:first-child{inset-inline-start:14px;background:var(--logo-cyan)}.plan .tag i:last-child{inset-inline-start:32px;background:var(--navy)}
+.plan h3{font-size:26px;margin-top:8px}
+.plan .sub{color:var(--muted);margin:6px 0 14px}.plan.rec .sub{color:var(--on-dark)}
+.price{display:flex;align-items:baseline;gap:8px;font-family:var(--f-display)}
+.price b{font-size:56px;line-height:1}.price span{font-size:14px;opacity:.8}
+.alt{font-size:14px;opacity:.8;margin-bottom:16px}
+.plan ul{list-style:none;padding:0;margin:0 0 20px;display:grid;gap:10px}
+.plan li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.plan li::before{content:"";flex:0 0 14px;height:14px;margin-top:6px;background:var(--logo-cyan);transform:skewX(calc(var(--slant) * -1))}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font:600 13px var(--f-body);color:var(--cyan-ink);text-transform:uppercase;letter-spacing:.04em}
+.eyebrow::before{content:"";width:14px;height:10px;background:var(--logo-cyan);transform:skewX(calc(var(--slant) * -1))}
+/* bottom bar */
+.bbar{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(10px);border-top:1px solid var(--line)}
+.bbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;border-radius:var(--r);text-decoration:none;font:600 13px var(--f-body);color:var(--heading);background:var(--surface-2)}
+.bbar a svg{width:20px;height:20px}
+.bbar a.wa{background:#dcf8e6;color:#0b3d22}
+:root[data-theme="dark"] .bbar a.wa{background:#12301f;color:#6fd39c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bbar a.wa{background:#12301f;color:#6fd39c}}
+.bbar a.primary{background:var(--btn-primary);color:var(--btn-primary-fg)}
+.content{padding:16px 20px 90px}
+.content h2{font-size:24px;margin-bottom:8px}
+.ph{height:120px;border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow-2);margin:12px 0}
+/* consent */
+.consent{position:absolute;left:12px;right:12px;bottom:76px;background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow-2);padding:10px 12px;display:flex;align-items:center;gap:10px;font-size:13px;line-height:1.4}
+.consent p{margin:0;flex:1}
+.consent .btn{min-height:44px;min-width:44px;padding:0 14px;font-size:14px}
+.consent.old{bottom:12px;flex-direction:column;align-items:stretch;padding:16px;font-size:15px;gap:12px}
+.consent.old .row{display:flex;gap:8px;justify-content:flex-start}
+/* states */
+.card{background:var(--surface);border-radius:var(--r-lg);padding:22px;box-shadow:var(--shadow-2);margin:16px}
+.card h3{font-size:22px;margin-bottom:6px}
+.card p{margin:0 0 14px;color:var(--muted);font-size:15px}
+label{display:block;font-weight:600;font-size:15px;margin-bottom:6px}
+.inp{width:100%;min-height:48px;border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:0 14px;font:16px var(--f-body);color:var(--text);direction:ltr;text-align:start}
+.inp.err{border-color:var(--err);box-shadow:0 0 0 3px color-mix(in srgb,var(--err) 20%,transparent)}
+.hint{font-size:13px;color:var(--muted);margin:6px 0 14px}
+.msg{display:flex;gap:10px;align-items:flex-start;border-radius:12px;padding:12px 14px;font-size:14px;margin:0 0 14px}
+.msg.err{background:var(--err-bg);color:var(--err)}.msg.ok{background:var(--ok-bg);color:var(--ok)}.msg.warn{background:var(--warn-bg);color:var(--warn)}
+.spin{width:18px;height:18px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none;border-style:dotted}}
+.btn[aria-busy=true]{opacity:.85;pointer-events:none}
+.empty{text-align:center;padding:36px 20px}
+.empty .mark{width:48px;height:34px;margin:0 auto 14px;position:relative}
+.empty .mark i{position:absolute;top:0;bottom:0;width:8px;transform:skewX(calc(var(--slant) * -1));background:var(--line)}
+.empty .mark i:nth-child(1){left:8px}.empty .mark i:nth-child(2){left:22px;background:var(--logo-cyan)}.empty .mark i:nth-child(3){left:36px}
+.skel{height:14px;border-radius:7px;background:linear-gradient(90deg,var(--surface-2),var(--line),var(--surface-2));background-size:200% 100%;animation:sk 1.4s infinite;margin:8px 0}
+@keyframes sk{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.skel{animation:none}}
+.otp{display:flex;gap:8px;direction:ltr}
+.otp input{flex:1;min-width:0;height:52px;text-align:center;font:600 22px var(--f-display);border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--text)}
+.steps{display:flex;gap:6px;margin:0 0 12px}
+.steps i{flex:1;height:4px;border-radius:2px;background:var(--line)}.steps i.on{background:var(--cyan)}
+/* fixes table */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:start;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--heading);background:var(--surface-2)}
+.footer{background:var(--ink);color:var(--on-dark);padding:28px 20px;font-size:14px}
+.footer .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+.footer a{color:#fff;text-decoration:none;display:flex;align-items:center;min-height:44px}
+.footer .langrow{display:flex;gap:10px;margin-top:16px}
+.footer .langrow a{border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:8px 14px;min-height:44px;display:inline-flex;align-items:center}
+.footer .langrow a.on{background:#fff;color:var(--ink)}
+.toggle{position:fixed;top:12px;inset-inline-end:12px;z-index:9}
+</style>
+</head>
+<body>
+<button class="btn btn-sm btn-navy toggle" onclick="var r=document.documentElement;r.dataset.theme=r.dataset.theme==='dark'?'light':'dark'">فاتح/داكن</button>
+<div class="doc">
+<h1>نماذج المرحلة 2 للموافقة</h1>
+<p>Nav Coaching · 2026-10-24 · نماذج HTML بهوية DESIGN.md. النصوص الإنجليزية مسودة ترجمة تحتاج اعتماد المدربة.</p>
+
+<!-- A: language switch, RTL vs LTR header -->
+<h2 id="a">A. مبدّل اللغة والهيدر في الاتجاهين</h2>
+<p class="spec">زر لغة واحد في الهيدر قرب القائمة (<b>EN</b> في العربية، <b>عربي</b> في الإنجليزية)، وصف لغات في التذييل. المسار الإنجليزي <b>/en/…</b>. الشعار يبقى يمين في RTL ويسار في LTR؛ الميل 37° لا يُعكس لأنه هوية الشعار. حجم كل هدف 44px.</p>
+<div class="frame" id="shot-a">
+<div class="frame-h"><b>جوال 390</b><span>عربي RTL · English LTR</span></div>
+<div class="two" style="padding:20px">
+  <div class="phone" dir="rtl">
+    <div class="hdr"><a class="brand" href="#"><span class="nav-logo"><i></i><i></i><i></i><i></i></span><b>Nav Coaching<small>Where Passion Meets Quality</small></b></a><div class="acts"><a class="lang" href="#" hreflang="en" lang="en" aria-label="English version">EN</a><span class="icbtn" aria-label="القائمة"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></div></div>
+    <div class="content"><h2>برنامج مبني عليك</h2><div class="ph"></div></div>
+  </div>
+  <div class="phone" dir="ltr" lang="en">
+    <div class="hdr"><a class="brand" href="#"><span class="nav-logo"><i></i><i></i><i></i><i></i></span><b>Nav Coaching<small>Where Passion Meets Quality</small></b></a><div class="acts"><a class="lang" href="#" hreflang="ar" lang="ar" aria-label="النسخة العربية">عربي</a><span class="icbtn" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span></div></div>
+    <div class="content"><h2>A program built around you</h2><div class="ph"></div></div>
+  </div>
+</div>
+<div class="frame-h"><b>حاسب 1280</b><span>الهيدر الإنجليزي LTR</span></div>
+<div dir="ltr" lang="en" class="hdr desk"><a class="brand" href="#"><span class="nav-logo"><i></i><i></i><i></i><i></i></span><b>Nav Coaching<small>Where Passion Meets Quality</small></b></a><nav class="links"><a href="#">Programs</a><a href="#">About the coach</a><a href="#">Reviews</a><a href="#">FAQ</a></nav><div class="acts"><a class="lang" href="#">عربي</a><span class="icbtn" aria-label="Theme">◐</span><a class="btn btn-ghost btn-sm" href="#" style="color:#fff">My account</a><a class="btn btn-cyan btn-sm" href="#">Programs &amp; pricing</a></div></div>
+</div>
+
+<!-- B: bottom bar + consent -->
+<h2 id="b">B. شريط الجوال السفلي وبانر الموافقة</h2>
+<p class="spec">شريط ثابت في الصفحات العامة على الجوال فقط: <b>اتصال</b> (tel)، <b>واتساب</b> برسالة جاهزة مرتبة الأسطر، <b>البرامج</b>. يختفي في الحساب واللوحة والدخول والدفع، ولا يظهر فوق لوحة مفاتيح مفتوحة. بانر GA الحالي يأخذ ~22% من الشاشة ويغطي بطاقة السعر (لقطة التدقيق)؛ المقترح سطر واحد فوق الشريط، نصه مختصر، وزرّاه 44px.</p>
+<div class="frame" id="shot-b">
+<div class="frame-h"><b>جوال 390</b><span>الحالي (يسار) مقابل المقترح (يمين)</span></div>
+<div class="two" style="padding:20px">
+  <div class="phone tall" dir="rtl">
+    <div class="hdr"><a class="brand" href="#"><span class="nav-logo"><i></i><i></i><i></i><i></i></span><b>Nav Coaching<small>Where Passion Meets Quality</small></b></a><div class="acts"><span class="icbtn">≡</span></div></div>
+    <div class="content"><h2>الحالي</h2><div class="plan rec" style="margin:12px 0"><h3>المكثفة</h3><div class="price"><b>599</b><span>ر.س / شهر</span></div><div class="alt">أو 1,550 ر.س لـ 3 أشهر</div><ul><li>جلسة حضورية مجانية</li><li>ملف شامل للخطة</li><li>4 مكالمات زوم شهرياً</li></ul><a class="btn btn-cyan btn-block" href="#">التفاصيل والاشتراك</a></div></div>
+    <div class="consent old"><p>نستخدم Google Analytics لقياس زيارات الموقع وتحسينه، بدون ربطها ببياناتك الصحية أو حسابك. توافق؟</p><div class="row"><a class="btn btn-navy" href="#">موافق</a><a class="btn btn-ghost" href="#">لا، شكراً</a></div></div>
+  </div>
+  <div class="phone tall" dir="rtl">
+    <div class="hdr"><a class="brand" href="#"><span class="nav-logo"><i></i><i></i><i></i><i></i></span><b>Nav Coaching<small>Where Passion Meets Quality</small></b></a><div class="acts"><a class="lang" href="#">EN</a><span class="icbtn">≡</span></div></div>
+    <div class="content"><h2>المقترح</h2><div class="plan rec" style="margin:12px 0"><h3>المكثفة</h3><div class="price"><b>599</b><span>ر.س / شهر</span></div><div class="alt">أو 1,550 ر.س لـ 3 أشهر</div><ul><li>جلسة حضورية مجانية</li><li>ملف شامل للخطة</li><li>4 مكالمات زوم شهرياً</li></ul><a class="btn btn-cyan btn-block" href="#">التفاصيل والاشتراك</a></div></div>
+    <div class="consent"><p>قياس الزيارات بـ Google Analytics بدون بياناتك الصحية. <a class="text-link" href="#">التفاصيل</a></p><a class="btn btn-navy" href="#">موافق</a><a class="btn btn-ghost" href="#">لا</a></div>
+    <nav class="bbar" aria-label="إجراءات سريعة"><a href="tel:+966599162724"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/></svg>اتصال</a><a class="wa" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20l1.3-3.9A8 8 0 1112 20a8 8 0 01-3.9-1z"/></svg>واتساب</a><a class="primary" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h7"/></svg>البرامج</a></nav>
+  </div>
+</div>
+<div style="padding:0 20px 20px"><p class="spec"><b>رسالة واتساب الجاهزة</b> (تُولَّد من الصفحة الحالية؛ القيم بين الأقواس تُملأ من الصفحة أو تُترك للعميل):</p>
+<pre dir="rtl" style="background:var(--surface-2);border-radius:12px;padding:14px;font:14px/1.7 var(--f-body);margin:8px 0 0;white-space:pre-wrap">السلام عليكم كوتش ساره
+الباقة: [المكثفة — 3 أشهر]
+الهدف: [ ]
+المدينة: [ ]
+الاسم: [ ]</pre></div>
+</div>
+
+<!-- C: English home -->
+<h2 id="c">C. النسخة الإنجليزية LTR: الهيرو وبطاقة الباقة والتذييل</h2>
+<p class="spec">ليست عكسًا للعربي: الخطوط نفسها (Readex Pro للعناوين، IBM Plex Sans للنص)، الشرائط المائلة تنتقل لليمين حتى لا تمر تحت النص، والأرقام والعملة بصيغة <b>SAR 599 / month</b>. العناوين الإنجليزية أقصر فتُضبط أحجامها على نفس سلّم <b>--t-display</b>.</p>
+<div class="frame" id="shot-c" dir="ltr" lang="en">
+<div class="frame-h" dir="rtl"><b>جوال 390 وحاسب</b><span>English draft — pending approval</span></div>
+<section class="hero">
+  <h1>A program built around <span class="hl">you</span>, not a template</h1>
+  <p class="lead">Personalised training and nutrition for your goal and level, reviewed and adjusted every week by Coach Sara.</p>
+  <div class="cta"><a class="btn btn-cyan" href="#">Programs &amp; pricing →</a><a class="text-link" href="#">Which program fits me?</a></div>
+  <div class="badges"><span class="badge">Coaching since 2017</span><span class="badge">MSc Sports Coaching · University of Stirling</span><span class="badge">Conditional money-back guarantee</span></div>
+</section>
+<div class="marquee"><span>Weekly follow-up</span><span>Adjusted to your progress</span><span>Reply within 48 working hours</span></div>
+<div style="padding:28px 20px 0"><span class="eyebrow">Programs</span></div>
+<div class="plan rec"><span class="tag"><i></i><i></i></span><h3>Intensive</h3><p class="sub">Best for beginners and anyone who wants weekly Zoom follow-up: training + nutrition + Zoom + one in-person session.</p><div class="price"><b>599</b><span>SAR / month</span></div><div class="alt">or SAR 1,550 for 3 months</div><ul><li>One free in-person technique session (women, Eastern Province)</li><li>Full training and nutrition plan with exercise guides, home or gym</li><li>4 Zoom calls a month to review progress and questions</li></ul><a class="btn btn-cyan btn-block" href="#">Details &amp; subscribe →</a></div>
+<footer class="footer"><b style="font-family:var(--f-display);color:#fff">Nav Coaching</b><div>Personalised training and nutrition with weekly follow-up.</div><div class="cols"><div><a href="#">Programs &amp; pricing</a><a href="#">About the coach</a><a href="#">Reviews</a><a href="#">FAQ</a></div><div><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Guarantee &amp; refunds</a><a href="#">Reviews policy</a></div></div><div class="langrow"><a class="on" href="#" lang="en">English</a><a href="#" lang="ar" hreflang="ar">العربية</a></div><div style="margin-top:14px;font-size:12px;opacity:.75">Nav Coaching for Sports Training Est. · CR 7050950752</div></footer>
+</div>
+
+<!-- D: states -->
+<h2 id="d">D. الحالات: فارغ، تحميل، خطأ، نجاح</h2>
+<p class="spec">الدخول بالرمز البريدي والاستبيان أهم مسارين. الأخطاء بلون <b>coral</b> هادئ لا أحمر حاد، ونص الخطأ يذكر ما يفعله العميل. حالات الفراغ بعلامة الشعار بلون الحد (لا إيموجي).</p>
+<div class="frame" id="shot-d">
+<div class="frame-h"><b>جوال 390</b><span>6 حالات</span></div>
+<div class="two" style="padding:20px">
+ <div class="phone" dir="rtl"><div class="card"><span class="eyebrow">حسابك في Nav Coaching</span><h3>الدخول أو إنشاء حساب</h3><p>نرسل لك رمز دخول من 6 أرقام. بدون كلمة مرور.</p><label>البريد الإلكتروني</label><input class="inp" value="sara@example.com" readonly><p class="hint">الرمز صالح 10 دقائق.</p><button class="btn btn-navy btn-block" aria-busy="true"><span class="spin"></span>جارٍ إرسال الرمز…</button></div></div>
+ <div class="phone" dir="rtl"><div class="card"><span class="eyebrow">حسابك في Nav Coaching</span><h3>الدخول أو إنشاء حساب</h3><p>نرسل لك رمز دخول من 6 أرقام.</p><label>البريد الإلكتروني</label><input class="inp err" value="sara@example" readonly><div class="msg err" role="alert"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span>البريد غير مكتمل. تأكد من وجود @ واسم النطاق، مثل name@gmail.com.</span></div><button class="btn btn-navy btn-block">أرسل رمز الدخول</button></div></div>
+ <div class="phone" dir="rtl"><div class="card"><span class="eyebrow">الخطوة 2 من 2</span><h3>أدخل الرمز</h3><div class="msg ok"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l4 4L19 6"/></svg><span>أرسلنا الرمز إلى sara@example.com. تحقق من البريد غير المرغوب إن تأخر.</span></div><label>رمز الدخول</label><div class="otp"><input value="4" readonly><input value="8" readonly><input value="1" readonly><input readonly><input readonly><input readonly></div><p class="hint">لم يصلك؟ <a class="text-link" href="#">أعد الإرسال بعد 00:42</a></p><button class="btn btn-navy btn-block">دخول</button></div></div>
+ <div class="phone" dir="rtl"><div class="card"><span class="eyebrow">الخطوة 2 من 2</span><h3>أدخل الرمز</h3><div class="msg err" role="alert"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span>الرمز غير صحيح. بقيت محاولتان، ثم يُقفل الدخول 15 دقيقة.</span></div><label>رمز الدخول</label><div class="otp"><input value="4" readonly><input value="8" readonly><input value="1" readonly><input value="2" readonly><input value="9" readonly><input value="0" readonly></div><button class="btn btn-navy btn-block">دخول</button></div></div>
+ <div class="phone" dir="rtl"><div class="card"><div class="steps"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div><h3>الخطوة 3: أيامك المتاحة</h3><div class="skel" style="width:70%"></div><div class="skel"></div><div class="skel" style="width:85%"></div><div class="skel" style="width:40%;height:44px;border-radius:12px;margin-top:16px"></div><p class="hint" style="margin-top:14px">تحميل الاستبيان… مسودتك محفوظة على جهازك.</p></div></div>
+ <div class="phone" dir="rtl"><div class="card empty"><div class="mark"><i></i><i></i><i></i></div><h3>لا تقييمات منشورة بعد</h3><p>تُنشر التقييمات بعد موافقة أصحابها. اقرأ <a class="text-link" href="#">سياسة التقييمات</a>.</p><a class="btn btn-navy" href="#">البرامج والأسعار</a></div><div class="card"><div class="msg warn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l10 18H2z M12 10v4M12 17h.01"/></svg><span>تعذّر حفظ الإيصال. تحقق من الاتصال وأعد المحاولة؛ طلبك #1042 محفوظ ولن يضيع.</span></div><button class="btn btn-navy btn-block">إعادة المحاولة</button></div></div>
+</div>
+</div>
+
+<!-- E: fixes -->
+<h2 id="e">E. إصلاحات من تدقيق الوصول (axe + قياس أهداف اللمس)</h2>
+<div class="frame"><table><thead><tr><th>الموضع</th><th>المشكلة</th><th>القرار التصميمي</th></tr></thead><tbody>
+<tr><td>الرئيسية والتقييمات: زر «المزيد»</td><td>عرضه 30px (الهدف 44)</td><td>زر نصي بحشو 12px أفقياً وحد أدنى 44×44</td></tr>
+<tr><td>الحاسبة: اختيار الطريقة</td><td>زر الراديو الأصلي 13×13</td><td>بطاقات اختيار (choice) كاملة قابلة للنقر 48px، الراديو مخفي بصرياً</td></tr>
+<tr><td>البرامج: جدول المقارنة · عن المدربة: الاقتباسات</td><td>منطقة تمرير بلا وصول لوحة المفاتيح (axe: serious)</td><td>tabindex=0 ووصف aria-label للمنطقة؛ على الحاسب يُعرض الجدول كاملاً بلا تمرير</td></tr>
+<tr><td>صفحة 404</td><td>عنوان التبويب يرث عنوان الرئيسية</td><td>عنوان خاص «الصفحة غير موجودة — Nav Coaching»</td></tr>
+<tr><td>روابط داخل الفقرات (الشروط، السياسات)</td><td>ارتفاع 21px</td><td>مستثناة من معيار 44px لأنها ضمن سطر نص (WCAG 2.5.8)؛ لا تغيير</td></tr>
+<tr><td>كل الصفحات</td><td>التباين: <b>0 مخالفات</b> AA في الفاتح والداكن</td><td>لا تغيير</td></tr>
+<tr><td>الجوال 390</td><td>لا تمرير أفقي في أي صفحة</td><td>لا تغيير</td></tr>
+</tbody></table></div>
+</div>
+</body></html>
