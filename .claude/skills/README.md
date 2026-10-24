@@ -6,7 +6,7 @@
 | المجلد | المصدر | النسخة | الترخيص |
 |---|---|---|---|
 | `impeccable/` | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | 4.6.0 · `9304afa` | Apache-2.0 |
-| `design-taste-frontend/` (Taste) | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) `skills/taste-skill` | v2 · `f624f37` | MIT |
+| `design-taste-frontend/` (Taste) | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) `skills/taste-skill` | 2.1.4 · `6010f91` | MIT |
 | `animate/` `improve-animations/` `review-animations/` `animation-performance/` `find-animation-opportunities/` `animation-vocabulary/` (Motion) | [emilkowalski/skill](https://github.com/emilkowalski/skill) | `2d22863` | MIT |
 | `ponytail/` `ponytail-review/` `ponytail-audit/` `ponytail-debt/` `ponytail-gain/` `ponytail-help/` (Ponytail) | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) `skills/` | `09c434a` | MIT |
 
