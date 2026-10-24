@@ -2463,3 +2463,5 @@ fieldset.field > legend { inline-size: 100%; padding: 0; float: none; }
 }
 /* الأرقام والعملة في الإنجليزية بخط النص نفسه */
 [dir="ltr"] .num { font-variant-numeric: tabular-nums; }
+[dir="ltr"] .page-hero:not(.v3 *)::before { left: auto; right: 8vw; }
+[dir="ltr"] .page-hero:not(.v3 *)::after { left: auto; right: 20vw; }

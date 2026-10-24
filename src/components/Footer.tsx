@@ -23,7 +23,7 @@ export default function Footer({ s, hasFreePlans = true, lang = "ar" }: { s: Set
               {s.contact.instagram && <a href={s.contact.instagram} target="_blank" rel="noopener" aria-label={u.instagram} title={u.instagram} className="ig"><IconInstagram size={24} /></a>}
               {s.contact.tiktok && <a href={s.contact.tiktok} target="_blank" rel="noopener" aria-label={u.tiktok} title={u.tiktok} className="tt"><IconTikTok size={22} /></a>}
             </div>
-            <p className="small"><span className="muted">{u.language}: </span><LangSwitch className="text-link" /></p>
+            <p className="small"><span style={{ color: "var(--on-dark-muted)" }}>{u.language}: </span><LangSwitch className="text-link" /></p>
           </div>
           <div>
             <h2>{u.site}</h2>

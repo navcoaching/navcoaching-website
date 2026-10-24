@@ -60,6 +60,7 @@
 | `BETTER_AUTH_SECRET` | نص عشوائي طويل (40 حرفاً على الأقل من مولّد كلمات المرور). لا تشاركيه مع أحد. |
 | `BETTER_AUTH_URL` | `https://navcoaching-app.netlify.app` (رابط موقعك بالضبط، بدون `/` في آخره) |
 | `NEXT_PUBLIC_SITE_URL` | نفس القيمة السابقة |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` و`TURNSTILE_SECRET_KEY` | اختياريان: من Cloudflare ← Turnstile ← Add widget للدومين. بدونهما لا يُطلب تحقق من الروبوتات |
 | `RESEND_API_KEY` | المفتاح من الخطوة 2 |
 | `MAIL_FROM` | `Nav Coaching <no-reply@navcoaching.com>` |
 | `COACH_NOTIFY_EMAIL` | بريدك الذي تصلك عليه تنبيهات الطلبات |
