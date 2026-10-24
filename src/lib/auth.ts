@@ -8,6 +8,7 @@ import { renderEmail } from "./email-template";
 import { allow } from "./rate";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { LOGIN_LOCK_AFTER, logSecurity, loginFailures, reportIssue } from "./ops";
+import { TURNSTILE_ERROR, verifyTurnstile } from "./turnstile";
 
 const ipOf = (h?: Headers) => h?.get("x-nf-client-connection-ip") ?? h?.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
 
@@ -68,6 +69,10 @@ export const auth = betterAuth({
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
       if (ctx.path !== "/sign-in/email-otp" && ctx.path !== "/email-otp/send-verification-otp") return;
+      // Turnstile على طلب رمز الدخول من الموقع. تطبيق الجوال (ترويسة expo-origin من better-auth/expo) لا يملك الودجت،
+      // فيبقى محمياً بحدود المعدل فقط (5 لكل IP كل 10 دقائق، و8 لكل بريد بالساعة).
+      if (ctx.path === "/email-otp/send-verification-otp" && !ctx.headers?.get("expo-origin") && !(await verifyTurnstile(ctx.headers?.get("x-turnstile-token"), ipOf(ctx.headers))))
+        throw new APIError("BAD_REQUEST", { code: "TURNSTILE_FAILED", message: TURNSTILE_ERROR });
       const email = String(ctx.body?.email ?? "").trim().toLowerCase();
       if (!email || (await loginFailures(email)) < LOGIN_LOCK_AFTER) return;
       await logSecurity("login_locked", { email, ip: ipOf(ctx.headers) });

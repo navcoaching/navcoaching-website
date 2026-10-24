@@ -7,6 +7,7 @@ import { AGE_MAX, AGE_MIN, NUTRITION_SKUS, OPT } from "@/lib/intake";
 import { activeCustom, customField, hintOf, isHidden, labelOf, LIMITS, type CustomQuestion, type IntakeConfig } from "@/lib/intake-config";
 import { Submit, useFormAction } from "@/components/FormBits";
 import StartPrefFields from "@/components/StartPrefFields";
+import Turnstile from "@/components/Turnstile";
 import { validStartPref } from "@/lib/schedule";
 
 type OfferOpt = { sku: string; label: string; group: string; price: string };
@@ -235,6 +236,7 @@ export default function CheckoutForm({ sku, offers, defaultName, responseTime, i
           </div>
           {show("notes") && <div className="field"><label htmlFor="notes">{lab("notes")}</label><textarea id="notes" name="notes" maxLength={800} defaultValue={d("notes")} />{hint("notes")}</div>}
           {extra(5)}
+          <Turnstile action="order" />
           <label className="check">
             <input type="checkbox" name="consent_terms" required data-err="نحتاج موافقتك للإرسال." {...inv("consent_terms")} />
             <span>أؤكد صحة البيانات وأوافق على <Link href="/policies#terms" target="_blank">الشروط</Link> و<Link href="/policies#privacy" target="_blank">سياسة الخصوصية</Link>. <span className="req">*</span></span>

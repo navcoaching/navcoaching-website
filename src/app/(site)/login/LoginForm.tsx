@@ -1,12 +1,14 @@
 "use client";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import Turnstile, { TURNSTILE_SITE_KEY } from "@/components/Turnstile";
 
 const ERR: Record<string, string> = {
   INVALID_OTP: "الرمز غير صحيح. تأكد منه وحاول مرة أخرى.",
   OTP_EXPIRED: "انتهت صلاحية الرمز. اطلب رمزاً جديداً.",
   TOO_MANY_ATTEMPTS: "محاولات كثيرة. اطلب رمزاً جديداً.",
   ACCOUNT_LOCKED: "الدخول مقفل مؤقتاً بعد 5 محاولات خاطئة. حاول بعد 15 دقيقة.",
+  TURNSTILE_FAILED: "تعذّر التحقق من أنك لست روبوتاً. حدّث الصفحة وحاول مرة أخرى.",
 };
 
 export default function LoginForm({ next }: { next: string }) {
@@ -15,16 +17,18 @@ export default function LoginForm({ next }: { next: string }) {
   const [otp, setOtp] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [captcha, setCaptcha] = useState("");
 
   async function send(e?: React.FormEvent) {
     e?.preventDefault();
     setError("");
     const clean = email.trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(clean)) { setError("البريد الإلكتروني غير صحيح."); return; }
+    if (TURNSTILE_SITE_KEY && !captcha) { setError("انتظر ثانية حتى يكتمل التحقق من أنك لست روبوتاً، ثم أعد المحاولة."); return; }
     setBusy(true);
-    const { error } = await authClient.emailOtp.sendVerificationOtp({ email: clean, type: "sign-in" });
+    const { error } = await authClient.emailOtp.sendVerificationOtp({ email: clean, type: "sign-in" }, { headers: captcha ? { "x-turnstile-token": captcha } : {} });
     setBusy(false);
-    if (error) { setError(error.code === "ACCOUNT_LOCKED" ? ERR.ACCOUNT_LOCKED : error.status === 429 ? "طلبات كثيرة. انتظر دقائق ثم حاول." : "تعذّر إرسال الرمز الآن. حاول بعد قليل أو تواصل معنا على واتساب."); return; }
+    if (error) { setError(error.code === "ACCOUNT_LOCKED" ? ERR.ACCOUNT_LOCKED : error.code === "TURNSTILE_FAILED" ? ERR.TURNSTILE_FAILED : error.status === 429 ? "طلبات كثيرة. انتظر دقائق ثم حاول." : "تعذّر إرسال الرمز الآن. حاول بعد قليل أو تواصل معنا على واتساب."); return; }
     setEmail(clean);
     setStep("otp");
   }
@@ -57,6 +61,7 @@ export default function LoginForm({ next }: { next: string }) {
           onChange={(e) => setEmail(e.target.value)} aria-invalid={!!error} aria-describedby="email-hint" required />
         <span id="email-hint" className="hint">نرسل لك رمز دخول من 6 أرقام. بدون كلمة مرور.</span>
       </div>
+      <Turnstile action="login" onToken={setCaptcha} />
       {error && <p className="alert err" role="alert">{error}</p>}
       <button className="btn btn-block" disabled={busy}>{busy ? "جارٍ الإرسال…" : "أرسل رمز الدخول"}</button>
     </form>

@@ -14,6 +14,8 @@ import { validStartPref } from "@/lib/schedule";
 import { createRenewal } from "@/lib/renew";
 import { createOrder, formToObject } from "@/lib/create-order";
 import { LOGIN_REQUIRED } from "@/lib/messages";
+import { clientIp } from "@/lib/rate";
+import { TURNSTILE_ERROR, verifyTurnstile } from "@/lib/turnstile";
 
 export type ActionState = { ok?: boolean; message?: string; error?: string; fieldErrors?: Record<string, string> };
 
@@ -24,6 +26,7 @@ const GENERIC = "حدث خطأ غير متوقع. يُرجى المحاولة م
 export async function createOrderAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const user = await getCurrentUser();
   if (!user) return { error: "انتهت الجلسة. يُرجى تسجيل الدخول مرة أخرى ثم إعادة الإرسال (إجاباتك محفوظة على جهازك)." };
+  if (!(await verifyTurnstile(String(fd.get("cf-turnstile-response") ?? ""), await clientIp()))) return { error: TURNSTILE_ERROR };
   const r = await createOrder(user.id, fd);
   if ("error" in r) return r;
   redirect(`/account/orders/${r.orderNo}?new=1`);
