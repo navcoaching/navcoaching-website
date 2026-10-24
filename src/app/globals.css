@@ -213,6 +213,7 @@ bdi, .ltr { unicode-bidi: isolate; direction: ltr; }
 .btn .arrow { transition: transform 0.2s var(--ease); }
 .btn:hover .arrow { transform: translateX(-4px); }
 .link-btn { background: none; border: 0; padding: 0; color: var(--cyan-ink); text-decoration: underline; cursor: pointer; min-height: 44px; }
+.review-text .link-btn { min-width: 44px; padding-inline: 8px; }
 
 /* ---------- الهيدر ---------- */
 .site-header {
@@ -723,7 +724,8 @@ input[type="date"] { width: 100%; max-width: 100%; min-width: 0; min-height: 50p
 .method-list { display: grid; gap: 8px; }
 .method { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 12px; cursor: pointer; background: var(--surface); }
 .method.on { border-color: var(--navy); background: var(--choice-bg); }
-.method input { margin-top: 5px; accent-color: var(--navy); }
+.method input { margin-top: 3px; width: 22px; height: 22px; flex: none; accent-color: var(--navy); }
+.method:has(input:focus-visible) { outline: 2px solid var(--cyan-ink); outline-offset: 2px; }
 .method span { display: grid; gap: 2px; }
 .method small { color: var(--muted); font-size: 13.5px; }
 

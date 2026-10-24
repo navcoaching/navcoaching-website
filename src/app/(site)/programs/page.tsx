@@ -66,7 +66,7 @@ export default async function Programs() {
           <div className="wrap">
             <div className="sec-head"><span className="eyebrow">مقارنة</span><h2>مقارنة باقات المتابعة</h2></div>
             <p className="compare-hint">سحب الجدول جانبياً يعرض باقي الباقات ←</p>
-            <div className="table-wrap">
+            <div className="table-wrap" tabIndex={0} role="region" aria-label="جدول مقارنة الباقات">
               <table className="t">
                 <thead>
                   <tr><th scope="col">ماذا تشمل</th>{compare.map((p) => <th scope="col" key={p!.slug}>{shortName(p!.name)}</th>)}</tr>

@@ -95,7 +95,7 @@ export default async function About() {
         <div className="wrap center stack" style={{ justifyItems: "center", display: "grid" }}>
           <h2>وش قالوا اللي تدربوا معي؟</h2>
           {quotes.length > 0 && (
-            <div className="reviews reviews-home about-quotes" style={{ textAlign: "start", width: "100%" }}>
+            <div className="reviews reviews-home about-quotes" style={{ textAlign: "start", width: "100%" }} tabIndex={0} role="region" aria-label="اقتباسات من المتدربين">
               {quotes.map((r) => <ReviewCard key={r.id} r={r} />)}
             </div>
           )}

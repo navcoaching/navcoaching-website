@@ -216,7 +216,7 @@ export default async function Home() {
             <p className="v3-eyebrow reveal">التقييمات</p>
             <h2 className="v3-h2 reveal" data-story>تقييمات المتدربين</h2>
             <p className="v3-sub reveal" data-fill>{s.testimonials_disclaimer}</p>
-            <div className="reviews reviews-home">
+            <div className="reviews reviews-home" tabIndex={0} role="region" aria-label="تقييمات المتدربين">
               {reviews.map((r) => <ReviewCard key={r.id} r={r} />)}
             </div>
             <Link href="/reviews" className="btn v3-btn-navy">كل التقييمات</Link>
