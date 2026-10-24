@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 type Cat = "follow" | "files" | "consult";
 
 /** تبويبات الأقسام في المتصفح، حتى تبقى صفحة البرامج ثابتة وسريعة. يدعم الروابط القديمة ?cat= */
-export default function ProgramTabs({ labels, panels }: { labels: Record<Cat, string>; panels: Record<Cat, React.ReactNode> }) {
+export default function ProgramTabs({ labels, panels, aria = "نوع البرنامج" }: { labels: Record<Cat, string>; panels: Record<Cat, React.ReactNode>; aria?: string }) {
   const cats = Object.keys(labels) as Cat[];
   const [cur, setCur] = useState<Cat>("follow");
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function ProgramTabs({ labels, panels }: { labels: Record<Cat, st
   };
   return (
     <>
-      <div className="tabs" role="tablist" aria-label="نوع البرنامج">
+      <div className="tabs" role="tablist" aria-label={aria}>
         {cats.map((c) => (
           <a key={c} role="tab" href={`?cat=${c}`} aria-selected={c === cur} aria-current={c === cur ? "true" : undefined}
             onClick={(e) => { e.preventDefault(); pick(c); }}>{labels[c]}</a>

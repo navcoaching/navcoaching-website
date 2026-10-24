@@ -2,6 +2,8 @@
 import Script from "next/script";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { href, langOfPath } from "@/lib/lang";
+import { t } from "@/i18n/ui";
 
 const KEY = "nav_analytics_consent";
 /** صفحات فيها بيانات المتدرب (صحة، طلبات، دفع): لا يُحمَّل عليها قياس الزيارات أبداً */
@@ -26,6 +28,7 @@ export default function Analytics({ id }: { id: string }) {
 
   const choose = (v: "yes" | "no") => { try { localStorage.setItem(KEY, v); } catch { /* التخزين غير متاح */ } setConsent(v); };
   const active = consent === "yes" && !isPrivate;
+  const u = t(langOfPath(path)).consent;
   return (
     <>
       {active && (
@@ -35,11 +38,11 @@ export default function Analytics({ id }: { id: string }) {
         </>
       )}
       {consent === null && !isPrivate && (
-        <div className="consent-bar" role="region" aria-label="ملفات تعريف الارتباط" data-testid="consent-bar">
-          <p className="small">قياس الزيارات بـ Google Analytics بدون بياناتك الصحية. <a href="/policies#privacy">التفاصيل</a></p>
+        <div className="consent-bar" role="region" aria-label={u.region} data-testid="consent-bar">
+          <p className="small">{u.text} <a href={href(langOfPath(path), "/policies#privacy")}>{u.details}</a></p>
           <div className="row" style={{ gap: 8 }}>
-            <button type="button" className="btn btn-sm" onClick={() => choose("yes")}>موافق</button>
-            <button type="button" className="btn btn-ghost btn-sm" onClick={() => choose("no")} aria-label="لا، شكراً">لا</button>
+            <button type="button" className="btn btn-sm" onClick={() => choose("yes")}>{u.yes}</button>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => choose("no")} aria-label={u.noAria}>{u.no}</button>
           </div>
         </div>
       )}

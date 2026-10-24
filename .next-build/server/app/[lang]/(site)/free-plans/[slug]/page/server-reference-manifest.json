@@ -1,0 +1,15 @@
+{
+  "node": {
+    "607163f3b4d850b49778a6d87a34c6d914726f17a0": {
+      "workers": {
+        "app/[lang]/(site)/free-plans/[slug]/page": {
+          "moduleId": 2082,
+          "async": true
+        }
+      },
+      "exportedName": "requestFreePlanAction",
+      "filename": "src/app/actions/client.ts"
+    }
+  },
+  "edge": {}
+}

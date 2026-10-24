@@ -1,0 +1,1 @@
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,11541,e=>{"use strict";var t=e.i(43476);e.s(["default",0,function({children:e,className:r="filters"}){return(0,t.jsx)("form",{className:r,role:"search",onChange:e=>{"SELECT"===e.target.tagName&&e.currentTarget.requestSubmit()},children:e})}])}]);

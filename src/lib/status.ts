@@ -34,18 +34,20 @@ export function statusTone(status: string): "wait" | "action" | "ok" | "muted" {
 }
 
 /** خطوات الخط الزمني المتوقعة لكل نوع منتج */
-export function timelineSteps(category: string, student: boolean): { key: string; label: string }[] {
+const STEP_EN: Record<string, string> = { received: "Received", awaiting_quote: "Amount confirmation", awaiting_payment: "Awaiting payment", payment_review: "Payment check", preparing: "In preparation", active: "Program active", completed: "Completed", delivered: "Delivered" };
+export function timelineSteps(category: string, student: boolean, lang: "ar" | "en" = "ar"): { key: string; label: string }[] {
   const start = [{ key: "received", label: "تم الاستلام" }];
   if (student) start.push({ key: "awaiting_quote", label: "تأكيد المبلغ" });
   const pay = [
     { key: "awaiting_payment", label: "بانتظار الدفع" },
     { key: "payment_review", label: "التحقق من الدفع" },
   ];
-  if (category === "follow")
-    return [...start, ...pay, { key: "preparing", label: "قيد الإعداد" }, { key: "active", label: "البرنامج نشط" }, { key: "completed", label: "انتهى الاشتراك" }];
-  if (category === "files")
-    return [...start, ...pay, { key: "preparing", label: "قيد الإعداد" }, { key: "delivered", label: "تم التسليم" }];
-  return [...start, ...pay, { key: "preparing", label: "قيد التنسيق" }, { key: "completed", label: "تمت الجلسة" }];
+  const steps = category === "follow"
+    ? [...start, ...pay, { key: "preparing", label: "قيد الإعداد" }, { key: "active", label: "البرنامج نشط" }, { key: "completed", label: "انتهى الاشتراك" }]
+    : category === "files"
+      ? [...start, ...pay, { key: "preparing", label: "قيد الإعداد" }, { key: "delivered", label: "تم التسليم" }]
+      : [...start, ...pay, { key: "preparing", label: "قيد التنسيق" }, { key: "completed", label: "تمت الجلسة" }];
+  return lang === "en" ? steps.map((s) => ({ ...s, label: s.key === "completed" && category === "consult" ? "Session done" : STEP_EN[s.key] ?? s.label })) : steps;
 }
 
 export function stepIndex(status: string, category: string, student: boolean) {

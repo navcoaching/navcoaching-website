@@ -84,6 +84,12 @@ export default async function AdminContent() {
       </section>
 
       <section className="card stack">
+        <H id="english">النسخة الإنجليزية</H>
+        <p className="small muted">الموقع الإنجليزي على <bdi dir="ltr">/en</bdi>: ترجمة الباقات والأسئلة والسياسات والنصوص العامة، والفارغ منها يُعرض بالعربية.</p>
+        <div><a className="btn btn-sm" href="/admin/content/en">تعديل الترجمة الإنجليزية</a></div>
+      </section>
+
+      <section className="card stack">
         <H id="intake">أسئلة الاستبيان</H>
         <p className="small muted">عدّلي نصوص الأسئلة، وأضيفي أسئلة جديدة، وأخفي الاختياري منها. تتحدث في الموقع مباشرة.</p>
         <div><a className="btn btn-sm" href="/admin/content/intake">تعديل أسئلة الاستبيان</a></div>

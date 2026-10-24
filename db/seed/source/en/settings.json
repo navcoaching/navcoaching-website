@@ -1,0 +1,143 @@
+{
+  "hero": {
+    "eyebrow": "Nav Coaching · Coach Sara",
+    "title": "A program built around you,",
+    "title_tail": "not a template",
+    "lead": "Personalised training and nutrition for your goal and level, reviewed and adjusted every week by Coach Sara.",
+    "tagline": "Where Passion Meets Quality"
+  },
+  "badges": [
+    "Coaching since 2017",
+    "MSc Sports Coaching · University of Stirling",
+    "Conditional money-back guarantee"
+  ],
+  "why": [
+    {
+      "title": "Built on your goal and level",
+      "body": "The program is designed after a detailed questionnaire about your goal, available days, equipment, and any injury that needs care."
+    },
+    {
+      "title": "Clear weekly follow-up",
+      "body": "Regular reviews by video or voice, and daily contact on WhatsApp with replies within 48 working hours."
+    },
+    {
+      "title": "Adjusted to your progress",
+      "body": "We adjust training and calories based on your measurements and adherence, so the results last."
+    }
+  ],
+  "how_steps": [
+    {
+      "title": "Choose a program and fill in the questionnaire",
+      "body": "Pick the plan and duration, then a short questionnaire about your goal, level, available days, and any injury."
+    },
+    {
+      "title": "Transfer the payment",
+      "body": "After the questionnaire, your order number and the account details appear. Transfer, then upload a photo of the receipt from your order page."
+    },
+    {
+      "title": "Receive your program and start",
+      "body": "Once the transfer is verified I get in touch within 48 working hours, your program file is delivered, and follow-up begins."
+    }
+  ],
+  "about": {
+    "name": "Coach Sara | Nav",
+    "bio": "Certified personal trainer, coaching since 2017. I help you build a clear training and nutrition routine that fits your goal, time, and level, with weekly follow-up that keeps you going and progressing.",
+    "home_bio": "Certified personal trainer, coaching since 2017, and former captain of the basketball team at Imam Abdulrahman Bin Faisal University. I help you build a clear training and nutrition routine that fits your goal, time, and level, with weekly follow-up and no restrictive diets.",
+    "points": [
+      "A program built on your goal and level.",
+      "Clear weekly follow-up.",
+      "Continuous adjustments to your progress and adherence."
+    ],
+    "story_title": "I became the person I once needed",
+    "story": [
+      "Before I became a coach, I was a trainee tired of experiments. I subscribed with coaches abroad and never found anyone who explained the exercises properly or cared about my goals.",
+      "Then I trained with Coach Sahar Alharthi. She changed how I saw training and inspired me to become a coach, and to this day I thank her for everything she taught me. That is when I decided to be the person I had needed.",
+      "Sport has been part of me from early on: I played basketball and captained the team at Imam Abdulrahman Bin Faisal University, and I competed professionally in esports. I started coaching in 2017 with basketball, worked as an assistant coach at the university club, and then coached at Pure Gym, Gymnation, Fitness Lounge, and private clubs."
+    ],
+    "pillars_title": "What makes training with me different?",
+    "pillars": [
+      {
+        "title": "Your plan explained on video",
+        "body": "I do not send a plan and leave it there. I walk through it with you in a video explaining everything, so you start with full understanding: what we do and why."
+      },
+      {
+        "title": "No deprivation",
+        "body": "I never use restrictive diets. Your plan fits your life, not a list of banned foods."
+      },
+      {
+        "title": "Serious follow-up, realistic plan",
+        "body": "I check in with you every week, care about your adherence, and adjust your plan to your progress and circumstances."
+      },
+      {
+        "title": "I teach you, not just train you",
+        "body": "I have loved teaching since I was young. I share everything I know, the science and the mindset, and I never stop researching and learning so that we both improve."
+      }
+    ],
+    "fit_title": "Who I work best with",
+    "fit": [
+      "Anyone who believes training is a lifestyle, not a quick fix for a temporary look or just for summer.",
+      "**And if adherence slips?** I try to understand why and help you work through it as much as I can. If it is bigger than what I can offer, I say so honestly and step back from coaching you."
+    ],
+    "notes": [
+      {
+        "title": "For gamers",
+        "body": "Coming from the esports world, I designed a special plan for gamers: better fitness on and off the screen, and dealing with back and joint pain from long sitting.",
+        "href": "/programs/gamers",
+        "label": "Gamers plan →"
+      },
+      {
+        "title": "During pregnancy",
+        "body": "I coach pregnant trainees in person only. Online, I cannot be sure every exercise is performed correctly, and pregnancy is a time that needs that certainty. Online, I offer nutrition follow-up only during pregnancy.",
+        "href": "",
+        "label": ""
+      }
+    ],
+    "experience_title": "Qualifications and experience",
+    "experience": [
+      "Coaching since 2017, starting in basketball.",
+      "Assistant coach at the university club.",
+      "Coach at Pure Gym, Gymnation, Fitness Lounge, and private clubs."
+    ],
+    "certs": [
+      "Saudi Reps — Level 4",
+      "NCSF",
+      "Menno Henselmans CPT",
+      "Functional Mobility",
+      "Pre & Postnatal Training",
+      "Prenatal Fitness Training — Aspire Academy",
+      "MSc Sports Coaching — University of Stirling"
+    ]
+  },
+  "testimonials_disclaimer": "Experiences are personal and results vary from person to person depending on adherence and condition. Coaching is not a substitute for a doctor or physiotherapist.",
+  "prices_note": "Prices are in Saudi riyals. Payment by bank transfer to the establishment’s account.",
+  "response_time": "within 48 working hours (Sunday to Thursday, 12 pm to 9 pm)",
+  "legal": {
+    "name": "Nav Coaching for Sports Training Est."
+  },
+  "bank": {
+    "accountName": "Nav Coaching for Sports Training Est.",
+    "bankName": "Al Rajhi Bank"
+  },
+  "program_shots": [
+    {
+      "title": "My program",
+      "caption": "As soon as you open your account: your adherence and streak, this week’s training days, today’s nutrition against your targets, and your supplement routine.",
+      "alt": "Screenshot of the account page with sample data: adherence bar, this week’s training days, today’s nutrition summary, and supplement routine"
+    },
+    {
+      "title": "Workout log",
+      "caption": "Each exercise shows the target sets, reps, and RIR; you log your weight and reps from your phone, and can swap in an alternative chosen by the coach.",
+      "alt": "Screenshot of the training program page with sample data: weekdays and an exercise card with targets and fields for weight, reps, and RIR"
+    },
+    {
+      "title": "Daily nutrition",
+      "caption": "Your daily calorie and macro targets and what is left, logging food from your meal plans or by the gram from the food database.",
+      "alt": "Screenshot of the nutrition page with sample data: today’s summary against targets, an add-food form, and today’s food by meal"
+    },
+    {
+      "title": "Progress dashboard",
+      "caption": "Your weight and measurements in clear week-by-week charts, with sample data.",
+      "alt": "Screenshot of the progress dashboard with sample data: weight chart and measurements chart"
+    }
+  ]
+}

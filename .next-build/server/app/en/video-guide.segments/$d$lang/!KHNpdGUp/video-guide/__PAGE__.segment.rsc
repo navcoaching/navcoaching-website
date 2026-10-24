@@ -1,0 +1,32 @@
+4:"$Sreact.fragment"
+5:"/_next/static/chunks/11c4jd1owx4o5.js"
+6:I[39756,["$5"],"default"]
+7:I[37457,["$5"],"default"]
+c:"/_next/static/chunks/1_9igip0clbba.js"
+d:"/_next/static/chunks/2htxg-49rhbgw.js"
+e:"/_next/static/chunks/33eqnabdhkbzu.js"
+f:"/_next/static/chunks/0pkb2nkcmakmy.js"
+10:I[22016,["$c","$d","$e","$f"],""]
+11:I[97367,["$5"],"OutletBoundary"]
+12:"$Sreact.suspense"
+15:"ViewportBoundary"
+16:I[97367,["$5"],"$15"]
+17:"MetadataBoundary"
+18:I[97367,["$5"],"$17"]
+19:I[27201,["$5"],"IconMark"]
+9:X
+9:C
+a:X
+b:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$4","c",{"children":[["$","div",null,{"className":"pub","children":[["$","section",null,{"className":"page-hero","children":["$","div",null,{"className":"wrap","children":[["$","span",null,{"className":"eyebrow","children":"Free tool"}],["$","h1",null,{"style":{"fontSize":"clamp(30px,5vw,50px)","marginTop":12},"children":"How to use the site, step by step"}],false]}]}],["$","section",null,{"className":"section tight","data-testid":"guide-video","children":["$","div",null,{"className":"wrap guide-video","children":[["$","p",null,{"className":"muted","children":"Video coming soon."}],["$","p",null,{"className":"muted small","style":{"marginTop":16},"children":[null,["$","$L10",null,{"href":"/en/program-preview","children":"Inside the program →"}]]}]]}]}]]}],[["$","script","script-0",{"src":"/_next/static/chunks/0pkb2nkcmakmy.js","async":true}]],["$","$L11",null,{"children":["$","$12",null,{"name":"Next.MetadataOutlet","children":"$@13"}]}]]}],"p":"$@14","v":null,"s":"$a"}}]]
+3:[["children",{"s":"video-guide","h":64,"d":{"r":["$","$4","c",{"children":[null,["$","$L6",null,{"parallelRouterKey":"children","template":["$","$L7",null,{}]}]]}],"p":"$@8","v":"$9","s":"$a"},"c":"$Qb"}]]
+2:[["children",{"s":"(site)","h":32,"c":"$Q3"}]]
+1:[["children",{"s":{"n":"lang","t":"d","k":"en","s":["actions","admin","api"]},"h":112,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":80,"c":"$Q1"},"h":{"r":["$","$4","h",{"children":[null,["$","$L16",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}],["$","meta","2",{"name":"theme-color","content":"#07142a"}]]}],["$","$L18",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$12",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"How to use the site (video) — Nav Coaching"}],["$","meta","1",{"name":"description","content":"A step-by-step video on using the Nav Coaching site: subscribing, the questionnaire, and following your program from your account."}],["$","link","2",{"rel":"manifest","href":"/manifest.webmanifest"}],["$","link","3",{"rel":"canonical","href":"http://localhost:3000/en/video-guide"}],["$","link","4",{"rel":"alternate","hrefLang":"ar","href":"http://localhost:3000/video-guide"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"http://localhost:3000/en/video-guide"}],["$","link","6",{"rel":"alternate","hrefLang":"x-default","href":"http://localhost:3000/video-guide"}],["$","meta","7",{"name":"mobile-web-app-capable","content":"yes"}],["$","meta","8",{"name":"apple-mobile-web-app-title","content":"Nav Coaching"}],["$","meta","9",{"name":"apple-mobile-web-app-status-bar-style","content":"default"}],["$","meta","10",{"property":"og:title","content":"How to use the site (video) — Nav Coaching"}],["$","meta","11",{"property":"og:description","content":"A step-by-step video on using the Nav Coaching site: subscribing, the questionnaire, and following your program from your account."}],["$","meta","12",{"property":"og:site_name","content":"Nav Coaching"}],["$","meta","13",{"property":"og:locale","content":"en_US"}],["$","meta","14",{"property":"og:image","content":"http://localhost:3000/brand/og.png"}],["$","meta","15",{"property":"og:image:width","content":"1200"}],["$","meta","16",{"property":"og:image:height","content":"630"}],["$","meta","17",{"property":"og:image:alt","content":"Nav Coaching"}],["$","meta","18",{"property":"og:type","content":"website"}],["$","meta","19",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","20",{"name":"twitter:title","content":"How to use the site (video) — Nav Coaching"}],["$","meta","21",{"name":"twitter:description","content":"A step-by-step video on using the Nav Coaching site: subscribing, the questionnaire, and following your program from your account."}],["$","meta","22",{"name":"twitter:image","content":"http://localhost:3000/brand/og.png"}],["$","meta","23",{"name":"twitter:image:alt","content":"Nav Coaching"}],["$","meta","24",{"name":"twitter:image:width","content":"1200"}],["$","meta","25",{"name":"twitter:image:height","content":"630"}],["$","link","26",{"rel":"icon","href":"/icon.png?icon.28rcsv2jnl9ix.png","sizes":"64x64","type":"image/png"}],["$","link","27",{"rel":"apple-touch-icon","href":"/apple-icon.png?apple-icon.2b005pjlgpn1l.png","sizes":"180x180","type":"image/png"}],["$","$L19","28",{}]]}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":"$@1a","v":null,"s":"$a"}},"a":"$@1b","u":"$@1c","b":"t7XlYF_6trZ-4JzolwJh_"}
+13:null
+1c:true
+a:300
+a:C
+1b:0
+8:"$undefined"
+1a:"$undefined"
+14:"$undefined"

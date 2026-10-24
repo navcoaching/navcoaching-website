@@ -1,0 +1,15 @@
+{
+  "node": {
+    "0042bdd92a74e27399ea5dcddaa74fb3937fc8926d": {
+      "workers": {
+        "app/admin/exercises/page": {
+          "moduleId": 78986,
+          "async": true
+        }
+      },
+      "exportedName": "checkVideosAction",
+      "filename": "src/app/actions/training.ts"
+    }
+  },
+  "edge": {}
+}

@@ -2,7 +2,7 @@
 // إجراءات التغذية والمكملات: الأهداف، الجداول الغذائية (قوالب ونسخ المتدربين)، روتين المكملات، وسجل الأكل اليومي.
 // الجلسة تُفحص هنا، وقاعدة البيانات تتحقق مرة ثانية (RLS ودوال SECURITY DEFINER).
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath } from "@/lib/revalidate";
 import { redirect } from "next/navigation";
 import { dbErrorMessage, withUser, type Tx } from "@/lib/db";
 import { getCurrentUser, getFreshUser } from "@/lib/session";

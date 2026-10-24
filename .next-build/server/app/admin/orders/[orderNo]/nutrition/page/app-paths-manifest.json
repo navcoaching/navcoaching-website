@@ -1,0 +1,3 @@
+{
+  "/admin/orders/[orderNo]/nutrition/page": "app/admin/orders/[orderNo]/nutrition/page.js"
+}

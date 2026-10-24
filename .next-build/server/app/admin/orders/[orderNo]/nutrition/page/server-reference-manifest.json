@@ -1,0 +1,305 @@
+{
+  "node": {
+    "6010662e1eb4a1d3f6a27707867908d376a0ccbe99": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "saveSuppAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "6013762ab223f84771381c6f9ea84f7b9a831fc707": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "assignSupplementsAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "6029379674af11e8b41cccaa87795d94ed3d75f110": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "saveMealAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "603debc89f0623e34bc0fbd198e068b40a8a84bbe8": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "deleteMealAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "6059a32ac29d7b01ce1f31e45b1cadcb8f298f6920": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "addMealAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "606a2f6197017fdea3880cf14baf8680005861f401": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "deletePlanAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "6071579b377caba9d1c1574be0d344cf3ddb4ec444": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "addSectionAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "607c31f1e5d55538f66d947ed90b057f051a9a9c44": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "saveTargetsAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "607f6c92e59b196da82d7919baaeb7fa955d521937": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "saveRoutineAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "6092bbf0d83bd4b45070a77037f2792f5062b0f09c": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "addFoodAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "6092cca720891e4e0c917874fa55a29794ac399a56": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "addSuppAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "609c5c43c93f7de97c3575106d66820b2ec8f44968": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "deleteRoutineAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "609ea921f98bb4af21097c259cf130ece44e2070f8": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "savePlanAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "60af3c75807b50194d1049b338d57c845680b49390": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "saveSectionAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "60bbe3622bb63a323c30ad254358c20ad649207329": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "assignNutritionAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "60be4323efe198575e3c2ebff4b980c0ded46110de": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "deleteSectionAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "60d66dd9e00873ee8a7e7297ca98356a20fb14e137": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "logFoodAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "60d8f727d70edacaf113216ff082598d6e8525651c": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "logFoodGramsAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "60e2aaf1a3d444d09f71f7cab984a4f3d43c8c5a0e": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "deleteFoodAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "60e46f7639f841e2d4faba301284e6359656f8c653": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "moveMealAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "60e4d17b16f13b152dee4a660a207dff4e400b4259": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "deleteFoodLogAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "60ed4547038227a6052c9dea23a43750f42b34b844": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "saveFoodAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "60efb0279625b274121c37704525dbc87857708967": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "saveFoodItemAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "60fd789cd4fa3e55c6bf858c9583f17467c3cd4b23": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "deleteSuppAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "6016cb585c6a9bd7a9f2c6ae81b9f7990cb24e5bb1": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "fillMacrosAction",
+      "filename": "src/app/actions/calories.ts"
+    },
+    "601e23e4cca3649213bc2a1bc6ea96a00c88f550db": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "saveMyBodyInfoAction",
+      "filename": "src/app/actions/calories.ts"
+    },
+    "602d05f9b6e70b2e954d49f675997ced084c12de42": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "saveCalorieProfileAction",
+      "filename": "src/app/actions/calories.ts"
+    },
+    "603e21af00fd77f09467505914e515892f9d4b3081": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "dismissCalorieSuggestionAction",
+      "filename": "src/app/actions/calories.ts"
+    },
+    "60533a89bf97a08a7172f4453dea80d4bbd3f5d9ca": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "applyCalorieSuggestionAction",
+      "filename": "src/app/actions/calories.ts"
+    },
+    "6077a510ecd21f5104c8fdd99f3d96ed43f3b204f1": {
+      "workers": {
+        "app/admin/orders/[orderNo]/nutrition/page": {
+          "moduleId": 91494,
+          "async": true
+        }
+      },
+      "exportedName": "confirmAutoKcalAction",
+      "filename": "src/app/actions/calories.ts"
+    }
+  },
+  "edge": {}
+}

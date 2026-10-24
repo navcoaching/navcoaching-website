@@ -1,0 +1,10 @@
+module.exports=[87903,e=>{e.v(e=>Promise.resolve().then(()=>e(12714)))},69770,e=>{e.v(t=>Promise.all(["server/chunks/1daa_@better-auth_kysely-adapter_dist_bun-sqlite-dialect-DoOVo4ja_mjs_01a8p_xab95r7._.js"].map(t=>e.l(t))).then(()=>t(2754)))},72453,e=>{e.v(t=>Promise.all(["server/chunks/1daa_@better-auth_kysely-adapter_dist_d1-sqlite-dialect-Cru74LbR_mjs_0gktzdm7geuda._.js"].map(t=>e.l(t))).then(()=>t(25911)))},9477,e=>{e.v(t=>Promise.all(["server/chunks/1q96_modules_@better-auth_kysely-adapter_dist_node-sqlite-dialect_mjs_05ltt5i9n0aiv._.js"].map(t=>e.l(t))).then(()=>t(89127)))},63921,e=>{e.v(t=>Promise.all(["server/chunks/node_modules_@better-auth_memory-adapter_dist_index_mjs_0dgcqiz_5ztcg._.js"].map(t=>e.l(t))).then(()=>t(68905)))},37875,e=>{e.v(e=>Promise.resolve().then(()=>e(7896)))},46120,e=>{e.v(t=>Promise.all(["server/chunks/node_modules_better-auth_dist_adapters_kysely-adapter_index_mjs_1u-8gniqb8hyv._.js"].map(t=>e.l(t))).then(()=>t(69580)))},6878,e=>{e.v(e=>Promise.resolve().then(()=>e(93458)))},27927,e=>e.a(async(t,r)=>{try{var s=e.i(43793),a=t([s]);async function o(e){return(0,s.g)(e,async t=>(await t.query(`SELECT o.order_no,
+            EXISTS (SELECT 1 FROM blocks b WHERE b.order_id = o.id) AS training,
+            (EXISTS (SELECT 1 FROM nutrition_targets t WHERE t.order_id = o.id)
+              OR EXISTS (SELECT 1 FROM nutrition_plans p WHERE p.order_id = o.id AND NOT p.archived)
+              OR EXISTS (SELECT 1 FROM supplement_routines r WHERE r.order_id = o.id AND NOT r.archived)) AS nutrition
+       FROM orders o
+      WHERE o.user_id = $1 AND o.category = 'follow' AND o.status IN ('active', 'delivered', 'completed')
+      ORDER BY (o.status = 'active') DESC, o.sub_start_at DESC NULLS LAST, o.created_at DESC LIMIT 1`,[e])).rows[0])}[s]=a.then?(await a)():a,e.s(["f",0,o]),r()}catch(e){r(e)}},!1),69801,e=>{e.v(e=>Promise.resolve().then(()=>e(48693)))}];
+
+//# sourceMappingURL=%5Broot-of-the-server%5D__04llkdyaxeohk._.js.map

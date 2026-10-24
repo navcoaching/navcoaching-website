@@ -1,0 +1,45 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/[lang]/layout,_N_T_/[lang]/(site)/layout,_N_T_/[lang]/(site)/faq/layout,_N_T_/[lang]/(site)/faq/page,_N_T_/ar/faq"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/$d$lang/!KHNpdGUp",
+    "/$d$lang/!KHNpdGUp/faq/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 64,
+    "slots": {
+      "children": {
+        "hints": 96,
+        "slots": {
+          "children": {
+            "hints": 32,
+            "slots": {
+              "children": {
+                "hints": 64,
+                "slots": {
+                  "children": {
+                    "hints": 160,
+                    "slots": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/641be65a4800c309d75c5eb76e622c6849ce5649d1afd907a97d3c220409f5e1/$/ar/faq",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/[lang]/(site)/faq/page"
+    },
+    "isFallback": false
+  }
+}

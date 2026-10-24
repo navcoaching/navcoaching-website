@@ -1,0 +1,35 @@
+{
+  "node": {
+    "60e4d17b16f13b152dee4a660a207dff4e400b4259": {
+      "workers": {
+        "app/[lang]/(site)/account/orders/[orderNo]/nutrition/page": {
+          "moduleId": 76517,
+          "async": true
+        }
+      },
+      "exportedName": "deleteFoodLogAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "60d66dd9e00873ee8a7e7297ca98356a20fb14e137": {
+      "workers": {
+        "app/[lang]/(site)/account/orders/[orderNo]/nutrition/page": {
+          "moduleId": 76517,
+          "async": true
+        }
+      },
+      "exportedName": "logFoodAction",
+      "filename": "src/app/actions/nutrition.ts"
+    },
+    "60d8f727d70edacaf113216ff082598d6e8525651c": {
+      "workers": {
+        "app/[lang]/(site)/account/orders/[orderNo]/nutrition/page": {
+          "moduleId": 76517,
+          "async": true
+        }
+      },
+      "exportedName": "logFoodGramsAction",
+      "filename": "src/app/actions/nutrition.ts"
+    }
+  },
+  "edge": {}
+}

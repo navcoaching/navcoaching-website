@@ -1,0 +1,3 @@
+module.exports=[16677,a=>{"use strict";a.s(["tiktokId",0,function(a){let b;if(!a)return null;try{b=new URL(a.trim())}catch{return null}if("https:"!==b.protocol||"tiktok.com"!==b.hostname.replace(/^www\.|^m\./,""))return null;let c=b.pathname.match(/\/(?:video|embed\/v2|player\/v1)\/(\d{8,25})(?:\/|$)/);return c?c[1]:null},"youtubeId",0,function(a){let b;if(!a)return null;try{b=new URL(a.trim())}catch{return null}let c=b.hostname.replace(/^www\.|^m\./,""),d=null;if("youtu.be"===c)d=b.pathname.slice(1);else if("youtube.com"===c){let a=b.pathname.match(/^\/(shorts|embed|live)\/([^/?#]+)/);d=a?a[2]:b.searchParams.get("v")}return d&&/^[A-Za-z0-9_-]{11}$/.test(d)?d:null}])}];
+
+//# sourceMappingURL=src_lib_youtube_ts_1e45q8k4160pv._.js.map

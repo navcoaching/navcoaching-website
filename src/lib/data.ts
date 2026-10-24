@@ -6,6 +6,23 @@ import { loadAdherence } from "./program-data";
 import { loadWeekState } from "./reminders";
 import { cache } from "react";
 import { batch, lit, withAnon, withUser } from "./db";
+import type { Lang } from "./lang";
+
+/** يدمج الترجمة الإنجليزية (i18n.en) فوق الحقول العربية؛ الحقل الناقص يبقى بالعربية. */
+function loc<T extends { i18n?: Record<string, Record<string, unknown>> | null }>(row: T, lang: Lang): T {
+  const en = lang === "en" ? row.i18n?.en : null;
+  if (!en) return row;
+  const out: Record<string, unknown> = { ...row };
+  for (const [k, v] of Object.entries(en)) {
+    if (v == null || v === "") continue;
+    if (k === "items" && Array.isArray(v) && Array.isArray(out.items)) {
+      // عناصر الباقة: النص المترجم بنفس الترتيب، و«مشمول/غير مشمول» من العربية
+      out.items = (out.items as { text: string; included: boolean }[]).map((it, i) => ({ ...it, text: (v[i] as { text?: string })?.text || it.text }));
+    } else if (typeof v === "object" && !Array.isArray(v) && typeof out[k] === "object" && out[k] && !Array.isArray(out[k])) out[k] = { ...(out[k] as object), ...v };
+    else out[k] = v;
+  }
+  return out as T;
+}
 
 export type Offer = { id: string; sku: string; label: string; months: number; price_halalas: number; currency: string; active: boolean };
 export type Product = {
@@ -55,21 +72,30 @@ const PRODUCT_SQL = `
   SELECT p.*, coalesce(json_agg(o ORDER BY o.sort) FILTER (WHERE o.id IS NOT NULL), '[]') AS offers
     FROM products p LEFT JOIN product_offers o ON o.product_id = p.id AND (o.active OR app.is_coach())`;
 
-export const getSettings = cache(async (): Promise<Settings> =>
+export const getSettings = cache(async (lang: Lang = "ar"): Promise<Settings> =>
   withAnon(async (tx) => {
-    const { rows } = await tx.query("SELECT key, value FROM site_settings WHERE is_public");
-    const s = Object.fromEntries(rows.map((r) => [r.key, r.value])) as Settings;
+    const { rows } = await tx.query("SELECT key, value, i18n FROM site_settings WHERE is_public");
+    // الترجمة الإنجليزية للإعداد: كائن يُدمج فوق العربي (الحقل الناقص يبقى عربياً)، أو قيمة كاملة (نص/قائمة)
+    const localized = (value: unknown, i18n: { en?: unknown } | null) => {
+      const en = lang === "en" ? i18n?.en : undefined;
+      if (en == null) return value;
+      const obj = (v: unknown) => typeof v === "object" && v !== null && !Array.isArray(v);
+      // قائمة كائنات (مثل لقطات البرنامج): تُدمج عنصراً بعنصر حتى تبقى الصور والمقاسات من العربي
+      if (Array.isArray(value) && Array.isArray(en) && value.every(obj)) return value.map((v, i) => (obj(en[i]) ? { ...(v as object), ...(en[i] as object) } : v));
+      return obj(value) && obj(en) ? { ...(value as object), ...(en as object) } : en;
+    };
+    const s = Object.fromEntries(rows.map((r) => [r.key, localized(r.value, r.i18n)])) as Settings;
     if (s.contact) s.contact = withTiktok(s.contact);
     return s;
   }),
 );
 
-export const getProducts = cache(async (): Promise<Product[]> =>
-  withAnon(async (tx) => (await tx.query(`${PRODUCT_SQL} WHERE p.status = 'published' AND p.booklet_id IS NULL GROUP BY p.id ORDER BY p.sort`)).rows),
+export const getProducts = cache(async (lang: Lang = "ar"): Promise<Product[]> =>
+  withAnon(async (tx) => (await tx.query(`${PRODUCT_SQL} WHERE p.status = 'published' AND p.booklet_id IS NULL GROUP BY p.id ORDER BY p.sort`)).rows.map((r) => loc(r, lang))),
 );
 
-export const getProduct = cache(async (slug: string): Promise<Product | null> =>
-  withAnon(async (tx) => (await tx.query(`${PRODUCT_SQL} WHERE p.slug = $1 AND p.status = 'published' AND p.booklet_id IS NULL GROUP BY p.id`, [slug])).rows[0] ?? null),
+export const getProduct = cache(async (slug: string, lang: Lang = "ar"): Promise<Product | null> =>
+  withAnon(async (tx) => { const r = (await tx.query(`${PRODUCT_SQL} WHERE p.slug = $1 AND p.status = 'published' AND p.booklet_id IS NULL GROUP BY p.id`, [slug])).rows[0]; return r ? loc(r, lang) : null; }),
 );
 
 export async function getOfferBySku(sku: string): Promise<{ product: Product; offer: Offer } | null> {
@@ -81,12 +107,12 @@ export async function getOfferBySku(sku: string): Promise<{ product: Product; of
   return null;
 }
 
-export const getFaqs = cache(async () =>
-  withAnon(async (tx) => (await tx.query("SELECT id, question, answer FROM faqs WHERE published ORDER BY sort")).rows as { id: string; question: string; answer: string }[]),
+export const getFaqs = cache(async (lang: Lang = "ar") =>
+  withAnon(async (tx) => (await tx.query("SELECT id, question, answer, i18n FROM faqs WHERE published ORDER BY sort")).rows.map((r) => loc(r, lang)) as { id: string; question: string; answer: string }[]),
 );
 
-export const getPolicies = cache(async () =>
-  withAnon(async (tx) => (await tx.query("SELECT slug, title, body FROM policies ORDER BY sort")).rows as { slug: string; title: string; body: string }[]),
+export const getPolicies = cache(async (lang: Lang = "ar") =>
+  withAnon(async (tx) => (await tx.query("SELECT slug, title, body, i18n FROM policies ORDER BY sort")).rows.map((r) => loc(r, lang)) as { slug: string; title: string; body: string }[]),
 );
 
 export type PublicReview = { id: string; source: string; product_name: string | null; rating: number | null; body: string; display_name: string; period_label: string | null; coach_reply: string | null; created_at: string };
@@ -182,13 +208,13 @@ export async function getMyPrefs(userId: string) {
 export type FreePlan = { id: string; slug: string; title: string; summary: string; audience: string | null; image_id: string | null; owned: boolean };
 
 /** الجداول المنشورة (RLS تمنع المخفية)، مع حالة «موجود في جداولي» للمستخدم الحالي */
-export async function getFreePlans(userId: string | null, slug?: string): Promise<FreePlan[]> {
-  const run = async (tx: import("./db").Tx) => (await tx.query(
-    `SELECT p.id, p.slug, p.title, p.summary, p.audience, p.image_id,
+export async function getFreePlans(userId: string | null, slug?: string, lang: Lang = "ar"): Promise<FreePlan[]> {
+  const run = async (tx: import("./db").Tx) => ((await tx.query(
+    `SELECT p.id, p.slug, p.title, p.summary, p.audience, p.image_id, p.i18n,
             ${userId ? "EXISTS (SELECT 1 FROM free_plan_requests r WHERE r.plan_id = p.id AND r.user_id = $2)" : "false"} AS owned
        FROM free_plans p
       WHERE p.status = 'published' AND ($1::text IS NULL OR p.slug = $1)
-      ORDER BY p.sort, p.created_at`, userId ? [slug ?? null, userId] : [slug ?? null])).rows as FreePlan[];
+      ORDER BY p.sort, p.created_at`, userId ? [slug ?? null, userId] : [slug ?? null])).rows as (FreePlan & { i18n?: Record<string, Record<string, unknown>> })[]).map((r) => loc(r, lang));
   return userId ? withUser(userId, run) : withAnon(run);
 }
 

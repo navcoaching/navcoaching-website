@@ -4,6 +4,7 @@ import Image from "next/image";
 import { requireCoach } from "@/lib/session";
 import AdminNav from "@/components/admin/AdminNav";
 import ThemeToggle from "@/components/ThemeToggle";
+import RootHtml from "@/components/RootHtml";
 
 export const metadata: Metadata = { title: { default: "لوحة الإدارة", template: "%s — لوحة الإدارة" }, robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -15,12 +16,13 @@ const NAV: { title?: string; links: [string, string][] }[] = [
   { title: "التمرين", links: [["/admin/templates", "قوالب البرامج"], ["/admin/exercises", "مكتبة التمارين"], ["/admin/rehab", "التمارين التأهيلية"]] },
   { title: "التغذية", links: [["/admin/nutrition", "التغذية والمكملات"], ["/admin/foods", "قاعدة الأكل"], ["/admin/foods/guide", "دليل مصادر الأكل"]] },
   { title: "المتجر والموقع", links: [["/admin/products", "المنتجات"], ["/admin/free-plans", "الجداول المجانية"], ["/admin/booklets", "الكتيبات"], ["/admin/reviews", "التقييمات"], ["/admin/media", "الصور"]] },
-  { title: "الإعدادات", links: [["/admin/content", "المحتوى والإعدادات"], ["/admin/stats", "أرشيف الأرقام"], ["/admin/content/intake", "أسئلة الاستبيان"], ["/admin/speed", "فحص السرعة"], ["/admin/security", "الأمان والمراقبة"], ["/", "الموقع ↗"]] },
+  { title: "الإعدادات", links: [["/admin/content", "المحتوى والإعدادات"], ["/admin/content/en", "النسخة الإنجليزية"], ["/admin/stats", "أرشيف الأرقام"], ["/admin/content/intake", "أسئلة الاستبيان"], ["/admin/speed", "فحص السرعة"], ["/admin/security", "الأمان والمراقبة"], ["/", "الموقع ↗"]] },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await requireCoach();
   return (
+    <RootHtml lang="ar">
     <div className="admin app">
       <nav className="admin-side" aria-label="لوحة الإدارة">
         <Link href="/admin" className="brand">
@@ -32,5 +34,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </nav>
       <main className="admin-main" id="main">{children}</main>
     </div>
+    </RootHtml>
   );
 }

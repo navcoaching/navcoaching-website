@@ -2447,3 +2447,19 @@ fieldset.field > legend { inline-size: 100%; padding: 0; float: none; }
 .booklet-cover-edit { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 14px; align-items: start; }
 @media (max-width: 600px) { .booklet-cover-edit { grid-template-columns: minmax(0, 1fr); } }
 .booklet-thumb { inline-size: 72px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; flex: none; }
+
+/* ===== النسخة الإنجليزية (LTR): الأسهم باتجاه القراءة، والشرائط المائلة في الجهة المقابلة للنص ===== */
+[dir="ltr"] .arrow, [dir="ltr"] .pcard .more svg, [dir="ltr"] .v3-plan .more svg, [dir="ltr"] .mbar svg.arrow { transform: scaleX(-1); }
+[dir="ltr"] .btn:hover .arrow { transform: scaleX(-1) translateX(-4px); }
+[dir="ltr"] .v3-hero::before { left: auto; right: 6vw; }
+[dir="ltr"] .v3-hero::after { left: auto; right: 23vw; }
+[dir="ltr"] .v3-close::before { left: auto; right: 6vw; }
+[dir="ltr"] .v3-close::after { left: auto; right: 17vw; }
+[dir="ltr"] .v3-bg-stroke { left: auto; right: -4%; }
+@media (max-width: 999px) {
+  [dir="ltr"] .v3-hero::before { left: auto; right: 52vw; }
+  [dir="ltr"] .v3-hero::after { left: auto; right: 82vw; }
+  [dir="ltr"] .v3-close::before { left: auto; right: -10vw; } [dir="ltr"] .v3-close::after { left: auto; right: 14vw; }
+}
+/* الأرقام والعملة في الإنجليزية بخط النص نفسه */
+[dir="ltr"] .num { font-variant-numeric: tabular-nums; }

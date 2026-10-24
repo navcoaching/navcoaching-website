@@ -1,0 +1,13 @@
+var R=require("../../chunks/[turbopack]_runtime.js")("server/app/apple-icon.png/route.js")
+R.c("server/chunks/[externals]__1c4isywy94j7c._.js")
+R.c("server/chunks/node_modules_next_dist_182yaz9b1ql64._.js")
+R.c("server/chunks/node_modules_next_dist_compiled_@opentelemetry_api_index_1flpc8x6dsfp6.js")
+R.c("server/chunks/_130yggxx35uou._.js")
+R.c("server/chunks/node_modules_@opentelemetry_api_build_esm_index_1jp9ij0_ddtgk.js")
+R.c("server/chunks/node_modules_next_dist_0asya_d53xspt._.js")
+R.c("server/chunks/[root-of-the-server]__12uj0887q1ayr._.js")
+R.c("server/chunks/node_modules_next_dist_10oni030-l6bx._.js")
+R.c("server/chunks/node_modules_next_1lo724y0ayaf6._.js")
+R.c("server/chunks/_next-internal_server_app_apple-icon_png_route_actions_0jcl8aui56a1m.js")
+R.m(29391)
+module.exports=R.m(29391).exports

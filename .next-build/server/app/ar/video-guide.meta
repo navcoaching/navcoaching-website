@@ -1,0 +1,45 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/[lang]/layout,_N_T_/[lang]/(site)/layout,_N_T_/[lang]/(site)/video-guide/layout,_N_T_/[lang]/(site)/video-guide/page,_N_T_/ar/video-guide"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/$d$lang/!KHNpdGUp",
+    "/$d$lang/!KHNpdGUp/video-guide/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 64,
+    "slots": {
+      "children": {
+        "hints": 96,
+        "slots": {
+          "children": {
+            "hints": 32,
+            "slots": {
+              "children": {
+                "hints": 64,
+                "slots": {
+                  "children": {
+                    "hints": 160,
+                    "slots": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/39da9570c36904f34070e5f6354a9527d364ab9029e033893610bc815aeb8de0/$/ar/video-guide",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/[lang]/(site)/video-guide/page"
+    },
+    "isFallback": false
+  }
+}

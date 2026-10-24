@@ -38,7 +38,8 @@ export const daysBetween = (a: string, b: string) => Math.round((parseDate(b) - 
 
 export type FieldErrors = Partial<Record<keyof EnergyInput, string>>;
 
-export function validate(i: Partial<Record<keyof EnergyInput, unknown>>): FieldErrors {
+export function validate(i: Partial<Record<keyof EnergyInput, unknown>>, lang: "ar" | "en" = "ar"): FieldErrors {
+  if (lang === "en") return validateEn(i);
   const e: FieldErrors = {};
   const isNum = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
   for (const [k, label] of [["leanChange", "تغيّر الكتلة الخالية من الدهون"], ["fatChange", "تغيّر كتلة الدهون"]] as const) {
@@ -61,7 +62,30 @@ export function validate(i: Partial<Record<keyof EnergyInput, unknown>>): FieldE
   return e;
 }
 
-export function calculateEnergyBalance(i: EnergyInput): EnergyResult {
+function validateEn(i: Partial<Record<keyof EnergyInput, unknown>>): FieldErrors {
+  const e: FieldErrors = {};
+  const isNum = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+  for (const [k, label] of [["leanChange", "the change in lean body mass"], ["fatChange", "the change in fat mass"]] as const) {
+    const v = i[k];
+    if (!isNum(v)) e[k] = `Enter ${label} (0 if unchanged).`;
+    else if (v < LIMITS.change[0] || v > LIMITS.change[1]) e[k] = `Enter ${label} between ${LIMITS.change[0]} and ${LIMITS.change[1]} kg.`;
+  }
+  for (const [k, label] of [["trainingKcal", "training-day calories"], ["restKcal", "rest-day calories"]] as const) {
+    const v = i[k];
+    if (!isNum(v)) e[k] = `Enter ${label}.`;
+    else if (v <= 0) e[k] = `${label[0].toUpperCase()}${label.slice(1)} must be greater than zero.`;
+    else if (v < LIMITS.kcal[0] || v > LIMITS.kcal[1]) e[k] = `Enter ${label} between ${LIMITS.kcal[0]} and ${LIMITS.kcal[1]}.`;
+  }
+  const td = i.trainingDays;
+  if (!isNum(td) || !Number.isInteger(td) || td < 0 || td > 7) e.trainingDays = "Choose the number of training days (0–7).";
+  const s = String(i.startDate ?? ""), en = String(i.endDate ?? "");
+  if (Number.isNaN(parseDate(s))) e.startDate = "Choose the date of the first measurement.";
+  if (Number.isNaN(parseDate(en))) e.endDate = "Choose the date of the second measurement.";
+  else if (!e.startDate && daysBetween(s, en) < 1) e.endDate = "The second measurement must be after the first.";
+  return e;
+}
+
+export function calculateEnergyBalance(i: EnergyInput, lang: "ar" | "en" = "ar"): EnergyResult {
   const warnings: string[] = [];
   const leanMJ = i.leanChange * MJ_PER_KG.lean;
   const fatMJ = i.fatChange * MJ_PER_KG.fat;
@@ -73,8 +97,8 @@ export function calculateEnergyBalance(i: EnergyInput): EnergyResult {
   const maintenance = avgIntake - dailyBalance;
   const dailyBalancePct = maintenance > 0 ? dailyBalance / maintenance : 0;
 
-  if (days < 14) warnings.push("المدة أقل من أسبوعين، فالنتيجة تتأثر كثيراً بتقلبات الماء وأخطاء جهاز القياس. الأفضل 4 أسابيع أو أكثر.");
-  if (maintenance <= 0) warnings.push("النتيجة غير منطقية: راجع أرقام التغيّر في الجسم والسعرات المأكولة.");
+  if (days < 14) warnings.push(lang === "en" ? "The period is under two weeks, so the result is strongly affected by water fluctuations and device error. Four weeks or more is best." : "المدة أقل من أسبوعين، فالنتيجة تتأثر كثيراً بتقلبات الماء وأخطاء جهاز القياس. الأفضل 4 أسابيع أو أكثر.");
+  if (maintenance <= 0) warnings.push(lang === "en" ? "The result does not make sense: check the body-change numbers and the calories eaten." : "النتيجة غير منطقية: راجع أرقام التغيّر في الجسم والسعرات المأكولة.");
   return { leanMJ, fatMJ, netKcal, days, avgIntake, dailyBalance, dailyBalancePct, maintenance, warnings };
 }
 
@@ -110,6 +134,21 @@ export const PAF_LEVELS = [
   { v: "1.2", l: "متوسط (7,500–10,000 خطوة)" },
   { v: "1.3", l: "نشيط (10,000–12,500 خطوة)" },
   { v: "1.4", l: "نشيط جداً (+12,500 خطوة أو عمل بدني)" },
+] as const;
+export const PAF_LEVELS_EN = [
+  { v: "1.0", l: "Sedentary (under 5,000 steps)" },
+  { v: "1.1", l: "Light (5,000–7,500 steps)" },
+  { v: "1.2", l: "Moderate (7,500–10,000 steps)" },
+  { v: "1.3", l: "Active (10,000–12,500 steps)" },
+  { v: "1.4", l: "Very active (12,500+ steps or physical work)" },
+] as const;
+export const EB_GOALS_EN = [
+  { v: "0.75", l: "Fast cut (25% deficit)" },
+  { v: "0.8", l: "Cut (20% deficit)" },
+  { v: "0.9", l: "Gradual cut (10% deficit)" },
+  { v: "1", l: "Maintain weight" },
+  { v: "1.05", l: "Lean bulk (5% surplus)" },
+  { v: "1.1", l: "Bulk (10% surplus)" },
 ] as const;
 /** عامل توازن الطاقة: أقل من 1 = عجز، أكثر من 1 = فائض */
 export const EB_GOALS = [
@@ -151,27 +190,28 @@ export function calculateIntake(i: IntakeInput): IntakeResult {
 }
 
 export type IntakeErrors = Partial<Record<keyof IntakeInput, string>>;
-export function validateIntake(i: Partial<Record<keyof IntakeInput, unknown>>): IntakeErrors {
+export function validateIntake(i: Partial<Record<keyof IntakeInput, unknown>>, lang: "ar" | "en" = "ar"): IntakeErrors {
   const e: IntakeErrors = {};
+  const en = lang === "en";
   const num = (k: "weight" | "bodyFat" | "heightCm" | "age" | "minutes", label: string, unit: string) => {
     const v = i[k]; const [min, max] = INTAKE_LIMITS[k];
-    if (typeof v !== "number" || !Number.isFinite(v)) e[k] = `اكتب ${label}.`;
-    else if (v <= 0 && k !== "minutes") e[k] = `${label} لازم يكون أكبر من صفر.`;
-    else if (v < min || v > max) e[k] = `اكتب ${label} بين ${min} و ${max}${unit}.`;
+    if (typeof v !== "number" || !Number.isFinite(v)) e[k] = en ? `Enter ${label}.` : `اكتب ${label}.`;
+    else if (v <= 0 && k !== "minutes") e[k] = en ? `${label} must be greater than zero.` : `${label} لازم يكون أكبر من صفر.`;
+    else if (v < min || v > max) e[k] = en ? `Enter ${label} between ${min} and ${max}${unit}.` : `اكتب ${label} بين ${min} و ${max}${unit}.`;
   };
-  if (!["cunningham", "tenhaaf", "tinsley"].includes(i.method as string)) e.method = "اختيار طريقة الحساب مطلوب.";
-  num("weight", "الوزن", " كغ");
-  num("minutes", "مدة التمرين", " دقيقة");
-  if (i.method === "cunningham") num("bodyFat", "نسبة الدهون", "%");
+  if (!["cunningham", "tenhaaf", "tinsley"].includes(i.method as string)) e.method = en ? "Choose a calculation method." : "اختيار طريقة الحساب مطلوب.";
+  num("weight", en ? "weight" : "الوزن", en ? " kg" : " كغ");
+  num("minutes", en ? "session length" : "مدة التمرين", en ? " min" : " دقيقة");
+  if (i.method === "cunningham") num("bodyFat", en ? "body-fat percentage" : "نسبة الدهون", "%");
   if (i.method === "tenhaaf") {
-    num("heightCm", "الطول", " سم");
-    num("age", "العمر", " سنة");
-    if (i.sex !== "male" && i.sex !== "female") e.sex = "اختيار الجنس مطلوب.";
+    num("heightCm", en ? "height" : "الطول", en ? " cm" : " سم");
+    num("age", en ? "age" : "العمر", en ? " years" : " سنة");
+    if (i.sex !== "male" && i.sex !== "female") e.sex = en ? "Choose sex." : "اختيار الجنس مطلوب.";
   }
   const td = i.trainingDays;
-  if (typeof td !== "number" || !Number.isInteger(td) || td < 0 || td > 7) e.trainingDays = "اختيار عدد أيام التمرين مطلوب.";
-  if (typeof i.paf !== "number" || i.paf < 1 || i.paf > 2) e.paf = "اختيار مستوى النشاط مطلوب.";
-  if (typeof i.ebFactor !== "number" || i.ebFactor < 0.6 || i.ebFactor > 1.3) e.ebFactor = "اختيار الهدف مطلوب.";
+  if (typeof td !== "number" || !Number.isInteger(td) || td < 0 || td > 7) e.trainingDays = en ? "Choose the number of training days." : "اختيار عدد أيام التمرين مطلوب.";
+  if (typeof i.paf !== "number" || i.paf < 1 || i.paf > 2) e.paf = en ? "Choose an activity level." : "اختيار مستوى النشاط مطلوب.";
+  if (typeof i.ebFactor !== "number" || i.ebFactor < 0.6 || i.ebFactor > 1.3) e.ebFactor = en ? "Choose a goal." : "اختيار الهدف مطلوب.";
   return e;
 }
 
@@ -180,8 +220,8 @@ export function validateIntake(i: Partial<Record<keyof IntakeInput, unknown>>): 
 // والدهون غ/كغ (قيمة مبدئية قابلة للتعديل)، والكارب هو الباقي من السعرات.
 // ---------------------------------------------------------------------
 export const PROTEIN_LEVELS = [
-  { v: "moderate", l: "معتدل (1.6 غ/كغ)", perKg: 1.6 },
-  { v: "high", l: "عالي (2.2 غ/كغ)", perKg: 2.2 },
+  { v: "moderate", l: "معتدل (1.6 غ/كغ)", en: "Moderate (1.6 g/kg)", perKg: 1.6 },
+  { v: "high", l: "عالي (2.2 غ/كغ)", en: "High (2.2 g/kg)", perKg: 2.2 },
 ] as const;
 export type ProteinLevel = (typeof PROTEIN_LEVELS)[number]["v"];
 export const proteinPerKg = (level: ProteinLevel | string) => PROTEIN_LEVELS.find((p) => p.v === level)?.perKg ?? PROTEIN_LEVELS[0].perKg;

@@ -1,8 +1,17 @@
-export const riyals = (halalas: number | null | undefined) => {
+import type { Lang } from "./lang";
+
+export const riyals = (halalas: number | null | undefined, lang: Lang = "ar") => {
   if (halalas == null) return "—";
   const v = halalas / 100;
-  return `${v.toLocaleString("en-US", { maximumFractionDigits: 2 })} ر.س`;
+  const n = v.toLocaleString("en-US", { maximumFractionDigits: 2 });
+  return lang === "en" ? `SAR ${n}` : `${n} ر.س`;
 };
+/** الرقم بلا عملة (للعرض الكبير بجانب رمز العملة) */
+export const priceNum = (text: string) => text.replace(/\s*ر\.س|SAR\s*/g, "");
+export const CURRENCY: Record<Lang, string> = { ar: "ر.س", en: "SAR" };
+/** تسمية مدة العرض باللغة: «شهر واحد»/«1 month»، «3 أشهر»/«3 months»، «دفعة واحدة»/«One-time» */
+export const offerLabel = (o: { label: string; months: number }, lang: Lang) =>
+  lang === "ar" ? o.label : o.months === 0 ? "One-time" : o.months === 1 ? "1 month" : `${o.months} months`;
 
 const dateFmt = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", {
   timeZone: "Asia/Riyadh",
@@ -18,7 +27,8 @@ const dateTimeFmt = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", {
   minute: "2-digit",
 });
 
-export const fmtDate = (d: Date | string) => dateFmt.format(new Date(d));
+const dateFmtEn = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Riyadh", day: "numeric", month: "long", year: "numeric" });
+export const fmtDate = (d: Date | string, lang: Lang = "ar") => (lang === "en" ? dateFmtEn : dateFmt).format(new Date(d));
 const dayMonthFmt = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", { timeZone: "UTC", day: "numeric", month: "long" });
 /** تاريخ بصيغة YYYY-MM-DD بدون اسم اليوم: «5 أكتوبر» */
 export const fmtDayMonth = (ymd: string) => dayMonthFmt.format(new Date(`${ymd.slice(0, 10)}T12:00:00Z`));
@@ -29,6 +39,8 @@ export const CATEGORY_LABEL: Record<string, string> = {
   files: "ملفات بدون متابعة",
   consult: "استشارات",
 };
+const CATEGORY_LABEL_EN: Record<string, string> = { follow: "With follow-up", files: "Plans without follow-up", consult: "Consultations" };
+export const categoryLabel = (c: string, lang: Lang) => (lang === "en" ? CATEGORY_LABEL_EN[c] ?? c : CATEGORY_LABEL[c] ?? c);
 
 export function shortName(name: string) {
   return name.replace(/^الباقة\s+/, "").replace(/^باقة\s+/, "");

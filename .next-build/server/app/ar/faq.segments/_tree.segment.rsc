@@ -1,0 +1,8 @@
+:HL["/_next/static/chunks/1vf_hy5fbcvt9.css","style"]
+:HL["/_next/static/chunks/1jfjtasog4rqi.css","style"]
+:HC["/",""]
+4:[["children",{"s":"__PAGE__","h":160}]]
+3:[["children",{"s":"faq","h":64,"c":"$Q4"}]]
+2:[["children",{"s":"(site)","h":32,"c":"$Q3"}]]
+1:[["children",{"s":{"n":"lang","t":"d","k":"ar","s":["actions","admin","api"]},"h":112,"c":"$Q2"}]]
+0:{"b":"t7XlYF_6trZ-4JzolwJh_","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

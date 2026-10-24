@@ -1,0 +1,10 @@
+var R=require("../../../../chunks/[turbopack]_runtime.js")("server/app/api/payments/webhook/route.js")
+R.c("server/chunks/[externals]__1j_0dx0t6dtj3._.js")
+R.c("server/chunks/_04wg-mmc-vz_z._.js")
+R.c("server/chunks/node_modules_next_dist_182yaz9b1ql64._.js")
+R.c("server/chunks/node_modules_@opentelemetry_api_build_esm_index_1jp9ij0_ddtgk.js")
+R.c("server/chunks/[root-of-the-server]__12uj0887q1ayr._.js")
+R.c("server/chunks/node_modules_next_dist_compiled_@opentelemetry_api_index_1flpc8x6dsfp6.js")
+R.c("server/chunks/_next-internal_server_app_api_payments_webhook_route_actions_1mbehelcssq91.js")
+R.m(20533)
+module.exports=R.m(20533).exports

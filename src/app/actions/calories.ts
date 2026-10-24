@@ -1,5 +1,5 @@
 "use server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath } from "@/lib/revalidate";
 import { dbErrorMessage, withUser, type Tx } from "@/lib/db";
 import { getCurrentUser, getFreshUser } from "@/lib/session";
 import { loadCalorieState } from "@/lib/calorie-data";

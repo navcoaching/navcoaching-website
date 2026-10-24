@@ -12,6 +12,7 @@ import { nutritionSql } from "./nutrition-sql.mjs";
 import { foodDetailsSql, foodsSql } from "./foods-sql.mjs";
 import { brandFoodsSql } from "./brand-foods-sql.mjs";
 import { recipeTemplatesSql } from "./recipes-sql.mjs";
+import { enStatements } from "./seed-en.mjs";
 
 loadEnv();
 const force = process.argv.includes("--force");
@@ -147,6 +148,7 @@ try {
   const { rows: [{ n: exCount }] } = await db.query("SELECT count(*)::int AS n FROM exercises");
 
   await db.query("COMMIT");
+  for (const [sql, params] of await enStatements()) await db.query(sql, params);
   console.log(`✓ استيراد: ${catalog.packages.length} منتجات، ${content.faqs.length} أسئلة، ${content.policies.length} سياسات، ${site.testimonials.length} تقييمات سابقة، ${exCount} تمريناً في المكتبة`);
 } catch (err) {
   await db.query("ROLLBACK");

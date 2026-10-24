@@ -12,6 +12,18 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [{ protocol: "https", hostname: "i.ytimg.com" }],
   },
+  // اللغات: العربية بلا بادئة (تُعاد كتابتها داخلياً إلى /ar/...)، والإنجليزية تحت /en. الحساب واللوحة والدخول والدفع بالعربية فقط.
+  async redirects() {
+    return [
+      { source: "/ar", destination: "/", permanent: true },
+      { source: "/ar/:path*", destination: "/:path*", permanent: true },
+      { source: "/en/:seg(account|login|checkout|admin|install)", destination: "/:seg", permanent: false },
+      { source: "/en/:seg(account|login|checkout|admin)/:path*", destination: "/:seg/:path*", permanent: false },
+    ];
+  },
+  async rewrites() {
+    return { afterFiles: [{ source: "/:path((?!en(?:/|$)|ar(?:/|$)|admin(?:/|$)|api(?:/|$)).*)", destination: "/ar/:path" }] };
+  },
   async headers() {
     return [
       {

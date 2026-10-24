@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
  * قائمة الجوال: تُغلق تلقائياً عند اختيار رابط، أو تغيّر الصفحة، أو الضغط خارجها، أو زر Esc.
  * الاختيار نفسه (تبديل المظهر) لا يغلقها.
  */
-export default function MobileMenu({ summary, children }: { summary: React.ReactNode; children: React.ReactNode }) {
+export default function MobileMenu({ summary, children, label = "فتح القائمة" }: { summary: React.ReactNode; children: React.ReactNode; label?: string }) {
   const ref = useRef<HTMLDetailsElement>(null);
   const pathname = usePathname();
   const close = () => { if (ref.current) ref.current.open = false; };
@@ -22,7 +22,7 @@ export default function MobileMenu({ summary, children }: { summary: React.React
 
   return (
     <details className="menu" ref={ref}>
-      <summary aria-label="فتح القائمة">{summary}</summary>
+      <summary aria-label={label}>{summary}</summary>
       <div onClick={(e) => { if ((e.target as HTMLElement).closest("a")) close(); }}>{children}</div>
     </details>
   );

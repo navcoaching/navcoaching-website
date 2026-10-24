@@ -1,0 +1,3 @@
+{
+  "/[lang]/(site)/checkout/[sku]/page": "app/[lang]/(site)/checkout/[sku]/page.js"
+}

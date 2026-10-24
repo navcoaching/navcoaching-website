@@ -2,7 +2,7 @@
 // إجراءات منصة التدريب: مكتبة التمارين والقوالب والبلوك (المدربة)، والتسجيل والتبديل (المتدرب).
 // كل إجراء يتحقق من الجلسة هنا، وقاعدة البيانات تتحقق مرة ثانية (RLS ودوال SECURITY DEFINER).
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath } from "@/lib/revalidate";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { dbErrorMessage, withUser, type Tx } from "@/lib/db";

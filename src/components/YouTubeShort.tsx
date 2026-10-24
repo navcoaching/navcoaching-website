@@ -1,4 +1,6 @@
 "use client";
+import { useLang } from "@/lib/use-lang";
+import { t } from "@/i18n/ui";
 import { useState } from "react";
 import { IconPlay } from "./Icons";
 
@@ -8,6 +10,7 @@ import { IconPlay } from "./Icons";
  */
 export default function YouTubeShort({ id, title, wide = false }: { id: string; title: string; wide?: boolean }) {
   const [play, setPlay] = useState(false);
+  const u = t(useLang()).common;
   const [thumbOk, setThumbOk] = useState(true);
   return (
     <div className="stack" style={{ ["--space" as string]: "12px" }}>
@@ -30,14 +33,14 @@ export default function YouTubeShort({ id, title, wide = false }: { id: string; 
                   else setThumbOk(false);
                 }} />
             )}
-            <button type="button" className="short-play" onClick={() => setPlay(true)} aria-label={`تشغيل المقطع: ${title}`}>
+            <button type="button" className="short-play" onClick={() => setPlay(true)} aria-label={`${u.playAria} ${title}`}>
               <span className="disc"><IconPlay size={30} /></span>
-              <span className="cap">تشغيل المقطع</span>
+              <span className="cap">{u.play}</span>
             </button>
           </>
         )}
       </div>
-      <a className="small center" href={wide ? `https://www.youtube.com/watch?v=${id}` : `https://www.youtube.com/shorts/${id}`} target="_blank" rel="noopener">فتح المقطع في يوتيوب ↗</a>
+      <a className="small center" href={wide ? `https://www.youtube.com/watch?v=${id}` : `https://www.youtube.com/shorts/${id}`} target="_blank" rel="noopener">{u.openYoutube}</a>
     </div>
   );
 }

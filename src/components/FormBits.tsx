@@ -33,11 +33,11 @@ export function FormMessage({ state }: { state: ActionState | undefined }) {
   return null;
 }
 
-export function CopyButton({ value, label = "نسخ" }: { value: string; label?: string }) {
+export function CopyButton({ value, label = "نسخ", done: doneLabel = "تم النسخ ✓" }: { value: string; label?: string; done?: string }) {
   const [done, setDone] = useState(false);
   return (
     <button type="button" className="btn btn-ghost btn-sm" onClick={async () => {
       try { await navigator.clipboard.writeText(value); setDone(true); setTimeout(() => setDone(false), 1800); } catch { /* ignore */ }
-    }}>{done ? "تم النسخ ✓" : label}</button>
+    }}>{done ? doneLabel : label}</button>
   );
 }

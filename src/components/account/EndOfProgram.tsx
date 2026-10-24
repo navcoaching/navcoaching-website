@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { withUser, type Tx } from "@/lib/db";
 import { riyadhDate } from "@/lib/schedule";
-import { ExitSurveyForm, ReviewForm } from "@/app/(site)/account/ClientForms";
+import { ExitSurveyForm, ReviewForm } from "@/app/[lang]/(site)/account/ClientForms";
 
 type O = { id: string; order_no: string; status: string; category: string; months: number; product_name: string; sub_end_at?: string | null };
 export type ExitSurvey = { wants_renewal: boolean; reason: string; experience: string; created_at: string };

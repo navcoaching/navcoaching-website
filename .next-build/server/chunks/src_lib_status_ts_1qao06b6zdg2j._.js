@@ -1,0 +1,3 @@
+module.exports=[97867,e=>{"use strict";e.s(["t",0,["awaiting_quote","awaiting_payment","payment_review","preparing"],"g",0,function(e,t){switch(e){case"awaiting_quote":return"بانتظار تأكيد المبلغ";case"awaiting_payment":return"بانتظار الدفع";case"payment_review":return"جارٍ التحقق من الدفع";case"preparing":return"consult"===t?"قيد التنسيق":"قيد الإعداد";case"active":return"البرنامج نشط";case"delivered":return"تم التسليم";case"completed":return"consult"===t?"تمت الجلسة":"follow"===t?"انتهى الاشتراك":"مكتمل";case"cancelled":return"تم إلغاء الطلب";default:return e}}])}];
+
+//# sourceMappingURL=src_lib_status_ts_1qao06b6zdg2j._.js.map

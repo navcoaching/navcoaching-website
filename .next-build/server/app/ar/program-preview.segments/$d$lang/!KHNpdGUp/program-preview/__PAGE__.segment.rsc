@@ -1,0 +1,33 @@
+4:"$Sreact.fragment"
+5:"/_next/static/chunks/11c4jd1owx4o5.js"
+6:I[39756,["$5"],"default"]
+7:I[37457,["$5"],"default"]
+c:"/_next/static/chunks/1_9igip0clbba.js"
+d:"/_next/static/chunks/2htxg-49rhbgw.js"
+e:"/_next/static/chunks/33eqnabdhkbzu.js"
+f:"/_next/static/chunks/11ly78thnaqxt.js"
+10:I[33123,["$c","$d","$e","$f"],"default"]
+11:I[22016,["$c","$d","$e","$f"],""]
+12:I[97367,["$5"],"OutletBoundary"]
+13:"$Sreact.suspense"
+16:"ViewportBoundary"
+17:I[97367,["$5"],"$16"]
+18:"MetadataBoundary"
+19:I[97367,["$5"],"$18"]
+1a:I[27201,["$5"],"IconMark"]
+9:X
+9:C
+a:X
+b:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$4","c",{"children":[["$","div",null,{"className":"pub","children":[["$","section",null,{"className":"page-hero","children":["$","div",null,{"className":"wrap","children":[["$","span",null,{"className":"eyebrow","children":"نظرة داخل برنامج المتدرب"}],["$","h1",null,{"style":{"fontSize":"clamp(30px,5vw,50px)","marginTop":12},"children":"كيف يبدو البرنامج من الداخل؟"}],["$","p",null,{"className":"lead","children":["لقطات من لوحة المتدرب ببيانات مثال، بدون أي بيانات شخصية. الضغط على الصورة يكبّرها.",""]}]]}]}],["$","section",null,{"className":"section tight","children":["$","div",null,{"className":"wrap","children":[["$","$L10",null,{"shots":[{"h":720,"w":754,"alt":"لقطة من صفحة «حسابي» ببيانات مثال: شريط الالتزام، أيام تمرين الأسبوع الحالي، ملخص تغذية اليوم، وروتين المكملات","src":"shots/my-program.webp","title":"برنامجي","caption":"أول ما تدخل حسابك: نسبة التزامك وأسابيعك المتتالية، أيام تمرين الأسبوع، تغذية اليوم مقابل أهدافك، وروتين المكملات."},{"h":960,"w":1148,"alt":"لقطة من صفحة برنامج التمرين ببيانات مثال: أيام الأسبوع، وبطاقة كل تمرين مع المستهدف وخانات الوزن والتكرارات وRIR","src":"shots/training-log.webp","title":"تسجيل التمرين","caption":"لكل تمرين المستهدف من الجولات والتكرارات وRIR، وتسجّل وزنك وتكراراتك من جوالك، ولك تبديله ببديل تختاره المدربة."},{"h":1020,"w":1148,"alt":"لقطة من صفحة التغذية ببيانات مثال: ملخص اليوم مقابل الأهداف، ونموذج إضافة أكلة، وأكل اليوم حسب الوجبات","src":"shots/nutrition-day.webp","title":"التغذية اليومية","caption":"أهدافك اليومية من السعرات والماكروز وكم باقي لك، وتسجّل أكلك من جداولك الغذائية أو بالغرام من قاعدة الأكل."},{"h":307,"w":1116,"alt":"لقطة من لوحة التقدم ببيانات مثال: رسم الوزن ورسم القياسات","src":"shots/progress-charts.webp","title":"لوحة التقدم","caption":"وزنك وقياساتك برسوم واضحة أسبوعاً بأسبوع، ببيانات مثال."}]}],["$","p",null,{"style":{"marginTop":24},"children":["$","$L11",null,{"href":"/programs","className":"btn","children":"البرامج والأسعار"}]}]]}]}]]}],[["$","script","script-0",{"src":"/_next/static/chunks/11ly78thnaqxt.js","async":true}]],["$","$L12",null,{"children":["$","$13",null,{"name":"Next.MetadataOutlet","children":"$@14"}]}]]}],"p":"$@15","v":null,"s":"$a"}}]]
+3:[["children",{"s":"program-preview","h":64,"d":{"r":["$","$4","c",{"children":[null,["$","$L6",null,{"parallelRouterKey":"children","template":["$","$L7",null,{}]}]]}],"p":"$@8","v":"$9","s":"$a"},"c":"$Qb"}]]
+2:[["children",{"s":"(site)","h":32,"c":"$Q3"}]]
+1:[["children",{"s":{"n":"lang","t":"d","k":"ar","s":["actions","admin","api"]},"h":112,"c":"$Q2"}]]
+0:{"t":{"t":{"s":"","h":80,"c":"$Q1"},"h":{"r":["$","$4","h",{"children":[null,["$","$L17",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1, viewport-fit=cover"}],["$","meta","2",{"name":"theme-color","content":"#07142a"}]]}],["$","$L19",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$13",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"نظرة داخل البرنامج — Nav Coaching"}],["$","meta","1",{"name":"description","content":"لقطات من لوحة المتدرب في Nav Coaching ببيانات مثال: برنامجي، تسجيل التمرين، التغذية اليومية، ولوحة التقدم."}],["$","link","2",{"rel":"manifest","href":"/manifest.webmanifest"}],["$","link","3",{"rel":"canonical","href":"http://localhost:3000/program-preview"}],["$","link","4",{"rel":"alternate","hrefLang":"ar","href":"http://localhost:3000/program-preview"}],["$","link","5",{"rel":"alternate","hrefLang":"en","href":"http://localhost:3000/en/program-preview"}],["$","link","6",{"rel":"alternate","hrefLang":"x-default","href":"http://localhost:3000/program-preview"}],["$","meta","7",{"name":"mobile-web-app-capable","content":"yes"}],["$","meta","8",{"name":"apple-mobile-web-app-title","content":"Nav Coaching"}],["$","meta","9",{"name":"apple-mobile-web-app-status-bar-style","content":"default"}],["$","meta","10",{"property":"og:title","content":"نظرة داخل البرنامج — Nav Coaching"}],["$","meta","11",{"property":"og:description","content":"لقطات من لوحة المتدرب في Nav Coaching ببيانات مثال: برنامجي، تسجيل التمرين، التغذية اليومية، ولوحة التقدم."}],["$","meta","12",{"property":"og:site_name","content":"Nav Coaching"}],["$","meta","13",{"property":"og:locale","content":"ar_SA"}],["$","meta","14",{"property":"og:image","content":"http://localhost:3000/brand/og.png"}],["$","meta","15",{"property":"og:image:width","content":"1200"}],["$","meta","16",{"property":"og:image:height","content":"630"}],["$","meta","17",{"property":"og:image:alt","content":"Nav Coaching"}],["$","meta","18",{"property":"og:type","content":"website"}],["$","meta","19",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","20",{"name":"twitter:title","content":"نظرة داخل البرنامج — Nav Coaching"}],["$","meta","21",{"name":"twitter:description","content":"لقطات من لوحة المتدرب في Nav Coaching ببيانات مثال: برنامجي، تسجيل التمرين، التغذية اليومية، ولوحة التقدم."}],["$","meta","22",{"name":"twitter:image","content":"http://localhost:3000/brand/og.png"}],["$","meta","23",{"name":"twitter:image:alt","content":"Nav Coaching"}],["$","meta","24",{"name":"twitter:image:width","content":"1200"}],["$","meta","25",{"name":"twitter:image:height","content":"630"}],["$","link","26",{"rel":"icon","href":"/icon.png?icon.28rcsv2jnl9ix.png","sizes":"64x64","type":"image/png"}],["$","link","27",{"rel":"apple-touch-icon","href":"/apple-icon.png?apple-icon.2b005pjlgpn1l.png","sizes":"180x180","type":"image/png"}],["$","$L1a","28",{}]]}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":"$@1b","v":null,"s":"$a"}},"a":"$@1c","u":"$@1d","b":"t7XlYF_6trZ-4JzolwJh_"}
+14:null
+1d:true
+a:300
+a:C
+1c:0
+8:"$undefined"
+1b:"$undefined"
+15:"$undefined"

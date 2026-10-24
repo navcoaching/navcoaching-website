@@ -2,7 +2,7 @@
 
 import { differentPerson } from "@/lib/names";
 import { TIKTOK_RE } from "@/lib/social";
-import { revalidatePath } from "next/cache";
+import { revalidatePath } from "@/lib/revalidate";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { dbErrorMessage, withUser, type Tx } from "@/lib/db";
@@ -873,4 +873,58 @@ export async function saveMonthlyGoalAction(_: ActionState, fd: FormData): Promi
   revalidatePath("/admin");
   revalidatePath("/admin/stats");
   return { ok: true, message: "تم حفظ الهدف." };
+}
+
+// ---------- الترجمة الإنجليزية (i18n.en) لمحتوى الموقع العام ----------
+const EN_KINDS = { product: "products", faq: "faqs", policy: "policies", setting: "site_settings", free_plan: "free_plans", booklet: "booklets" } as const;
+
+/** يحفظ الترجمة الإنجليزية لصف واحد في عمود i18n (الحقول الفارغة تُحذف فتُعرض بالعربية) */
+export async function saveTranslationAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const kind = String(fd.get("kind") ?? "") as keyof typeof EN_KINDS;
+  const id = String(fd.get("id") ?? "").trim();
+  const table = EN_KINDS[kind];
+  if (!table || !id || id.length > 80) return { error: "طلب غير صالح." };
+  const g = (k: string) => String(fd.get(k) ?? "").trim().slice(0, 6000);
+  const pairs = (v: string) => lines(v).map((l) => l.split("|").map((x) => x.trim()));
+  let value: Record<string, unknown>;
+  switch (kind) {
+    case "product": value = { name: g("name"), audience: g("audience"), note: g("note"), delivery: g("delivery"), requirements: g("requirements"), policy_note: g("policy_note"), items: lines(g("items")).map((text) => ({ text })) }; break;
+    case "faq": value = { question: g("question"), answer: g("answer") }; break;
+    case "policy": value = { title: g("title"), body: g("body") }; break;
+    case "free_plan": value = { title: g("title"), summary: g("summary"), audience: g("audience") }; break;
+    case "booklet": value = { title: g("title"), description: g("description") }; break;
+    case "setting":
+      switch (id) {
+        case "hero": value = { eyebrow: g("eyebrow"), title: g("title"), title_tail: g("title_tail"), lead: g("lead"), tagline: g("tagline") }; break;
+        case "badges": value = lines(g("value")).slice(0, 6) as unknown as Record<string, unknown>; break;
+        case "why": case "how_steps": value = pairs(g("value")).map(([title, ...b]) => ({ title, body: b.join(" | ") })) as unknown as Record<string, unknown>; break;
+        case "testimonials_disclaimer": case "prices_note": case "response_time": value = g("value") as unknown as Record<string, unknown>; break;
+        case "about":
+          value = {
+            name: g("name"), bio: g("bio"), home_bio: g("home_bio"), points: lines(g("points")), certs: lines(g("certs")),
+            story_title: g("story_title"), story: lines(g("story")),
+            pillars_title: g("pillars_title"), pillars: pairs(g("pillars")).map(([title, ...b]) => ({ title, body: b.join(" | ") })),
+            fit_title: g("fit_title"), fit: lines(g("fit")),
+            notes: pairs(g("notes")).map(([title, body = "", href = "", label = ""]) => ({ title, body, href: href.startsWith("/") || href.startsWith("https://") ? href : "", label })),
+            experience_title: g("experience_title"), experience: lines(g("experience")),
+          };
+          break;
+        default: return { error: "إعداد غير معروف." };
+      }
+      break;
+    default: return { error: "طلب غير صالح." };
+  }
+  // الحقول الفارغة لا تُحفظ، فتُعرض بالعربية بدلاً منها
+  if (value && typeof value === "object" && !Array.isArray(value)) for (const k of Object.keys(value)) { const v = (value as Record<string, unknown>)[k]; if (v === "" || (Array.isArray(v) && v.length === 0)) delete (value as Record<string, unknown>)[k]; }
+  const where = kind === "setting" ? "key = $2" : kind === "policy" ? "slug = $2" : "id = $2::uuid";
+  if (where.includes("uuid") && !/^[0-9a-f-]{36}$/.test(id)) return { error: "طلب غير صالح." };
+  try {
+    await asCoach(async (tx, uid) => {
+      const r = await tx.query(`UPDATE ${table} SET i18n = jsonb_set(i18n, '{en}', $1::jsonb) WHERE ${where}`, [JSON.stringify(value), id]);
+      if (!r.rowCount) throw new Error("not found");
+      await log(tx, uid, "i18n.save", `${kind}:${id}`, { fields: Object.keys(value as object) });
+    });
+  } catch (err) { return fail(err); }
+  revalidatePath("/", "layout");
+  return { ok: true, message: "تم حفظ الترجمة." };
 }

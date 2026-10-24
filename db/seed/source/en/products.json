@@ -1,0 +1,115 @@
+{
+  "intensive": {
+    "name": "Intensive",
+    "audience": "Best for beginners and anyone who wants weekly follow-up with Zoom calls: training + nutrition + Zoom + one in-person session.",
+    "items": [
+      "One free in-person session (1 hour) to correct technique and check exercise quality (women, Eastern Province)",
+      "A full training and nutrition plan with clear exercise guides, at home or in the gym",
+      "4 Zoom calls a month to review your progress and your training and mindset questions",
+      "A weekly review of your physical and mental progress (video or voice note), adjusting calories or training when needed",
+      "A simple guide to the MyFitnessPal calorie-tracking app",
+      "A complete training and nutrition booklet",
+      "Help choosing what suits your health and lifestyle in nutrition and daily routine",
+      "Daily contact, with replies within 48 working hours"
+    ],
+    "delivery": "A personalised program file after the questionnaire, regular reviews by video or voice note, and daily contact on WhatsApp with replies within 48 working hours.",
+    "requirements": "Fill in the trainee questionnaire (5 steps), then transfer by bank and upload a photo of the receipt. The subscription starts once the transfer is verified and the questionnaire is complete.",
+    "policy_note": "Paid once per plan and duration by bank transfer, with no automatic renewal. 3-month subscriptions are covered by the conditional money-back guarantee and the free renewal for consistent trainees."
+  },
+  "advanced": {
+    "name": "Advanced",
+    "audience": "For experienced trainees who want training + nutrition with weekly follow-up, without Zoom.",
+    "items": [
+      "A full training and nutrition plan with clear exercise guides, at home or in the gym",
+      "A weekly review of your physical and mental progress (video or voice note), adjusting calories or training when needed",
+      "A complete training and nutrition booklet",
+      "Help choosing what suits your health and lifestyle in training and daily routine",
+      "Daily contact, with replies within 48 working hours",
+      "Zoom calls and the in-person session (Intensive only)"
+    ],
+    "delivery": "A personalised program file after the questionnaire, regular reviews by video or voice note, and daily contact on WhatsApp with replies within 48 working hours.",
+    "requirements": "Fill in the trainee questionnaire (5 steps), then transfer by bank and upload a photo of the receipt. The subscription starts once the transfer is verified and the questionnaire is complete.",
+    "policy_note": "Paid once per plan and duration by bank transfer, with no automatic renewal. 3-month subscriptions are covered by the conditional money-back guarantee and the free renewal for consistent trainees."
+  },
+  "basic": {
+    "name": "Basic",
+    "audience": "For anyone who manages their own nutrition and needs a training plan only, with a review every two weeks.",
+    "items": [
+      "A full training plan with clear exercise guides, at home or in the gym",
+      "A review every two weeks of your physical and mental progress (video or voice note), adjusting training when needed",
+      "A complete training and nutrition booklet",
+      "Daily contact, with replies within 48 working hours",
+      "No nutrition plan"
+    ],
+    "delivery": "A personalised program file after the questionnaire, regular reviews by video or voice note, and daily contact on WhatsApp with replies within 48 working hours.",
+    "requirements": "Fill in the trainee questionnaire (5 steps), then transfer by bank and upload a photo of the receipt. The subscription starts once the transfer is verified and the questionnaire is complete.",
+    "policy_note": "Paid once per plan and duration by bank transfer, with no automatic renewal. 3-month subscriptions are covered by the conditional money-back guarantee and the free renewal for consistent trainees."
+  },
+  "nutrition": {
+    "name": "Nutrition",
+    "audience": "For anyone who needs a complete nutrition plan and wants to learn calorie counting, without a training plan.",
+    "note": "One month · usually no renewal needed",
+    "items": [
+      "A complete nutrition plan that fits your goal and lifestyle",
+      "Your calorie target for your goal",
+      "Learning calorie counting, with food choices that suit you",
+      "An Excel file to track progress and measurements",
+      "A weekly discussion of your relationship with food at home and out",
+      "Daily contact, with replies within 48 working hours",
+      "Not needed if you are on Intensive or Advanced: nutrition is included there"
+    ],
+    "delivery": "A personalised program file after the questionnaire, regular reviews by video or voice note, and daily contact on WhatsApp with replies within 48 working hours.",
+    "requirements": "Fill in the trainee questionnaire (5 steps), then transfer by bank and upload a photo of the receipt. The subscription starts once the transfer is verified and the questionnaire is complete.",
+    "policy_note": "Paid once by bank transfer, with no automatic renewal. The money-back guarantee covers 3-month subscriptions to Intensive, Advanced, and Basic only."
+  },
+  "custom-training-plan": {
+    "name": "Personal-training alternative",
+    "audience": "For advanced trainees who do not need follow-up, or as a cheaper alternative to personal training.",
+    "items": [
+      "A custom training plan for the number of training days you need",
+      "How to gauge effort and the number of sets required",
+      "Download the plan to your device"
+    ],
+    "delivery": "A personalised plan after the questionnaire, delivered as a file you can download to your device. No follow-up.",
+    "requirements": "Fill in the trainee questionnaire (5 steps), then transfer by bank and upload a photo of the receipt. The subscription starts once the transfer is verified and the questionnaire is complete.",
+    "policy_note": "Paid once by bank transfer. The plans are yours for life and you can edit them."
+  },
+  "training-nutrition-plan": {
+    "name": "Training plan with nutrition",
+    "audience": "For advanced trainees who do not need follow-up, or as a cheaper alternative to personal training.",
+    "items": [
+      "A custom training plan for the number of training days you need",
+      "How to gauge effort and the number of sets required",
+      "A nutrition plan with options that fit your training goal",
+      "Download the plan to your device"
+    ],
+    "delivery": "A personalised plan after the questionnaire, delivered as a file you can download to your device. No follow-up.",
+    "requirements": "Fill in the trainee questionnaire (5 steps), then transfer by bank and upload a photo of the receipt. The subscription starts once the transfer is verified and the questionnaire is complete.",
+    "policy_note": "Paid once by bank transfer. The plans are yours for life and you can edit them."
+  },
+  "nutrition-consultation": {
+    "name": "Nutrition consultation",
+    "audience": "For specific nutrition questions: one session is enough to set your calories and food advice.",
+    "items": [
+      "Discuss all your nutrition questions",
+      "A calorie target for your goal with food suggestions",
+      "Advice on supplements and how to eat out the right way"
+    ],
+    "delivery": "A session on Google Meet or WhatsApp, whichever suits you.",
+    "requirements": "Fill in the trainee questionnaire (5 steps), then transfer by bank and upload a photo of the receipt. The subscription starts once the transfer is verified and the questionnaire is complete.",
+    "policy_note": "Paid once by bank transfer."
+  },
+  "training-consultation": {
+    "name": "Training consultation",
+    "audience": "For specific training questions: one session is enough to adjust your plan and correct technique.",
+    "items": [
+      "Discuss all your training questions",
+      "Adjust your training plan to your goal, with mobility exercise suggestions",
+      "Correct the technique of exercises you suspect are wrong or cause pain",
+      "Check that your training quality is right for building muscle"
+    ],
+    "delivery": "A session on Google Meet or WhatsApp, whichever suits you.",
+    "requirements": "Fill in the trainee questionnaire (5 steps), then transfer by bank and upload a photo of the receipt. The subscription starts once the transfer is verified and the questionnaire is complete.",
+    "policy_note": "Paid once by bank transfer."
+  }
+}
